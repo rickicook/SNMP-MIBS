@@ -1,0 +1,211 @@
+OPEN-GEAR-CARD-MIB DEFINITIONS ::= BEGIN
+
+--
+-- Defines control and monitoring structures for a generic Open Gear Card.
+--
+
+IMPORTS
+  openGearFrameIndex
+     FROM OPEN-GEAR-FRAME-MIB
+
+  openGearObjects
+    FROM OPEN-GEAR-MIB
+
+  OBJECT-TYPE, NOTIFICATION-TYPE, MODULE-IDENTITY, Integer32, Unsigned32
+    FROM SNMPv2-SMI
+
+  OBJECT-GROUP, NOTIFICATION-GROUP, MODULE-COMPLIANCE
+    FROM SNMPv2-CONF
+
+  DisplayString, TruthValue
+    FROM SNMPv2-TC;
+
+openGearCardMib MODULE-IDENTITY
+  LAST-UPDATED "200703070000Z"
+  ORGANIZATION "www.rossvideo.org"
+  CONTACT-INFO
+    "postal:   Ross Video Limited
+               8 John St. P.O. Box 220
+               Iroquois ON K0E 1K0
+               Canada
+
+     email:    support@rossvideo.com"
+  DESCRIPTION
+    "Defines control and monitoring structures for a generic Open Gear Card."
+  REVISION     "200703070000Z"
+  DESCRIPTION
+    "First revision."
+  ::= { openGearObjects 3 }
+
+--
+--  Top level components in the OpenGear card MIB
+--
+openGearCardNotifications
+  OBJECT IDENTIFIER ::= { openGearCardMib 0 }
+
+openGearCardObjects
+  OBJECT IDENTIFIER ::= { openGearCardMib 1 }
+
+openGearCardConformance
+  OBJECT IDENTIFIER ::= { openGearCardMib 2 }
+
+--
+--  Notifications relating to the frame and card
+--
+openGearCardOnlineEvent   NOTIFICATION-TYPE
+  OBJECTS { openGearCardProduct }
+  STATUS current
+  DESCRIPTION
+    "An indication that a card has come online.
+     The event contains the card product name - openGearCardProduct."
+  ::= { openGearCardNotifications 1 }
+
+openGearCardOfflineEvent  NOTIFICATION-TYPE
+  OBJECTS { openGearCardProduct }
+  STATUS current
+  DESCRIPTION
+    "An indication that a card has gone offline.
+     The event contains the card product name - openGearCardProduct."
+  ::= { openGearCardNotifications 2 }
+
+--
+--  All the cards in the Open Gear frame
+--
+openGearNumberOfCards    OBJECT-TYPE
+    SYNTAX      Unsigned32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION
+      "The total number of Open Gear cards in the open gear frame."
+    ::= { openGearCardObjects 1 }
+
+openGearCardTable     OBJECT-TYPE
+    SYNTAX      SEQUENCE OF OpenGearCardEntry
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION
+      "A table of Open Gear cards.  Each entry in the table represents the card
+       that is inserted in the frame. The total number of entries should be the
+       value in 'openGearNumberOfCards'"
+    ::= { openGearCardObjects 2 }
+
+openGearCardEntry     OBJECT-TYPE
+    SYNTAX      OpenGearCardEntry
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION
+      "A conceptual row within the Open Gear card table."
+    INDEX       { openGearFrameIndex, openGearCardIndex }
+    ::= { openGearCardTable 1 }
+
+OpenGearCardEntry ::= SEQUENCE {
+    openGearCardIndex         Unsigned32,
+    openGearCardSupplier      DisplayString,
+    openGearCardProduct       DisplayString,
+    openGearCardSoftwareRev   DisplayString,
+    openGearCardOnline        TruthValue,
+    openGearCardOid           OBJECT IDENTIFIER
+}
+
+openGearCardIndex    OBJECT-TYPE
+    SYNTAX      Unsigned32
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION
+      "The openGearIndex represents the slot number into which the card is
+       inserted, on the Open Gear frame."
+    ::= { openGearCardEntry 1 }
+
+openGearCardSupplier     OBJECT-TYPE
+    SYNTAX      DisplayString
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION
+      "The manufacturer or supplier of the card."
+    ::= { openGearCardEntry 2 }
+
+openGearCardProduct     OBJECT-TYPE
+    SYNTAX      DisplayString
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION
+      "The product name of the card."
+    ::= { openGearCardEntry 3 }
+
+openGearCardSoftwareRev     OBJECT-TYPE
+    SYNTAX      DisplayString
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION
+      "The primary software revision number for this card."
+    ::= { openGearCardEntry 4 }
+
+openGearCardOnline   OBJECT-TYPE
+    SYNTAX      TruthValue
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION
+      "Whether the card is online or not, true(1), false(2)."
+    ::= { openGearCardEntry 5 }
+
+openGearCardOid     OBJECT-TYPE
+    SYNTAX      OBJECT IDENTIFIER
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION
+      "The base OID of the card's MIB.
+       Product-specific parameters may be found by browsing the card MIB.
+       If the card does not support SNMP, this field will report the
+       OID of the OPEN-GEAR-CARD-MIB."
+    ::= { openGearCardEntry 6 }
+
+--
+-- Conformance
+--
+openGearCardMibCompliances
+  OBJECT IDENTIFIER ::= { openGearCardConformance 1 }
+openGearCardMibGroups
+  OBJECT IDENTIFIER ::= { openGearCardConformance 2 }
+
+--
+-- Compliance Statement
+--
+openGearCardCompliances MODULE-COMPLIANCE
+  STATUS      current
+  DESCRIPTION
+    "The compliance statement for Open Gear Frame entities."
+
+  MODULE -- this module
+    MANDATORY-GROUPS { openGearCardInfoGroup,
+                       openGearCardNotifyGroup
+                     }
+
+  ::= { openGearCardMibCompliances 1 }
+
+--
+-- Open Gear Frame MIB groups
+--
+openGearCardInfoGroup OBJECT-GROUP
+  OBJECTS { openGearNumberOfCards,
+            openGearCardSupplier,
+            openGearCardProduct,
+            openGearCardSoftwareRev,
+            openGearCardOnline,
+            openGearCardOid }
+  STATUS  current
+  DESCRIPTION
+    "A collection of objects providing basic instrumentation
+    and control of an Open Gear Card."
+  ::= { openGearCardMibGroups 2 }
+
+openGearCardNotifyGroup NOTIFICATION-GROUP
+  NOTIFICATIONS {
+    openGearCardOnlineEvent,
+    openGearCardOfflineEvent
+  }
+  STATUS current
+  DESCRIPTION
+    "The notifications relating to the Open Gear card"
+  ::= { openGearCardMibGroups 3 }
+
+END

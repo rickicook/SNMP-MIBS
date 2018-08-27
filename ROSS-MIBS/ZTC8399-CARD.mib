@@ -1,0 +1,424 @@
+ZTC8399-CARD-MIB DEFINITIONS ::= BEGIN
+
+--
+-- Defines control and monitoring structures for the ZTC-8399 card.
+--
+
+IMPORTS
+  openGearFrameIndex
+    FROM OPEN-GEAR-FRAME-MIB
+
+  openGearCardIndex
+    FROM OPEN-GEAR-CARD-MIB
+
+   openGearObjects
+    FROM OPEN-GEAR-MIB
+
+  OBJECT-TYPE, NOTIFICATION-TYPE, MODULE-IDENTITY, Integer32, Unsigned32
+    FROM SNMPv2-SMI
+
+  OBJECT-GROUP, NOTIFICATION-GROUP, MODULE-COMPLIANCE
+    FROM SNMPv2-CONF
+
+  DisplayString
+    FROM SNMPv2-TC;
+
+ztc8399CardMib MODULE-IDENTITY
+  LAST-UPDATED "200703070000Z"
+  ORGANIZATION "www.rossvideo.org"
+  CONTACT-INFO
+    "postal:   Ross Video
+               8 John St. P.O. Box 220
+               Iroquois ON K0E 1K0
+
+      email:   support@rossvideo.com"
+
+  DESCRIPTION
+    "Defines control and monitoring structures for the ZTC-8399 card family.
+     This is a family of reclocking distribution amplifiers for multi-
+     definition broadcast video signals."
+
+  REVISION     "200703070000Z"
+  DESCRIPTION
+    "First revision."
+  ::= { openGearObjects 15 }
+
+--
+--  Top level components in the ZTC-8399 MIB
+--
+ztc8399CardNotifications
+  OBJECT IDENTIFIER ::= { ztc8399CardMib 0 }
+
+ztc8399CardObjects
+  OBJECT IDENTIFIER ::= { ztc8399CardMib 1 }
+
+ztc8399CardConformance
+  OBJECT IDENTIFIER ::= { ztc8399CardMib 2 }
+
+--
+--  Notifications relating to the ZTC-8399 card
+--
+ztc8399SignalStatusEvent   NOTIFICATION-TYPE
+  OBJECTS { ztc8399SignalStatus }
+  STATUS current
+  DESCRIPTION
+    "An indication that the status of input channel A has changed.
+     The current status is reported in ztc8399InputAStatus."
+  ::= { ztc8399CardNotifications 1 }
+
+--
+--  ZTC8399 Card information
+--
+--
+--  All the ZTC-8399 cards in the Open Gear frame
+--
+ztc8399NumberOfCards    OBJECT-TYPE
+  SYNTAX      Integer32
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "The total number of ZTC-8399 cards in the open gear frame."
+  ::= { ztc8399CardObjects 1 }
+
+--
+--  Table of Product parameters
+--
+ztc8399ProductTable     OBJECT-TYPE
+  SYNTAX      SEQUENCE OF Ra820xProductEntry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "A table containing product info for all ZTC-8399 cards at this node.
+     This table is the expansion of the table 'openGearCardTable' in the
+     OPEN-GEAR-CARD-MIB. For each ZTC-8399 card in the 'openGearCardTable',
+     there is a corresponding entry in this table, having the same indices -
+     'openGearFrameIndex' and 'openGearCardIndex'."
+  ::= { ztc8399CardObjects 2 }
+
+ztc8399ProductEntry     OBJECT-TYPE
+  SYNTAX      Ra820xProductEntry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "A conceptual row within the 'ztc8399ProductTable'."
+  INDEX    { openGearFrameIndex, openGearCardIndex }
+  ::= { ztc8399ProductTable 1 }
+
+Ra820xProductEntry ::= SEQUENCE {
+  ztc8399BoardRev            DisplayString,
+  ztc8399SignalStatus        Integer32,
+  ztc8399RearModule          Integer32,
+  ztc8399CardName            DisplayString,
+  ztc8399FactoryReset        INTEGER,
+  ztc8399EditPermission      INTEGER,
+  ztc8399FloatHSlider        DisplayString
+}
+
+ztc8399BoardRev    OBJECT-TYPE
+  SYNTAX      DisplayString
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "The hardware (board) revision of this card."
+  ::= { ztc8399ProductEntry 1 }
+
+ztc8399SignalStatus    OBJECT-TYPE
+  SYNTAX      Integer32
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "The status of the signal."
+  ::= { ztc8399ProductEntry 2 }
+
+ztc8399RearModule    OBJECT-TYPE
+  SYNTAX      Integer32
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "The type of rear I/O module present for this card."
+  ::= { ztc8399ProductEntry 3 }
+
+ztc8399CardName    OBJECT-TYPE
+  SYNTAX      DisplayString
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "The card name."
+  ::= { ztc8399ProductEntry 5 }
+
+ztc8399FactoryReset    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    reset      (0)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "Setting this parameter to zero will set the configuration of this card
+     to the factory default settings."
+  ::= { ztc8399ProductEntry 6 }
+
+ztc8399EditPermission    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    unlocked   (0),
+    locked     (1)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "The edit permission for read-write parameters of this card."
+  DEFVAL  { unlocked }
+  ::= { ztc8399ProductEntry 19 }
+
+ztc8399FloatHSlider    OBJECT-TYPE
+  SYNTAX      DisplayString (SIZE(6))
+  UNITS       "Azimuth"
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "The azimuth value, the range is 1.000 - 10.000."
+  DEFVAL  { "1.000" }
+  ::= { ztc8399ProductEntry 20 }
+
+--
+--  Table of Audio channel parameters
+--
+ztc8399EmbeddedAudio
+  OBJECT IDENTIFIER ::= { ztc8399CardObjects 3 }
+
+ztc8399NumberOfEmbeddedAudioChannel  OBJECT-TYPE
+  SYNTAX      Integer32
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "The total number of embedded audio groups on the MUX-8252 cards."
+  ::= { ztc8399EmbeddedAudio 1 }
+
+ztc8399EmbeddedAudioTable     OBJECT-TYPE
+  SYNTAX      SEQUENCE OF Ztc8399EmbeddedAudioEntry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "A table containing the four embeded audio groups.
+     This table is the expansion of the table 'openGearCardTable' in the
+     OPEN-GEAR-CARD-MIB. For each MUX-8252 card in the 'openGearCardTable',
+     there is a corresponding entry in this table, having the same indices -
+     'openGearFrameIndex', 'openGearCardIndex' and its own audio group index."
+  ::= { ztc8399EmbeddedAudio 2 }
+
+ztc8399EmbeddedAudioEntry     OBJECT-TYPE
+  SYNTAX      Ztc8399EmbeddedAudioEntry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "A conceptual row within the 'ztc8399AudioChannelTable'."
+  INDEX    { openGearFrameIndex, openGearCardIndex, ztc8399AudioChannelIndex }
+  ::= { ztc8399EmbeddedAudioTable 1 }
+
+Ztc8399EmbeddedAudioEntry ::= SEQUENCE {
+  ztc8399AudioChannelIndex   Unsigned32,
+  ztc8399EmbeddedAudioDelay  Integer32
+  -- ztc8399EmbeddedAudioGain   DisplayString
+}
+
+ztc8399AudioChannelIndex    OBJECT-TYPE
+  SYNTAX      Unsigned32
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "The ztc8399AudioChannelIndex represents the group index."
+  ::= { ztc8399EmbeddedAudioEntry 1 }
+
+ztc8399EmbeddedAudioDelay    OBJECT-TYPE
+  SYNTAX      Integer32 (0..1000)
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "The audio delay."
+  DEFVAL  { 0 }
+  ::= { ztc8399EmbeddedAudioEntry 2 }
+
+-- ztc8399EmbeddedAudioGain    OBJECT-TYPE
+  -- SYNTAX      DisplayString (SIZE(6))
+  -- MAX-ACCESS  read-write
+  -- STATUS      current
+  -- DESCRIPTION
+    -- "The audio gain, the range is 1.0 - 10.0."
+  -- DEFVAL  { "1.000" }
+  -- ::= { ztc8399EmbeddedAudioEntry 3 }
+
+ztc8399AnotherAudioTable     OBJECT-TYPE
+  SYNTAX      SEQUENCE OF Ztc8399AnotherAudioEntry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "A table containing the four embeded audio groups.
+     This table is the expansion of the table 'openGearCardTable' in the
+     OPEN-GEAR-CARD-MIB. For each MUX-8252 card in the 'openGearCardTable',
+     there is a corresponding entry in this table, having the same indices -
+     'openGearFrameIndex', 'openGearCardIndex' and its own audio group index."
+  ::= { ztc8399EmbeddedAudio 3 }
+
+ztc8399AnotherAudioEntry     OBJECT-TYPE
+  SYNTAX      Ztc8399AnotherAudioEntry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "A conceptual row within the 'ztc8399AudioChannelTable'."
+  INDEX    { openGearFrameIndex, openGearCardIndex, ztc8399AudioChannelIndex }
+  ::= { ztc8399AnotherAudioTable 1 }
+
+Ztc8399AnotherAudioEntry ::= SEQUENCE {
+  ztc8399AnotherAudioGain   DisplayString
+}
+
+ztc8399AnotherAudioGain    OBJECT-TYPE
+  SYNTAX      DisplayString (SIZE(6))
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "The audio gain, the range is 1.0 - 10.0."
+  DEFVAL  { "1.000" }
+  ::= { ztc8399AnotherAudioEntry 1 }
+
+--
+--  Table of Audio channel parameters
+--
+ztc8399AnotherGroup
+  OBJECT IDENTIFIER ::= { ztc8399CardObjects 5 }
+
+ztc8399NumberOfAnotherChannel  OBJECT-TYPE
+  SYNTAX      Integer32
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "The total number of embedded audio groups on the MUX-8252 cards."
+  ::= { ztc8399AnotherGroup 1 }
+
+ztc8399AnotherTable     OBJECT-TYPE
+  SYNTAX      SEQUENCE OF Ztc8399AnotherEntry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "A table containing the four embeded audio groups.
+     This table is the expansion of the table 'openGearCardTable' in the
+     OPEN-GEAR-CARD-MIB. For each MUX-8252 card in the 'openGearCardTable',
+     there is a corresponding entry in this table, having the same indices -
+     'openGearFrameIndex', 'openGearCardIndex' and its own audio group index."
+  ::= { ztc8399AnotherGroup 2 }
+
+ztc8399AnotherEntry     OBJECT-TYPE
+  SYNTAX      Ztc8399AnotherEntry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "A conceptual row within the 'ztc8399AudioChannelTable'."
+  INDEX    { openGearFrameIndex, openGearCardIndex, ztc8399AnotherIndex }
+  ::= { ztc8399AnotherTable 1 }
+
+Ztc8399AnotherEntry ::= SEQUENCE {
+  ztc8399AnotherIndex        Unsigned32,
+  ztc8399AudioSource         INTEGER,
+  ztc8399ModifiableChannel   DisplayString,
+  ztc8399Int32ArrayIP        Integer32
+}
+
+ztc8399AnotherIndex    OBJECT-TYPE
+  SYNTAX      Unsigned32
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "The ztc8399AudioChannelIndex represents the group index."
+  ::= { ztc8399AnotherEntry 1 }
+
+ztc8399AudioSource    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    aes1Left   (0),
+    aes1Right  (1),
+    aes2Left   (2),
+    aes2Right  (3),
+    aes3Left   (4),
+    aes3Right  (5),
+    aes4Left   (6),
+    aes4Right  (7)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "The audio delay."
+  DEFVAL  { 0 }
+  ::= { ztc8399AnotherEntry 2 }
+
+ztc8399ModifiableChannel    OBJECT-TYPE
+  SYNTAX      DisplayString (SIZE(7))
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "The modifiable Channel name array."
+  ::= { ztc8399AnotherEntry 3 }
+
+ztc8399Int32ArrayIP    OBJECT-TYPE
+  SYNTAX      Integer32
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "The INT32 Array IP, the increment step is 10000000."
+  DEFVAL  { 100 }
+  ::= { ztc8399AnotherEntry 4 }
+
+--
+-- Conformance
+--
+ztc8399CardMibCompliances
+  OBJECT IDENTIFIER ::= { ztc8399CardConformance 1 }
+ztc8399CardMibGroups
+  OBJECT IDENTIFIER ::= { ztc8399CardConformance 2 }
+
+--
+-- Compliance Statement
+--
+ztc8399CardCompliances MODULE-COMPLIANCE
+  STATUS      current
+  DESCRIPTION
+    "The compliance statement for ZTC-8399 entities."
+
+  MODULE -- this module
+    MANDATORY-GROUPS { ztc8399CardInfoGroup,
+                       ztc8399CardNotifyGroup
+                     }
+                     
+  ::= { ztc8399CardMibCompliances 1 }
+
+ztc8399CardInfoGroup OBJECT-GROUP
+    OBJECTS { ztc8399NumberOfCards,
+              ztc8399BoardRev,
+              ztc8399SignalStatus,
+              ztc8399RearModule,
+              ztc8399CardName,
+              ztc8399EditPermission,
+              ztc8399FloatHSlider,
+              ztc8399FactoryReset,
+              ztc8399NumberOfEmbeddedAudioChannel,
+              ztc8399EmbeddedAudioDelay,
+              ztc8399AnotherAudioGain,
+              ztc8399NumberOfAnotherChannel,
+              ztc8399AudioSource,
+              ztc8399ModifiableChannel,
+              ztc8399Int32ArrayIP
+              -- ztc8399EmbeddedAudioGain
+            }
+    STATUS  current
+    DESCRIPTION
+            "A collection of objects providing basic instrumentation
+            and control of an ZTC-8399 card."
+    ::= { ztc8399CardMibGroups 1 }
+
+ztc8399CardNotifyGroup NOTIFICATION-GROUP
+  NOTIFICATIONS { ztc8399SignalStatusEvent
+                }
+  STATUS current
+  DESCRIPTION
+    "The notifications relating to the ZTC-8399 card"
+  ::= { ztc8399CardMibGroups 2 }
+
+END
+

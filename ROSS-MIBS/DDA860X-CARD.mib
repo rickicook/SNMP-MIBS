@@ -1,0 +1,707 @@
+DDA860X-CARD-MIB DEFINITIONS ::= BEGIN
+
+--
+-- Defines control and monitoring structures for the DDA860X card.
+--
+
+IMPORTS
+  openGearFrameIndex
+    FROM OPEN-GEAR-FRAME-MIB
+
+  openGearCardIndex
+    FROM OPEN-GEAR-CARD-MIB
+
+  openGearObjects
+    FROM OPEN-GEAR-MIB
+
+  OBJECT-TYPE, NOTIFICATION-TYPE, MODULE-IDENTITY, Integer32
+    FROM SNMPv2-SMI
+
+  OBJECT-GROUP, NOTIFICATION-GROUP, MODULE-COMPLIANCE
+    FROM SNMPv2-CONF
+
+  DisplayString
+    FROM SNMPv2-TC;
+
+dda860xCardMib MODULE-IDENTITY
+  LAST-UPDATED "201307161200Z"
+  ORGANIZATION "www.rossvideo.org"
+  CONTACT-INFO
+    "postal:   Ross Video
+               8 John St. P.O. Box 220
+               Iroquois ON K0E 1K0
+
+      email:   support@rossvideo.com"
+
+  DESCRIPTION
+    "Defines control and monitoring structures for the DDA860X card."
+
+  REVISION     "201307161200Z"
+  DESCRIPTION
+    "... "
+  ::= { openGearObjects 28 }
+
+--
+--  Top level components in the DDA860X MIB
+--
+dda860xCardNotifications
+  OBJECT IDENTIFIER ::= { dda860xCardMib 0 }
+
+dda860xCardObjects
+  OBJECT IDENTIFIER ::= { dda860xCardMib 1 }
+
+dda860xCardConformance
+  OBJECT IDENTIFIER ::= { dda860xCardMib 2 }
+
+--
+--  Notifications relating to the DDA860X card
+--
+dda860xCh0StatusAlarmEvent   NOTIFICATION-TYPE
+  OBJECTS { dda860xCh0StatusAlarm }
+  STATUS current
+  DESCRIPTION
+    "... "
+  ::= { dda860xCardNotifications 1 }
+
+dda860xCh0SdiInputEvent   NOTIFICATION-TYPE
+  OBJECTS { dda860xCh0SdiInput }
+  STATUS current
+  DESCRIPTION
+    "... "
+  ::= { dda860xCardNotifications 2 }
+
+dda860xCh0SdiOutputEvent   NOTIFICATION-TYPE
+  OBJECTS { dda860xCh0SdiOutput }
+  STATUS current
+  DESCRIPTION
+    "... "
+  ::= { dda860xCardNotifications 3 }
+
+dda860xCh1StatusAlarmEvent   NOTIFICATION-TYPE
+  OBJECTS { dda860xCh1StatusAlarm }
+  STATUS current
+  DESCRIPTION
+    "... "
+  ::= { dda860xCardNotifications 4 }
+
+dda860xCh1SdiInputEvent   NOTIFICATION-TYPE
+  OBJECTS { dda860xCh1SdiInput }
+  STATUS current
+  DESCRIPTION
+    "... "
+  ::= { dda860xCardNotifications 5 }
+
+dda860xCh1SdiOutputEvent   NOTIFICATION-TYPE
+  OBJECTS { dda860xCh1SdiOutput }
+  STATUS current
+  DESCRIPTION
+    "... "
+  ::= { dda860xCardNotifications 6 }
+
+dda860xHardwareStatusEvent   NOTIFICATION-TYPE
+  OBJECTS { dda860xHardwareStatus }
+  STATUS current
+  DESCRIPTION
+    "... "
+  ::= { dda860xCardNotifications 7 }
+
+--
+--  DDA860X Card information
+--
+--
+--  All the DDA860X cards in the Open Gear frame
+--
+dda860xNumberOfCards    OBJECT-TYPE
+  SYNTAX      Integer32
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "The total number of DDA860X cards in the open gear frame.
+"  ::= { dda860xCardObjects 1 }
+
+--
+--  Table of Product parameters
+--
+dda860xProductTable     OBJECT-TYPE
+  SYNTAX      SEQUENCE OF Dda860xProductEntry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "A table containing product info for all DDA860X cards at this node.
+    This table is the expansion of the table 'openGearCardTable' in the
+    OPEN-GEAR-CARD-MIB. For each DDA860X card in the 'openGearCardTable',
+    there is a corresponding entry in this table, having the same indices -
+    'openGearFrameIndex' and 'openGearCardIndex'."
+  ::= { dda860xCardObjects 2 }
+
+dda860xProductEntry     OBJECT-TYPE
+  SYNTAX      Dda860xProductEntry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "A conceptual row within the 'dda860xProductTable'."
+  INDEX    { openGearFrameIndex, openGearCardIndex }
+  ::= { dda860xProductTable 1 }
+
+Dda860xProductEntry ::= SEQUENCE {
+  dda860xBoardRev                  DisplayString,
+  dda860xSerialNumber              DisplayString,
+  dda860xRearModule                DisplayString
+}
+
+dda860xBoardRev    OBJECT-TYPE
+  SYNTAX      DisplayString
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "... "
+  ::= { dda860xProductEntry 4 }
+
+dda860xSerialNumber    OBJECT-TYPE
+  SYNTAX      DisplayString
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "... "
+  ::= { dda860xProductEntry 5 }
+
+dda860xRearModule    OBJECT-TYPE
+  SYNTAX      DisplayString
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "... "
+  ::= { dda860xProductEntry 6 }
+
+--
+--  Table of Hardware parameters
+--
+dda860xHardwareTable     OBJECT-TYPE
+  SYNTAX      SEQUENCE OF Dda860xHardwareEntry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "A table containing product info for all DDA860X cards at this node.
+    This table is the expansion of the table 'openGearCardTable' in the
+    OPEN-GEAR-CARD-MIB. For each DDA860X card in the 'openGearCardTable',
+    there is a corresponding entry in this table, having the same indices -
+    'openGearFrameIndex' and 'openGearCardIndex'."
+  ::= { dda860xCardObjects 3 }
+
+dda860xHardwareEntry     OBJECT-TYPE
+  SYNTAX      Dda860xHardwareEntry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "A conceptual row within the 'dda860xHardwareTable'."
+  INDEX    { openGearFrameIndex, openGearCardIndex }
+  ::= { dda860xHardwareTable 1 }
+
+Dda860xHardwareEntry ::= SEQUENCE {
+  dda860xHardwareStatus            Integer32,
+  dda860xCardVoltage               Integer32,
+  dda860xCardCurrent               Integer32,
+  dda860xConfigBank                Integer32
+}
+
+dda860xHardwareStatus    OBJECT-TYPE
+  SYNTAX      Integer32
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "The status parameter is a bitfield where each bit indicates a
+    specific status. A value of zero means OK.
+    The status bits are defined as follows:
+      0x0001 - Wrong Board Type
+      0x0002 - Incomp Rear Module
+    All other values are undefined."
+  ::= { dda860xHardwareEntry 1 }
+
+dda860xCardVoltage    OBJECT-TYPE
+  SYNTAX      Integer32
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "... "
+  ::= { dda860xHardwareEntry 2 }
+
+dda860xCardCurrent    OBJECT-TYPE
+  SYNTAX      Integer32
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "... "
+  ::= { dda860xHardwareEntry 3 }
+
+dda860xConfigBank    OBJECT-TYPE
+  SYNTAX      Integer32
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "... "
+  ::= { dda860xHardwareEntry 4 }
+
+--
+--  Table of Signal parameters
+--
+dda860xSignalTable     OBJECT-TYPE
+  SYNTAX      SEQUENCE OF Dda860xSignalEntry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "A table containing product info for all DDA860X cards at this node.
+    This table is the expansion of the table 'openGearCardTable' in the
+    OPEN-GEAR-CARD-MIB. For each DDA860X card in the 'openGearCardTable',
+    there is a corresponding entry in this table, having the same indices -
+    'openGearFrameIndex' and 'openGearCardIndex'."
+  ::= { dda860xCardObjects 4 }
+
+dda860xSignalEntry     OBJECT-TYPE
+  SYNTAX      Dda860xSignalEntry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "A conceptual row within the 'dda860xSignalTable'."
+  INDEX    { openGearFrameIndex, openGearCardIndex }
+  ::= { dda860xSignalTable 1 }
+
+Dda860xSignalEntry ::= SEQUENCE {
+  dda860xCh0StatusAlarm            Integer32,
+  dda860xCh0SdiInput               INTEGER,
+  dda860xCh0SdiOutput              INTEGER,
+  dda860xCh0InputCableLength       DisplayString,
+  dda860xCh1StatusAlarm            Integer32,
+  dda860xCh1SdiInput               INTEGER,
+  dda860xCh1SdiOutput              INTEGER,
+  dda860xCh1InputCableLength       DisplayString,
+  dda860xBackupInputStatus         INTEGER
+}
+
+dda860xCh0StatusAlarm    OBJECT-TYPE
+  SYNTAX      Integer32
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "The status parameter is a bitfield where each bit indicates a
+    specific status. A value of zero means OK.
+    The status bits are defined as follows:
+      0x0001 - OK
+      0x0004 - No input
+      0x0002 - Unlocked
+      0x0010 - No input
+      0x0008 - Unlocked
+    All other values are undefined."
+  ::= { dda860xSignalEntry 1 }
+
+dda860xCh0SdiInput    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    noSignal                (0),
+    sDSignal                (1),
+    hD3GSignal              (2),
+    equalizerBypassed       (3),
+    sDSignalBackup          (4),
+    hD3GSignalBackup        (5),
+    equalizerBypassedBackup  (6)
+  }
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "... "
+  ::= { dda860xSignalEntry 2 }
+
+dda860xCh0SdiOutput    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    unlocked                (0),
+    locked125M              (1),
+    locked270M              (2),
+    locked1dot5G            (3),
+    locked3dot0G            (4),
+    signalPresent           (5),
+    reclockerBypassed       (6),
+    noSignal                (7),
+    noSignalMuted           (8),
+    unlockedMuted           (9)
+  }
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "... "
+  ::= { dda860xSignalEntry 3 }
+
+dda860xCh0InputCableLength    OBJECT-TYPE
+  SYNTAX      DisplayString
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "... "
+  ::= { dda860xSignalEntry 4 }
+
+dda860xCh1StatusAlarm    OBJECT-TYPE
+  SYNTAX      Integer32
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "The status parameter is a bitfield where each bit indicates a
+    specific status. A value of zero means OK.
+    The status bits are defined as follows:
+      0x0001 - OK
+      0x0004 - No input
+      0x0002 - Unlocked
+      0x0010 - No input
+      0x0008 - Unlocked
+    All other values are undefined."
+  ::= { dda860xSignalEntry 6 }
+
+dda860xCh1SdiInput    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    noSignal                (0),
+    sDSignal                (1),
+    hD3GSignal              (2),
+    equalizerBypassed       (3),
+    sDSignalBackup          (4),
+    hD3GSignalBackup        (5),
+    equalizerBypassedBackup  (6)
+  }
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "... "
+  ::= { dda860xSignalEntry 7 }
+
+dda860xCh1SdiOutput    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    unlocked                (0),
+    locked125M              (1),
+    locked270M              (2),
+    locked1dot5G            (3),
+    locked3dot0G            (4),
+    signalPresent           (5),
+    reclockerBypassed       (6),
+    noSignal                (7),
+    noSignalMuted           (8),
+    unlockedMuted           (9)
+  }
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "... "
+  ::= { dda860xSignalEntry 8 }
+
+dda860xCh1InputCableLength    OBJECT-TYPE
+  SYNTAX      DisplayString
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "... "
+  ::= { dda860xSignalEntry 9 }
+
+dda860xBackupInputStatus    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    noSignal                (0),
+    sDSignal                (1),
+    hD3GSignal              (2),
+    equalizerBypassed       (3),
+    sDSignalBackup          (4),
+    hD3GSignalBackup        (5),
+    equalizerBypassedBackup  (6)
+  }
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "... "
+  ::= { dda860xSignalEntry 10 }
+
+--
+--  Table of CfgControl parameters
+--
+dda860xCfgControlTable     OBJECT-TYPE
+  SYNTAX      SEQUENCE OF Dda860xCfgControlEntry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "A table containing product info for all DDA860X cards at this node.
+    This table is the expansion of the table 'openGearCardTable' in the
+    OPEN-GEAR-CARD-MIB. For each DDA860X card in the 'openGearCardTable',
+    there is a corresponding entry in this table, having the same indices -
+    'openGearFrameIndex' and 'openGearCardIndex'."
+  ::= { dda860xCardObjects 5 }
+
+dda860xCfgControlEntry     OBJECT-TYPE
+  SYNTAX      Dda860xCfgControlEntry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "A conceptual row within the 'dda860xCfgControlTable'."
+  INDEX    { openGearFrameIndex, openGearCardIndex }
+  ::= { dda860xCfgControlTable 1 }
+
+Dda860xCfgControlEntry ::= SEQUENCE {
+  dda860xEditPermission            INTEGER,
+  dda860xFactoryReset              INTEGER,
+  dda860xChannelOptions            INTEGER
+}
+
+dda860xEditPermission    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    unlocked                (0),
+    locked                  (1)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { unlocked }
+  ::= { dda860xCfgControlEntry 1 }
+
+dda860xFactoryReset    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    reset                   (0)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { reset }
+  ::= { dda860xCfgControlEntry 2 }
+
+dda860xChannelOptions    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    dualChannel             (0),
+    singleChannel           (1)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { dualChannel }
+  ::= { dda860xCfgControlEntry 3 }
+
+--
+--  Table of Setup parameters
+--
+dda860xSetupArrGrp
+  OBJECT IDENTIFIER ::= { dda860xCardObjects 6 }
+
+dda860xNumberOfElementsIndda860xSetupArrGrp OBJECT-TYPE
+  SYNTAX      Integer32
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "The total number of elements in dda860xSetupArrGrp."
+  ::= { dda860xSetupArrGrp 1 }
+
+dda860xSetupTable     OBJECT-TYPE
+  SYNTAX      SEQUENCE OF Dda860xSetupEntry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "A table containing product info for all DDA860X cards at this node.
+    This table is the expansion of the table 'openGearCardTable' in the
+    OPEN-GEAR-CARD-MIB. For each DDA860X card in the 'openGearCardTable',
+    there is a corresponding entry in this table, having the same indices -
+    'openGearFrameIndex' and 'openGearCardIndex'."
+  ::= { dda860xSetupArrGrp 2 }
+
+dda860xSetupEntry     OBJECT-TYPE
+  SYNTAX      Dda860xSetupEntry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "A conceptual row within the 'dda860xSetupTable'."
+  INDEX    { openGearFrameIndex, openGearCardIndex,  dda860xSetupIndex}
+  ::= { dda860xSetupTable 1 }
+
+Dda860xSetupEntry ::= SEQUENCE {
+  dda860xSetupIndex        Unsigned32,
+  dda860xEnableEqArray             INTEGER,
+  dda860xEnableRckArray            INTEGER,
+  dda860xRckRateArray              INTEGER,
+  dda860xFailoverArray             INTEGER
+}
+
+dda860xSetupIndex   OBJECT-TYPE
+  SYNTAX      Unsigned32
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "It represents the array group index."
+  ::= { dda860xSetupEntry 1 }
+
+dda860xEnableEqArray    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    disabled                (0),
+    enabled                 (1)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { enabled }
+  ::= { dda860xSetupEntry 2 }
+
+dda860xEnableRckArray    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    disabled                (0),
+    enabled                 (1)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { enabled }
+  ::= { dda860xSetupEntry 3 }
+
+dda860xRckRateArray    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    auto                    (0),
+    v270Mbps                (1),
+    v1dot53dot0Gbps         (2)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { auto }
+  ::= { dda860xSetupEntry 4 }
+
+dda860xFailoverArray    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    disabled                (0),
+    enabled                 (1)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { disabled }
+  ::= { dda860xSetupEntry 5 }
+
+--
+--  Table of Alarms parameters
+--
+dda860xAlarmsArrGrp
+  OBJECT IDENTIFIER ::= { dda860xCardObjects 7 }
+
+dda860xNumberOfElementsIndda860xAlarmsArrGrp OBJECT-TYPE
+  SYNTAX      Integer32
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "The total number of elements in dda860xAlarmsArrGrp."
+  ::= { dda860xAlarmsArrGrp 1 }
+
+dda860xAlarmsTable     OBJECT-TYPE
+  SYNTAX      SEQUENCE OF Dda860xAlarmsEntry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "A table containing product info for all DDA860X cards at this node.
+    This table is the expansion of the table 'openGearCardTable' in the
+    OPEN-GEAR-CARD-MIB. For each DDA860X card in the 'openGearCardTable',
+    there is a corresponding entry in this table, having the same indices -
+    'openGearFrameIndex' and 'openGearCardIndex'."
+  ::= { dda860xAlarmsArrGrp 2 }
+
+dda860xAlarmsEntry     OBJECT-TYPE
+  SYNTAX      Dda860xAlarmsEntry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "A conceptual row within the 'dda860xAlarmsTable'."
+  INDEX    { openGearFrameIndex, openGearCardIndex,  dda860xAlarmsIndex}
+  ::= { dda860xAlarmsTable 1 }
+
+Dda860xAlarmsEntry ::= SEQUENCE {
+  dda860xAlarmsIndex        Unsigned32,
+  dda860xAlarmLoiArray             INTEGER
+}
+
+dda860xAlarmsIndex   OBJECT-TYPE
+  SYNTAX      Unsigned32
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "It represents the array group index."
+  ::= { dda860xAlarmsEntry 1 }
+
+dda860xAlarmLoiArray    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    ignore                  (0),
+    notify                  (1)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { notify }
+  ::= { dda860xAlarmsEntry 2 }
+
+--
+-- Conformance
+--
+dda860xCardMibCompliances
+  OBJECT IDENTIFIER ::= { dda860xCardConformance 1 }
+dda860xCardMibGroups
+  OBJECT IDENTIFIER ::= { dda860xCardConformance 2 }
+--
+-- Compliance Statement
+--
+dda860xCardCompliances MODULE-COMPLIANCE
+  STATUS      current
+  DESCRIPTION
+    "The compliance statement for DDA860X entities."
+  MODULE -- this module
+    MANDATORY-GROUPS { dda860xCardInfoGroup,
+                       dda860xCardNotifyGroup
+                     }
+
+  ::= { dda860xCardMibCompliances 1 }
+
+dda860xCardInfoGroup OBJECT-GROUP
+    OBJECTS { dda860xNumberOfCards,
+              dda860xBoardRev,
+              dda860xSerialNumber,
+              dda860xRearModule,
+              dda860xHardwareStatus,
+              dda860xCardVoltage,
+              dda860xCardCurrent,
+              dda860xConfigBank,
+              dda860xCh0StatusAlarm,
+              dda860xCh0SdiInput,
+              dda860xCh0SdiOutput,
+              dda860xCh0InputCableLength,
+              dda860xCh1StatusAlarm,
+              dda860xCh1SdiInput,
+              dda860xCh1SdiOutput,
+              dda860xCh1InputCableLength,
+              dda860xBackupInputStatus,
+              dda860xEditPermission,
+              dda860xFactoryReset,
+              dda860xChannelOptions,
+              dda860xEnableEqArray,
+              dda860xEnableRckArray,
+              dda860xRckRateArray,
+              dda860xFailoverArray,
+              dda860xAlarmLoiArray
+            }
+    STATUS  current
+    DESCRIPTION
+      "A collection of objects providing basic instrumentation
+        and control of an DDA860X card."
+    ::= { dda860xCardMibGroups 1 }
+
+dda860xCardNotifyGroup NOTIFICATION-GROUP
+  NOTIFICATIONS { dda860xCh0StatusAlarmEvent,
+                  dda860xCh0SdiInputEvent,
+                  dda860xCh0SdiOutputEvent,
+                  dda860xCh1StatusAlarmEvent,
+                  dda860xCh1SdiInputEvent,
+                  dda860xCh1SdiOutputEvent,
+                  dda860xHardwareStatusEvent
+                }
+    STATUS  current
+    DESCRIPTION
+      "The notifications relating to the DDA860X card."
+    ::= { dda860xCardMibGroups 2 }
+
+END

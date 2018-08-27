@@ -1,0 +1,469 @@
+SRA8201A-CARD-MIB DEFINITIONS ::= BEGIN
+
+--
+-- Defines control and monitoring structures for the SRA-8201A, SRA-8601A,
+-- and SEA-8203A cards.
+--
+
+IMPORTS
+  openGearFrameIndex
+    FROM OPEN-GEAR-FRAME-MIB
+
+  openGearCardIndex
+    FROM OPEN-GEAR-CARD-MIB
+
+   openGearObjects
+    FROM OPEN-GEAR-MIB
+
+  OBJECT-TYPE, NOTIFICATION-TYPE, MODULE-IDENTITY, Integer32
+    FROM SNMPv2-SMI
+
+  OBJECT-GROUP, NOTIFICATION-GROUP, MODULE-COMPLIANCE
+    FROM SNMPv2-CONF
+
+  DisplayString
+    FROM SNMPv2-TC;
+
+sra8201ACardMib MODULE-IDENTITY
+  LAST-UPDATED "200805080000Z"
+  ORGANIZATION "www.rossvideo.org"
+  CONTACT-INFO
+    "postal:   Ross Video
+               8 John St. P.O. Box 220
+               Iroquois ON K0E 1K0
+
+      email:   support@rossvideo.com"
+
+  DESCRIPTION
+    "Defines control and monitoring structures for the SRA-8201A card family,
+     including:
+        SRA-8201A  Single channel MD reclocking DA
+        SRA-8601A  Single channel 3G reclocking DA
+        SEA-8203A  Single channel MD equalizing DA"
+
+  REVISION     "200805080000Z"
+  DESCRIPTION
+    "First revision."
+  ::= { openGearObjects 12 }
+
+--
+--  Top level components in the SRA-8201A MIB
+--
+sra8201ACardNotifications
+  OBJECT IDENTIFIER ::= { sra8201ACardMib 0 }
+
+sra8201ACardObjects
+  OBJECT IDENTIFIER ::= { sra8201ACardMib 1 }
+
+sra8201ACardConformance
+  OBJECT IDENTIFIER ::= { sra8201ACardMib 2 }
+
+--
+--  Notifications relating to the SRA-8201A card
+--
+sra8201ASignalStatusEvent   NOTIFICATION-TYPE
+  OBJECTS { sra8201ASignalStatus }
+  STATUS current
+  DESCRIPTION
+    "An indication that the signal status of the card has changed.
+     The current status is reported in sra8201ASignalStatus."
+  ::= { sra8201ACardNotifications 1 }
+
+--
+--  SRA-8201A Card information
+--
+--
+--  All the SRA-8201A cards in the Open Gear frame
+--
+sra8201ANumberOfCards    OBJECT-TYPE
+  SYNTAX      Integer32
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "The total number of SRA-8201A/8601A/8203A cards in the frame."
+  ::= { sra8201ACardObjects 1 }
+
+--
+--  Table of Product parameters
+--
+sra8201AProductTable     OBJECT-TYPE
+  SYNTAX      SEQUENCE OF Sra8201AProductEntry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "A table containing product info for all SRA-8201A cards at this node.
+     This table is the expansion of the table 'openGearCardTable' in the
+     OPEN-GEAR-CARD-MIB. For each SRA-8201A card in the 'openGearCardTable',
+     there is a corresponding entry in this table, having the same indices -
+     'openGearFrameIndex' and 'openGearCardIndex'."
+  ::= { sra8201ACardObjects 2 }
+
+sra8201AProductEntry     OBJECT-TYPE
+  SYNTAX      Sra8201AProductEntry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "A conceptual row within the 'sra8201AProductTable'."
+  INDEX    { openGearFrameIndex, openGearCardIndex }
+  ::= { sra8201AProductTable 1 }
+
+Sra8201AProductEntry ::= SEQUENCE {
+  sra8201ABoardRev            DisplayString,
+  sra8201ASerialNumber        DisplayString
+}
+
+sra8201ABoardRev    OBJECT-TYPE
+  SYNTAX      DisplayString
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "The hardware (board) revision of this card."
+  ::= { sra8201AProductEntry 4 }
+
+sra8201ASerialNumber  OBJECT-TYPE
+  SYNTAX      DisplayString
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "The serial number of this card."
+  ::= { sra8201AProductEntry 5 }
+
+--
+--  Table of Hardware parameters
+--
+sra8201AHardwareTable     OBJECT-TYPE
+  SYNTAX      SEQUENCE OF Sra8201AHardwareEntry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "A table containing hardware status for all SRA-8201A cards at this node.
+     This table is the expansion of the table 'openGearCardTable' in the
+     OPEN-GEAR-CARD-MIB. For each SRA-8201A card in the 'openGearCardTable',
+     there is a corresponding entry in this table, having the same indices -
+     'openGearFrameIndex' and 'openGearCardIndex'."
+  ::= { sra8201ACardObjects 3 }
+
+sra8201AHardwareEntry     OBJECT-TYPE
+  SYNTAX      Sra8201AHardwareEntry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "A conceptual row within the 'sra8201AHardwareTable'."
+  INDEX    { openGearFrameIndex, openGearCardIndex }
+  ::= { sra8201AHardwareTable 1 }
+
+Sra8201AHardwareEntry ::= SEQUENCE {
+  sra8201ARearModule          DisplayString,
+  sra8201ACardVoltage         Integer32,
+  sra8201ACardCurrent         Integer32,
+  sra8201AEEBank              Integer32
+}
+
+sra8201ARearModule    OBJECT-TYPE
+  SYNTAX      DisplayString
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "The type of rear I/O module present for this card."
+  ::= { sra8201AHardwareEntry 2 }
+
+sra8201ACardVoltage    OBJECT-TYPE
+  SYNTAX      Integer32
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "The supply voltage measured at this card, in milliVolts."
+  ::= { sra8201AHardwareEntry 3 }
+
+sra8201ACardCurrent    OBJECT-TYPE
+  SYNTAX      Integer32
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "The current consumption of this card in milliAmps."
+  ::= { sra8201AHardwareEntry 4 }
+
+sra8201AEEBank    OBJECT-TYPE
+  SYNTAX      Integer32
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "The index of the EEPROM storage bank used to store the persistent
+     configuration of this card.  This index will increment whenever
+     a new configuration is stored."
+  ::= { sra8201AHardwareEntry 5 }
+
+--
+--  Table of Signal Status parameters
+--
+sra8201ASignalTable     OBJECT-TYPE
+  SYNTAX      SEQUENCE OF Sra8201ASignalEntry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "A table containing signal status for all SRA-8201A cards at this node.
+     This table is the expansion of the table 'openGearCardTable' in the
+     OPEN-GEAR-CARD-MIB. For each SRA-8201A card in the 'openGearCardTable',
+     there is a corresponding entry in this table, having the same indices -
+     'openGearFrameIndex' and 'openGearCardIndex'."
+  ::= { sra8201ACardObjects 4 }
+
+sra8201ASignalEntry     OBJECT-TYPE
+  SYNTAX      Sra8201ASignalEntry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "A conceptual row within the 'sra8201ASignalTable'."
+  INDEX    { openGearFrameIndex, openGearCardIndex }
+  ::= { sra8201ASignalTable 1 }
+
+Sra8201ASignalEntry ::= SEQUENCE {
+  sra8201ASignalStatus        INTEGER
+}
+
+sra8201ASignalStatus    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    locked143   (0),
+    locked177   (1),
+    locked270   (2),
+    locked360   (3),
+    locked540   (4),
+    locked1G5   (5),
+    locked3G0   (6),
+    locked6G0   (7),
+    sigPresent  (8),
+    bypass      (9),
+    noSignal    (10),
+    noSignalMuted (11),
+    unlocked      (12),
+    unlockedMuted (13)
+  }
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "The status of the video output of this distribution card.
+     The reported values have the following meaning:
+       locked143:  signal is reclocked at 143 MHz (8201A only)
+       locked177:  signal is reclocked at 177 MHz (8201A only)
+       locked270:  signal is reclocked at 270 Mbps (8201A/8601A)
+       locked360:  signal is reclocked at 360 Mbps (8201A only)
+       locked540:  signal is reclocked at 540 Mbps (8201A only)
+       locked1G5:  signal is reclocked at 1.5 Gbps (8201A/8601A)
+       locked3G0:  signal is reclocked at 3.0 Gbps (8601A only)
+       locked6G0:  reserved
+       sigPresent: input present and being passed by SEA-8203A
+       bypass:     input present and passed but not reclocked (8201A/8601A)
+       noSignal:   no input present
+       noSignalMuted:  no input present, output muted
+       unlocked:   input present but unlocked (8201A/8601A)
+       unlockedMuted:  input present but unlocked, output muted (8201A/8601A).
+     A status values of noSignal (10) or higher should be considered an
+     error condition."
+  ::= { sra8201ASignalEntry 1 }
+
+--
+--  Table of access control parameters
+--
+sra8201ASetupTable     OBJECT-TYPE
+  SYNTAX      SEQUENCE OF Sra8201ASetupEntry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "A table containing access settings for all SRA-8201A cards at this node.
+     This table is the expansion of the table 'openGearCardTable' in the
+     OPEN-GEAR-CARD-MIB. For each SRA-8201A card in the 'openGearCardTable',
+     there is a corresponding entry in this table, having the same indices -
+     'openGearFrameIndex' and 'openGearCardIndex'."
+  ::= { sra8201ACardObjects 5 }
+
+sra8201ASetupEntry     OBJECT-TYPE
+  SYNTAX      Sra8201ASetupEntry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "A conceptual row within the 'sra8201ASetupTable'."
+  INDEX    { openGearFrameIndex, openGearCardIndex }
+  ::= { sra8201ASetupTable 1 }
+
+Sra8201ASetupEntry ::= SEQUENCE {
+  sra8201AEditPermission      INTEGER,
+  sra8201AFactoryReset        INTEGER
+}
+
+sra8201AEditPermission    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    unlocked   (0),
+    locked     (2),
+    localOnly  (3)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "The edit permission for read-write parameters of this card."
+  DEFVAL  { unlocked }
+  ::= { sra8201ASetupEntry 1 }
+
+sra8201AFactoryReset    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    reset      (0)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "Setting this parameter to zero will set the configuration of this card
+     to the factory default settings."
+  ::= { sra8201ASetupEntry 2 }
+
+--
+--  Table of configuration parameters
+--
+sra8201AConfigTable     OBJECT-TYPE
+  SYNTAX      SEQUENCE OF Sra8201AConfigEntry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "A table containing configuration settings for all SRA-8201A cards
+     at this node. This table is the expansion of the 'openGearCardTable'
+     in the OPEN-GEAR-CARD-MIB. For each SRA-8201A in the 'openGearCardTable',
+     there is a corresponding entry in this table, having the same indices -
+     'openGearFrameIndex' and 'openGearCardIndex'."
+  ::= { sra8201ACardObjects 6 }
+
+sra8201AConfigEntry     OBJECT-TYPE
+  SYNTAX      Sra8201AConfigEntry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "A conceptual row within the 'sra8201AConfigTable'."
+  INDEX    { openGearFrameIndex, openGearCardIndex }
+  ::= { sra8201AConfigTable 1 }
+
+Sra8201AConfigEntry ::= SEQUENCE {
+  sra8201ADataRate            INTEGER,
+  sra8201AEqEnable            INTEGER,
+  sra8201AMuteOnLOI           INTEGER,
+  sra8201ANotifyOnLOI         INTEGER
+}
+
+sra8201ADataRate    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    rate270  (2),
+    rate1G5  (5),
+    rate3G0  (6),
+    bypass   (8),
+    auto     (9)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "The configured data rate for this card.
+     The permitted settings for the SEA-8203A equalizing DA are:
+       rate270:  sets the cable driver slew rate to SD
+       rate1G5:  sets the cable driver slew rate to HD
+     The permitted settings for the SRA-8201A/8601A reclocking DAs are:
+       rate270:  reclock the signal at a fix rate of 270 Mbps
+       rate1G5:  reclock the signal at a fix rate of 1.5 Gbps
+       rate3G0:  reclock the signal at a fix rate of 3.0 Gbps (8601A only)
+       auto:  enables reclocking with automatic rate detection
+       bypass:   bypass the reclocking module
+     Automatic rate detection supports the following rates:
+       8201A:  143, 270, 360, 540 Mbps and 1.5 Gbps
+       8601A:  270 Mbps, 1.5 Gbps, 3.0 Gbps."
+  DEFVAL  { rate1G5 }
+  ::= { sra8201AConfigEntry 1 }
+
+sra8201AEqEnable    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    bypass   (0),
+    equalize (1)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "Specifies the equalization option for this card:
+       equalize:  equalize the input
+       bypass:  bypass the equalizer module
+     For the SRA-8201A/8601A reclocking DAs, this setting is used only
+     when the card is also configured to bypass the reclocking module."
+  DEFVAL  { equalize }
+  ::= { sra8201AConfigEntry 2 }
+
+sra8201AMuteOnLOI    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    pass (0),
+    mute (1)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "Specifies whether to mute the output or pass the signal when the
+     input is invalid or the reclocker is unlocked."
+  DEFVAL  { pass }
+  ::= { sra8201AConfigEntry 3 }
+
+sra8201ANotifyOnLOI    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    ignore (0),
+    notify (1)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "Specifies whether to notify DashBoard about a loss-of-input condition."
+  DEFVAL  { notify }
+  ::= { sra8201AConfigEntry 4 }
+
+--
+-- Conformance
+--
+sra8201ACardMibCompliances
+  OBJECT IDENTIFIER ::= { sra8201ACardConformance 1 }
+sra8201ACardMibGroups
+  OBJECT IDENTIFIER ::= { sra8201ACardConformance 2 }
+
+--
+-- Compliance Statement
+--
+sra8201ACardCompliances MODULE-COMPLIANCE
+  STATUS      current
+  DESCRIPTION
+    "The compliance statement for SRA-8201A entities."
+
+  MODULE -- this module
+    MANDATORY-GROUPS { sra8201ACardInfoGroup,
+                       sra8201ACardNotifyGroup
+                     }
+
+  ::= { sra8201ACardMibCompliances 1 }
+
+sra8201ACardInfoGroup OBJECT-GROUP
+    OBJECTS { sra8201ANumberOfCards,
+              sra8201ABoardRev,
+              sra8201ASerialNumber,
+              sra8201ARearModule,
+              sra8201ACardVoltage,
+              sra8201ACardCurrent,
+              sra8201AEEBank,
+              sra8201AEditPermission,
+              sra8201AFactoryReset,
+              sra8201ADataRate,
+              sra8201AEqEnable,
+              sra8201AMuteOnLOI,
+              sra8201ANotifyOnLOI,
+              sra8201ASignalStatus
+            }
+    STATUS  current
+    DESCRIPTION
+            "A collection of objects providing basic instrumentation
+            and control of an SRA-8201A card."
+    ::= { sra8201ACardMibGroups 1 }
+
+sra8201ACardNotifyGroup NOTIFICATION-GROUP
+  NOTIFICATIONS { sra8201ASignalStatusEvent
+                }
+  STATUS current
+  DESCRIPTION
+    "The notifications relating to the SRA-8201A card"
+  ::= { sra8201ACardMibGroups 2 }
+
+END

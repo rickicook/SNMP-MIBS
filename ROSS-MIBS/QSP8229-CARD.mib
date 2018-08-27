@@ -1,0 +1,284 @@
+QSP8229-CARD-MIB DEFINITIONS ::= BEGIN
+
+--
+-- Defines control and monitoring structures for the QSP8229 card.
+--
+
+IMPORTS
+  openGearFrameIndex
+    FROM OPEN-GEAR-FRAME-MIB
+
+  openGearCardIndex
+    FROM OPEN-GEAR-CARD-MIB
+
+   openGearObjects
+    FROM OPEN-GEAR-MIB
+
+  OBJECT-TYPE, NOTIFICATION-TYPE, MODULE-IDENTITY, Integer32, Unsigned32
+    FROM SNMPv2-SMI
+
+  OBJECT-GROUP, NOTIFICATION-GROUP, MODULE-COMPLIANCE
+    FROM SNMPv2-CONF
+
+  DisplayString
+    FROM SNMPv2-TC;
+
+qsp8229CardMib MODULE-IDENTITY
+  LAST-UPDATED "201503031542Z"
+  ORGANIZATION "www.rossvideo.org"
+  CONTACT-INFO
+    "postal:   Ross Video
+               8 John St. P.O. Box 220
+               Iroquois ON K0E 1K0
+
+      email:   support@rossvideo.com"
+
+  DESCRIPTION
+    "Defines control and monitoring structures for the QSP8229 card family.
+     This is a family of MultiDefinition Digital Keyers."
+
+  REVISION     "201503031542Z"
+  DESCRIPTION
+    "First revision."
+  ::= { openGearObjects 23 }
+
+--
+--  Top level components in the QSP8229 MIB
+--
+qsp8229CardNotifications
+  OBJECT IDENTIFIER ::= { qsp8229CardMib 0 }
+
+qsp8229CardObjects
+  OBJECT IDENTIFIER ::= { qsp8229CardMib 1 }
+
+qsp8229CardConformance
+  OBJECT IDENTIFIER ::= { qsp8229CardMib 2 }
+
+--
+-- Notifications relating to the QSP8229 card
+--
+qsp8229ReferenceStatusEvent   NOTIFICATION-TYPE
+  OBJECTS { qsp8229ReferenceStatus }
+  STATUS current
+  DESCRIPTION
+    "An indication that Status of the Analog Reference has changed.
+    The current status is reported in qsp8229ReferenceStatus."
+  ::= { qsp8229CardNotifications 1 }
+
+qsp8229BkgdAStatusEvent   NOTIFICATION-TYPE
+  OBJECTS { qsp8229BkgdAStatus }
+  STATUS current
+  DESCRIPTION
+    "An indication that Status of Bkgd A signal has changed.
+    The current status is reported in qsp8229BkgdAStatus."
+  ::= { qsp8229CardNotifications 2 }
+
+qsp8229BkgdBStatusEvent   NOTIFICATION-TYPE
+  OBJECTS { qsp8229BkgdBStatus }
+  STATUS current
+  DESCRIPTION
+    "An indication that Status of Bkgd B signal has changed.
+    The current status is reported in qsp8229BkgdBStatus."
+  ::= { qsp8229CardNotifications 3 }
+
+qsp8229BkgdCStatusEvent   NOTIFICATION-TYPE
+  OBJECTS { qsp8229BkgdCStatus }
+  STATUS current
+  DESCRIPTION
+    "An indication that Status of Bkgd C signal has changed.
+    The current status is reported in qsp8229BkgdCStatus."
+  ::= { qsp8229CardNotifications 4 }
+
+qsp8229BkgdDStatusEvent   NOTIFICATION-TYPE
+  OBJECTS { qsp8229BkgdDStatus }
+  STATUS current
+  DESCRIPTION
+    "An indication that Status of Bkgd D signal has changed.
+    The current status is reported in qsp8229BkgdDStatus."
+  ::= { qsp8229CardNotifications 5 }
+
+--
+--  QSP8229 Card information
+--
+--
+--  All the QSP8229 cards in the Open Gear frame
+--
+qsp8229NumberOfCards    OBJECT-TYPE
+  SYNTAX      Integer32
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "The total number of QSP8229 cards in the open gear frame."
+  ::= { qsp8229CardObjects 1 }
+
+--
+--  Table of Product parameters
+--
+qsp8229ProductTable     OBJECT-TYPE
+  SYNTAX      SEQUENCE OF Ra820xProductEntry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "A table containing product info for all QSP8229 cards at this node.
+     This table is the expansion of the table 'openGearCardTable' in the
+     OPEN-GEAR-CARD-MIB. For each QSP8229 card in the 'openGearCardTable',
+     there is a corresponding entry in this table, having the same indices -
+     'openGearFrameIndex' and 'openGearCardIndex'."
+  ::= { qsp8229CardObjects 2 }
+
+qsp8229ProductEntry     OBJECT-TYPE
+  SYNTAX      Ra820xProductEntry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "A conceptual row within the 'qsp8229ProductTable'."
+  INDEX    { openGearFrameIndex, openGearCardIndex }
+  ::= { qsp8229ProductTable 1 }
+
+Ra820xProductEntry ::= SEQUENCE {
+  qsp8229ReferenceStatus      INTEGER,
+  qsp8229BkgdAStatus          INTEGER,
+  qsp8229BkgdBStatus          INTEGER,
+  qsp8229BkgdCStatus          INTEGER,
+  qsp8229BkgdDStatus          INTEGER
+}
+
+qsp8229ReferenceStatus   OBJECT-TYPE
+  SYNTAX      INTEGER
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "Status of the Analog Reference.
+    This status parameter is a bitfield where each bit
+    indicates a specific status. A value of zero means OK.
+    The status bits are defined as follows:
+      0x0001 - No Reference
+      0x0002 - Reference Unlocked
+      0x0004 - Invalid Reference
+      0x0008 - Alarm suppressed
+    All other values are undefined."
+  ::= { qsp8229ProductEntry 1 }
+
+qsp8229BkgdAStatus   OBJECT-TYPE
+  SYNTAX      INTEGER
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "Status of Bkgd A signal.
+    This status parameter is a bitfield where each bit
+    indicates a specific status. A value of zero means OK.
+    The status bits are defined as follows:
+      0x0001 - Alarm suppressed
+      0x0002 - No signal
+      0x0004 - Incompatible format
+      0x0008 - Audio absent
+      0x0010 - Unsupported format
+      0x0020 - Audio silent
+    All other values are undefined."
+  ::= { qsp8229ProductEntry 2 }
+
+qsp8229BkgdBStatus   OBJECT-TYPE
+  SYNTAX      INTEGER
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "Status of Bkgd B signal.
+    This status parameter is a bitfield where each bit
+    indicates a specific status. A value of zero means OK.
+    The status bits are defined as follows:
+      0x0001 - Alarm suppressed
+      0x0002 - No signal
+      0x0004 - Incompatible format
+      0x0008 - Audio absent
+      0x0010 - Unsupported format
+      0x0020 - Audio silent
+    All other values are undefined."
+  ::= { qsp8229ProductEntry 3 }
+
+qsp8229BkgdCStatus   OBJECT-TYPE
+  SYNTAX      INTEGER
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "Status of Bkgd C signal.
+    This status parameter is a bitfield where each bit
+    indicates a specific status. A value of zero means OK.
+    The status bits are defined as follows:
+      0x0001 - Alarm suppressed
+      0x0002 - No signal
+      0x0004 - Incompatible format
+      0x0008 - Audio absent
+      0x0010 - Unsupported format
+      0x0020 - Audio silent
+    All other values are undefined."
+  ::= { qsp8229ProductEntry 4 }
+
+qsp8229BkgdDStatus   OBJECT-TYPE
+  SYNTAX      INTEGER
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "Status of Bkgd D signal.
+    This status parameter is a bitfield where each bit
+    indicates a specific status. A value of zero means OK.
+    The status bits are defined as follows:
+      0x0001 - Alarm suppressed
+      0x0002 - No signal
+      0x0004 - Incompatible format
+      0x0008 - Audio absent
+      0x0010 - Unsupported format
+      0x0020 - Audio silent
+    All other values are undefined."
+  ::= { qsp8229ProductEntry 5 }
+
+--
+-- Conformance
+--
+qsp8229CardMibCompliances
+  OBJECT IDENTIFIER ::= { qsp8229CardConformance 1 }
+qsp8229CardMibGroups
+  OBJECT IDENTIFIER ::= { qsp8229CardConformance 2 }
+
+--
+-- Compliance Statement
+--
+qsp8229CardCompliances MODULE-COMPLIANCE
+  STATUS      current
+  DESCRIPTION
+    "The compliance statement for QSP8229 entities."
+
+  MODULE -- this module
+    MANDATORY-GROUPS { qsp8229CardInfoGroup,
+                       qsp8229CardNotifyGroup
+                     }
+
+  ::= { qsp8229CardMibCompliances 1 }
+
+qsp8229CardInfoGroup OBJECT-GROUP
+    OBJECTS { qsp8229NumberOfCards,
+              qsp8229ReferenceStatus,
+              qsp8229BkgdAStatus,
+              qsp8229BkgdBStatus,
+              qsp8229BkgdCStatus,
+              qsp8229BkgdDStatus
+            }
+    STATUS  current
+    DESCRIPTION
+            "A collection of objects providing basic instrumentation
+            and control of an QSP8229 card."
+    ::= { qsp8229CardMibGroups 1 }
+
+qsp8229CardNotifyGroup NOTIFICATION-GROUP
+  NOTIFICATIONS {
+               qsp8229ReferenceStatusEvent,
+               qsp8229BkgdAStatusEvent,
+               qsp8229BkgdBStatusEvent,
+               qsp8229BkgdCStatusEvent,
+               qsp8229BkgdDStatusEvent
+                }
+  STATUS current
+  DESCRIPTION
+    "The notifications relating to the QSP8229 card"
+  ::= { qsp8229CardMibGroups 2 }
+
+END

@@ -1,0 +1,1199 @@
+UDC8225-CARD-MIB DEFINITIONS ::= BEGIN
+
+--
+-- Defines control and monitoring structures for the UDC-8225 card.
+--
+
+IMPORTS
+  openGearFrameIndex
+    FROM OPEN-GEAR-FRAME-MIB
+
+  openGearCardIndex
+    FROM OPEN-GEAR-CARD-MIB
+
+  openGearObjects
+    FROM OPEN-GEAR-MIB
+
+  OBJECT-TYPE, NOTIFICATION-TYPE, MODULE-IDENTITY, Integer32
+    FROM SNMPv2-SMI
+
+  OBJECT-GROUP, NOTIFICATION-GROUP, MODULE-COMPLIANCE
+    FROM SNMPv2-CONF
+
+  DisplayString
+    FROM SNMPv2-TC;
+
+udc8225CardMib MODULE-IDENTITY
+  LAST-UPDATED "200903051200Z"
+  ORGANIZATION "www.rossvideo.org"
+  CONTACT-INFO
+    "postal:   Ross Video
+               8 John St. P.O. Box 220
+               Iroquois ON K0E 1K0
+
+       email:    support@rossvideo.com"
+  DESCRIPTION
+    "Added CC status and control."
+  REVISION     "200903051200Z"
+  DESCRIPTION
+    "Defines control and monitoring structures for the UDC-8225 card."
+  REVISION     "200803251200Z"
+  DESCRIPTION
+    "Updated to include wings parameters (for side-panel content)."
+  REVISION     "200707171200Z"
+  DESCRIPTION
+    "SNMP MIB for the UDC-8225 cross converter with audio support."
+  ::= { openGearObjects 7 }
+
+--
+--  Top level components in the UDC-8225 MIB
+--
+udc8225CardNotifications
+  OBJECT IDENTIFIER ::= { udc8225CardMib 0 }
+
+udc8225CardObjects
+  OBJECT IDENTIFIER ::= { udc8225CardMib 1 }
+
+udc8225CardConformance
+  OBJECT IDENTIFIER ::= { udc8225CardMib 2 }
+
+--
+--  Notifications relating to the UDC-8225 card
+--
+udc8225HWStatusEvent   NOTIFICATION-TYPE
+  OBJECTS { udc8225HWStatus }
+  STATUS current
+  DESCRIPTION
+    "An indication that the hw status has changed. The status value
+     is in udc8225HWStatus"
+  ::= { udc8225CardNotifications 1 }
+
+udc8225ReferenceStatusEvent   NOTIFICATION-TYPE
+  OBJECTS { udc8225ReferenceStatus }
+  STATUS current
+  DESCRIPTION
+    "An indication that status of the timing reference has changed.
+     The status value is in udc8225ReferenceStatus"
+  ::= { udc8225CardNotifications 2 }
+
+udc8225InputStatusEvent   NOTIFICATION-TYPE
+  OBJECTS { udc8225InputStatus }
+  STATUS current
+  DESCRIPTION
+    "An indication that status of the video input has changed.
+     The status value is in udc8225InputStatus"
+  ::= { udc8225CardNotifications 3 }
+
+udc8225AudioStatusEvent   NOTIFICATION-TYPE
+  OBJECTS { udc8225AudioStatus }
+  STATUS current
+  DESCRIPTION
+    "An indication that status of the embedded audio on the video input has changed.
+     The status value is in udc8225AudioStatus"
+  ::= { udc8225CardNotifications 4 }
+
+udc8225CCLine21InputEvent   NOTIFICATION-TYPE
+  OBJECTS { udc8225CCLine21Input }
+  STATUS current
+  DESCRIPTION
+    "An indication that status of the line 21 input has changed.
+     The status value is in udc8225CCLine21Input"
+  ::= { udc8225CardNotifications 5 }
+
+udc8225CC708InputEvent   NOTIFICATION-TYPE
+  OBJECTS { udc8225CC708Input }
+  STATUS current
+  DESCRIPTION
+    "An indication that status of the 708 input has changed.
+     The status value is in udc8225CC708Input"
+  ::= { udc8225CardNotifications 6 }
+
+--
+--  UDC8225 Card information
+--
+--
+--  All the UDC-8225 cards in the Open Gear frame
+--
+udc8225NumberOfCards    OBJECT-TYPE
+  SYNTAX      Integer32
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "The total number of UDC-8225 cards in the open gear frame."
+  ::= { udc8225CardObjects 1 }
+
+--
+--  Table of Product parameters
+--
+udc8225ProductTable     OBJECT-TYPE
+  SYNTAX      SEQUENCE OF Udc8225ProductEntry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "A table containing product info for all UDC-8225 cards at this node.
+     This table is the expansion of the table 'openGearCardTable' in the
+     OPEN-GEAR-CARD-MIB. For each UDC-8225 card in the 'openGearCardTable',
+     there is a corresponding entry in this table, having the same indices -
+     'openGearFrameIndex' and 'openGearCardIndex'."
+  ::= { udc8225CardObjects 2 }
+
+udc8225ProductEntry     OBJECT-TYPE
+  SYNTAX      Udc8225ProductEntry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "A conceptual row within the 'udc8225ProductTable'."
+  INDEX    { openGearFrameIndex, openGearCardIndex }
+  ::= { udc8225ProductTable 1 }
+
+Udc8225ProductEntry ::= SEQUENCE {
+  udc8225FirmwareRev         DisplayString,
+  udc8225ConverterRev        DisplayString,
+  udc8225BoardRev            DisplayString,
+  udc8225OptionBoardType     Integer32
+}
+
+udc8225FirmwareRev    OBJECT-TYPE
+  SYNTAX      DisplayString
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "The version number of the FPGA firmware on this card."
+  ::= { udc8225ProductEntry 4 }
+
+udc8225ConverterRev    OBJECT-TYPE
+  SYNTAX      DisplayString
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "The version number of the format-conversion software on this card."
+  ::= { udc8225ProductEntry 5 }
+
+udc8225BoardRev    OBJECT-TYPE
+  SYNTAX      DisplayString
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "The hardware (board) revision of this card."
+  ::= { udc8225ProductEntry 6 }
+
+udc8225OptionBoardType    OBJECT-TYPE
+  SYNTAX      Integer32
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "The type of option board installed on this card."
+  ::= { udc8225ProductEntry 7 }
+
+--
+--  Table of Hardware parameters
+--
+udc8225HardwareTable     OBJECT-TYPE
+  SYNTAX      SEQUENCE OF Udc8225HardwareEntry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "A table containing hardware status for all UDC-8225 cards at this node.
+     This table is the expansion of the table 'openGearCardTable' in the
+     OPEN-GEAR-CARD-MIB. For each UDC-8225 card in the 'openGearCardTable',
+     there is a corresponding entry in this table, having the same indices -
+     'openGearFrameIndex' and 'openGearCardIndex'."
+  ::= { udc8225CardObjects 3 }
+
+udc8225HardwareEntry     OBJECT-TYPE
+  SYNTAX      Udc8225HardwareEntry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "A conceptual row within the 'udc8225HardwareTable'."
+  INDEX    { openGearFrameIndex, openGearCardIndex }
+  ::= { udc8225HardwareTable 1 }
+
+Udc8225HardwareEntry ::= SEQUENCE {
+  udc8225HWStatus            Integer32,
+  udc8225RearModule          Integer32,
+  udc8225CardVoltage         Integer32,
+  udc8225CardCurrent         Integer32,
+  udc8225EEBank              Integer32
+}
+
+udc8225HWStatus    OBJECT-TYPE
+  SYNTAX      Integer32
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "The hardware status of this card.  The status parameter is a bitfield
+     where each bit indicates a specific error.  A value of zero means there
+     are no hardware faults.  Any non-zero value indicates an error.
+     The error bits are defined as follows:
+        0x0001 - FPGA load invalid
+        0x0002 - Assembly Error (wrong option card installed)
+        0x0004 - Incompatible rear I/O module
+        0x0008 - Current consumption is out of spec
+        0x0010 - Undiagnosed internal error
+     All other values are undefined."
+  ::= { udc8225HardwareEntry 1 }
+
+udc8225RearModule    OBJECT-TYPE
+  SYNTAX      Integer32
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "The type of rear I/O module present for this card."
+  ::= { udc8225HardwareEntry 2 }
+
+udc8225CardVoltage    OBJECT-TYPE
+  SYNTAX      Integer32
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "The supply voltage measured at this card, in milliVolts."
+  ::= { udc8225HardwareEntry 3 }
+
+udc8225CardCurrent    OBJECT-TYPE
+  SYNTAX      Integer32
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "The current consumption of this card in milliAmps."
+  ::= { udc8225HardwareEntry 4 }
+
+udc8225EEBank    OBJECT-TYPE
+  SYNTAX      Integer32
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "The index of the EEPROM storage bank used to store the persistent
+     configuration of this card.  This index will increment whenever
+     a new configuration is stored."
+  ::= { udc8225HardwareEntry 5 }
+
+--
+--  Table of Signal Status parameters
+--
+udc8225SignalTable     OBJECT-TYPE
+  SYNTAX      SEQUENCE OF Udc8225SignalEntry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "A table containing signal status for all UDC-8225 cards at this node.
+     This table is the expansion of the table 'openGearCardTable' in the
+     OPEN-GEAR-CARD-MIB. For each UDC-8225 card in the 'openGearCardTable',
+     there is a corresponding entry in this table, having the same indices -
+     'openGearFrameIndex' and 'openGearCardIndex'."
+  ::= { udc8225CardObjects 4 }
+
+udc8225SignalEntry     OBJECT-TYPE
+  SYNTAX      Udc8225SignalEntry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "A conceptual row within the 'udc8225SignalTable'."
+  INDEX    { openGearFrameIndex, openGearCardIndex }
+  ::= { udc8225SignalTable 1 }
+
+Udc8225SignalEntry ::= SEQUENCE {
+  udc8225ReferenceStatus     INTEGER,
+  udc8225ReferenceFormat     DisplayString,
+  udc8225GenlockState        INTEGER,
+  udc8225InputStatus         INTEGER,
+  udc8225InputFormat         DisplayString,
+  udc8225AudioStatus         DisplayString,
+  udc8225WingsFormat         DisplayString
+}
+
+udc8225ReferenceStatus    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    noSignal  (0),
+    invalid   (1),
+    unlocked  (2),
+    locked    (3)
+  }
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "The status of the timing reference for this card.
+     Changes are reported as a trap - udc8225ReferenceStatusEvent"
+  ::= { udc8225SignalEntry 1 }
+
+udc8225ReferenceFormat    OBJECT-TYPE
+  SYNTAX      DisplayString
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "The format of the video timing reference for this card."
+  ::= { udc8225SignalEntry 2 }
+
+udc8225GenlockState    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    noReference (0),
+    invalidRef  (1), -- wrong clock rate for selected output format
+    locking     (2),
+    locked      (3),
+    freeze      (4),  -- reference lost after fully locked
+    relocking   (5)
+  }
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "The genlock status of this card."
+  ::= { udc8225SignalEntry 3 }
+
+udc8225InputStatus    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    noSignal    (0),
+    unsupported (1),
+    mismatched  (2), -- does not match configuration
+    valid       (3)
+  }
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "The status of the video input for this card.
+     Changes are reported as a trap - udc8225InputStatusEvent"
+  ::= { udc8225SignalEntry 4 }
+
+udc8225InputFormat    OBJECT-TYPE
+  SYNTAX      DisplayString
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "The format of the input video signal for this card."
+  ::= { udc8225SignalEntry 5 }
+
+udc8225AudioStatus    OBJECT-TYPE
+  SYNTAX      DisplayString
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "Status field showing the status of embedded audio on input to this card.
+     The symbols following each group number have the following meaning:
+     '-' this group is not present,
+     'S' synchronous audio present for this group,
+     'A' asynchronous audio present for this group."
+  ::= { udc8225SignalEntry 6 }
+
+udc8225WingsFormat    OBJECT-TYPE
+  SYNTAX      DisplayString
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "The format of the side panel video input for this card."
+  ::= { udc8225SignalEntry 7 }
+
+--
+--  Table of configuration control parameters
+--
+udc8225SetupTable     OBJECT-TYPE
+  SYNTAX      SEQUENCE OF Udc8225SetupEntry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "A table containing access settings for all UDC-8225 cards at this node.
+     This table is the expansion of the table 'openGearCardTable' in the
+     OPEN-GEAR-CARD-MIB. For each UDC-8225 card in the 'openGearCardTable',
+     there is a corresponding entry in this table, having the same indices -
+     'openGearFrameIndex' and 'openGearCardIndex'."
+  ::= { udc8225CardObjects 5 }
+
+udc8225SetupEntry     OBJECT-TYPE
+  SYNTAX      Udc8225SetupEntry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "A conceptual row within the 'udc8225SetupTable'."
+  INDEX    { openGearFrameIndex, openGearCardIndex }
+  ::= { udc8225SetupTable 1 }
+
+Udc8225SetupEntry ::= SEQUENCE {
+  udc8225EditPermission      INTEGER,
+  udc8225FactoryReset        INTEGER
+}
+
+udc8225EditPermission    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    unlocked   (0),
+    locked     (1)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "The edit permission for read-write parameters of this card."
+  DEFVAL  { unlocked }
+  ::= { udc8225SetupEntry 1 }
+
+udc8225FactoryReset    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    reset      (0)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "Setting this parameter to zero will set the configuration of this card
+     to the factory default settings."
+  ::= { udc8225SetupEntry 2 }
+
+--
+--  Table of Output parameters
+--
+udc8225OutputTable     OBJECT-TYPE
+  SYNTAX      SEQUENCE OF Udc8225OutputEntry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "A table containing output settings for all UDC-8225 cards at this node.
+     This table is the expansion of the table 'openGearCardTable' in the
+     OPEN-GEAR-CARD-MIB. For each UDC-8225 card in the 'openGearCardTable',
+     there is a corresponding entry in this table, having the same indices -
+     'openGearFrameIndex' and 'openGearCardIndex'."
+  ::= { udc8225CardObjects 6 }
+
+udc8225OutputEntry     OBJECT-TYPE
+  SYNTAX      Udc8225OutputEntry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "A conceptual row within the 'udc8225OutputTable'."
+  INDEX    { openGearFrameIndex, openGearCardIndex }
+  ::= { udc8225OutputTable 1 }
+
+Udc8225OutputEntry ::= SEQUENCE {
+  udc8225OutputFormat        INTEGER,
+  udc8225AspectConversion    INTEGER,
+  udc8225LossOfInput         INTEGER,
+  udc8225TestPattern         INTEGER,
+  udc8225MonitorFormat       INTEGER,
+  udc8225InputAspectRatio    INTEGER,
+  udc8225OutputAspectRatio   INTEGER,
+  udc8225AutodetectRate      INTEGER,
+  udc8225WingsEnable         INTEGER,
+  udc8225WingsCrop           Integer32
+}
+
+udc8225OutputFormat    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    output480i5994  (0),
+    output720p5994  (1),
+    output1080i5994 (2),
+    output576i50    (3),
+    output720p50    (4),
+    output1080i50   (5)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "The video output format for this conversion card."
+  DEFVAL  { output480i5994 }
+  ::= { udc8225OutputEntry 1 }
+
+udc8225AspectConversion    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    fullScreen    (0),
+    panoramic     (1),
+    letterPillar  (2),
+    zoom          (3)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "The aspect ratio conversion for the video output for this card.
+     Note that this has no effect unless the aspect ratio of input
+     and output are different."
+  DEFVAL  { fullScreen }
+  ::= { udc8225OutputEntry 2 }
+
+udc8225LossOfInput    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    black (0),
+    blue  (1)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "The flat frame color to be displayed on loss of input."
+  DEFVAL  { black }
+  ::= { udc8225OutputEntry 3 }
+
+udc8225TestPattern    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    smpteBars    (0),
+    p75Bars      (3),
+    disabled     (4)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "The test pattern to be output by this card."
+  DEFVAL  { disabled }
+  ::= { udc8225OutputEntry 4 }
+
+udc8225MonitorFormat    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    auto  (0),
+    ntsc  (1),
+    pal   (2),
+    video (3)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "The format of the analog monitoring output for this card."
+  DEFVAL  { auto }
+  ::= { udc8225OutputEntry 5 }
+
+udc8225InputAspectRatio    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    auto       (0),
+    aspect4x3  (1),
+    aspect16x9 (2),
+    aspect14x9 (3)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "The aspect ratio of the video input to this conversion card.
+     When set to auto, aspect ratio is determined from the input format
+     (SD is assumed to be 4x3, HD is assumed to be 16x9)."
+  DEFVAL  { auto }
+  ::= { udc8225OutputEntry 6 }
+
+udc8225OutputAspectRatio    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    auto       (0),
+    aspect4x3  (1),
+    aspect16x9 (2),
+    aspect14x9 (3)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "The aspect ratio of the video output of this conversion card.
+     When set to auto, aspect ratio is determined from the output format
+     (SD is assumed to be 4x3, HD is assumed to be 16x9)."
+  DEFVAL  { auto }
+  ::= { udc8225OutputEntry 7 }
+
+udc8225AutodetectRate    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    slow       (0),
+    fast       (1)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "The autodetection rate setting for this conversion card.
+     Use fast for the clean, fast autodetection of the input signal.
+     On slow, the input flywheels for about 1 frame after change of format
+     before reconfiguring the converter, to provide greater tolerance for
+     noise on the input video."
+  DEFVAL  { fast }
+  ::= { udc8225OutputEntry 8 }
+
+udc8225WingsEnable    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    disabled   (0),
+    enabled    (1)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "Indicates if side-panel content insertion is enabled.
+     This feature is available only when the aspect ratio conversion is
+     set to letterPillar, and the input and output aspect ratios differ."
+  DEFVAL  { enabled }
+  ::= { udc8225OutputEntry 9 }
+
+udc8225WingsCrop    OBJECT-TYPE
+  SYNTAX      Integer32 (0..5)
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "The percentage of the foreground image to be cropped when inserting
+    side-panel content."
+  DEFVAL  { 0 }
+  ::= { udc8225OutputEntry 10 }
+
+--
+--  Table of Timing parameters
+--
+udc8225TimingTable     OBJECT-TYPE
+  SYNTAX      SEQUENCE OF Udc8225TimingEntry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "A table containing timing settings for all UDC-8225 cards at this node.
+     This table is the expansion of the table 'openGearCardTable' in the
+     OPEN-GEAR-CARD-MIB. For each UDC-8225 card in the 'openGearCardTable',
+     there is a corresponding entry in this table, having the same indices -
+     'openGearFrameIndex' and 'openGearCardIndex'."
+  ::= { udc8225CardObjects 7 }
+
+udc8225TimingEntry     OBJECT-TYPE
+  SYNTAX      Udc8225TimingEntry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "A conceptual row within the 'udc8225TimingTable'."
+  INDEX    { openGearFrameIndex, openGearCardIndex }
+  ::= { udc8225TimingTable 1 }
+
+Udc8225TimingEntry ::= SEQUENCE {
+  udc8225Reference           INTEGER,
+  udc8225HorizontalDelay     Integer32,
+  udc8225VerticalDelay       Integer32
+}
+
+udc8225Reference        OBJECT-TYPE
+  SYNTAX  INTEGER {
+    frame1  (0),
+    frame2  (1),
+    local   (2)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "The selected video timing reference for this card."
+  DEFVAL  { frame1 }
+  ::= { udc8225TimingEntry 1 }
+
+udc8225HorizontalDelay    OBJECT-TYPE
+  SYNTAX      Integer32 (0..2750)
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "The horizontal delay of this card in pixels."
+  DEFVAL  { 0 }
+  ::= { udc8225TimingEntry 2 }
+
+udc8225VerticalDelay    OBJECT-TYPE
+  SYNTAX      Integer32 (0..1125)
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "The vertical delay of this card in lines."
+  DEFVAL  { 0 }
+  ::= { udc8225TimingEntry 3 }
+
+--
+--  Table of ProcAmp parameters
+--
+udc8225ProcAmpTable     OBJECT-TYPE
+  SYNTAX      SEQUENCE OF Udc8225ProcAmpEntry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "A table containing proc amp settings for all UDC-8225 cards at this node.
+     This table is the expansion of the table 'openGearCardTable' in the
+     OPEN-GEAR-CARD-MIB. For each UDC-8225 card in the 'openGearCardTable',
+     there is a corresponding entry in this table, having the same indices -
+     'openGearFrameIndex' and 'openGearCardIndex'."
+  ::= { udc8225CardObjects 8 }
+
+udc8225ProcAmpEntry     OBJECT-TYPE
+  SYNTAX      Udc8225ProcAmpEntry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "A conceptual row within the 'udc8225ProcAmpTable'."
+  INDEX    { openGearFrameIndex, openGearCardIndex }
+  ::= { udc8225ProcAmpTable 1 }
+
+Udc8225ProcAmpEntry ::= SEQUENCE {
+  udc8225VideoGain           Integer32,
+  udc8225ChromaGain          Integer32,
+  udc8225CBGain              Integer32,
+  udc8225BlackOffset         Integer32,
+  udc8225ProcAmpReset        INTEGER,
+  udc8225BlackClip           INTEGER,
+  udc8225BlankActiveLines    Integer32
+}
+
+udc8225VideoGain    OBJECT-TYPE
+  SYNTAX      Integer32 (0..200)
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "The video gain of the output proc amp, in percent."
+  DEFVAL  { 100 }
+  ::= { udc8225ProcAmpEntry 1 }
+
+udc8225ChromaGain    OBJECT-TYPE
+  SYNTAX      Integer32 (0..200)
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "The chroma gain of the output proc amp, in percent."
+  DEFVAL  { 100 }
+  ::= { udc8225ProcAmpEntry 2 }
+
+udc8225CBGain    OBJECT-TYPE
+  SYNTAX      Integer32 (0..200)
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "The Cb (chroma blue) gain of the output proc amp, in percent."
+  DEFVAL  { 100 }
+  ::= { udc8225ProcAmpEntry 3 }
+
+udc8225BlackOffset    OBJECT-TYPE
+  SYNTAX      Integer32 (-60..160)
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "The black offset of the output proc amp."
+  DEFVAL  { 0 }
+  ::= { udc8225ProcAmpEntry 4 }
+
+udc8225ProcAmpReset    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    reset      (0)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "Setting this parameter to zero will set the configuration of this card
+     to the factory default settings."
+  DEFVAL  { reset }
+  ::= { udc8225ProcAmpEntry 5 }
+
+--
+--  Special proc amp features
+--
+udc8225BlackClip    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    disabled (0),
+    enabled  (1)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "Enables clipping of luma levels below 40h (black)."
+  DEFVAL  { enabled }
+  ::= { udc8225ProcAmpEntry 6 }
+
+udc8225BlankActiveLines    OBJECT-TYPE
+  SYNTAX      Integer32 (0..3)
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "The number of lines to blank following the start of active video.
+     The purpose of this is to allow removal of closed captioning and
+     similar encoded information before format conversion."
+  DEFVAL  { 0 }
+  ::= { udc8225ProcAmpEntry 7 }
+
+--
+--  Table of Audio Control parameters
+--
+udc8225AudioControlTable     OBJECT-TYPE
+  SYNTAX      SEQUENCE OF Udc8225AudioControlEntry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "A table containing audio control settings for all UDC-8225 cards at this node.
+     This table is the expansion of the table 'openGearCardTable' in the
+     OPEN-GEAR-CARD-MIB. For each UDC-8225 card in the 'openGearCardTable',
+     there is a corresponding entry in this table, having the same indices -
+     'openGearFrameIndex' and 'openGearCardIndex'."
+  ::= { udc8225CardObjects 9 }
+
+udc8225AudioControlEntry     OBJECT-TYPE
+  SYNTAX      Udc8225AudioControlEntry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "A conceptual row within the 'udc8225AudioControlTable'."
+  INDEX    { openGearFrameIndex, openGearCardIndex }
+  ::= { udc8225AudioControlTable 1 }
+
+Udc8225AudioControlEntry ::= SEQUENCE {
+  udc8225AudioGrp1           INTEGER,
+  udc8225AudioGrp2           INTEGER,
+  udc8225AudioGrp3           INTEGER,
+  udc8225AudioGrp4           INTEGER,
+  udc8225Group1Tone          INTEGER,
+  udc8225Group2Tone          INTEGER,
+  udc8225Group3Tone          INTEGER,
+  udc8225Group4Tone          INTEGER,
+  udc8225AudioDelay          Integer32
+}
+
+udc8225AudioGrp1    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    disable (0),
+    mute    (1),
+    tone    (2),
+    pass    (3)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "Processing option for embedded audio group 1."
+  DEFVAL  { pass }
+  ::= { udc8225AudioControlEntry 1 }
+
+udc8225AudioGrp2    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    disable (0),
+    mute    (1),
+    tone    (2),
+    pass    (3)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "Processing option for embedded audio group 2."
+  DEFVAL  { pass }
+  ::= { udc8225AudioControlEntry 2 }
+
+udc8225AudioGrp3    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    disable (0),
+    mute    (1),
+    tone    (2),
+    pass    (3)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "Processing option for embedded audio group 3."
+  DEFVAL  { pass }
+  ::= { udc8225AudioControlEntry 3 }
+
+udc8225AudioGrp4    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    disable (0),
+    mute    (1),
+    tone    (2),
+    pass    (3)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "Processing option for embedded audio group 4."
+  DEFVAL  { pass }
+  ::= { udc8225AudioControlEntry 4 }
+
+udc8225Group1Tone    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    f1000Hz (2),
+    f2000Hz (4),
+    f3000Hz (6),
+    f4000Hz (8),
+    f5000Hz (10)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "Test tone to be written to embedded audio group 1."
+  DEFVAL  { f1000Hz }
+  ::= { udc8225AudioControlEntry 5 }
+
+udc8225Group2Tone    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    f1000Hz (2),
+    f2000Hz (4),
+    f3000Hz (6),
+    f4000Hz (8),
+    f5000Hz (10)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "Test tone to be written to embedded audio group 2."
+  DEFVAL  { f1000Hz }
+  ::= { udc8225AudioControlEntry 6 }
+
+udc8225Group3Tone    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    f1000Hz (2),
+    f2000Hz (4),
+    f3000Hz (6),
+    f4000Hz (8),
+    f5000Hz (10)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "Test tone to be written to embedded audio group 3."
+  DEFVAL  { f1000Hz }
+  ::= { udc8225AudioControlEntry 7 }
+
+udc8225Group4Tone    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    f1000Hz (2),
+    f2000Hz (4),
+    f3000Hz (6),
+    f4000Hz (8),
+    f5000Hz (10)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "Test tone to be written to embedded audio group 4."
+  DEFVAL  { f1000Hz }
+  ::= { udc8225AudioControlEntry 8 }
+
+udc8225AudioDelay    OBJECT-TYPE
+  SYNTAX      Integer32 (0..1000)
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "The number of milliseconds that embedded audio should be delayed,
+     relative to the video.  The delay is applied to all audio groups."
+  DEFVAL  { 0 }
+  ::= { udc8225AudioControlEntry 9 }
+
+
+--  Table of Closed Captioning parameters
+--
+udc8225ClosedCaptionTable     OBJECT-TYPE
+  SYNTAX      SEQUENCE OF Udc8225ClosedCaptionEntry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "A table containing closed captioning status for all UDC-8225 cards at this node.
+     This table is the expansion of the table 'openGearCardTable' in the
+     OPEN-GEAR-CARD-MIB. For each UDC-8225 card in the 'openGearCardTable',
+     there is a corresponding entry in this table, having the same indices -
+     'openGearFrameIndex' and 'openGearCardIndex'."
+  ::= { udc8225CardObjects 10 }
+
+udc8225ClosedCaptionEntry     OBJECT-TYPE
+  SYNTAX      Udc8225ClosedCaptionEntry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "A conceptual row within the 'udc8225ClosedCaptionTable'."
+  INDEX    { openGearFrameIndex, openGearCardIndex }
+  ::= { udc8225ClosedCaptionTable 1 }
+
+Udc8225ClosedCaptionEntry ::= SEQUENCE {
+  udc8225CCLine21Input       INTEGER,
+  udc8225CC708Input          INTEGER
+}
+
+udc8225CCLine21Input    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    noSignal   (0),
+    field1     (1),
+    field2     (2),
+    field1And2 (3)
+  }
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "Status for Line 21 input"
+  DEFVAL  { noSignal }
+  ::= { udc8225ClosedCaptionEntry 1 }
+
+udc8225CC708Input    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    noSignal         (0),
+    608Present       (1),
+    708Present       (2),
+    608And708Present (3)
+  }
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "Status for 708 input"
+  DEFVAL  { noSignal }
+  ::= { udc8225ClosedCaptionEntry 2 }
+
+--  Table of VANC parameters
+--
+udc8225VancTable     OBJECT-TYPE
+  SYNTAX      SEQUENCE OF Udc8225VancEntry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "A table containing VANC settings for all UDC-8225 cards at this node.
+     This table is the expansion of the table 'openGearCardTable' in the
+     OPEN-GEAR-CARD-MIB. For each UDC-8225 card in the 'openGearCardTable',
+     there is a corresponding entry in this table, having the same indices -
+     'openGearFrameIndex' and 'openGearCardIndex'."
+  ::= { udc8225CardObjects 11 }
+
+udc8225VancEntry     OBJECT-TYPE
+  SYNTAX      Udc8225VancEntry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "A conceptual row within the 'udc8225VancTable'."
+  INDEX    { openGearFrameIndex, openGearCardIndex }
+  ::= { udc8225VancTable 1 }
+
+Udc8225VancEntry ::= SEQUENCE {
+  udc8225CCEnabled         INTEGER,
+  udc8225Sd708OutputLine   Integer32,
+  udc8225Hd708OutputLine   Integer32,
+  udc8225PassThruEnabled   INTEGER,
+  udc8225SdPassThruLine    Integer32,
+  udc8225HdPassThruLine    Integer32
+}
+
+udc8225CCEnabled    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    disabled   (0),
+    enabled    (1)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "control for closed captioning"
+  DEFVAL  { enabled }
+  ::= { udc8225VancEntry 1 }
+
+udc8225Sd708OutputLine    OBJECT-TYPE
+  SYNTAX      Integer32  (12..19)
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "SD 708 output line setting"
+  DEFVAL  { 12 }
+  ::= { udc8225VancEntry 2 }
+
+udc8225Hd708OutputLine    OBJECT-TYPE
+  SYNTAX      Integer32  (9..20)
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "HD 708 output line setting"
+  DEFVAL  { 9 }
+  ::= { udc8225VancEntry 3 }
+
+udc8225PassThruEnabled   OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    disabled   (0),
+    enabled    (1)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "control for closed captioning"
+  DEFVAL  { disabled }
+  ::= { udc8225VancEntry 4 }
+
+udc8225SdPassThruLine    OBJECT-TYPE
+  SYNTAX      Integer32  (12..19)
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "SD Pass Thru line setting"
+  DEFVAL  { 12 }
+  ::= { udc8225VancEntry 5 }
+
+udc8225HdPassThruLine    OBJECT-TYPE
+  SYNTAX      Integer32  (9..20)
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "HD Pass Thru line setting"
+  DEFVAL  { 9 }
+  ::= { udc8225VancEntry 6 }
+
+--
+-- Conformance
+--
+udc8225CardMibCompliances
+  OBJECT IDENTIFIER ::= { udc8225CardConformance 1 }
+udc8225CardMibGroups
+  OBJECT IDENTIFIER ::= { udc8225CardConformance 2 }
+
+--
+-- Compliance Statement
+--
+udc8225CardCompliances MODULE-COMPLIANCE
+  STATUS      current
+  DESCRIPTION
+    "The compliance statement for UDC-8225 entities."
+
+  MODULE -- this module
+    MANDATORY-GROUPS { udc8225CardInfoGroup,
+                       udc8225CardNotifyGroup
+                     }
+
+  ::= { udc8225CardMibCompliances 1 }
+
+--
+-- UDC-8225 MIB groups
+--
+udc8225CardInfoGroup OBJECT-GROUP
+    OBJECTS { udc8225NumberOfCards,
+              udc8225FirmwareRev,
+              udc8225ConverterRev,
+              udc8225BoardRev,
+              udc8225OptionBoardType,
+              udc8225RearModule,
+              udc8225CardVoltage,
+              udc8225CardCurrent,
+              udc8225EEBank,
+              udc8225HWStatus,
+              udc8225ReferenceStatus,
+              udc8225ReferenceFormat,
+              udc8225GenlockState,
+              udc8225InputStatus,
+              udc8225InputFormat,
+              udc8225AudioStatus,
+              udc8225WingsFormat,
+              udc8225EditPermission,
+              udc8225FactoryReset,
+              udc8225OutputFormat,
+              udc8225AspectConversion,
+              udc8225LossOfInput,
+              udc8225TestPattern,
+              udc8225MonitorFormat,
+              udc8225InputAspectRatio,
+              udc8225OutputAspectRatio,
+              udc8225AutodetectRate,
+              udc8225WingsEnable,
+              udc8225WingsCrop,
+              udc8225Reference,
+              udc8225HorizontalDelay,
+              udc8225VerticalDelay,
+              udc8225VideoGain,
+              udc8225ChromaGain,
+              udc8225CBGain,
+              udc8225BlackOffset,
+              udc8225ProcAmpReset,
+              udc8225BlackClip,
+              udc8225BlankActiveLines,
+              udc8225AudioGrp1,
+              udc8225AudioGrp2,
+              udc8225AudioGrp3,
+              udc8225AudioGrp4,
+              udc8225Group1Tone,
+              udc8225Group2Tone,
+              udc8225Group3Tone,
+              udc8225Group4Tone,
+              udc8225AudioDelay,
+              udc8225CCLine21Input,
+              udc8225CC708Input,
+              udc8225CCEnabled,
+              udc8225Sd708OutputLine,
+              udc8225Hd708OutputLine,
+              udc8225PassThruEnabled,
+              udc8225SdPassThruLine,
+              udc8225HdPassThruLine
+            }
+    STATUS  current
+    DESCRIPTION
+            "A collection of objects providing basic instrumentation
+            and control of an UDC-8225 card."
+    ::= { udc8225CardMibGroups 1 }
+
+udc8225CardNotifyGroup NOTIFICATION-GROUP
+  NOTIFICATIONS { udc8225HWStatusEvent,
+                  udc8225ReferenceStatusEvent,
+                  udc8225InputStatusEvent,
+                  udc8225AudioStatusEvent,
+                  udc8225CCLine21InputEvent,
+                  udc8225CC708InputEvent
+                }
+  STATUS current
+  DESCRIPTION
+    "The notifications relating to the UDC-8225 card"
+  ::= { udc8225CardMibGroups 2 }
+
+END

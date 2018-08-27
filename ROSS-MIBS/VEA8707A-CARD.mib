@@ -1,0 +1,381 @@
+VEA8707A-CARD-MIB DEFINITIONS ::= BEGIN
+
+--
+-- Defines control and monitoring structures for the VEA8707A card.
+--
+
+IMPORTS
+  openGearFrameIndex
+    FROM OPEN-GEAR-FRAME-MIB
+
+  openGearCardIndex
+    FROM OPEN-GEAR-CARD-MIB
+
+  openGearObjects
+    FROM OPEN-GEAR-MIB
+
+  OBJECT-TYPE, NOTIFICATION-TYPE, MODULE-IDENTITY, Integer32
+    FROM SNMPv2-SMI
+
+  OBJECT-GROUP, NOTIFICATION-GROUP, MODULE-COMPLIANCE
+    FROM SNMPv2-CONF
+
+  DisplayString
+    FROM SNMPv2-TC;
+
+vea8707aCardMib MODULE-IDENTITY
+  LAST-UPDATED "201001211200Z"
+  ORGANIZATION "www.rossvideo.org"
+  CONTACT-INFO
+    "postal:   Ross Video
+               8 John St. P.O. Box 220
+               Iroquois ON K0E 1K0
+
+      email:   support@rossvideo.com"
+
+  DESCRIPTION
+    "Defines control and monitoring structures for the VEA8707A card.
+     (Add more) ..."
+
+  REVISION     "201001211200Z"
+  DESCRIPTION
+    "... "
+  ::= { openGearObjects 22 }
+
+--
+--  Top level components in the VEA8707A MIB
+--
+vea8707aCardNotifications
+  OBJECT IDENTIFIER ::= { vea8707aCardMib 0 }
+
+vea8707aCardObjects
+  OBJECT IDENTIFIER ::= { vea8707aCardMib 1 }
+
+vea8707aCardConformance
+  OBJECT IDENTIFIER ::= { vea8707aCardMib 2 }
+
+--
+--  Notifications relating to the VEA8707A card
+--
+vea8707aSignalAlarmEvent   NOTIFICATION-TYPE
+  OBJECTS { vea8707aSignalAlarm }
+  STATUS current
+  DESCRIPTION
+    "... "
+  ::= { vea8707aCardNotifications 1 }
+
+--
+--  VEA8707A Card information
+--
+--
+--  All the VEA8707A cards in the Open Gear frame
+--
+vea8707aNumberOfCards    OBJECT-TYPE
+  SYNTAX      Integer32
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "The total number of VEA8707A cards in the open gear frame.
+"  ::= { vea8707aCardObjects 1 }
+
+--
+--  Table of Product parameters
+--
+vea8707aProductTable     OBJECT-TYPE
+  SYNTAX      SEQUENCE OF Vea8707aProductEntry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "A table containing product info for all VEA8707A cards at this node.
+    This table is the expansion of the table 'openGearCardTable' in the
+    OPEN-GEAR-CARD-MIB. For each VEA8707A card in the 'openGearCardTable',
+    there is a corresponding entry in this table, having the same indices -
+    'openGearFrameIndex' and 'openGearCardIndex'."
+  ::= { vea8707aCardObjects 2 }
+
+vea8707aProductEntry     OBJECT-TYPE
+  SYNTAX      Vea8707aProductEntry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "A conceptual row within the 'vea8707aProductTable'."
+  INDEX    { openGearFrameIndex, openGearCardIndex }
+  ::= { vea8707aProductTable 1 }
+
+Vea8707aProductEntry ::= SEQUENCE {
+  vea8707aBoardRev                 DisplayString,
+  vea8707aSerialNumber             DisplayString
+}
+
+vea8707aBoardRev    OBJECT-TYPE
+  SYNTAX      DisplayString
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "... "
+  ::= { vea8707aProductEntry 4 }
+
+vea8707aSerialNumber    OBJECT-TYPE
+  SYNTAX      DisplayString
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "... "
+  ::= { vea8707aProductEntry 5 }
+
+--
+--  Table of Hardware parameters
+--
+vea8707aHardwareTable     OBJECT-TYPE
+  SYNTAX      SEQUENCE OF Vea8707aHardwareEntry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "A table containing product info for all VEA8707A cards at this node.
+    This table is the expansion of the table 'openGearCardTable' in the
+    OPEN-GEAR-CARD-MIB. For each VEA8707A card in the 'openGearCardTable',
+    there is a corresponding entry in this table, having the same indices -
+    'openGearFrameIndex' and 'openGearCardIndex'."
+  ::= { vea8707aCardObjects 3 }
+
+vea8707aHardwareEntry     OBJECT-TYPE
+  SYNTAX      Vea8707aHardwareEntry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "A conceptual row within the 'vea8707aHardwareTable'."
+  INDEX    { openGearFrameIndex, openGearCardIndex }
+  ::= { vea8707aHardwareTable 1 }
+
+Vea8707aHardwareEntry ::= SEQUENCE {
+  vea8707aRearModule               DisplayString,
+  vea8707aCardVoltage              Integer32,
+  vea8707aCardCurrent              Integer32,
+  vea8707aConfigBank               Integer32,
+  vea8707aHwAlarm                  Integer32,
+  vea8707aUpTime                   Integer32
+}
+
+vea8707aRearModule    OBJECT-TYPE
+  SYNTAX      DisplayString
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "... "
+  ::= { vea8707aHardwareEntry 2 }
+
+vea8707aCardVoltage    OBJECT-TYPE
+  SYNTAX      Integer32
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "... "
+  ::= { vea8707aHardwareEntry 3 }
+
+vea8707aCardCurrent    OBJECT-TYPE
+  SYNTAX      Integer32
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "... "
+  ::= { vea8707aHardwareEntry 4 }
+
+vea8707aConfigBank    OBJECT-TYPE
+  SYNTAX      Integer32
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "... "
+  ::= { vea8707aHardwareEntry 5 }
+
+vea8707aHwAlarm    OBJECT-TYPE
+  SYNTAX      Integer32
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "The status parameter is a bitfield where each bit indicates a
+    specific status. A value of zero means OK.
+    The status bits are defined as follows:
+      0x0001 - Incomp I/O module(alarm suppressed)
+      0x0002 - Incomp I/O module
+    All other values are undefined."
+  ::= { vea8707aHardwareEntry 6 }
+
+vea8707aUpTime    OBJECT-TYPE
+  SYNTAX      Integer32
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "... "
+  ::= { vea8707aHardwareEntry 7 }
+
+--
+--  Table of Signal parameters
+--
+vea8707aSignalTable     OBJECT-TYPE
+  SYNTAX      SEQUENCE OF Vea8707aSignalEntry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "A table containing product info for all VEA8707A cards at this node.
+    This table is the expansion of the table 'openGearCardTable' in the
+    OPEN-GEAR-CARD-MIB. For each VEA8707A card in the 'openGearCardTable',
+    there is a corresponding entry in this table, having the same indices -
+    'openGearFrameIndex' and 'openGearCardIndex'."
+  ::= { vea8707aCardObjects 4 }
+
+vea8707aSignalEntry     OBJECT-TYPE
+  SYNTAX      Vea8707aSignalEntry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "A conceptual row within the 'vea8707aSignalTable'."
+  INDEX    { openGearFrameIndex, openGearCardIndex }
+  ::= { vea8707aSignalTable 1 }
+
+Vea8707aSignalEntry ::= SEQUENCE {
+  vea8707aSignalAlarm              Integer32,
+  vea8707aSignalFormat             INTEGER
+}
+
+vea8707aSignalAlarm    OBJECT-TYPE
+  SYNTAX      Integer32
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "The status parameter is a bitfield where each bit indicates a
+    specific status. A value of zero means OK.
+    The status bits are defined as follows:
+      0x0001 - Video Present
+      0x0002 - AES/Other
+      0x0004 - No Input
+      0x0008 - No Input
+    All other values are undefined."
+  ::= { vea8707aSignalEntry 1 }
+
+vea8707aSignalFormat    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    v480i59dot94            (0),
+    v720p59dot94            (1),
+    v1080i59dot94           (2),
+    v1080p29dot97           (3),
+    video59dot94Hz          (4),
+    v576i50                 (5),
+    v720p50                 (6),
+    v1080i50                (7),
+    v1080p25                (8),
+    video50Hz               (9),
+    unknownVideo            (10),
+    aESOther                (11),
+    noSignal                (12)
+  }
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "... "
+  ::= { vea8707aSignalEntry 2 }
+
+--
+--  Table of Input parameters
+--
+vea8707aInputTable     OBJECT-TYPE
+  SYNTAX      SEQUENCE OF Vea8707aInputEntry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "A table containing product info for all VEA8707A cards at this node.
+    This table is the expansion of the table 'openGearCardTable' in the
+    OPEN-GEAR-CARD-MIB. For each VEA8707A card in the 'openGearCardTable',
+    there is a corresponding entry in this table, having the same indices -
+    'openGearFrameIndex' and 'openGearCardIndex'."
+  ::= { vea8707aCardObjects 6 }
+
+vea8707aInputEntry     OBJECT-TYPE
+  SYNTAX      Vea8707aInputEntry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "A conceptual row within the 'vea8707aInputTable'."
+  INDEX    { openGearFrameIndex, openGearCardIndex }
+  ::= { vea8707aInputTable 1 }
+
+Vea8707aInputEntry ::= SEQUENCE {
+  vea8707aLoiNotify                INTEGER,
+  vea8707aIncompRmNotify           INTEGER
+}
+
+vea8707aLoiNotify    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    ignore                  (0),
+    notify                  (1)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { notify }
+  ::= { vea8707aInputEntry 4 }
+
+vea8707aIncompRmNotify    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    ignore                  (0),
+    notify                  (1)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { notify }
+  ::= { vea8707aInputEntry 5 }
+
+--
+-- Conformance
+--
+vea8707aCardMibCompliances
+  OBJECT IDENTIFIER ::= { vea8707aCardConformance 1 }
+vea8707aCardMibGroups
+  OBJECT IDENTIFIER ::= { vea8707aCardConformance 2 }
+--
+-- Compliance Statement
+--
+vea8707aCardCompliances MODULE-COMPLIANCE
+  STATUS      current
+  DESCRIPTION
+    "The compliance statement for VEA8707A entities."
+  MODULE -- this module
+    MANDATORY-GROUPS { vea8707aCardInfoGroup,
+                       vea8707aCardNotifyGroup
+                     }
+
+  ::= { vea8707aCardMibCompliances 1 }
+
+vea8707aCardInfoGroup OBJECT-GROUP
+    OBJECTS { vea8707aNumberOfCards,
+              vea8707aBoardRev,
+              vea8707aSerialNumber,
+              vea8707aRearModule,
+              vea8707aCardVoltage,
+              vea8707aCardCurrent,
+              vea8707aConfigBank,
+              vea8707aHwAlarm,
+              vea8707aUpTime,
+              vea8707aSignalAlarm,
+              vea8707aSignalFormat,
+              vea8707aLoiNotify,
+              vea8707aIncompRmNotify
+            }
+    STATUS  current
+    DESCRIPTION
+      "A collection of objects providing basic instrumentation
+        and control of an VEA8707A card."
+    ::= { vea8707aCardMibGroups 1 }
+
+vea8707aCardNotifyGroup NOTIFICATION-GROUP
+  NOTIFICATIONS { vea8707aSignalAlarmEvent
+                }
+    STATUS  current
+    DESCRIPTION
+      "The notifications relating to the VEA8707A card."
+    ::= { vea8707aCardMibGroups 2 }
+
+END

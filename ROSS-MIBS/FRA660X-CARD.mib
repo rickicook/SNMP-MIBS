@@ -1,0 +1,799 @@
+FRA660X-CARD-MIB DEFINITIONS ::= BEGIN
+
+--
+-- Defines control and monitoring structures for the FRA660X card.
+--
+
+IMPORTS
+  openGearFrameIndex
+    FROM OPEN-GEAR-FRAME-MIB
+
+  openGearCardIndex
+    FROM OPEN-GEAR-CARD-MIB
+
+  openGearObjects
+    FROM OPEN-GEAR-MIB
+
+  OBJECT-TYPE, NOTIFICATION-TYPE, MODULE-IDENTITY, Integer32
+    FROM SNMPv2-SMI
+
+  OBJECT-GROUP, NOTIFICATION-GROUP, MODULE-COMPLIANCE
+    FROM SNMPv2-CONF
+
+  DisplayString
+    FROM SNMPv2-TC;
+
+fra660xCardMib MODULE-IDENTITY
+  LAST-UPDATED "201010271200Z"
+  ORGANIZATION "www.rossvideo.org"
+  CONTACT-INFO
+    "postal:   Ross Video
+               8 John St. P.O. Box 220
+               Iroquois ON K0E 1K0
+
+      email:   support@rossvideo.com"
+
+  DESCRIPTION
+    "Defines control and monitoring structures for the FRA660X card.
+     (Add more) ..."
+
+  REVISION     "201010271200Z"
+  DESCRIPTION
+    "... "
+  ::= { openGearObjects 17 }
+
+--
+--  Top level components in the FRA660X MIB
+--
+fra660xCardNotifications
+  OBJECT IDENTIFIER ::= { fra660xCardMib 0 }
+
+fra660xCardObjects
+  OBJECT IDENTIFIER ::= { fra660xCardMib 1 }
+
+fra660xCardConformance
+  OBJECT IDENTIFIER ::= { fra660xCardMib 2 }
+
+--
+--  Notifications relating to the FRA660X card
+--
+fra660xCh1SdiInputEvent   NOTIFICATION-TYPE
+  OBJECTS { fra660xCh1SdiInput }
+  STATUS current
+  DESCRIPTION
+    "... "
+  ::= { fra660xCardNotifications 1 }
+
+fra660xCh2SdiInputEvent   NOTIFICATION-TYPE
+  OBJECTS { fra660xCh2SdiInput }
+  STATUS current
+  DESCRIPTION
+    "... "
+  ::= { fra660xCardNotifications 2 }
+
+fra660xCh1SdiOutputEvent   NOTIFICATION-TYPE
+  OBJECTS { fra660xCh1SdiOutput }
+  STATUS current
+  DESCRIPTION
+    "... "
+  ::= { fra660xCardNotifications 3 }
+
+fra660xCh2SdiOutputEvent   NOTIFICATION-TYPE
+  OBJECTS { fra660xCh2SdiOutput }
+  STATUS current
+  DESCRIPTION
+    "... "
+  ::= { fra660xCardNotifications 4 }
+
+fra660xHardwareStatusEvent   NOTIFICATION-TYPE
+  OBJECTS { fra660xHardwareStatus }
+  STATUS current
+  DESCRIPTION
+    "... "
+  ::= { fra660xCardNotifications 5 }
+
+--
+--  FRA660X Card information
+--
+--
+--  All the FRA660X cards in the Open Gear frame
+--
+fra660xNumberOfCards    OBJECT-TYPE
+  SYNTAX      Integer32
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "The total number of FRA660X cards in the open gear frame.
+"  ::= { fra660xCardObjects 1 }
+
+--
+--  Table of Product parameters
+--
+fra660xProductTable     OBJECT-TYPE
+  SYNTAX      SEQUENCE OF Fra660xProductEntry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "A table containing product info for all FRA660X cards at this node.
+    This table is the expansion of the table 'openGearCardTable' in the
+    OPEN-GEAR-CARD-MIB. For each FRA660X card in the 'openGearCardTable',
+    there is a corresponding entry in this table, having the same indices -
+    'openGearFrameIndex' and 'openGearCardIndex'."
+  ::= { fra660xCardObjects 2 }
+
+fra660xProductEntry     OBJECT-TYPE
+  SYNTAX      Fra660xProductEntry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "A conceptual row within the 'fra660xProductTable'."
+  INDEX    { openGearFrameIndex, openGearCardIndex }
+  ::= { fra660xProductTable 1 }
+
+Fra660xProductEntry ::= SEQUENCE {
+  fra660xBoardRev                  DisplayString,
+  fra660xSerialNumber              DisplayString,
+  fra660xRearModule                DisplayString
+}
+
+fra660xBoardRev    OBJECT-TYPE
+  SYNTAX      DisplayString
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "... "
+  ::= { fra660xProductEntry 4 }
+
+fra660xSerialNumber    OBJECT-TYPE
+  SYNTAX      DisplayString
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "... "
+  ::= { fra660xProductEntry 5 }
+
+fra660xRearModule    OBJECT-TYPE
+  SYNTAX      DisplayString
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "... "
+  ::= { fra660xProductEntry 6 }
+
+--
+--  Table of Hardware parameters
+--
+fra660xHardwareTable     OBJECT-TYPE
+  SYNTAX      SEQUENCE OF Fra660xHardwareEntry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "A table containing product info for all FRA660X cards at this node.
+    This table is the expansion of the table 'openGearCardTable' in the
+    OPEN-GEAR-CARD-MIB. For each FRA660X card in the 'openGearCardTable',
+    there is a corresponding entry in this table, having the same indices -
+    'openGearFrameIndex' and 'openGearCardIndex'."
+  ::= { fra660xCardObjects 3 }
+
+fra660xHardwareEntry     OBJECT-TYPE
+  SYNTAX      Fra660xHardwareEntry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "A conceptual row within the 'fra660xHardwareTable'."
+  INDEX    { openGearFrameIndex, openGearCardIndex }
+  ::= { fra660xHardwareTable 1 }
+
+Fra660xHardwareEntry ::= SEQUENCE {
+  fra660xHardwareStatus            Integer32,
+  fra660xCardVoltage               Integer32,
+  fra660xCardCurrent               Integer32,
+  fra660xConfigBank                Integer32,
+  fra660xSfpModuleTemp             Integer32
+}
+
+fra660xHardwareStatus    OBJECT-TYPE
+  SYNTAX      Integer32
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "The status parameter is a bitfield where each bit indicates a
+    specific status. A value of zero means OK.
+    The status bits are defined as follows:
+      0x0800 - Incomp Rear Module
+    All other values are undefined."
+  ::= { fra660xHardwareEntry 1 }
+
+fra660xCardVoltage    OBJECT-TYPE
+  SYNTAX      Integer32
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "... "
+  ::= { fra660xHardwareEntry 3 }
+
+fra660xCardCurrent    OBJECT-TYPE
+  SYNTAX      Integer32
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "... "
+  ::= { fra660xHardwareEntry 4 }
+
+fra660xConfigBank    OBJECT-TYPE
+  SYNTAX      Integer32
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "... "
+  ::= { fra660xHardwareEntry 5 }
+
+fra660xSfpModuleTemp    OBJECT-TYPE
+  SYNTAX      Integer32
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "... "
+  ::= { fra660xHardwareEntry 6 }
+
+--
+--  Table of Signal parameters
+--
+fra660xSignalTable     OBJECT-TYPE
+  SYNTAX      SEQUENCE OF Fra660xSignalEntry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "A table containing product info for all FRA660X cards at this node.
+    This table is the expansion of the table 'openGearCardTable' in the
+    OPEN-GEAR-CARD-MIB. For each FRA660X card in the 'openGearCardTable',
+    there is a corresponding entry in this table, having the same indices -
+    'openGearFrameIndex' and 'openGearCardIndex'."
+  ::= { fra660xCardObjects 4 }
+
+fra660xSignalEntry     OBJECT-TYPE
+  SYNTAX      Fra660xSignalEntry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "A conceptual row within the 'fra660xSignalTable'."
+  INDEX    { openGearFrameIndex, openGearCardIndex }
+  ::= { fra660xSignalTable 1 }
+
+Fra660xSignalEntry ::= SEQUENCE {
+  fra660xCh1SdiInput               INTEGER,
+  fra660xCh1SdiOutput              INTEGER,
+  fra660xSfpCh1RxPower             DisplayString,
+  fra660xSfpCh1TxPower             DisplayString,
+  fra660xCh2SdiInput               INTEGER,
+  fra660xCh2SdiOutput              INTEGER,
+  fra660xSfpCh2RxPower             DisplayString,
+  fra660xSfpCh2TxPower             DisplayString,
+  fra660xCh1StatusAlarm            Integer32,
+  fra660xCh2StatusAlarm            Integer32,
+  fra660xSfpCh1Status              INTEGER,
+  fra660xSfpCh2Status              INTEGER,
+  fra660xOpticalWavelength         Integer32,
+  fra660xOpticalCh2Wavelength      Integer32
+}
+
+fra660xCh1SdiInput    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    noSignal                (0),
+    signalPresentBNC        (1),
+    signalPresentFiber      (2)
+  }
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "... "
+  ::= { fra660xSignalEntry 1 }
+
+fra660xCh1SdiOutput    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    locked143M              (0),
+    locked177M              (1),
+    locked270M              (2),
+    locked360M              (3),
+    locked540M              (4),
+    locked1dot5G            (5),
+    locked3dot0G            (6),
+    undefinedRate           (7),
+    bypassReclocking        (9),
+    noSignal                (10),
+    noSignalMuted           (11),
+    unlocked                (12),
+    unlockedMuted           (13)
+  }
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "... "
+  ::= { fra660xSignalEntry 2 }
+
+fra660xSfpCh1RxPower    OBJECT-TYPE
+  SYNTAX      DisplayString
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "... "
+  ::= { fra660xSignalEntry 3 }
+
+fra660xSfpCh1TxPower    OBJECT-TYPE
+  SYNTAX      DisplayString
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "... "
+  ::= { fra660xSignalEntry 4 }
+
+fra660xCh2SdiInput    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    noSignal                (0),
+    signalPresentBNC        (1),
+    signalPresentFiber      (2)
+  }
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "... "
+  ::= { fra660xSignalEntry 5 }
+
+fra660xCh2SdiOutput    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    locked143M              (0),
+    locked177M              (1),
+    locked270M              (2),
+    locked360M              (3),
+    locked540M              (4),
+    locked1dot5G            (5),
+    locked3dot0G            (6),
+    undefinedRate           (7),
+    bypassReclocking        (9),
+    noSignal                (10),
+    noSignalMuted           (11),
+    unlocked                (12),
+    unlockedMuted           (13)
+  }
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "... "
+  ::= { fra660xSignalEntry 6 }
+
+fra660xSfpCh2RxPower    OBJECT-TYPE
+  SYNTAX      DisplayString
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "... "
+  ::= { fra660xSignalEntry 7 }
+
+fra660xSfpCh2TxPower    OBJECT-TYPE
+  SYNTAX      DisplayString
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "... "
+  ::= { fra660xSignalEntry 8 }
+
+fra660xCh1StatusAlarm    OBJECT-TYPE
+  SYNTAX      Integer32
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "The status parameter is a bitfield where each bit indicates a
+    specific status. A value of zero means OK.
+    The status bits are defined as follows:
+      0x0001 - OK
+      0x0004 - No Input
+      0x0002 - Reclocker unlocked
+      0x0080 - No Input
+      0x0040 - Reclocker unlocked
+      0x0020 - SFP Hi Temp
+      0x0008 - SFP Low Temp
+      0x0100 - SFP Hi Power
+      0x0010 - SFP Low Power
+      0x0200 - SFP Tx Fault
+      0x0400 - SFP Not Detected
+    All other values are undefined."
+  ::= { fra660xSignalEntry 9 }
+
+fra660xCh2StatusAlarm    OBJECT-TYPE
+  SYNTAX      Integer32
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "The status parameter is a bitfield where each bit indicates a
+    specific status. A value of zero means OK.
+    The status bits are defined as follows:
+      0x0001 - OK
+      0x0004 - No Input
+      0x0002 - Reclocker unlocked
+      0x0080 - No Input
+      0x0040 - Reclocker unlocked
+      0x0020 - SFP Hi Temp
+      0x0008 - SFP Low Temp
+      0x0100 - SFP Hi Power
+      0x0010 - SFP Low Power
+      0x0200 - SFP Tx Fault
+      0x0400 - SFP Not Detected
+    All other values are undefined."
+  ::= { fra660xSignalEntry 10 }
+
+fra660xSfpCh1Status    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    oK                      (0),
+    tempLow                 (1),
+    rxPowerLow              (2),
+    txPowerLow              (3),
+    tempHigh                (4),
+    noSignal                (5),
+    txPowerHigh             (6),
+    rxPowerHigh             (7),
+    txFault                 (8),
+    txDisabled              (9),
+    notDetected             (10)
+  }
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "... "
+  ::= { fra660xSignalEntry 11 }
+
+fra660xSfpCh2Status    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    oK                      (0),
+    tempLow                 (1),
+    rxPowerLow              (2),
+    txPowerLow              (3),
+    tempHigh                (4),
+    noSignal                (5),
+    txPowerHigh             (6),
+    rxPowerHigh             (7),
+    txFault                 (8),
+    txDisabled              (9),
+    notDetected             (10)
+  }
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "... "
+  ::= { fra660xSignalEntry 12 }
+
+fra660xOpticalWavelength    OBJECT-TYPE
+  SYNTAX      Integer32
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "... "
+  ::= { fra660xSignalEntry 13 }
+
+fra660xOpticalCh2Wavelength    OBJECT-TYPE
+  SYNTAX      Integer32
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "... "
+  ::= { fra660xSignalEntry 14 }
+
+--
+--  Table of CfgControl parameters
+--
+fra660xCfgControlTable     OBJECT-TYPE
+  SYNTAX      SEQUENCE OF Fra660xCfgControlEntry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "A table containing product info for all FRA660X cards at this node.
+    This table is the expansion of the table 'openGearCardTable' in the
+    OPEN-GEAR-CARD-MIB. For each FRA660X card in the 'openGearCardTable',
+    there is a corresponding entry in this table, having the same indices -
+    'openGearFrameIndex' and 'openGearCardIndex'."
+  ::= { fra660xCardObjects 5 }
+
+fra660xCfgControlEntry     OBJECT-TYPE
+  SYNTAX      Fra660xCfgControlEntry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "A conceptual row within the 'fra660xCfgControlTable'."
+  INDEX    { openGearFrameIndex, openGearCardIndex }
+  ::= { fra660xCfgControlTable 1 }
+
+Fra660xCfgControlEntry ::= SEQUENCE {
+  fra660xEditPermission            INTEGER,
+  fra660xFactoryReset              INTEGER
+}
+
+fra660xEditPermission    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    unlocked                (0),
+    locked                  (2),
+    localOnly               (3)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { unlocked }
+  ::= { fra660xCfgControlEntry 1 }
+
+fra660xFactoryReset    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    reset                   (0)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { reset }
+  ::= { fra660xCfgControlEntry 2 }
+
+--
+--  Table of Setup parameters
+--
+fra660xSetupTable     OBJECT-TYPE
+  SYNTAX      SEQUENCE OF Fra660xSetupEntry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "A table containing product info for all FRA660X cards at this node.
+    This table is the expansion of the table 'openGearCardTable' in the
+    OPEN-GEAR-CARD-MIB. For each FRA660X card in the 'openGearCardTable',
+    there is a corresponding entry in this table, having the same indices -
+    'openGearFrameIndex' and 'openGearCardIndex'."
+  ::= { fra660xCardObjects 6 }
+
+fra660xSetupEntry     OBJECT-TYPE
+  SYNTAX      Fra660xSetupEntry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "A conceptual row within the 'fra660xSetupTable'."
+  INDEX    { openGearFrameIndex, openGearCardIndex }
+  ::= { fra660xSetupTable 1 }
+
+Fra660xSetupEntry ::= SEQUENCE {
+  fra660xCh1DataRate               INTEGER,
+  fra660xCh1EqEnable               INTEGER,
+  fra660xCh1MuteOnLOI              INTEGER,
+  fra660xCh2DataRate               INTEGER,
+  fra660xCh2EqEnable               INTEGER,
+  fra660xCh2MuteOnLOI              INTEGER
+}
+
+fra660xCh1DataRate    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    v270Mbps                (2),
+    v1dot5Gbps              (5),
+    v3dot0Gbps              (6),
+    bypass                  (8),
+    auto                    (9)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { auto }
+  ::= { fra660xSetupEntry 1 }
+
+fra660xCh1EqEnable    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    disabled                (0),
+    enabled                 (1)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { enabled }
+  ::= { fra660xSetupEntry 2 }
+
+fra660xCh1MuteOnLOI    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    pass                    (0),
+    mute                    (1)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { pass }
+  ::= { fra660xSetupEntry 3 }
+
+fra660xCh2DataRate    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    v270Mbps                (2),
+    v1dot5Gbps              (5),
+    v3dot0Gbps              (6),
+    bypass                  (8),
+    auto                    (9)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { auto }
+  ::= { fra660xSetupEntry 4 }
+
+fra660xCh2EqEnable    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    disabled                (0),
+    enabled                 (1)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { enabled }
+  ::= { fra660xSetupEntry 5 }
+
+fra660xCh2MuteOnLOI    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    pass                    (0),
+    mute                    (1)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { pass }
+  ::= { fra660xSetupEntry 6 }
+
+--
+--  Table of Alarms parameters
+--
+fra660xAlarmsTable     OBJECT-TYPE
+  SYNTAX      SEQUENCE OF Fra660xAlarmsEntry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "A table containing product info for all FRA660X cards at this node.
+    This table is the expansion of the table 'openGearCardTable' in the
+    OPEN-GEAR-CARD-MIB. For each FRA660X card in the 'openGearCardTable',
+    there is a corresponding entry in this table, having the same indices -
+    'openGearFrameIndex' and 'openGearCardIndex'."
+  ::= { fra660xCardObjects 7 }
+
+fra660xAlarmsEntry     OBJECT-TYPE
+  SYNTAX      Fra660xAlarmsEntry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "A conceptual row within the 'fra660xAlarmsTable'."
+  INDEX    { openGearFrameIndex, openGearCardIndex }
+  ::= { fra660xAlarmsTable 1 }
+
+Fra660xAlarmsEntry ::= SEQUENCE {
+  fra660xSfpNotifyOnPower          INTEGER,
+  fra660xSfpNotifyOnTemp           INTEGER,
+  fra660xCh1NotifyOnLOI            INTEGER,
+  fra660xCh2NotifyOnLOI            INTEGER
+}
+
+fra660xSfpNotifyOnPower    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    ignore                  (0),
+    notify                  (1)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { notify }
+  ::= { fra660xAlarmsEntry 1 }
+
+fra660xSfpNotifyOnTemp    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    ignore                  (0),
+    notify                  (1)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { notify }
+  ::= { fra660xAlarmsEntry 2 }
+
+fra660xCh1NotifyOnLOI    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    ignore                  (0),
+    notify                  (1)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { notify }
+  ::= { fra660xAlarmsEntry 3 }
+
+fra660xCh2NotifyOnLOI    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    ignore                  (0),
+    notify                  (1)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { notify }
+  ::= { fra660xAlarmsEntry 4 }
+
+--
+-- Conformance
+--
+fra660xCardMibCompliances
+  OBJECT IDENTIFIER ::= { fra660xCardConformance 1 }
+fra660xCardMibGroups
+  OBJECT IDENTIFIER ::= { fra660xCardConformance 2 }
+--
+-- Compliance Statement
+--
+fra660xCardCompliances MODULE-COMPLIANCE
+  STATUS      current
+  DESCRIPTION
+    "The compliance statement for FRA660X entities."
+  MODULE -- this module
+    MANDATORY-GROUPS { fra660xCardInfoGroup,
+                       fra660xCardNotifyGroup
+                     }
+
+  ::= { fra660xCardMibCompliances 1 }
+
+fra660xCardInfoGroup OBJECT-GROUP
+    OBJECTS { fra660xNumberOfCards,
+              fra660xBoardRev,
+              fra660xSerialNumber,
+              fra660xRearModule,
+              fra660xHardwareStatus,
+              fra660xCardVoltage,
+              fra660xCardCurrent,
+              fra660xConfigBank,
+              fra660xSfpModuleTemp,
+              fra660xCh1SdiInput,
+              fra660xCh1SdiOutput,
+              fra660xSfpCh1RxPower,
+              fra660xSfpCh1TxPower,
+              fra660xCh2SdiInput,
+              fra660xCh2SdiOutput,
+              fra660xSfpCh2RxPower,
+              fra660xSfpCh2TxPower,
+              fra660xCh1StatusAlarm,
+              fra660xCh2StatusAlarm,
+              fra660xSfpCh1Status,
+              fra660xSfpCh2Status,
+              fra660xOpticalWavelength,
+              fra660xOpticalCh2Wavelength,
+              fra660xEditPermission,
+              fra660xFactoryReset,
+              fra660xCh1DataRate,
+              fra660xCh1EqEnable,
+              fra660xCh1MuteOnLOI,
+              fra660xCh2DataRate,
+              fra660xCh2EqEnable,
+              fra660xCh2MuteOnLOI,
+              fra660xSfpNotifyOnPower,
+              fra660xSfpNotifyOnTemp,
+              fra660xCh1NotifyOnLOI,
+              fra660xCh2NotifyOnLOI
+            }
+    STATUS  current
+    DESCRIPTION
+      "A collection of objects providing basic instrumentation
+        and control of an FRA660X card."
+    ::= { fra660xCardMibGroups 1 }
+
+fra660xCardNotifyGroup NOTIFICATION-GROUP
+  NOTIFICATIONS { fra660xCh1SdiInputEvent,
+                  fra660xCh2SdiInputEvent,
+                  fra660xCh1SdiOutputEvent,
+                  fra660xCh2SdiOutputEvent,
+                  fra660xHardwareStatusEvent
+                }
+    STATUS  current
+    DESCRIPTION
+      "The notifications relating to the FRA660X card."
+    ::= { fra660xCardMibGroups 2 }
+
+END

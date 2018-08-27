@@ -1,0 +1,284 @@
+MDK8229-CARD-MIB DEFINITIONS ::= BEGIN
+
+--
+-- Defines control and monitoring structures for the MDK8229 card.
+--
+
+IMPORTS
+  openGearFrameIndex
+    FROM OPEN-GEAR-FRAME-MIB
+
+  openGearCardIndex
+    FROM OPEN-GEAR-CARD-MIB
+
+   openGearObjects
+    FROM OPEN-GEAR-MIB
+
+  OBJECT-TYPE, NOTIFICATION-TYPE, MODULE-IDENTITY, Integer32, Unsigned32
+    FROM SNMPv2-SMI
+
+  OBJECT-GROUP, NOTIFICATION-GROUP, MODULE-COMPLIANCE
+    FROM SNMPv2-CONF
+
+  DisplayString
+    FROM SNMPv2-TC;
+
+mdk8229CardMib MODULE-IDENTITY
+  LAST-UPDATED "201503031542Z"
+  ORGANIZATION "www.rossvideo.org"
+  CONTACT-INFO
+    "postal:   Ross Video
+               8 John St. P.O. Box 220
+               Iroquois ON K0E 1K0
+
+      email:   support@rossvideo.com"
+
+  DESCRIPTION
+    "Defines control and monitoring structures for the MDK8229 card family.
+     This is a family of MultiDefinition Digital Keyers."
+
+  REVISION     "201503031542Z"
+  DESCRIPTION
+    "First revision."
+  ::= { openGearObjects 23 }
+
+--
+--  Top level components in the MDK8229 MIB
+--
+mdk8229CardNotifications
+  OBJECT IDENTIFIER ::= { mdk8229CardMib 0 }
+
+mdk8229CardObjects
+  OBJECT IDENTIFIER ::= { mdk8229CardMib 1 }
+
+mdk8229CardConformance
+  OBJECT IDENTIFIER ::= { mdk8229CardMib 2 }
+
+--
+-- Notifications relating to the MDK8229 card
+--
+mdk8229ReferenceStatusEvent   NOTIFICATION-TYPE
+  OBJECTS { mdk8229ReferenceStatus }
+  STATUS current
+  DESCRIPTION
+    "An indication that Status of the Analog Reference has changed.
+    The current status is reported in mdk8229ReferenceStatus."
+  ::= { mdk8229CardNotifications 1 }
+
+mdk8229BkgdAStatusEvent   NOTIFICATION-TYPE
+  OBJECTS { mdk8229BkgdAStatus }
+  STATUS current
+  DESCRIPTION
+    "An indication that Status of Bkgd A signal has changed.
+    The current status is reported in mdk8229BkgdAStatus."
+  ::= { mdk8229CardNotifications 2 }
+
+mdk8229BkgdBStatusEvent   NOTIFICATION-TYPE
+  OBJECTS { mdk8229BkgdBStatus }
+  STATUS current
+  DESCRIPTION
+    "An indication that Status of Bkgd B signal has changed.
+    The current status is reported in mdk8229BkgdBStatus."
+  ::= { mdk8229CardNotifications 3 }
+
+mdk8229BkgdCStatusEvent   NOTIFICATION-TYPE
+  OBJECTS { mdk8229BkgdCStatus }
+  STATUS current
+  DESCRIPTION
+    "An indication that Status of Bkgd C signal has changed.
+    The current status is reported in mdk8229BkgdCStatus."
+  ::= { mdk8229CardNotifications 4 }
+
+mdk8229BkgdDStatusEvent   NOTIFICATION-TYPE
+  OBJECTS { mdk8229BkgdDStatus }
+  STATUS current
+  DESCRIPTION
+    "An indication that Status of Bkgd D signal has changed.
+    The current status is reported in mdk8229BkgdDStatus."
+  ::= { mdk8229CardNotifications 5 }
+
+--
+--  MDK8229 Card information
+--
+--
+--  All the MDK8229 cards in the Open Gear frame
+--
+mdk8229NumberOfCards    OBJECT-TYPE
+  SYNTAX      Integer32
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "The total number of MDK8229 cards in the open gear frame."
+  ::= { mdk8229CardObjects 1 }
+
+--
+--  Table of Product parameters
+--
+mdk8229ProductTable     OBJECT-TYPE
+  SYNTAX      SEQUENCE OF Ra820xProductEntry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "A table containing product info for all MDK8229 cards at this node.
+     This table is the expansion of the table 'openGearCardTable' in the
+     OPEN-GEAR-CARD-MIB. For each MDK8229 card in the 'openGearCardTable',
+     there is a corresponding entry in this table, having the same indices -
+     'openGearFrameIndex' and 'openGearCardIndex'."
+  ::= { mdk8229CardObjects 2 }
+
+mdk8229ProductEntry     OBJECT-TYPE
+  SYNTAX      Ra820xProductEntry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "A conceptual row within the 'mdk8229ProductTable'."
+  INDEX    { openGearFrameIndex, openGearCardIndex }
+  ::= { mdk8229ProductTable 1 }
+
+Ra820xProductEntry ::= SEQUENCE {
+  mdk8229ReferenceStatus      INTEGER,
+  mdk8229BkgdAStatus          INTEGER,
+  mdk8229BkgdBStatus          INTEGER,
+  mdk8229BkgdCStatus          INTEGER,
+  mdk8229BkgdDStatus          INTEGER
+}
+
+mdk8229ReferenceStatus   OBJECT-TYPE
+  SYNTAX      INTEGER
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "Status of the Analog Reference.
+    This status parameter is a bitfield where each bit
+    indicates a specific status. A value of zero means OK.
+    The status bits are defined as follows:
+      0x0001 - No Reference
+      0x0002 - Reference Unlocked
+      0x0004 - Invalid Reference
+      0x0008 - Alarm suppressed
+    All other values are undefined."
+  ::= { mdk8229ProductEntry 1 }
+
+mdk8229BkgdAStatus   OBJECT-TYPE
+  SYNTAX      INTEGER
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "Status of Bkgd A signal.
+    This status parameter is a bitfield where each bit
+    indicates a specific status. A value of zero means OK.
+    The status bits are defined as follows:
+      0x0001 - Alarm suppressed
+      0x0002 - No signal
+      0x0004 - Incompatible format
+      0x0008 - Audio absent
+      0x0010 - Unsupported format
+      0x0020 - Audio silent
+    All other values are undefined."
+  ::= { mdk8229ProductEntry 2 }
+
+mdk8229BkgdBStatus   OBJECT-TYPE
+  SYNTAX      INTEGER
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "Status of Bkgd B signal.
+    This status parameter is a bitfield where each bit
+    indicates a specific status. A value of zero means OK.
+    The status bits are defined as follows:
+      0x0001 - Alarm suppressed
+      0x0002 - No signal
+      0x0004 - Incompatible format
+      0x0008 - Audio absent
+      0x0010 - Unsupported format
+      0x0020 - Audio silent
+    All other values are undefined."
+  ::= { mdk8229ProductEntry 3 }
+
+mdk8229BkgdCStatus   OBJECT-TYPE
+  SYNTAX      INTEGER
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "Status of Bkgd C signal.
+    This status parameter is a bitfield where each bit
+    indicates a specific status. A value of zero means OK.
+    The status bits are defined as follows:
+      0x0001 - Alarm suppressed
+      0x0002 - No signal
+      0x0004 - Incompatible format
+      0x0008 - Audio absent
+      0x0010 - Unsupported format
+      0x0020 - Audio silent
+    All other values are undefined."
+  ::= { mdk8229ProductEntry 4 }
+
+mdk8229BkgdDStatus   OBJECT-TYPE
+  SYNTAX      INTEGER
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "Status of Bkgd D signal.
+    This status parameter is a bitfield where each bit
+    indicates a specific status. A value of zero means OK.
+    The status bits are defined as follows:
+      0x0001 - Alarm suppressed
+      0x0002 - No signal
+      0x0004 - Incompatible format
+      0x0008 - Audio absent
+      0x0010 - Unsupported format
+      0x0020 - Audio silent
+    All other values are undefined."
+  ::= { mdk8229ProductEntry 5 }
+
+--
+-- Conformance
+--
+mdk8229CardMibCompliances
+  OBJECT IDENTIFIER ::= { mdk8229CardConformance 1 }
+mdk8229CardMibGroups
+  OBJECT IDENTIFIER ::= { mdk8229CardConformance 2 }
+
+--
+-- Compliance Statement
+--
+mdk8229CardCompliances MODULE-COMPLIANCE
+  STATUS      current
+  DESCRIPTION
+    "The compliance statement for MDK8229 entities."
+
+  MODULE -- this module
+    MANDATORY-GROUPS { mdk8229CardInfoGroup,
+                       mdk8229CardNotifyGroup
+                     }
+
+  ::= { mdk8229CardMibCompliances 1 }
+
+mdk8229CardInfoGroup OBJECT-GROUP
+    OBJECTS { mdk8229NumberOfCards,
+              mdk8229ReferenceStatus,
+              mdk8229BkgdAStatus,
+              mdk8229BkgdBStatus,
+              mdk8229BkgdCStatus,
+              mdk8229BkgdDStatus
+            }
+    STATUS  current
+    DESCRIPTION
+            "A collection of objects providing basic instrumentation
+            and control of an MDK8229 card."
+    ::= { mdk8229CardMibGroups 1 }
+
+mdk8229CardNotifyGroup NOTIFICATION-GROUP
+  NOTIFICATIONS {
+               mdk8229ReferenceStatusEvent,
+               mdk8229BkgdAStatusEvent,
+               mdk8229BkgdBStatusEvent,
+               mdk8229BkgdCStatusEvent,
+               mdk8229BkgdDStatusEvent
+                }
+  STATUS current
+  DESCRIPTION
+    "The notifications relating to the MDK8229 card"
+  ::= { mdk8229CardMibGroups 2 }
+
+END

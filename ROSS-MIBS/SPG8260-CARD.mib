@@ -1,0 +1,783 @@
+SPG8260-CARD-MIB DEFINITIONS ::= BEGIN
+
+--
+-- Defines control and monitoring structures for the SPG8260 card.
+--
+
+IMPORTS
+  openGearFrameIndex
+    FROM OPEN-GEAR-FRAME-MIB
+
+  openGearCardIndex
+    FROM OPEN-GEAR-CARD-MIB
+
+  openGearObjects
+    FROM OPEN-GEAR-MIB
+
+  OBJECT-TYPE, NOTIFICATION-TYPE, MODULE-IDENTITY, Integer32
+    FROM SNMPv2-SMI
+
+  OBJECT-GROUP, NOTIFICATION-GROUP, MODULE-COMPLIANCE
+    FROM SNMPv2-CONF
+
+  DisplayString
+    FROM SNMPv2-TC;
+
+spg8260CardMib MODULE-IDENTITY
+  LAST-UPDATED "201004011200Z"
+  ORGANIZATION "www.rossvideo.org"
+  CONTACT-INFO
+    "postal:   Ross Video
+               8 John St. P.O. Box 220
+               Iroquois ON K0E 1K0
+
+      email:   support@rossvideo.com"
+
+  DESCRIPTION
+    "Defines control and monitoring structures for the SPG8260 card.
+     (Add more) ..."
+
+  REVISION     "201004011200Z"
+  DESCRIPTION
+    "... "
+  ::= { openGearObjects 24 }
+
+--
+--  Top level components in the SPG8260 MIB
+--
+spg8260CardNotifications
+  OBJECT IDENTIFIER ::= { spg8260CardMib 0 }
+
+spg8260CardObjects
+  OBJECT IDENTIFIER ::= { spg8260CardMib 1 }
+
+spg8260CardConformance
+  OBJECT IDENTIFIER ::= { spg8260CardMib 2 }
+
+--
+--  Notifications relating to the SPG8260 card
+--
+spg8260RefAlarmEvent   NOTIFICATION-TYPE
+  OBJECTS { spg8260RefAlarm }
+  STATUS current
+  DESCRIPTION
+    "... "
+  ::= { spg8260CardNotifications 1 }
+
+spg8260HwAlarmEvent   NOTIFICATION-TYPE
+  OBJECTS { spg8260HwAlarm }
+  STATUS current
+  DESCRIPTION
+    "... "
+  ::= { spg8260CardNotifications 2 }
+
+--
+--  SPG8260 Card information
+--
+--
+--  All the SPG8260 cards in the Open Gear frame
+--
+spg8260NumberOfCards    OBJECT-TYPE
+  SYNTAX      Integer32
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "The total number of SPG8260 cards in the open gear frame.
+"  ::= { spg8260CardObjects 1 }
+
+--
+--  Table of Product parameters
+--
+spg8260ProductTable     OBJECT-TYPE
+  SYNTAX      SEQUENCE OF Spg8260ProductEntry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "A table containing product info for all SPG8260 cards at this node.
+    This table is the expansion of the table 'openGearCardTable' in the
+    OPEN-GEAR-CARD-MIB. For each SPG8260 card in the 'openGearCardTable',
+    there is a corresponding entry in this table, having the same indices -
+    'openGearFrameIndex' and 'openGearCardIndex'."
+  ::= { spg8260CardObjects 2 }
+
+spg8260ProductEntry     OBJECT-TYPE
+  SYNTAX      Spg8260ProductEntry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "A conceptual row within the 'spg8260ProductTable'."
+  INDEX    { openGearFrameIndex, openGearCardIndex }
+  ::= { spg8260ProductTable 1 }
+
+Spg8260ProductEntry ::= SEQUENCE {
+  spg8260Product                   DisplayString,
+  spg8260Supplier                  DisplayString,
+  spg8260BoardRev                  DisplayString,
+  spg8260SerialNumber              DisplayString,
+  spg8260RearModule                DisplayString,
+  spg8260Firmware                  DisplayString,
+  spg8260Software                  DisplayString
+}
+
+spg8260Product    OBJECT-TYPE
+  SYNTAX      DisplayString
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "... "
+  ::= { spg8260ProductEntry 1 }
+
+spg8260Supplier    OBJECT-TYPE
+  SYNTAX      DisplayString
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "... "
+  ::= { spg8260ProductEntry 2 }
+
+spg8260BoardRev    OBJECT-TYPE
+  SYNTAX      DisplayString
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "... "
+  ::= { spg8260ProductEntry 3 }
+
+spg8260SerialNumber    OBJECT-TYPE
+  SYNTAX      DisplayString
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "... "
+  ::= { spg8260ProductEntry 4 }
+
+spg8260RearModule    OBJECT-TYPE
+  SYNTAX      DisplayString
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "... "
+  ::= { spg8260ProductEntry 5 }
+
+spg8260Firmware    OBJECT-TYPE
+  SYNTAX      DisplayString
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "... "
+  ::= { spg8260ProductEntry 6 }
+
+spg8260Software    OBJECT-TYPE
+  SYNTAX      DisplayString
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "... "
+  ::= { spg8260ProductEntry 7 }
+
+--
+--  Table of Hardware parameters
+--
+spg8260HardwareTable     OBJECT-TYPE
+  SYNTAX      SEQUENCE OF Spg8260HardwareEntry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "A table containing product info for all SPG8260 cards at this node.
+    This table is the expansion of the table 'openGearCardTable' in the
+    OPEN-GEAR-CARD-MIB. For each SPG8260 card in the 'openGearCardTable',
+    there is a corresponding entry in this table, having the same indices -
+    'openGearFrameIndex' and 'openGearCardIndex'."
+  ::= { spg8260CardObjects 3 }
+
+spg8260HardwareEntry     OBJECT-TYPE
+  SYNTAX      Spg8260HardwareEntry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "A conceptual row within the 'spg8260HardwareTable'."
+  INDEX    { openGearFrameIndex, openGearCardIndex }
+  ::= { spg8260HardwareTable 1 }
+
+Spg8260HardwareEntry ::= SEQUENCE {
+  spg8260HwAlarm                   Integer32,
+  spg8260CardVoltage               Integer32,
+  spg8260CardCurrent               Integer32,
+  spg8260Headroom                  Integer32,
+  spg8260Ram                       Integer32,
+  spg8260UpTime                    Integer32,
+  spg8260ConfigBank                Integer32
+}
+
+spg8260HwAlarm    OBJECT-TYPE
+  SYNTAX      Integer32
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "The status parameter is a bitfield where each bit indicates a
+    specific status. A value of zero means OK.
+    The status bits are defined as follows:
+      0x0001 - FPGA load invalid
+      0x0004 - Incomp I/O module
+      0x0002 - Current out of spec
+      0x0008 - Internal Error
+    All other values are undefined."
+  ::= { spg8260HardwareEntry 1 }
+
+spg8260CardVoltage    OBJECT-TYPE
+  SYNTAX      Integer32
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "... "
+  ::= { spg8260HardwareEntry 2 }
+
+spg8260CardCurrent    OBJECT-TYPE
+  SYNTAX      Integer32
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "... "
+  ::= { spg8260HardwareEntry 3 }
+
+spg8260Headroom    OBJECT-TYPE
+  SYNTAX      Integer32
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "... "
+  ::= { spg8260HardwareEntry 4 }
+
+spg8260Ram    OBJECT-TYPE
+  SYNTAX      Integer32
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "... "
+  ::= { spg8260HardwareEntry 5 }
+
+spg8260UpTime    OBJECT-TYPE
+  SYNTAX      Integer32
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "... "
+  ::= { spg8260HardwareEntry 6 }
+
+spg8260ConfigBank    OBJECT-TYPE
+  SYNTAX      Integer32
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "... "
+  ::= { spg8260HardwareEntry 7 }
+
+--
+--  Table of Signal parameters
+--
+spg8260SignalTable     OBJECT-TYPE
+  SYNTAX      SEQUENCE OF Spg8260SignalEntry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "A table containing product info for all SPG8260 cards at this node.
+    This table is the expansion of the table 'openGearCardTable' in the
+    OPEN-GEAR-CARD-MIB. For each SPG8260 card in the 'openGearCardTable',
+    there is a corresponding entry in this table, having the same indices -
+    'openGearFrameIndex' and 'openGearCardIndex'."
+  ::= { spg8260CardObjects 4 }
+
+spg8260SignalEntry     OBJECT-TYPE
+  SYNTAX      Spg8260SignalEntry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "A conceptual row within the 'spg8260SignalTable'."
+  INDEX    { openGearFrameIndex, openGearCardIndex }
+  ::= { spg8260SignalTable 1 }
+
+Spg8260SignalEntry ::= SEQUENCE {
+  spg8260RefAlarm                  Integer32,
+  spg8260RefFormat                 INTEGER
+}
+
+spg8260RefAlarm    OBJECT-TYPE
+  SYNTAX      Integer32
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "The status parameter is a bitfield where each bit indicates a
+    specific status. A value of zero means OK.
+    The status bits are defined as follows:
+      0x0001 - Internal Reference
+      0x0004 - No Color Burst Detected
+      0x0008 - Locking
+      0x0002 - No Reference
+    All other values are undefined."
+  ::= { spg8260SignalEntry 1 }
+
+spg8260RefFormat    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    unknown                 (0),
+    v480i59dot941           (1),
+    v480i59dot943           (3),
+    v576i505                (5),
+    v576i507                (7),
+    v720p50                 (9),
+    v720p59dot94            (10),
+    v720p60                 (11),
+    v720p30                 (12),
+    v720p29dot97            (13),
+    v720p25                 (14),
+    v720p24                 (15),
+    v720p23dot98            (16),
+    v1080p25                (17),
+    v1080p24                (18),
+    v1080p23dot98           (19),
+    v1080i50                (20),
+    v1080i59dot94           (21),
+    v1080i60                (22),
+    v1080pSF24              (24),
+    v1080pSF23dot98         (25),
+    v1080p30                (26),
+    v1080p29dot97           (27),
+    aESReference            (28),
+    wordClockReference      (29),
+    autoDetect              (30)
+  }
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "... "
+  ::= { spg8260SignalEntry 2 }
+
+--
+--  Table of Setup parameters
+--
+spg8260SetupTable     OBJECT-TYPE
+  SYNTAX      SEQUENCE OF Spg8260SetupEntry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "A table containing product info for all SPG8260 cards at this node.
+    This table is the expansion of the table 'openGearCardTable' in the
+    OPEN-GEAR-CARD-MIB. For each SPG8260 card in the 'openGearCardTable',
+    there is a corresponding entry in this table, having the same indices -
+    'openGearFrameIndex' and 'openGearCardIndex'."
+  ::= { spg8260CardObjects 5 }
+
+spg8260SetupEntry     OBJECT-TYPE
+  SYNTAX      Spg8260SetupEntry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "A conceptual row within the 'spg8260SetupTable'."
+  INDEX    { openGearFrameIndex, openGearCardIndex }
+  ::= { spg8260SetupTable 1 }
+
+Spg8260SetupEntry ::= SEQUENCE {
+  spg8260RefSelect                 INTEGER,
+  spg8260RefRate                   INTEGER,
+  spg8260AudOutputFormat           INTEGER,
+  spg8260AudTiming                 INTEGER,
+  spg8260AesLevel                  Integer32,
+  spg8260AesTone                   INTEGER,
+  spg8260ResetAll                  INTEGER
+}
+
+spg8260RefSelect    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    local                   (0),
+    frame1                  (1),
+    frame2                  (2),
+    internal                (3)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { frame1 }
+  ::= { spg8260SetupEntry 1 }
+
+spg8260RefRate    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    v60Hz                   (0),
+    v59dot94Hz              (1),
+    v50Hz                   (2),
+    v30Hz                   (3),
+    v29dot97Hz              (4),
+    v25Hz                   (5),
+    v24Hz                   (6),
+    v23dot98Hz              (7)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { v59dot94Hz }
+  ::= { spg8260SetupEntry 2 }
+
+spg8260AudOutputFormat    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    off                     (0),
+    aES                     (1),
+    wordClock               (2)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { aES }
+  ::= { spg8260SetupEntry 3 }
+
+spg8260AudTiming    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    videoOutput1            (0),
+    videoOutput2            (1),
+    videoOutput3            (2),
+    videoOutput4            (3)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { videoOutput1 }
+  ::= { spg8260SetupEntry 4 }
+
+spg8260AesLevel    OBJECT-TYPE
+  SYNTAX      Integer32 (-40..0)
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { -20 }
+  ::= { spg8260SetupEntry 5 }
+
+spg8260AesTone    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    mute                    (0),
+    v500Hz                  (1),
+    v1kHz                   (2),
+    v2kHz                   (3),
+    v4kHz                   (4)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { mute }
+  ::= { spg8260SetupEntry 6 }
+
+spg8260ResetAll    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    reset                   (0)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { reset }
+  ::= { spg8260SetupEntry 7 }
+
+--
+--  Table of VideoOutputs parameters
+--
+spg8260VideoOutputsArrGrp
+  OBJECT IDENTIFIER ::= { spg8260CardObjects 6 }
+
+spg8260NumberOfElementsInspg8260VideoOutputsArrGrp OBJECT-TYPE
+  SYNTAX      Integer32
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "The total number of elements in spg8260VideoOutputsArrGrp."
+  ::= { spg8260VideoOutputsArrGrp 1 }
+
+spg8260VideoOutputsTable     OBJECT-TYPE
+  SYNTAX      SEQUENCE OF Spg8260VideoOutputsEntry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "A table containing product info for all SPG8260 cards at this node.
+    This table is the expansion of the table 'openGearCardTable' in the
+    OPEN-GEAR-CARD-MIB. For each SPG8260 card in the 'openGearCardTable',
+    there is a corresponding entry in this table, having the same indices -
+    'openGearFrameIndex' and 'openGearCardIndex'."
+  ::= { spg8260VideoOutputsArrGrp 2 }
+
+spg8260VideoOutputsEntry     OBJECT-TYPE
+  SYNTAX      Spg8260VideoOutputsEntry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "A conceptual row within the 'spg8260VideoOutputsTable'."
+  INDEX    { openGearFrameIndex, openGearCardIndex,  spg8260VideoOutputsIndex}
+  ::= { spg8260VideoOutputsTable 1 }
+
+Spg8260VideoOutputsEntry ::= SEQUENCE {
+  spg8260VideoOutputsIndex        Unsigned32,
+  spg8260VidOutputFormat           INTEGER,
+  spg8260HDelay                    Integer32,
+  spg8260VDelay                    Integer32,
+  spg8260VidStatus                 Integer32
+}
+
+spg8260VideoOutputsIndex   OBJECT-TYPE
+  SYNTAX      Unsigned32
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "It represents the array group index."
+  ::= { spg8260VideoOutputsEntry 1 }
+
+spg8260VidOutputFormat    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    nTSCBlack               (1),
+    nTSCColorBars           (3),
+    pALBlack                (5),
+    pALColorBars            (7),
+    v720p50                 (9),
+    v720p59dot94            (10),
+    v720p60                 (11),
+    v720p30                 (12),
+    v720p29dot97            (13),
+    v720p25                 (14),
+    v720p24                 (15),
+    v720p23dot98            (16),
+    v1080p25                (17),
+    v1080p24                (18),
+    v1080p23dot98           (19),
+    v1080i50                (20),
+    v1080i59dot94           (21),
+    v1080i60                (22),
+    v1080pSF24              (24),
+    v1080pSF23dot98         (25),
+    v1080p30                (26),
+    v1080p29dot97           (27)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { v1080i59dot94 }
+  ::= { spg8260VideoOutputsEntry 2 }
+
+spg8260HDelay    OBJECT-TYPE
+  SYNTAX      Integer32
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { 0 }
+  ::= { spg8260VideoOutputsEntry 3 }
+
+spg8260VDelay    OBJECT-TYPE
+  SYNTAX      Integer32
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { 0 }
+  ::= { spg8260VideoOutputsEntry 4 }
+
+spg8260VidStatus    OBJECT-TYPE
+  SYNTAX      Integer32
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "The status parameter is a bitfield where each bit indicates a
+    specific status. A value of zero means OK.
+    The status bits are defined as follows:
+      0x0001 - Genlock
+      0x0002 - Field Lock
+      0x0004 - Clock Lock
+      0x0008 - Incompatible
+      0x0010 - Field Lock
+      0x0020 - Clock Lock
+      0x0040 - Incompatible
+    All other values are undefined."
+  ::= { spg8260VideoOutputsEntry 5 }
+
+--
+--  Table of Alarms parameters
+--
+spg8260AlarmsTable     OBJECT-TYPE
+  SYNTAX      SEQUENCE OF Spg8260AlarmsEntry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "A table containing product info for all SPG8260 cards at this node.
+    This table is the expansion of the table 'openGearCardTable' in the
+    OPEN-GEAR-CARD-MIB. For each SPG8260 card in the 'openGearCardTable',
+    there is a corresponding entry in this table, having the same indices -
+    'openGearFrameIndex' and 'openGearCardIndex'."
+  ::= { spg8260CardObjects 7 }
+
+spg8260AlarmsEntry     OBJECT-TYPE
+  SYNTAX      Spg8260AlarmsEntry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "A conceptual row within the 'spg8260AlarmsTable'."
+  INDEX    { openGearFrameIndex, openGearCardIndex }
+  ::= { spg8260AlarmsTable 1 }
+
+Spg8260AlarmsEntry ::= SEQUENCE {
+  spg8260RefAlarmEnable            INTEGER,
+  spg8260ColorBurstDetection       INTEGER
+}
+
+spg8260RefAlarmEnable    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    no                      (0),
+    yes                     (1)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { yes }
+  ::= { spg8260AlarmsEntry 1 }
+
+spg8260ColorBurstDetection    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    no                      (0),
+    yes                     (1)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { yes }
+  ::= { spg8260AlarmsEntry 2 }
+
+--
+--  Table of VideoOutputsAlarm parameters
+--
+spg8260VideoOutputsAlarmArrGrp
+  OBJECT IDENTIFIER ::= { spg8260CardObjects 8 }
+
+spg8260NumberOfElementsInspg8260VideoOutputsAlarmArrGrp OBJECT-TYPE
+  SYNTAX      Integer32
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "The total number of elements in spg8260VideoOutputsAlarmArrGrp."
+  ::= { spg8260VideoOutputsAlarmArrGrp 1 }
+
+spg8260VideoOutputsAlarmTable     OBJECT-TYPE
+  SYNTAX      SEQUENCE OF Spg8260VideoOutputsAlarmEntry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "A table containing product info for all SPG8260 cards at this node.
+    This table is the expansion of the table 'openGearCardTable' in the
+    OPEN-GEAR-CARD-MIB. For each SPG8260 card in the 'openGearCardTable',
+    there is a corresponding entry in this table, having the same indices -
+    'openGearFrameIndex' and 'openGearCardIndex'."
+  ::= { spg8260VideoOutputsAlarmArrGrp 2 }
+
+spg8260VideoOutputsAlarmEntry     OBJECT-TYPE
+  SYNTAX      Spg8260VideoOutputsAlarmEntry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "A conceptual row within the 'spg8260VideoOutputsAlarmTable'."
+  INDEX    { openGearFrameIndex, openGearCardIndex,  spg8260VideoOutputsAlarmIndex}
+  ::= { spg8260VideoOutputsAlarmTable 1 }
+
+Spg8260VideoOutputsAlarmEntry ::= SEQUENCE {
+  spg8260VideoOutputsAlarmIndex        Unsigned32,
+  spg8260OutputStatusAlarm         INTEGER
+}
+
+spg8260VideoOutputsAlarmIndex   OBJECT-TYPE
+  SYNTAX      Unsigned32
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "It represents the array group index."
+  ::= { spg8260VideoOutputsAlarmEntry 1 }
+
+spg8260OutputStatusAlarm    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    no                      (0),
+    yes                     (1)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { yes }
+  ::= { spg8260VideoOutputsAlarmEntry 2 }
+
+--
+-- Conformance
+--
+spg8260CardMibCompliances
+  OBJECT IDENTIFIER ::= { spg8260CardConformance 1 }
+spg8260CardMibGroups
+  OBJECT IDENTIFIER ::= { spg8260CardConformance 2 }
+--
+-- Compliance Statement
+--
+spg8260CardCompliances MODULE-COMPLIANCE
+  STATUS      current
+  DESCRIPTION
+    "The compliance statement for SPG8260 entities."
+  MODULE -- this module
+    MANDATORY-GROUPS { spg8260CardInfoGroup,
+                       spg8260CardNotifyGroup
+                     }
+
+  ::= { spg8260CardMibCompliances 1 }
+
+spg8260CardInfoGroup OBJECT-GROUP
+    OBJECTS { spg8260NumberOfCards,
+              spg8260Product,
+              spg8260Supplier,
+              spg8260BoardRev,
+              spg8260SerialNumber,
+              spg8260RearModule,
+              spg8260Firmware,
+              spg8260Software,
+              spg8260HwAlarm,
+              spg8260CardVoltage,
+              spg8260CardCurrent,
+              spg8260Headroom,
+              spg8260Ram,
+              spg8260UpTime,
+              spg8260ConfigBank,
+              spg8260RefAlarm,
+              spg8260RefFormat,
+              spg8260RefSelect,
+              spg8260RefRate,
+              spg8260AudOutputFormat,
+              spg8260AudTiming,
+              spg8260AesLevel,
+              spg8260AesTone,
+              spg8260ResetAll,
+              spg8260VidOutputFormat,
+              spg8260HDelay,
+              spg8260VDelay,
+              spg8260VidStatus,
+              spg8260RefAlarmEnable,
+              spg8260ColorBurstDetection,
+              spg8260OutputStatusAlarm
+            }
+    STATUS  current
+    DESCRIPTION
+      "A collection of objects providing basic instrumentation
+        and control of an SPG8260 card."
+    ::= { spg8260CardMibGroups 1 }
+
+spg8260CardNotifyGroup NOTIFICATION-GROUP
+  NOTIFICATIONS { spg8260RefAlarmEvent,
+                  spg8260HwAlarmEvent
+                }
+    STATUS  current
+    DESCRIPTION
+      "The notifications relating to the SPG8260 card."
+    ::= { spg8260CardMibGroups 2 }
+
+END

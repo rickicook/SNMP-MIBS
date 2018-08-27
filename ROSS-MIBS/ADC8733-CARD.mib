@@ -1,0 +1,1146 @@
+ADC8733-CARD-MIB DEFINITIONS ::= BEGIN
+
+--
+-- Defines control and monitoring structures for the ADC-8733A,
+--   ADC-8733A-S, ADC-8733A-C and ADC-8733A-SC card.
+--
+
+IMPORTS
+  openGearFrameIndex
+    FROM OPEN-GEAR-FRAME-MIB
+
+  openGearCardIndex
+    FROM OPEN-GEAR-CARD-MIB
+
+  openGearObjects
+    FROM OPEN-GEAR-MIB
+
+  OBJECT-TYPE, NOTIFICATION-TYPE, MODULE-IDENTITY, Integer32, Unsigned32
+    FROM SNMPv2-SMI
+
+  OBJECT-GROUP, NOTIFICATION-GROUP, MODULE-COMPLIANCE
+    FROM SNMPv2-CONF
+
+  DisplayString
+    FROM SNMPv2-TC;
+
+adc8733CardMib MODULE-IDENTITY
+  LAST-UPDATED "200903111200Z"
+  ORGANIZATION "www.rossvideo.org"
+  CONTACT-INFO
+    "postal:   Ross Video
+               8 John St. P.O. Box 220
+               Iroquois ON K0E 1K0
+
+       email:    support@rossvideo.com"
+  DESCRIPTION
+    "Defines control and monitoring structures for the ADC-8733A and
+     ADC-8733A-S, ADC-8733A-C and ADC-8733A-SC card."
+  REVISION     "200903111200Z"
+  DESCRIPTION
+    "Add audio mux support."
+  REVISION     "200806251200Z"
+  DESCRIPTION
+    "SNMP MIB for the ADC-8733 analog component to SDI video decoder."
+  ::= { openGearObjects 16 }
+
+--
+--  Top level components in the ADC-8733 MIB
+--
+adc8733CardNotifications
+  OBJECT IDENTIFIER ::= { adc8733CardMib 0 }
+
+adc8733CardObjects
+  OBJECT IDENTIFIER ::= { adc8733CardMib 1 }
+
+adc8733CardConformance
+  OBJECT IDENTIFIER ::= { adc8733CardMib 2 }
+
+--
+--  Notifications relating to the ADC-8733 card
+--
+adc8733HWStatusEvent   NOTIFICATION-TYPE
+  OBJECTS { adc8733HWStatus }
+  STATUS current
+  DESCRIPTION
+    "An indication that the hw status has changed. The status value
+     is in adc8733HWStatus"
+  ::= { adc8733CardNotifications 1 }
+
+adc8733InputStatusEvent   NOTIFICATION-TYPE
+  OBJECTS { adc8733InputStatus }
+  STATUS current
+  DESCRIPTION
+    "An indication that status of the video input has changed.
+     The status value is in adc8733InputStatus"
+  ::= { adc8733CardNotifications 2 }
+
+adc8733ReferenceStatusEvent   NOTIFICATION-TYPE
+  OBJECTS { adc8733ReferenceStatus }
+  STATUS current
+  DESCRIPTION
+    "An indication that status of the timing reference has changed.
+     The status value is in adc8733ReferenceStatus"
+  ::= { adc8733CardNotifications 3 }
+
+adc8733AudioInputStatusEvent   NOTIFICATION-TYPE
+  OBJECTS { adc8733AnalogInputStatus }
+  STATUS current
+  DESCRIPTION
+    "An indication that status of the analog input has changed.
+     The status value is in adc8733AnalogInputStatus."
+  ::= { adc8733CardNotifications 4 }
+
+--
+--  ADC8733 Card information
+--
+--
+--  All the ADC-8733 cards in the Open Gear frame
+--
+adc8733NumberOfCards    OBJECT-TYPE
+  SYNTAX      Integer32
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "The total number of ADC-8733 cards in the open gear frame."
+  ::= { adc8733CardObjects 1 }
+
+--
+--  Table of Product parameters
+--
+adc8733ProductTable     OBJECT-TYPE
+  SYNTAX      SEQUENCE OF Adc8733ProductEntry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "A table containing product info for all ADC-8733 cards at this node.
+     This table is the expansion of the table 'openGearCardTable' in the
+     OPEN-GEAR-CARD-MIB. For each ADC-8733 card in the 'openGearCardTable',
+     there is a corresponding entry in this table, having the same indices -
+     'openGearFrameIndex' and 'openGearCardIndex'."
+  ::= { adc8733CardObjects 2 }
+
+adc8733ProductEntry     OBJECT-TYPE
+  SYNTAX      Adc8733ProductEntry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "A conceptual row within the 'adc8733ProductTable'."
+  INDEX    { openGearFrameIndex, openGearCardIndex }
+  ::= { adc8733ProductTable 1 }
+
+Adc8733ProductEntry ::= SEQUENCE {
+  adc8733FirmwareRev         DisplayString,
+  adc8733BoardRev            DisplayString
+}
+
+adc8733FirmwareRev    OBJECT-TYPE
+  SYNTAX      DisplayString
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "The version number of the FPGA firmware on this card."
+  ::= { adc8733ProductEntry 4 }
+
+adc8733BoardRev    OBJECT-TYPE
+  SYNTAX      DisplayString
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "The hardware (board) revision of this card."
+  ::= { adc8733ProductEntry 6 }
+
+--
+--  Table of Hardware parameters
+--
+adc8733HardwareTable     OBJECT-TYPE
+  SYNTAX      SEQUENCE OF Adc8733HardwareEntry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "A table containing hardware status for all ADC-8733 cards at this node.
+     This table is the expansion of the table 'openGearCardTable' in the
+     OPEN-GEAR-CARD-MIB. For each ADC-8733 card in the 'openGearCardTable',
+     there is a corresponding entry in this table, having the same indices -
+     'openGearFrameIndex' and 'openGearCardIndex'."
+  ::= { adc8733CardObjects 3 }
+
+adc8733HardwareEntry     OBJECT-TYPE
+  SYNTAX      Adc8733HardwareEntry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "A conceptual row within the 'adc8733HardwareTable'."
+  INDEX    { openGearFrameIndex, openGearCardIndex }
+  ::= { adc8733HardwareTable 1 }
+
+Adc8733HardwareEntry ::= SEQUENCE {
+  adc8733HWStatus           Integer32,
+  adc8733RearModule         DisplayString,
+  adc8733CardVoltage        Integer32,
+  adc8733CardCurrent        Integer32,
+  adc8733EEBank             Integer32
+}
+
+adc8733HWStatus    OBJECT-TYPE
+  SYNTAX      Integer32
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "The hardware status of this card.  The status parameter is a bitfield
+     where each bit indicates a specific error.  A value of zero means there
+     are no hardware faults.  Any non-zero value indicates an error.
+     The error bits are defined as follows:
+        0x0001 - FPGA load invalid
+        0x0002 - Assembly Error (wrong option card installed)
+        0x0004 - Incompatible rear I/O module
+        0x0008 - Current consumption is out of spec
+        0x0010 - Undiagnosed internal error
+     All other values are undefined."
+  ::= { adc8733HardwareEntry 1 }
+
+adc8733RearModule    OBJECT-TYPE
+  SYNTAX      DisplayString
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "The type of rear I/O module presented for this card."
+  ::= { adc8733HardwareEntry 2 }
+
+adc8733CardVoltage    OBJECT-TYPE
+  SYNTAX      Integer32
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "The supply voltage measured at this card, in milliVolts."
+  ::= { adc8733HardwareEntry 3 }
+
+adc8733CardCurrent    OBJECT-TYPE
+  SYNTAX      Integer32
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "The current consumption of this card in milliAmps."
+  ::= { adc8733HardwareEntry 4 }
+
+adc8733EEBank    OBJECT-TYPE
+  SYNTAX      Integer32
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "The index of the EEPROM storage bank used to store the persistent
+     configuration of this card.  This index will increment whenever
+     a new configuration is stored."
+  ::= { adc8733HardwareEntry 5 }
+
+--
+--  Table of Signal Status parameters
+--
+adc8733SignalTable     OBJECT-TYPE
+  SYNTAX      SEQUENCE OF Adc8733SignalEntry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "A table containing signal status for all ADC-8733 cards at this node.
+     This table is the expansion of the table 'openGearCardTable' in the
+     OPEN-GEAR-CARD-MIB. For each ADC-8733 card in the 'openGearCardTable',
+     there is a corresponding entry in this table, having the same indices -
+     'openGearFrameIndex' and 'openGearCardIndex'."
+  ::= { adc8733CardObjects 4 }
+
+adc8733SignalEntry     OBJECT-TYPE
+  SYNTAX      Adc8733SignalEntry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "A conceptual row within the 'adc8733SignalTable'."
+  INDEX    { openGearFrameIndex, openGearCardIndex }
+  ::= { adc8733SignalTable 1 }
+
+Adc8733SignalEntry ::= SEQUENCE {
+  adc8733InputStatus         INTEGER,
+  adc8733ReferenceStatus     INTEGER,
+  adc8733LineStandard        INTEGER
+}
+
+adc8733InputStatus    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    noSignal  (0),
+    unlocked  (1),
+    present   (2)
+  }
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "The status of the video input for this card.
+     Changes are reported as a trap - adc8733InputStatusEvent"
+  ::= { adc8733SignalEntry 1 }
+
+adc8733ReferenceStatus    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    noReference      (0),
+    invalidReference (1),
+    referenceOK      (2)
+  }
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "The status of the timing reference for this card.
+     Changes are reported as a trap - adc8733ReferenceStatusEvent"
+  ::= { adc8733SignalEntry 3 }
+
+adc8733LineStandard    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    line525 (0),
+    line625 (1)
+  }
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "The line standard of the input signal"
+  ::= { adc8733SignalEntry 4 }
+
+
+--
+--  Table of configuration control parameters
+--
+adc8733SetupTable     OBJECT-TYPE
+  SYNTAX      SEQUENCE OF Adc8733SetupEntry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "A table containing access settings for all ADC-8733 cards at this node.
+     This table is the expansion of the table 'openGearCardTable' in the
+     OPEN-GEAR-CARD-MIB. For each ADC-8733 card in the 'openGearCardTable',
+     there is a corresponding entry in this table, having the same indices -
+     'openGearFrameIndex' and 'openGearCardIndex'."
+  ::= { adc8733CardObjects 5 }
+
+adc8733SetupEntry     OBJECT-TYPE
+  SYNTAX      Adc8733SetupEntry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "A conceptual row within the 'adc8733SetupTable'."
+  INDEX    { openGearFrameIndex, openGearCardIndex }
+  ::= { adc8733SetupTable 1 }
+
+Adc8733SetupEntry ::= SEQUENCE {
+  adc8733EditPermission       INTEGER,
+  adc8733FactoryReset         INTEGER,
+  adc8733InputStandard        INTEGER,
+  adc8733NTSCSetup            INTEGER
+}
+
+adc8733EditPermission    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    unlocked   (0),
+    locked     (1)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "The edit permission for read-write parameters of this card."
+  DEFVAL  { unlocked }
+  ::= { adc8733SetupEntry 1 }
+
+adc8733FactoryReset    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    reset      (0)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "Setting this parameter to zero will set the configuration of this card
+     to the factory default settings."
+  ::= { adc8733SetupEntry 2 }
+
+adc8733InputStandard    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    rgbSMPTE   (0),
+    rbgMII     (1),
+    rgbNTSC    (2),
+    yuvSMPTE   (3),
+    yuvMII     (4),
+    yuvBETA    (5)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "Setting the input standard, it is only applicable when the reomte/local
+     jumper on the card is set to remote, otherwise it is irrelevant."
+  DEFVAL  { yuvSMPTE }
+  ::= { adc8733SetupEntry 3 }
+
+adc8733NTSCSetup    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    on       (0),
+    off      (1)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "The user must remove the setup from the video signal that has setup.
+     The value 'on(0)' is to remove the setup"
+  ::= { adc8733SetupEntry 4 }
+
+--
+--  Table of Output parameters
+--
+adc8733OutputTable     OBJECT-TYPE
+  SYNTAX      SEQUENCE OF Adc8733OutputEntry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "A table containing output settings for all ADC-8733 cards at this node.
+     This table is the expansion of the table 'openGearCardTable' in the
+     OPEN-GEAR-CARD-MIB. For each ADC-8733 card in the 'openGearCardTable',
+     there is a corresponding entry in this table, having the same indices -
+     'openGearFrameIndex' and 'openGearCardIndex'."
+  ::= { adc8733CardObjects 6 }
+
+adc8733OutputEntry     OBJECT-TYPE
+  SYNTAX      Adc8733OutputEntry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "A conceptual row within the 'adc8733OutputTable'."
+  INDEX    { openGearFrameIndex, openGearCardIndex }
+  ::= { adc8733OutputTable 1 }
+
+Adc8733OutputEntry ::= SEQUENCE {
+  adc8733InputLossMode       INTEGER,
+  adc8733ForcedBlack         INTEGER,
+  adc8733ForcedMonochrome    INTEGER,
+  adc8733TestPattern         INTEGER,
+  adc8733ForcedFreeze        INTEGER,
+  adc8733FreezeMode          INTEGER
+}
+
+adc8733InputLossMode OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    black     (0),
+    noOutput  (1),
+    freeze    (2)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "The input loss mode selects the type of video output
+     when the input is lost."
+  DEFVAL  { black }
+  ::= { adc8733OutputEntry 1 }
+
+adc8733ForcedBlack    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    on   (0),
+    off  (1)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "Force the output to black."
+  DEFVAL  { off }
+  ::= { adc8733OutputEntry 2 }
+
+adc8733ForcedMonochrome    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    on   (0),
+    off  (1)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "Force the output to monochrome."
+  DEFVAL  { off }
+  ::= { adc8733OutputEntry 3 }
+
+adc8733TestPattern    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    off                (0),
+    sdiCheckField      (1),
+    fullFieldColorBars (2)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "The output test pattern."
+  DEFVAL  { off }
+  ::= { adc8733OutputEntry 4 }
+
+adc8733ForcedFreeze    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    on   (0),
+    off  (1)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "Force the output freeze."
+  DEFVAL  { off }
+  ::= { adc8733OutputEntry 5 }
+
+adc8733FreezeMode    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    field1     (0),
+    fields2    (1),
+    frame      (2)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "When the output freezes, the output video can be last field1, field2
+     or frame.."
+  DEFVAL  { field1 }
+  ::= { adc8733OutputEntry 6 }
+
+--
+--  Table of Timing parameters
+--
+adc8733TimingTable     OBJECT-TYPE
+  SYNTAX      SEQUENCE OF Adc8733TimingEntry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "A table containing timing settings for all ADC-8733 cards at this node.
+     This table is the expansion of the table 'openGearCardTable' in the
+     OPEN-GEAR-CARD-MIB. For each ADC-8733 card in the 'openGearCardTable',
+     there is a corresponding entry in this table, having the same indices -
+     'openGearFrameIndex' and 'openGearCardIndex'."
+  ::= { adc8733CardObjects 7 }
+
+adc8733TimingEntry     OBJECT-TYPE
+  SYNTAX      Adc8733TimingEntry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "A conceptual row within the 'adc8733TimingTable'."
+  INDEX    { openGearFrameIndex, openGearCardIndex }
+  ::= { adc8733TimingTable 1 }
+
+Adc8733TimingEntry ::= SEQUENCE {
+  adc8733Reference           INTEGER,
+  adc8733HorizontalDelay     Integer32,
+  adc8733VerticalDelay       Integer32,
+  adc8733TimingMode          INTEGER,
+  adc8733InputTiming         INTEGER
+}
+
+adc8733Reference        OBJECT-TYPE
+  SYNTAX  INTEGER {
+    bnc8    (1),
+    frame1  (2),
+    frame2  (3)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "The selected video timing reference for this card."
+  DEFVAL  { frame1 }
+  ::= { adc8733TimingEntry 1 }
+
+adc8733HorizontalDelay    OBJECT-TYPE
+  SYNTAX      Integer32 (0..1727)
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "The horizontal delay of this card in pixels, the maximum is 1715 for NTSC,
+     the maximum is 1727 for PAL."
+  DEFVAL  { 0 }
+  ::= { adc8733TimingEntry 2 }
+
+adc8733VerticalDelay    OBJECT-TYPE
+  SYNTAX      Integer32 (0..624)
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "The vertical delay of this card in lines, the maximum is 524 for NTSC,
+     the maximum is 624 for PAL."
+  DEFVAL  { 0 }
+  ::= { adc8733TimingEntry 3 }
+
+adc8733TimingMode        OBJECT-TYPE
+  SYNTAX  INTEGER {
+    lineDelay  (0),
+    lineSync   (1),
+    frameDelay (2),
+    frameSync  (3)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "The selected video timing mode for this card. The 'frameDelay'
+     and 'frameSync' are only available when the frame sync feature
+     is licensed."
+  ::= { adc8733TimingEntry 4 }
+
+adc8733InputTiming        OBJECT-TYPE
+  SYNTAX  INTEGER {
+    yg   (0),
+    bnc8 (1),
+    frm1 (2),
+    frm2 (3)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "To select where the input signal timing will come from."
+  DEFVAL  { frm1 }
+  ::= { adc8733TimingEntry 5 }
+
+--
+--  Table of ProcAmp parameters
+--
+adc8733ProcAmpTable     OBJECT-TYPE
+  SYNTAX      SEQUENCE OF Adc8733ProcAmpEntry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "A table containing proc amp settings for all ADC-8733 cards at this node.
+     This table is the expansion of the table 'openGearCardTable' in the
+     OPEN-GEAR-CARD-MIB. For each ADC-8733 card in the 'openGearCardTable',
+     there is a corresponding entry in this table, having the same indices -
+     'openGearFrameIndex' and 'openGearCardIndex'."
+  ::= { adc8733CardObjects 8 }
+
+adc8733ProcAmpEntry     OBJECT-TYPE
+  SYNTAX      Adc8733ProcAmpEntry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "A conceptual row within the 'adc8733ProcAmpTable'."
+  INDEX    { openGearFrameIndex, openGearCardIndex }
+  ::= { adc8733ProcAmpTable 1 }
+
+Adc8733ProcAmpEntry ::= SEQUENCE {
+  adc8733VideoGain            DisplayString,
+  adc8733ChromaGain           DisplayString,
+  adc8733CBGain               DisplayString,
+  adc8733BlackOffset          DisplayString,
+  adc8733SuperBlack           INTEGER,
+  adc8733ProcAmpReset         INTEGER
+}
+
+adc8733VideoGain    OBJECT-TYPE
+  SYNTAX      DisplayString (SIZE(3))
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "The video gain of the output, this is float, in the range (100 ~ 300).
+     This is the internal data used in the card, and is mapped to the
+     range (50 ~ 150) percentage linearly, which is displayed on the
+     Dashboard."
+  DEFVAL  { "200" }
+  ::= { adc8733ProcAmpEntry 1 }
+
+adc8733ChromaGain    OBJECT-TYPE
+  SYNTAX      DisplayString (SIZE(3))
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "The chroma gain of the output, this is float, in the range (100 ~ 300).
+     This is the internal data used in the card, and is mapped to the
+     range (50 ~ 150) percentage linearly, which is displayed on the
+     Dashboard."
+  DEFVAL  { "200" }
+  ::= { adc8733ProcAmpEntry 2 }
+
+adc8733CBGain    OBJECT-TYPE
+  SYNTAX      DisplayString (SIZE(3))
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "The Cb (chroma blue) gain of the output, this is float,
+     in the range (100 ~ 300). This is the internal data used in the card,
+     and is mapped to the range (50 ~ 150) percentage linearly, which is
+     displayed on the Dashboard."
+  DEFVAL  { "200" }
+  ::= { adc8733ProcAmpEntry 3 }
+
+adc8733BlackOffset    OBJECT-TYPE
+  SYNTAX      DisplayString (SIZE(5))
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "The black offset of the output, this is float, in the range
+    (-14.0 ~ 101.1). The unit is IRE."
+  DEFVAL  { "0.0" }
+  ::= { adc8733ProcAmpEntry 4 }
+
+adc8733SuperBlack    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    pass       (0),
+    clip       (1)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "To enable or disable the SuperBlack clipping function."
+  DEFVAL  { pass }
+  ::= { adc8733ProcAmpEntry 6 }
+
+adc8733ProcAmpReset    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    reset      (0)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "Setting this parameter to zero will set the configuration of this card
+     to the factory default settings."
+  DEFVAL  { reset }
+  ::= { adc8733ProcAmpEntry 8 }
+
+--
+--  Table of Framing parameters
+--
+adc8733FramingTable     OBJECT-TYPE
+  SYNTAX      SEQUENCE OF Adc8733FramingEntry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "A table containing framing settings for all ADC-8733 cards at this node.
+     This table is the expansion of the table 'openGearCardTable' in the
+     OPEN-GEAR-CARD-MIB. For each ADC-8733 card in the 'openGearCardTable',
+     there is a corresponding entry in this table, having the same indices -
+     'openGearFrameIndex' and 'openGearCardIndex'."
+  ::= { adc8733CardObjects 9 }
+
+adc8733FramingEntry     OBJECT-TYPE
+  SYNTAX      Adc8733FramingEntry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "A conceptual row within the 'adc8733FramingTable'."
+  INDEX    { openGearFrameIndex, openGearCardIndex }
+  ::= { adc8733FramingTable 1 }
+
+Adc8733FramingEntry ::= SEQUENCE {
+  adc8733VerticalIntervalBlanking  INTEGER,
+  adc8733VerticalIntervalEnd       INTEGER,
+  adc8733LockVbitOnLine            INTEGER,
+  adc8733HorizontalCropEnable      INTEGER,
+  adc8733HorizontalCropLeft        Integer32,
+  adc8733HorizontalCropRight       Integer32
+}
+
+adc8733VerticalIntervalBlanking    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    pass    (0),
+    blank   (1)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "Processing option for embedded audio group 1."
+  DEFVAL  { pass }
+  ::= { adc8733FramingEntry 1 }
+
+adc8733VerticalIntervalEnd    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    viEnd19   (0),
+    viEnd20   (1),
+    viEnd21   (2),
+    viEnd22   (3)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "Set the VI ends line for the card, for 625-line mode input, the VI end
+     can only be set to viEnd22, for 526-line input, the VI end range is
+     viEnd19 to viEnd21."
+  ::= { adc8733FramingEntry 2 }
+
+adc8733LockVbitOnLine    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    vBitLock10 (0),
+    vBitLock20 (1)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "To force the V bit for 10 or 20 lines."
+  DEFVAL  { vBitLock20 }
+  ::= { adc8733FramingEntry 3 }
+
+adc8733HorizontalCropEnable    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    on  (0),
+    off (1)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "To enable cropping leading or/and trailing video samples in the
+     output SDI video line."
+  DEFVAL  { off }
+  ::= { adc8733FramingEntry 4 }
+
+adc8733HorizontalCropLeft    OBJECT-TYPE
+  SYNTAX      Integer32 (0..350)
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "The starting pixle of the SDI video line that can be cropped."
+  DEFVAL  { 0 }
+  ::= { adc8733FramingEntry 5 }
+
+adc8733HorizontalCropRight   OBJECT-TYPE
+  SYNTAX      Integer32 (0..350)
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "The trailing pixle of the SDI video line that can be cropped."
+  DEFVAL  { 0 }
+  ::= { adc8733FramingEntry 6 }
+
+
+--
+--  Table of Audio Mux Configuration
+--
+adc8733AudioMuxTable     OBJECT-TYPE
+  SYNTAX      SEQUENCE OF Adc8733AudioMuxEntry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "A table containing audio mux configuration for the ADC-8733 cards at this
+     node. This table is the expansion of the table 'openGearCardTable' in the
+     OPEN-GEAR-CARD-MIB. For each ADC-8733 card in the 'openGearCardTable',
+     there is a corresponding entry in this table, having the same indices -
+     'openGearFrameIndex' and 'openGearCardIndex'."
+  ::= { adc8733CardObjects 10 }
+
+adc8733AudioMuxEntry     OBJECT-TYPE
+  SYNTAX      Adc8733AudioMuxEntry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "A conceptual row within the 'adc8733FramingTable'."
+  INDEX    { openGearFrameIndex, openGearCardIndex }
+  ::= { adc8733AudioMuxTable 1 }
+
+Adc8733AudioMuxEntry ::= SEQUENCE {
+  adc8733AudioMuxEnable           INTEGER,
+  adc8733AudioEmbeddedGroup       INTEGER,
+  adc8733AudioDelay               Integer32,
+  adc8733AudioInputThreshhold     INTEGER,
+  adc8733AudioInputSilenceTimeout Integer32,
+  adc8733AudioConfigReset         INTEGER
+}
+
+adc8733AudioMuxEnable    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    on   (0),
+    off  (1)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "To enable or disable the audio mux functionality."
+  DEFVAL  { on }
+  ::= { adc8733AudioMuxEntry 1 }
+
+adc8733AudioEmbeddedGroup    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    aesGroup1 (0),
+    aesGroup2 (1),
+    aesGroup3 (2),
+    aesGroup4 (3)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "Select the AES group that embeds the input audio."
+  DEFVAL  { aesGroup1 }
+  ::= { adc8733AudioMuxEntry 2 }
+
+adc8733AudioDelay    OBJECT-TYPE
+  SYNTAX      Integer32 (0..5000)
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "Set the delay in milli-seconds between the audio input and output,
+     which applies to the all 4 input channels."
+  DEFVAL  { 0 }
+  ::= { adc8733AudioMuxEntry 3 }
+
+adc8733AudioInputThreshhold OBJECT-TYPE
+  SYNTAX      INTEGER  {
+   minus84dB(0),
+   minus78DB(1),
+   minus72DB(2),
+   minus66DB(3),
+   minus60DB(4),
+   minus54DB(5),
+   minus48DB(6),
+   minus42DB(7),
+   minus36DB(8),
+   minus30DB(9),
+   minus24DB(10),
+   minus18DB(11),
+   minus12DB(12),
+   minus6DB(13)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "The silence threshhold for the audio input, it is in dB."
+  DEFVAL  { 0 }
+  ::= { adc8733AudioMuxEntry 4 }
+
+adc8733AudioInputSilenceTimeout OBJECT-TYPE
+  SYNTAX      Integer32 (0..60)
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "The silence time-out for the audio input, it is in second."
+  DEFVAL  { 10 }
+  ::= { adc8733AudioMuxEntry 5 }
+
+adc8733AudioConfigReset    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    reset      (0)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "Reset all the audio mux parameters to the default, including all the
+     analog input and the embedded audio parameters."
+  DEFVAL  { 0 }
+  ::= { adc8733AudioMuxEntry 6 }
+
+--
+--  Audio analog input parameters' group
+--
+adc8733AudioAnalogInput
+  OBJECT IDENTIFIER ::= { adc8733CardObjects 11 }
+
+adc8733AudioAnalogInputCount OBJECT-TYPE
+  SYNTAX Integer32
+  MAX-ACCESS read-only
+  STATUS current
+  DESCRIPTION
+    "The number of audio analog inputs on each card."
+  ::= { adc8733AudioAnalogInput 1 }
+
+--
+-- A table for the audio analog input
+-- Indexed by frameIndex, cardIndex, analogInputIndex
+--
+adc8733AudioAnalogInputTable OBJECT-TYPE
+  SYNTAX SEQUENCE OF Adc8733AudioAnalogInputEntry
+  MAX-ACCESS not-accessible
+  STATUS current
+  DESCRIPTION
+    "A table containing general settings for the analog audio inputs."
+  ::= { adc8733AudioAnalogInput 2 }
+
+adc8733AudioAnalogInputEntry OBJECT-TYPE
+  SYNTAX Adc8733AudioAnalogInputEntry
+  MAX-ACCESS not-accessible
+  STATUS current
+  DESCRIPTION
+    "A row within the mux8252AesInputTable."
+  INDEX { openGearFrameIndex, openGearCardIndex, adc8733AnalogInputIndex }
+  ::= { adc8733AudioAnalogInputTable 1 }
+
+Adc8733AudioAnalogInputEntry ::= SEQUENCE {
+  adc8733AnalogInputIndex  Unsigned32,
+  adc8733AnalogInputGain   DisplayString,
+  adc8733AnalogInputStatus INTEGER
+}
+
+adc8733AnalogInputIndex OBJECT-TYPE
+  SYNTAX Unsigned32
+  MAX-ACCESS not-accessible
+  STATUS current
+  DESCRIPTION
+    "analog input channel index."
+  ::= { adc8733AudioAnalogInputEntry 1 }
+
+adc8733AnalogInputGain OBJECT-TYPE
+  SYNTAX      DisplayString (SIZE(4))
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "The analog audio input gain."
+  DEFVAL  { "0.0" }
+  ::= { adc8733AudioAnalogInputEntry 2 }
+
+adc8733AnalogInputStatus OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    ok       (0),
+    tooHight (1),
+    noInput  (2)
+  }
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "Indicates whether the analog input is too high.
+     Changes are reported as a trap - adc8733AudioInputStatusEvent"
+  DEFVAL  { ok }
+  ::= { adc8733AudioAnalogInputEntry 3 }
+
+--
+--  Embedded audio parameters' group
+--
+adc8733EmbeddedAudioChannel
+  OBJECT IDENTIFIER ::= { adc8733CardObjects 12 }
+
+adc8733EmbeddedAudioChannelCount OBJECT-TYPE
+  SYNTAX Integer32
+  MAX-ACCESS read-only
+  STATUS current
+  DESCRIPTION
+    "The number of embedded audio channels on each card."
+  ::= { adc8733EmbeddedAudioChannel 1 }
+
+--
+-- A table for the audio analog input
+-- Indexed by frameIndex, cardIndex, analogInputIndex
+--
+adc8733EmbeddedAudioChannelTable OBJECT-TYPE
+  SYNTAX SEQUENCE OF Adc8733EmbeddedAudioChannelEntry
+  MAX-ACCESS not-accessible
+  STATUS current
+  DESCRIPTION
+    "A table containing general settings for the embedded audio channels."
+  ::= { adc8733EmbeddedAudioChannel 2 }
+
+adc8733EmbeddedAudioChannelEntry OBJECT-TYPE
+  SYNTAX Adc8733EmbeddedAudioChannelEntry
+  MAX-ACCESS not-accessible
+  STATUS current
+  DESCRIPTION
+    "A row within the mux8252AesInputTable."
+  INDEX {
+    openGearFrameIndex,
+    openGearCardIndex,
+    adc8733EmbeddedAudioChannelIndex
+  }
+  ::= { adc8733EmbeddedAudioChannelTable 1 }
+
+Adc8733EmbeddedAudioChannelEntry ::= SEQUENCE {
+  adc8733EmbeddedAudioChannelIndex  Unsigned32,
+  adc8733EmbeddedAudioChannelSource INTEGER
+}
+
+adc8733EmbeddedAudioChannelIndex OBJECT-TYPE
+  SYNTAX Unsigned32
+  MAX-ACCESS not-accessible
+  STATUS current
+  DESCRIPTION
+    "The embedded audio channel index."
+  ::= { adc8733EmbeddedAudioChannelEntry 1 }
+
+adc8733EmbeddedAudioChannelSource OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    analogInput1 (0),
+    analogInput2 (1),
+    analogInput3 (2),
+    analogInput4 (3),
+    mute(5)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "Select the analog input to be embedded into this channel."
+  DEFVAL  { analogInput1 }
+  ::= { adc8733EmbeddedAudioChannelEntry 2 }
+
+--
+-- Conformance
+--
+adc8733CardMibCompliances
+  OBJECT IDENTIFIER ::= { adc8733CardConformance 1 }
+adc8733CardMibGroups
+  OBJECT IDENTIFIER ::= { adc8733CardConformance 2 }
+
+--
+-- Compliance Statement
+--
+adc8733CardCompliances MODULE-COMPLIANCE
+  STATUS      current
+  DESCRIPTION
+    "The compliance statement for ADC-8733 entities."
+
+  MODULE -- this module
+    MANDATORY-GROUPS { adc8733CardInfoGroup,
+                       adc8733CardNotifyGroup
+                     }
+
+  ::= { adc8733CardMibCompliances 1 }
+
+--
+-- ADC-8733 MIB groups
+--
+adc8733CardInfoGroup OBJECT-GROUP
+    OBJECTS { adc8733NumberOfCards,
+              adc8733FirmwareRev,
+              adc8733BoardRev,
+              adc8733HWStatus,
+              adc8733RearModule,
+              adc8733CardVoltage,
+              adc8733CardCurrent,
+              adc8733EEBank,
+              adc8733ReferenceStatus,
+              adc8733LineStandard,
+              adc8733InputStatus,
+              adc8733EditPermission,
+              adc8733FactoryReset,
+              adc8733InputStandard,
+              adc8733NTSCSetup,
+              adc8733TestPattern,
+              adc8733InputLossMode,
+              adc8733ForcedBlack,
+              adc8733ForcedMonochrome,
+              adc8733ForcedFreeze,
+              adc8733FreezeMode,
+              adc8733Reference,
+              adc8733HorizontalDelay,
+              adc8733VerticalDelay,
+              adc8733TimingMode,
+              adc8733InputTiming,
+              adc8733VideoGain,
+              adc8733ChromaGain,
+              adc8733CBGain,
+              adc8733BlackOffset,
+              adc8733ProcAmpReset,
+              adc8733SuperBlack,
+              adc8733VerticalIntervalBlanking,
+              adc8733VerticalIntervalEnd,
+              adc8733LockVbitOnLine,
+              adc8733HorizontalCropEnable,
+              adc8733HorizontalCropLeft,
+              adc8733HorizontalCropRight,
+              adc8733AudioMuxEnable,
+              adc8733AudioEmbeddedGroup,
+              adc8733AudioDelay,
+              adc8733AudioInputThreshhold,
+              adc8733AudioInputSilenceTimeout,
+              adc8733AudioConfigReset,
+              adc8733AudioAnalogInputCount,
+              adc8733AnalogInputGain,
+              adc8733AnalogInputStatus,
+              adc8733EmbeddedAudioChannelCount,
+              adc8733EmbeddedAudioChannelSource
+            }
+    STATUS  current
+    DESCRIPTION
+            "A collection of objects providing basic instrumentation
+            and control of an ADC-8733 card."
+    ::= { adc8733CardMibGroups 1 }
+
+adc8733CardNotifyGroup NOTIFICATION-GROUP
+  NOTIFICATIONS {
+                  adc8733HWStatusEvent,
+                  adc8733ReferenceStatusEvent,
+                  adc8733InputStatusEvent,
+                  adc8733AudioInputStatusEvent
+                }
+  STATUS current
+  DESCRIPTION
+    "The notifications relating to the ADC-8733 card"
+  ::= { adc8733CardMibGroups 2 }
+
+END

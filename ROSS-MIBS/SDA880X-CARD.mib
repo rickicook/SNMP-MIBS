@@ -1,0 +1,643 @@
+SDA880X-CARD-MIB DEFINITIONS ::= BEGIN
+
+--
+-- Defines control and monitoring structures for the SDA880X card.
+--
+
+IMPORTS
+  openGearFrameIndex
+    FROM OPEN-GEAR-FRAME-MIB
+
+  openGearCardIndex
+    FROM OPEN-GEAR-CARD-MIB
+
+  openGearObjects
+    FROM OPEN-GEAR-MIB
+
+  OBJECT-TYPE, NOTIFICATION-TYPE, MODULE-IDENTITY, Integer32
+    FROM SNMPv2-SMI
+
+  OBJECT-GROUP, NOTIFICATION-GROUP, MODULE-COMPLIANCE
+    FROM SNMPv2-CONF
+
+  DisplayString
+    FROM SNMPv2-TC;
+
+sda880xCardMib MODULE-IDENTITY
+  LAST-UPDATED "201501201200Z"
+  ORGANIZATION "www.rossvideo.org"
+  CONTACT-INFO
+    "postal:   Ross Video
+               8 John St. P.O. Box 220
+               Iroquois ON K0E 1K0
+
+      email:   support@rossvideo.com"
+
+  DESCRIPTION
+    "Defines control and monitoring structures for the SDA880X card."
+
+  REVISION     "201501201200Z"
+  DESCRIPTION
+    "... "
+  ::= { openGearObjects 31 }
+
+--
+--  Top level components in the SDA880X MIB
+--
+sda880xCardNotifications
+  OBJECT IDENTIFIER ::= { sda880xCardMib 0 }
+
+sda880xCardObjects
+  OBJECT IDENTIFIER ::= { sda880xCardMib 1 }
+
+sda880xCardConformance
+  OBJECT IDENTIFIER ::= { sda880xCardMib 2 }
+
+--
+--  Notifications relating to the SDA880X card
+--
+sda880xCh0StatusAlarmEvent   NOTIFICATION-TYPE
+  OBJECTS { sda880xCh0StatusAlarm }
+  STATUS current
+  DESCRIPTION
+    "... "
+  ::= { sda880xCardNotifications 1 }
+
+sda880xCh0SdiInputEvent   NOTIFICATION-TYPE
+  OBJECTS { sda880xCh0SdiInput }
+  STATUS current
+  DESCRIPTION
+    "... "
+  ::= { sda880xCardNotifications 2 }
+
+sda880xCh0SdiOutputEvent   NOTIFICATION-TYPE
+  OBJECTS { sda880xCh0SdiOutput }
+  STATUS current
+  DESCRIPTION
+    "... "
+  ::= { sda880xCardNotifications 3 }
+
+sda880xHardwareStatusEvent   NOTIFICATION-TYPE
+  OBJECTS { sda880xHardwareStatus }
+  STATUS current
+  DESCRIPTION
+    "... "
+  ::= { sda880xCardNotifications 4 }
+
+--
+--  SDA880X Card information
+--
+--
+--  All the SDA880X cards in the Open Gear frame
+--
+sda880xNumberOfCards    OBJECT-TYPE
+  SYNTAX      Integer32
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "The total number of SDA880X cards in the open gear frame.
+"  ::= { sda880xCardObjects 1 }
+
+--
+--  Table of Product parameters
+--
+sda880xProductTable     OBJECT-TYPE
+  SYNTAX      SEQUENCE OF Sda880xProductEntry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "A table containing product info for all SDA880X cards at this node.
+    This table is the expansion of the table 'openGearCardTable' in the
+    OPEN-GEAR-CARD-MIB. For each SDA880X card in the 'openGearCardTable',
+    there is a corresponding entry in this table, having the same indices -
+    'openGearFrameIndex' and 'openGearCardIndex'."
+  ::= { sda880xCardObjects 2 }
+
+sda880xProductEntry     OBJECT-TYPE
+  SYNTAX      Sda880xProductEntry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "A conceptual row within the 'sda880xProductTable'."
+  INDEX    { openGearFrameIndex, openGearCardIndex }
+  ::= { sda880xProductTable 1 }
+
+Sda880xProductEntry ::= SEQUENCE {
+  sda880xBoardRev                  DisplayString,
+  sda880xSerialNumber              DisplayString,
+  sda880xRearModule                DisplayString
+}
+
+sda880xBoardRev    OBJECT-TYPE
+  SYNTAX      DisplayString
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "... "
+  ::= { sda880xProductEntry 4 }
+
+sda880xSerialNumber    OBJECT-TYPE
+  SYNTAX      DisplayString
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "... "
+  ::= { sda880xProductEntry 5 }
+
+sda880xRearModule    OBJECT-TYPE
+  SYNTAX      DisplayString
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "... "
+  ::= { sda880xProductEntry 6 }
+
+--
+--  Table of Hardware parameters
+--
+sda880xHardwareTable     OBJECT-TYPE
+  SYNTAX      SEQUENCE OF Sda880xHardwareEntry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "A table containing product info for all SDA880X cards at this node.
+    This table is the expansion of the table 'openGearCardTable' in the
+    OPEN-GEAR-CARD-MIB. For each SDA880X card in the 'openGearCardTable',
+    there is a corresponding entry in this table, having the same indices -
+    'openGearFrameIndex' and 'openGearCardIndex'."
+  ::= { sda880xCardObjects 3 }
+
+sda880xHardwareEntry     OBJECT-TYPE
+  SYNTAX      Sda880xHardwareEntry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "A conceptual row within the 'sda880xHardwareTable'."
+  INDEX    { openGearFrameIndex, openGearCardIndex }
+  ::= { sda880xHardwareTable 1 }
+
+Sda880xHardwareEntry ::= SEQUENCE {
+  sda880xHardwareStatus            Integer32,
+  sda880xCardVoltage               Integer32,
+  sda880xCardCurrent               Integer32,
+  sda880xConfigBank                Integer32
+}
+
+sda880xHardwareStatus    OBJECT-TYPE
+  SYNTAX      Integer32
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "The status parameter is a bitfield where each bit indicates a
+    specific status. A value of zero means OK.
+    The status bits are defined as follows:
+      0x0001 - Wrong Board Type
+      0x0002 - Incomp Rear Module
+    All other values are undefined."
+  ::= { sda880xHardwareEntry 1 }
+
+sda880xCardVoltage    OBJECT-TYPE
+  SYNTAX      Integer32
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "... "
+  ::= { sda880xHardwareEntry 2 }
+
+sda880xCardCurrent    OBJECT-TYPE
+  SYNTAX      Integer32
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "... "
+  ::= { sda880xHardwareEntry 3 }
+
+sda880xConfigBank    OBJECT-TYPE
+  SYNTAX      Integer32
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "... "
+  ::= { sda880xHardwareEntry 4 }
+
+--
+--  Table of Signal parameters
+--
+sda880xSignalTable     OBJECT-TYPE
+  SYNTAX      SEQUENCE OF Sda880xSignalEntry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "A table containing product info for all SDA880X cards at this node.
+    This table is the expansion of the table 'openGearCardTable' in the
+    OPEN-GEAR-CARD-MIB. For each SDA880X card in the 'openGearCardTable',
+    there is a corresponding entry in this table, having the same indices -
+    'openGearFrameIndex' and 'openGearCardIndex'."
+  ::= { sda880xCardObjects 4 }
+
+sda880xSignalEntry     OBJECT-TYPE
+  SYNTAX      Sda880xSignalEntry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "A conceptual row within the 'sda880xSignalTable'."
+  INDEX    { openGearFrameIndex, openGearCardIndex }
+  ::= { sda880xSignalTable 1 }
+
+Sda880xSignalEntry ::= SEQUENCE {
+  sda880xCh0StatusAlarm            Integer32,
+  sda880xCh0SdiInput               INTEGER,
+  sda880xCh0SdiOutput              INTEGER,
+  sda880xCh0InputCableLength       DisplayString,
+  sda880xBackupInputStatus         INTEGER,
+  sda880xCh1SdiInput               INTEGER
+}
+
+sda880xCh0StatusAlarm    OBJECT-TYPE
+  SYNTAX      Integer32
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "The status parameter is a bitfield where each bit indicates a
+    specific status. A value of zero means OK.
+    The status bits are defined as follows:
+      0x0001 - OK
+      0x0004 - No input
+      0x0002 - Unlocked
+      0x0010 - No input
+      0x0008 - Unlocked
+    All other values are undefined."
+  ::= { sda880xSignalEntry 1 }
+
+sda880xCh0SdiInput    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    noSignal                (0),
+    belowMADISSignal        (1),
+    mADISignal              (2),
+    sDSignal                (3),
+    hDSignal                (4),
+    v3GSignal               (5),
+    v6GSignal               (6),
+    equalizerBypassed       (7),
+    belowMADISSignalBackup  (8),
+    mADISignalBackup        (9),
+    sDSignalBackup          (10),
+    hDSignalBackup          (11),
+    v3GSignalBackup         (12),
+    v6GSignalBackup         (13)
+  }
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "... "
+  ::= { sda880xSignalEntry 2 }
+
+sda880xCh0SdiOutput    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    unlocked                (0),
+    locked125M              (1),
+    locked270M              (2),
+    locked1dot5G            (3),
+    locked3dot0G            (4),
+    locked6dot0G            (5),
+    signalPresent           (6),
+    reclockerBypassed       (7),
+    noSignal                (8),
+    noSignalMuted           (9),
+    unlockedMuted           (10)
+  }
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "... "
+  ::= { sda880xSignalEntry 3 }
+
+sda880xCh0InputCableLength    OBJECT-TYPE
+  SYNTAX      DisplayString
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "... "
+  ::= { sda880xSignalEntry 4 }
+
+sda880xBackupInputStatus    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    noSignal                (0),
+    belowMADISSignal        (1),
+    mADISignal              (2),
+    sDSignal                (3),
+    hDSignal                (4),
+    v3GSignal               (5),
+    v6GSignal               (6),
+    equalizerBypassed       (7),
+    belowMADISSignalBackup  (8),
+    mADISignalBackup        (9),
+    sDSignalBackup          (10),
+    hDSignalBackup          (11),
+    v3GSignalBackup         (12),
+    v6GSignalBackup         (13)
+  }
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "... "
+  ::= { sda880xSignalEntry 5 }
+
+sda880xCh1SdiInput    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    noSignal                (0),
+    belowMADISSignal        (1),
+    mADISignal              (2),
+    sDSignal                (3),
+    hDSignal                (4),
+    v3GSignal               (5),
+    v6GSignal               (6),
+    equalizerBypassed       (7),
+    belowMADISSignalBackup  (8),
+    mADISignalBackup        (9),
+    sDSignalBackup          (10),
+    hDSignalBackup          (11),
+    v3GSignalBackup         (12),
+    v6GSignalBackup         (13)
+  }
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "... "
+  ::= { sda880xSignalEntry 6 }
+
+--
+--  Table of CfgControl parameters
+--
+sda880xCfgControlTable     OBJECT-TYPE
+  SYNTAX      SEQUENCE OF Sda880xCfgControlEntry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "A table containing product info for all SDA880X cards at this node.
+    This table is the expansion of the table 'openGearCardTable' in the
+    OPEN-GEAR-CARD-MIB. For each SDA880X card in the 'openGearCardTable',
+    there is a corresponding entry in this table, having the same indices -
+    'openGearFrameIndex' and 'openGearCardIndex'."
+  ::= { sda880xCardObjects 5 }
+
+sda880xCfgControlEntry     OBJECT-TYPE
+  SYNTAX      Sda880xCfgControlEntry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "A conceptual row within the 'sda880xCfgControlTable'."
+  INDEX    { openGearFrameIndex, openGearCardIndex }
+  ::= { sda880xCfgControlTable 1 }
+
+Sda880xCfgControlEntry ::= SEQUENCE {
+  sda880xEditPermission            INTEGER,
+  sda880xFactoryReset              INTEGER
+}
+
+sda880xEditPermission    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    unlocked                (0),
+    locked                  (1)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { unlocked }
+  ::= { sda880xCfgControlEntry 1 }
+
+sda880xFactoryReset    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    reset                   (0)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { reset }
+  ::= { sda880xCfgControlEntry 2 }
+
+--
+--  Table of Setup parameters
+--
+sda880xSetupArrGrp
+  OBJECT IDENTIFIER ::= { sda880xCardObjects 6 }
+
+sda880xNumberOfElementsInsda880xSetupArrGrp OBJECT-TYPE
+  SYNTAX      Integer32
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "The total number of elements in sda880xSetupArrGrp."
+  ::= { sda880xSetupArrGrp 1 }
+
+sda880xSetupTable     OBJECT-TYPE
+  SYNTAX      SEQUENCE OF Sda880xSetupEntry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "A table containing product info for all SDA880X cards at this node.
+    This table is the expansion of the table 'openGearCardTable' in the
+    OPEN-GEAR-CARD-MIB. For each SDA880X card in the 'openGearCardTable',
+    there is a corresponding entry in this table, having the same indices -
+    'openGearFrameIndex' and 'openGearCardIndex'."
+  ::= { sda880xSetupArrGrp 2 }
+
+sda880xSetupEntry     OBJECT-TYPE
+  SYNTAX      Sda880xSetupEntry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "A conceptual row within the 'sda880xSetupTable'."
+  INDEX    { openGearFrameIndex, openGearCardIndex,  sda880xSetupIndex}
+  ::= { sda880xSetupTable 1 }
+
+Sda880xSetupEntry ::= SEQUENCE {
+  sda880xSetupIndex        Unsigned32,
+  sda880xEnableEqArray             INTEGER,
+  sda880xEnableRckArray            INTEGER,
+  sda880xRckRateArray              INTEGER,
+  sda880xFailoverArray             INTEGER
+}
+
+sda880xSetupIndex   OBJECT-TYPE
+  SYNTAX      Unsigned32
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "It represents the array group index."
+  ::= { sda880xSetupEntry 1 }
+
+sda880xEnableEqArray    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    disabled                (0),
+    enabled                 (1)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { enabled }
+  ::= { sda880xSetupEntry 2 }
+
+sda880xEnableRckArray    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    disabled                (0),
+    enabled                 (1)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { enabled }
+  ::= { sda880xSetupEntry 3 }
+
+sda880xRckRateArray    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    auto                    (0),
+    v270Mbps                (1),
+    v1dot5Gbps              (2),
+    v3dot0Gbps              (3)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { auto }
+  ::= { sda880xSetupEntry 4 }
+
+sda880xFailoverArray    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    disabled                (0),
+    enabled                 (1)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { disabled }
+  ::= { sda880xSetupEntry 5 }
+
+--
+--  Table of Alarms parameters
+--
+sda880xAlarmsArrGrp
+  OBJECT IDENTIFIER ::= { sda880xCardObjects 7 }
+
+sda880xNumberOfElementsInsda880xAlarmsArrGrp OBJECT-TYPE
+  SYNTAX      Integer32
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "The total number of elements in sda880xAlarmsArrGrp."
+  ::= { sda880xAlarmsArrGrp 1 }
+
+sda880xAlarmsTable     OBJECT-TYPE
+  SYNTAX      SEQUENCE OF Sda880xAlarmsEntry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "A table containing product info for all SDA880X cards at this node.
+    This table is the expansion of the table 'openGearCardTable' in the
+    OPEN-GEAR-CARD-MIB. For each SDA880X card in the 'openGearCardTable',
+    there is a corresponding entry in this table, having the same indices -
+    'openGearFrameIndex' and 'openGearCardIndex'."
+  ::= { sda880xAlarmsArrGrp 2 }
+
+sda880xAlarmsEntry     OBJECT-TYPE
+  SYNTAX      Sda880xAlarmsEntry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "A conceptual row within the 'sda880xAlarmsTable'."
+  INDEX    { openGearFrameIndex, openGearCardIndex,  sda880xAlarmsIndex}
+  ::= { sda880xAlarmsTable 1 }
+
+Sda880xAlarmsEntry ::= SEQUENCE {
+  sda880xAlarmsIndex        Unsigned32,
+  sda880xAlarmLoiArray             INTEGER
+}
+
+sda880xAlarmsIndex   OBJECT-TYPE
+  SYNTAX      Unsigned32
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "It represents the array group index."
+  ::= { sda880xAlarmsEntry 1 }
+
+sda880xAlarmLoiArray    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    ignore                  (0),
+    notify                  (1)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { notify }
+  ::= { sda880xAlarmsEntry 2 }
+
+--
+-- Conformance
+--
+sda880xCardMibCompliances
+  OBJECT IDENTIFIER ::= { sda880xCardConformance 1 }
+sda880xCardMibGroups
+  OBJECT IDENTIFIER ::= { sda880xCardConformance 2 }
+--
+-- Compliance Statement
+--
+sda880xCardCompliances MODULE-COMPLIANCE
+  STATUS      current
+  DESCRIPTION
+    "The compliance statement for SDA880X entities."
+  MODULE -- this module
+    MANDATORY-GROUPS { sda880xCardInfoGroup,
+                       sda880xCardNotifyGroup
+                     }
+
+  ::= { sda880xCardMibCompliances 1 }
+
+sda880xCardInfoGroup OBJECT-GROUP
+    OBJECTS { sda880xNumberOfCards,
+              sda880xBoardRev,
+              sda880xSerialNumber,
+              sda880xRearModule,
+              sda880xHardwareStatus,
+              sda880xCardVoltage,
+              sda880xCardCurrent,
+              sda880xConfigBank,
+              sda880xCh0StatusAlarm,
+              sda880xCh0SdiInput,
+              sda880xCh0SdiOutput,
+              sda880xCh0InputCableLength,
+              sda880xBackupInputStatus,
+              sda880xCh1SdiInput,
+              sda880xEditPermission,
+              sda880xFactoryReset,
+              sda880xEnableEqArray,
+              sda880xEnableRckArray,
+              sda880xRckRateArray,
+              sda880xFailoverArray,
+              sda880xAlarmLoiArray
+            }
+    STATUS  current
+    DESCRIPTION
+      "A collection of objects providing basic instrumentation
+        and control of an SDA880X card."
+    ::= { sda880xCardMibGroups 1 }
+
+sda880xCardNotifyGroup NOTIFICATION-GROUP
+  NOTIFICATIONS { sda880xCh0StatusAlarmEvent,
+                  sda880xCh0SdiInputEvent,
+                  sda880xCh0SdiOutputEvent,
+                  sda880xHardwareStatusEvent
+                }
+    STATUS  current
+    DESCRIPTION
+      "The notifications relating to the SDA880X card."
+    ::= { sda880xCardMibGroups 2 }
+
+END

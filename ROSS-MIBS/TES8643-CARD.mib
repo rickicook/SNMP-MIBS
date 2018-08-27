@@ -1,0 +1,197 @@
+TES8643-CARD-MIB DEFINITIONS ::= BEGIN
+
+--
+-- Defines control and monitoring structures for the TES8643 card.
+--
+
+IMPORTS
+  openGearFrameIndex
+    FROM OPEN-GEAR-FRAME-MIB
+
+  openGearCardIndex
+    FROM OPEN-GEAR-CARD-MIB
+
+   openGearObjects
+    FROM OPEN-GEAR-MIB
+
+  OBJECT-TYPE, NOTIFICATION-TYPE, MODULE-IDENTITY, Integer32, Unsigned32
+    FROM SNMPv2-SMI
+
+  OBJECT-GROUP, NOTIFICATION-GROUP, MODULE-COMPLIANCE
+    FROM SNMPv2-CONF
+
+  DisplayString
+    FROM SNMPv2-TC;
+
+tes8643CardMib MODULE-IDENTITY
+  LAST-UPDATED "201503031542Z"
+  ORGANIZATION "www.rossvideo.org"
+  CONTACT-INFO
+    "postal:   Ross Video
+               8 John St. P.O. Box 220
+               Iroquois ON K0E 1K0
+
+      email:   support@rossvideo.com"
+
+  DESCRIPTION
+    "Defines control and monitoring structures for the TES8643 card family.
+     This is a family of MultiDefinition Digital Keyers."
+
+  REVISION     "201503031542Z"
+  DESCRIPTION
+    "First revision."
+  ::= { openGearObjects 23 }
+
+--
+--  Top level components in the TES8643 MIB
+--
+tes8643CardNotifications
+  OBJECT IDENTIFIER ::= { tes8643CardMib 0 }
+
+tes8643CardObjects
+  OBJECT IDENTIFIER ::= { tes8643CardMib 1 }
+
+tes8643CardConformance
+  OBJECT IDENTIFIER ::= { tes8643CardMib 2 }
+
+--
+-- Notifications relating to the TES8643 card
+--
+tes8643ReferenceStatusEvent   NOTIFICATION-TYPE
+  OBJECTS { tes8643ReferenceStatus }
+  STATUS current
+  DESCRIPTION
+    "An indication that Status of the Analog Reference has changed.
+    The current status is reported in tes8643ReferenceStatus."
+  ::= { tes8643CardNotifications 1 }
+
+tes8643Input1StatusEvent   NOTIFICATION-TYPE
+  OBJECTS { tes8643Input1Status }
+  STATUS current
+  DESCRIPTION
+    "An indication that Status of Input 1 signal has changed.
+    The current status is reported in tes8643Input1Status."
+  ::= { tes8643CardNotifications 2 }
+
+--
+--  TES8643 Card information
+--
+--
+--  All the TES8643 cards in the Open Gear frame
+--
+tes8643NumberOfCards    OBJECT-TYPE
+  SYNTAX      Integer32
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "The total number of TES8643 cards in the open gear frame."
+  ::= { tes8643CardObjects 1 }
+
+--
+--  Table of Product parameters
+--
+tes8643ProductTable     OBJECT-TYPE
+  SYNTAX      SEQUENCE OF Ra820xProductEntry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "A table containing product info for all TES8643 cards at this node.
+     This table is the expansion of the table 'openGearCardTable' in the
+     OPEN-GEAR-CARD-MIB. For each TES8643 card in the 'openGearCardTable',
+     there is a corresponding entry in this table, having the same indices -
+     'openGearFrameIndex' and 'openGearCardIndex'."
+  ::= { tes8643CardObjects 2 }
+
+tes8643ProductEntry     OBJECT-TYPE
+  SYNTAX      Ra820xProductEntry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "A conceptual row within the 'tes8643ProductTable'."
+  INDEX    { openGearFrameIndex, openGearCardIndex }
+  ::= { tes8643ProductTable 1 }
+
+Ra820xProductEntry ::= SEQUENCE {
+  tes8643ReferenceStatus      INTEGER,
+  tes8643Input1Status         INTEGER
+}
+
+tes8643ReferenceStatus   OBJECT-TYPE
+  SYNTAX      INTEGER
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "Status of the Analog Reference.
+    This status parameter is a bitfield where each bit
+    indicates a specific status. A value of zero means OK.
+    The status bits are defined as follows:
+      0x0001 - No Reference
+      0x0002 - Reference Unlocked
+      0x0004 - Invalid Reference
+      0x0008 - Alarm suppressed
+    All other values are undefined."
+  ::= { tes8643ProductEntry 1 }
+
+tes8643Input1Status   OBJECT-TYPE
+  SYNTAX      INTEGER
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "Status of Input 1 signal.
+    This status parameter is a bitfield where each bit
+    indicates a specific status. A value of zero means OK.
+    The status bits are defined as follows:
+      0x0001 - Alarm suppressed
+      0x0002 - No signal
+      0x0004 - Incompatible format
+      0x0008 - Audio absent
+      0x0010 - Unsupported format
+      0x0020 - Audio silent
+    All other values are undefined."
+  ::= { tes8643ProductEntry 2 }
+
+--
+-- Conformance
+--
+tes8643CardMibCompliances
+  OBJECT IDENTIFIER ::= { tes8643CardConformance 1 }
+tes8643CardMibGroups
+  OBJECT IDENTIFIER ::= { tes8643CardConformance 2 }
+
+--
+-- Compliance Statement
+--
+tes8643CardCompliances MODULE-COMPLIANCE
+  STATUS      current
+  DESCRIPTION
+    "The compliance statement for TES8643 entities."
+
+  MODULE -- this module
+    MANDATORY-GROUPS { tes8643CardInfoGroup,
+                       tes8643CardNotifyGroup
+                     }
+
+  ::= { tes8643CardMibCompliances 1 }
+
+tes8643CardInfoGroup OBJECT-GROUP
+    OBJECTS { tes8643NumberOfCards,
+              tes8643ReferenceStatus,
+              tes8643Input1Status
+            }
+    STATUS  current
+    DESCRIPTION
+            "A collection of objects providing basic instrumentation
+            and control of an TES8643 card."
+    ::= { tes8643CardMibGroups 1 }
+
+tes8643CardNotifyGroup NOTIFICATION-GROUP
+  NOTIFICATIONS {
+               tes8643ReferenceStatusEvent,
+               tes8643Input1StatusEvent
+                }
+  STATUS current
+  DESCRIPTION
+    "The notifications relating to the TES8643 card"
+  ::= { tes8643CardMibGroups 2 }
+
+END

@@ -1,0 +1,211 @@
+AvrDemo-CARD-MIB DEFINITIONS ::= BEGIN
+
+--
+-- Defines control and monitoring structures for the AvrDemo card.
+--
+
+IMPORTS
+  openGearFrameIndex
+    FROM OPEN-GEAR-FRAME-MIB
+
+  openGearCardIndex
+    FROM OPEN-GEAR-CARD-MIB
+
+   openGearObjects
+    FROM OPEN-GEAR-MIB
+
+  OBJECT-TYPE, NOTIFICATION-TYPE, MODULE-IDENTITY, Integer32
+    FROM SNMPv2-SMI
+
+  OBJECT-GROUP, NOTIFICATION-GROUP, MODULE-COMPLIANCE
+    FROM SNMPv2-CONF
+
+  DisplayString
+    FROM SNMPv2-TC;
+
+avrDemoCardMib MODULE-IDENTITY
+  LAST-UPDATED "200807020000Z"
+  ORGANIZATION "www.rossvideo.org"
+  CONTACT-INFO
+    "postal:   Ross Video
+               8 John St. P.O. Box 220
+               Iroquois ON K0E 1K0
+
+      email:   support@rossvideo.com"
+
+  DESCRIPTION
+    "Defines control and monitoring structures for the AvrDemo card."
+
+  REVISION     "200807020000Z"
+  DESCRIPTION
+    "First revision."
+  ::= { openGearObjects 1234 }
+
+--
+--  Top level components in the AvrDemo card MIB
+--
+avrDemoCardNotifications
+  OBJECT IDENTIFIER ::= { avrDemoCardMib 0 }
+
+avrDemoCardObjects
+  OBJECT IDENTIFIER ::= { avrDemoCardMib 1 }
+
+avrDemoCardConformance
+  OBJECT IDENTIFIER ::= { avrDemoCardMib 2 }
+
+--
+--  Notifications relating to the AvrDemo card
+--
+avrDemoPhaseEvent   NOTIFICATION-TYPE
+  OBJECTS { avrDemoPhase }
+  STATUS current
+  DESCRIPTION
+    "An indication that the phase setting of the card has changed.
+     The current phase is reported in avrDemoPhase."
+  ::= { avrDemoCardNotifications 1 }
+
+--
+--  AvrDemo Card information
+--
+--
+--  Count of AvrDemo cards in the Open Gear frame
+--
+avrDemoNumberOfCards    OBJECT-TYPE
+  SYNTAX      Integer32
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "The total number of AvrDemo cards in the frame."
+  ::= { avrDemoCardObjects 1 }
+
+--
+--  Table of Product parameters
+--
+avrDemoProductTable     OBJECT-TYPE
+  SYNTAX      SEQUENCE OF AvrDemoProductEntry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "A table containing product info for all AvrDemo cards at this node.
+     This table is the expansion of the table 'openGearCardTable' in the
+     OPEN-GEAR-CARD-MIB. For each AvrDemo card in the 'openGearCardTable',
+     there is a corresponding entry in this table, having the same indices -
+     'openGearFrameIndex' and 'openGearCardIndex'."
+  ::= { avrDemoCardObjects 2 }
+
+avrDemoProductEntry     OBJECT-TYPE
+  SYNTAX      AvrDemoProductEntry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "A conceptual row within the 'avrDemoProductTable'."
+  INDEX    { openGearFrameIndex, openGearCardIndex }
+  ::= { avrDemoProductTable 1 }
+
+AvrDemoProductEntry ::= SEQUENCE {
+  avrDemoDeviceName      DisplayString,
+  avrDemoClockTime       Integer32
+}
+
+avrDemoDeviceName      OBJECT-TYPE
+  SYNTAX      DisplayString
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "The device name for this card."
+  ::= { avrDemoProductEntry 5 }
+
+avrDemoClockTime    OBJECT-TYPE
+  SYNTAX      Integer32
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "The time since bootup, in seconds."
+  ::= { avrDemoProductEntry 6 }
+
+--
+--  Table of configuration parameters
+--
+avrDemoConfigTable     OBJECT-TYPE
+  SYNTAX      SEQUENCE OF AvrDemoConfigEntry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "A table containing setup parameters for all AvrDemo cards
+     at this node. This table is the expansion of the 'openGearCardTable'
+     in the OPEN-GEAR-CARD-MIB. For each AvrDemo in the 'openGearCardTable',
+     there is a corresponding entry in this table, having the same indices -
+     'openGearFrameIndex' and 'openGearCardIndex'."
+  ::= { avrDemoCardObjects 3 }
+
+avrDemoConfigEntry     OBJECT-TYPE
+  SYNTAX      AvrDemoConfigEntry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "A conceptual row within the 'avrDemoConfigTable'."
+  INDEX    { openGearFrameIndex, openGearCardIndex }
+  ::= { avrDemoConfigTable 1 }
+
+AvrDemoConfigEntry ::= SEQUENCE {
+  avrDemoPhase           INTEGER
+}
+
+avrDemoPhase    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    off    (0),
+    low    (1),
+    medium (2),
+    high   (3)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "Provides the phase offset for this card."
+  DEFVAL  { off }
+  ::= { avrDemoConfigEntry 1 }
+
+--
+-- Conformance
+--
+avrDemoCardMibCompliances
+  OBJECT IDENTIFIER ::= { avrDemoCardConformance 1 }
+avrDemoCardMibGroups
+  OBJECT IDENTIFIER ::= { avrDemoCardConformance 2 }
+
+--
+-- Compliance Statement
+--
+avrDemoCardCompliances MODULE-COMPLIANCE
+  STATUS      current
+  DESCRIPTION
+    "The compliance statement for AvrDemo entities."
+
+  MODULE -- this module
+    MANDATORY-GROUPS { avrDemoCardInfoGroup,
+                       avrDemoCardNotifyGroup
+                     }
+
+  ::= { avrDemoCardMibCompliances 1 }
+
+avrDemoCardInfoGroup OBJECT-GROUP
+    OBJECTS { avrDemoNumberOfCards,
+              avrDemoDeviceName,
+              avrDemoClockTime,
+              avrDemoPhase
+            }
+    STATUS  current
+    DESCRIPTION
+            "A collection of objects providing basic instrumentation
+            and control of an AvrDemo card."
+    ::= { avrDemoCardMibGroups 1 }
+
+avrDemoCardNotifyGroup NOTIFICATION-GROUP
+  NOTIFICATIONS { avrDemoPhaseEvent
+                }
+  STATUS current
+  DESCRIPTION
+    "The notifications relating to the AvrDemo card"
+  ::= { avrDemoCardMibGroups 2 }
+
+END

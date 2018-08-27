@@ -1,0 +1,1249 @@
+MUX8252-CARD-MIB DEFINITIONS ::= BEGIN
+
+--
+-- Defines control and monitoring structures for the MUX-8252 card.
+--
+
+IMPORTS
+  openGearFrameIndex
+    FROM OPEN-GEAR-FRAME-MIB
+
+  openGearCardIndex
+    FROM OPEN-GEAR-CARD-MIB
+
+  openGearObjects
+    FROM OPEN-GEAR-MIB
+
+  OBJECT-TYPE, NOTIFICATION-TYPE, MODULE-IDENTITY, Integer32, Unsigned32
+    FROM SNMPv2-SMI
+
+  OBJECT-GROUP, NOTIFICATION-GROUP, MODULE-COMPLIANCE
+    FROM SNMPv2-CONF
+
+  DisplayString, TEXTUAL-CONVENTION
+    FROM SNMPv2-TC;
+
+mux8252CardMib MODULE-IDENTITY
+  LAST-UPDATED "200903171200Z"
+  ORGANIZATION "www.rossvideo.org"
+  CONTACT-INFO
+    "postal:   Ross Video
+               8 John St. P.O. Box 220
+               Iroquois ON K0E 1K0
+
+       email:    support@rossvideo.com"
+  DESCRIPTION
+    "Defines control and monitoring structures for the MUX-8252 card."
+  REVISION     "200903171200Z"
+  DESCRIPTION
+    "SNMP MIB for the MUX-8252 audio embedded with 4 AES inputs."
+  ::= { openGearObjects 8 }
+
+--
+--  Top level components in the MUX-8252 MIB
+--
+mux8252CardNotifications
+  OBJECT IDENTIFIER ::= { mux8252CardMib 0 }
+
+mux8252CardObjects
+  OBJECT IDENTIFIER ::= { mux8252CardMib 1 }
+
+mux8252CardConformance
+  OBJECT IDENTIFIER ::= { mux8252CardMib 2 }
+
+--
+--  Notifications relating to the MUX-8252 card
+--
+mux8252HWStatusEvent   NOTIFICATION-TYPE
+  OBJECTS { mux8252HWStatus }
+  STATUS current
+  DESCRIPTION
+    "A notification that the hardware status has changed.
+     The status value is in mux8252HWStatus"
+  ::= { mux8252CardNotifications 1 }
+
+mux8252ReferenceStatusEvent   NOTIFICATION-TYPE
+  OBJECTS { mux8252ReferenceStatus }
+  STATUS current
+  DESCRIPTION
+    "An indication that status of the timing reference has changed.
+     The status value is in mux8252ReferenceStatus"
+  ::= { mux8252CardNotifications 2 }
+
+mux8252InputStatusEvent   NOTIFICATION-TYPE
+  OBJECTS { mux8252InputStatus }
+  STATUS current
+  DESCRIPTION
+    "An indication that status of the video input has changed.
+     The status value is in mux8252InputStatus"
+  ::= { mux8252CardNotifications 3 }
+
+mux8252AudioStatusEvent   NOTIFICATION-TYPE
+  OBJECTS { mux8252AudioStatus }
+  STATUS current
+  DESCRIPTION
+    "An indication that status of the embedded audio on the video input has changed.
+     The status value is in mux8252AudioStatus"
+  ::= { mux8252CardNotifications 4 }
+
+--
+--  MUX8252 Card information
+--
+--
+--  All the MUX-8252 cards in the Open Gear frame
+--
+mux8252NumberOfCards    OBJECT-TYPE
+  SYNTAX      Integer32
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "The total number of MUX-8252 cards in the open gear frame."
+  ::= { mux8252CardObjects 1 }
+
+--
+--  Table of Product parameters
+--
+mux8252ProductTable     OBJECT-TYPE
+  SYNTAX      SEQUENCE OF Mux8252ProductEntry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "A table containing product info for all MUX-8252 cards at this node.
+     This table is the expansion of the table 'openGearCardTable' in the
+     OPEN-GEAR-CARD-MIB. For each MUX-8252 card in the 'openGearCardTable',
+     there is a corresponding entry in this table, having the same indices -
+     'openGearFrameIndex' and 'openGearCardIndex'."
+  ::= { mux8252CardObjects 2 }
+
+mux8252ProductEntry     OBJECT-TYPE
+  SYNTAX      Mux8252ProductEntry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "A conceptual row within the 'mux8252ProductTable'."
+  INDEX    { openGearFrameIndex, openGearCardIndex }
+  ::= { mux8252ProductTable 1 }
+
+Mux8252ProductEntry ::= SEQUENCE {
+  mux8252FirmwareRev         DisplayString,
+  mux8252BoardRev            DisplayString,
+  mux8252SerialNumber        DisplayString
+}
+
+mux8252FirmwareRev    OBJECT-TYPE
+  SYNTAX      DisplayString
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "The version number of the FPGA firmware on this card."
+  ::= { mux8252ProductEntry 4 }
+
+mux8252BoardRev    OBJECT-TYPE
+  SYNTAX      DisplayString
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "The hardware (board) revision of this card."
+  ::= { mux8252ProductEntry 6 }
+
+mux8252SerialNumber    OBJECT-TYPE
+  SYNTAX      DisplayString
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "The serial number of this card."
+  ::= { mux8252ProductEntry 7 }
+
+--
+--  Table of Hardware parameters
+--
+mux8252HardwareTable     OBJECT-TYPE
+  SYNTAX      SEQUENCE OF Mux8252HardwareEntry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "A table containing hardware status for all MUX-8252 cards at this node.
+     This table is the expansion of the table 'openGearCardTable' in the
+     OPEN-GEAR-CARD-MIB. For each MUX-8252 card in the 'openGearCardTable',
+     there is a corresponding entry in this table, having the same indices -
+     'openGearFrameIndex' and 'openGearCardIndex'."
+  ::= { mux8252CardObjects 3 }
+
+mux8252HardwareEntry     OBJECT-TYPE
+  SYNTAX      Mux8252HardwareEntry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "A conceptual row within the 'mux8252HardwareTable'."
+  INDEX    { openGearFrameIndex, openGearCardIndex }
+  ::= { mux8252HardwareTable 1 }
+
+Mux8252HardwareEntry ::= SEQUENCE {
+  mux8252HWStatus            Integer32,
+  mux8252RearModule          DisplayString,
+  mux8252CardVoltage         Integer32,
+  mux8252CardCurrent         Integer32,
+  mux8252EEBank              Integer32
+}
+
+mux8252HWStatus    OBJECT-TYPE
+  SYNTAX      Integer32
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "The hardware status of this card.  The status parameter is a bitfield
+     where each bit indicates a specific error.  A value of zero means there
+     are no hardware faults.  Any non-zero value indicates an error.
+     The error bits are defined as follows:
+        0x0002 - FPGA load invalid
+        0x0008 - Incompatible rear I/O module
+        0x0010 - Current consumption is out of spec
+        0x0040 - Undiagnosed internal error
+     All other values are undefined."
+  ::= { mux8252HardwareEntry 1 }
+
+mux8252RearModule    OBJECT-TYPE
+  SYNTAX      DisplayString
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "The type of rear I/O module present for this card."
+  ::= { mux8252HardwareEntry 2 }
+
+mux8252CardVoltage    OBJECT-TYPE
+  SYNTAX      Integer32
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "The supply voltage measured at this card, in milliVolts."
+  ::= { mux8252HardwareEntry 3 }
+
+mux8252CardCurrent    OBJECT-TYPE
+  SYNTAX      Integer32
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "The current consumption of this card in milliAmps."
+  ::= { mux8252HardwareEntry 4 }
+
+mux8252EEBank    OBJECT-TYPE
+  SYNTAX      Integer32
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "The index of the EEPROM storage bank used to store the persistent
+     configuration of this card.  This index will increment whenever
+     a new configuration is stored."
+  ::= { mux8252HardwareEntry 5 }
+
+--
+--  Table of Signal Status parameters
+--
+mux8252SignalTable     OBJECT-TYPE
+  SYNTAX      SEQUENCE OF Mux8252SignalEntry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "A table containing signal status for all MUX-8252 cards at this node.
+     This table is the expansion of the table 'openGearCardTable' in the
+     OPEN-GEAR-CARD-MIB. For each MUX-8252 card in the 'openGearCardTable',
+     there is a corresponding entry in this table, having the same indices -
+     'openGearFrameIndex' and 'openGearCardIndex'."
+  ::= { mux8252CardObjects 4 }
+
+mux8252SignalEntry     OBJECT-TYPE
+  SYNTAX      Mux8252SignalEntry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "A conceptual row within the 'mux8252SignalTable'."
+  INDEX    { openGearFrameIndex, openGearCardIndex }
+  ::= { mux8252SignalTable 1 }
+
+Mux8252SignalEntry ::= SEQUENCE {
+  mux8252ReferenceStatus     INTEGER,
+  mux8252ReferenceFormat     DisplayString,
+  mux8252GenlockState        INTEGER,
+  mux8252InputStatus         INTEGER,
+  mux8252InputFormat         DisplayString,
+  mux8252AudioStatus         DisplayString
+}
+
+mux8252ReferenceStatus    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    noSignal  (0),
+    invalid   (1),
+    unlocked  (2),
+    locked    (3)
+  }
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "The status of the timing reference for this card.
+     Changes are reported as a trap - mux8252ReferenceStatusEvent"
+  ::= { mux8252SignalEntry 1 }
+
+mux8252ReferenceFormat    OBJECT-TYPE
+  SYNTAX      DisplayString
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "The format of the video timing reference for this card."
+  ::= { mux8252SignalEntry 2 }
+
+mux8252GenlockState    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    noReference (0),
+    invalidRef  (1), -- wrong clock rate for selected output format
+    locking     (2),
+    locked      (3),
+    freeze      (4),  -- reference lost after fully locked
+    relocking   (5)
+  }
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "The genlock status of this card."
+  ::= { mux8252SignalEntry 3 }
+
+mux8252InputStatus    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    noSignal    (0),
+    unsupported (1),
+    mismatched  (2), -- does not match configuration
+    valid       (3)
+  }
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "The status of the video input for this card.
+     Changes are reported as a trap - mux8252InputStatusEvent"
+  ::= { mux8252SignalEntry 4 }
+
+mux8252InputFormat    OBJECT-TYPE
+  SYNTAX      DisplayString
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "The format of the input video signal for this card."
+  ::= { mux8252SignalEntry 5 }
+
+mux8252AudioStatus    OBJECT-TYPE
+  SYNTAX      DisplayString
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "Status field showing the status of embedded audio on input to this card.
+     The symbols following each group number have the following meaning:
+     '-' this group is not present,
+     'S' synchronous audio present for this group,
+     'A' asynchronous audio present for this group."
+  ::= { mux8252SignalEntry 6 }
+
+--
+--  Table of AES Input Status parameters
+--
+mux8252AesStatusTable     OBJECT-TYPE
+  SYNTAX      SEQUENCE OF Mux8252AesStatusEntry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "A table showing AES audio status for all MUX-8252 cards at this node.
+     This table is the expansion of the table 'openGearCardTable' in the
+     OPEN-GEAR-CARD-MIB. For each MUX-8252 card in the 'openGearCardTable',
+     there is a corresponding entry in this table, having the same indices -
+     'openGearFrameIndex' and 'openGearCardIndex'."
+  ::= { mux8252CardObjects 5 }
+
+mux8252AesStatusEntry     OBJECT-TYPE
+  SYNTAX      Mux8252AesStatusEntry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "A conceptual row within the 'mux8252AesStatusTable'."
+  INDEX    { openGearFrameIndex, openGearCardIndex }
+  ::= { mux8252AesStatusTable 1 }
+
+Mux8252AesStatusEntry ::= SEQUENCE {
+  mux8252Aes1Status          INTEGER,
+  mux8252Aes2Status          INTEGER,
+  mux8252Aes3Status          INTEGER,
+  mux8252Aes4Status          INTEGER
+}
+
+AesInputStatus ::= TEXTUAL-CONVENTION
+  STATUS       current
+  DESCRIPTION
+     "Input status reported for eash AES audio input, defined as follows:
+      aesOk:      no errors
+      async:      asynchronous AES input, not selected for use.
+      asyncWarn:  asynchronous AES input, selected for insertion, not in use.
+      asyncErr:   asynchronous AES input, being embedded (error condition).
+      absent:     AES input missing, not selected for use.
+      absentWarn: AES input missing, selected for insertion, but not in use.
+      absentErr:  AES input missing, required for embedding."
+  SYNTAX    INTEGER  {
+    aesOk      (0),
+    async      (1),
+    asyncWarn  (2),
+    asyncErr   (3),
+    absent     (4),
+    absentWarn (5),
+    absentErr  (6)
+  }
+
+mux8252Aes1Status    OBJECT-TYPE
+  SYNTAX      AesInputStatus
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "The status of AES audio input 1.
+     For details, see AesInputStatus."
+  ::= { mux8252AesStatusEntry 1 }
+
+mux8252Aes2Status    OBJECT-TYPE
+  SYNTAX      AesInputStatus
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "The status of AES audio input 1.
+     For details, see AesInputStatus."
+  ::= { mux8252AesStatusEntry 2 }
+
+mux8252Aes3Status    OBJECT-TYPE
+  SYNTAX      AesInputStatus
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "The status of AES audio input 1.
+     For details, see AesInputStatus."
+  ::= { mux8252AesStatusEntry 3 }
+
+mux8252Aes4Status    OBJECT-TYPE
+  SYNTAX      AesInputStatus
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "The status of AES audio input 1.
+     For details, see AesInputStatus."
+  ::= { mux8252AesStatusEntry 4 }
+
+--
+--  Table of configuration control parameters
+--
+mux8252SetupTable     OBJECT-TYPE
+  SYNTAX      SEQUENCE OF Mux8252SetupEntry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "A table containing access settings for all MUX-8252 cards at this node.
+     This table is the expansion of the table 'openGearCardTable' in the
+     OPEN-GEAR-CARD-MIB. For each MUX-8252 card in the 'openGearCardTable',
+     there is a corresponding entry in this table, having the same indices -
+     'openGearFrameIndex' and 'openGearCardIndex'."
+  ::= { mux8252CardObjects 6 }
+
+mux8252SetupEntry     OBJECT-TYPE
+  SYNTAX      Mux8252SetupEntry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "A conceptual row within the 'mux8252SetupTable'."
+  INDEX    { openGearFrameIndex, openGearCardIndex }
+  ::= { mux8252SetupTable 1 }
+
+Mux8252SetupEntry ::= SEQUENCE {
+  mux8252EditPermission      INTEGER,
+  mux8252FactoryReset        INTEGER,
+  mux8252ResetAudioInputs    INTEGER,
+  mux8252ResetAudioGroups    INTEGER
+}
+
+mux8252EditPermission    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    unlocked   (0),
+    locked     (1)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "The edit permission for read-write parameters of this card."
+  DEFVAL  { unlocked }
+  ::= { mux8252SetupEntry 1 }
+
+mux8252FactoryReset    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    reset      (1)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "Setting this parameter to reset (1) will set the configuration of this
+     card to the factory default settings."
+  ::= { mux8252SetupEntry 2 }
+
+mux8252ResetAudioInputs    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    reset      (1)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "Setting this parameter to reset (1) will reset all AES audio input parameters
+     to the factory default settings."
+  ::= { mux8252SetupEntry 3 }
+
+mux8252ResetAudioGroups    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    reset      (1)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "Setting this parameter to reset (1) will reset the configuration for all
+     embedded audio groups to the factory default settings."
+  ::= { mux8252SetupEntry 4 }
+
+--
+--  Table of Output parameters
+--
+mux8252OutputTable     OBJECT-TYPE
+  SYNTAX      SEQUENCE OF Mux8252OutputEntry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "A table containing output settings for all MUX-8252 cards at this node.
+     This table is the expansion of the table 'openGearCardTable' in the
+     OPEN-GEAR-CARD-MIB. For each MUX-8252 card in the 'openGearCardTable',
+     there is a corresponding entry in this table, having the same indices -
+     'openGearFrameIndex' and 'openGearCardIndex'."
+  ::= { mux8252CardObjects 7 }
+
+mux8252OutputEntry     OBJECT-TYPE
+  SYNTAX      Mux8252OutputEntry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "A conceptual row within the 'mux8252OutputTable'."
+  INDEX    { openGearFrameIndex, openGearCardIndex }
+  ::= { mux8252OutputTable 1 }
+
+Mux8252OutputEntry ::= SEQUENCE {
+  mux8252LossOfInput         INTEGER,
+  mux8252TestPattern         INTEGER,
+  mux8252MonitorFormat       INTEGER
+}
+
+mux8252LossOfInput    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    black (0),
+    blue  (1)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "The flat frame color to be displayed on loss of input."
+  DEFVAL  { black }
+  ::= { mux8252OutputEntry 3 }
+
+mux8252TestPattern    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    smpteBars    (0),
+    p75Bars      (3),
+    disabled     (4)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "The test pattern to be output by this card."
+  DEFVAL  { disabled }
+  ::= { mux8252OutputEntry 4 }
+
+mux8252MonitorFormat    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    auto  (0),
+    ntsc  (1),
+    pal   (2),
+    video (3)
+  }
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "The format of the analog monitoring output for this card."
+  DEFVAL  { video }
+  ::= { mux8252OutputEntry 5 }
+
+--
+--  Table of Timing parameters
+--
+mux8252TimingTable     OBJECT-TYPE
+  SYNTAX      SEQUENCE OF Mux8252TimingEntry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "A table containing timing settings for all MUX-8252 cards at this node.
+     This table is the expansion of the table 'openGearCardTable' in the
+     OPEN-GEAR-CARD-MIB. For each MUX-8252 card in the 'openGearCardTable',
+     there is a corresponding entry in this table, having the same indices -
+     'openGearFrameIndex' and 'openGearCardIndex'."
+  ::= { mux8252CardObjects 8 }
+
+mux8252TimingEntry     OBJECT-TYPE
+  SYNTAX      Mux8252TimingEntry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "A conceptual row within the 'mux8252TimingTable'."
+  INDEX    { openGearFrameIndex, openGearCardIndex }
+  ::= { mux8252TimingTable 1 }
+
+Mux8252TimingEntry ::= SEQUENCE {
+  mux8252ReferenceSelect    INTEGER
+}
+
+mux8252ReferenceSelect  OBJECT-TYPE
+  SYNTAX  INTEGER {
+    frame1  (0),
+    frame2  (1),
+    local   (2),
+    video   (3)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "The selected video timing reference for this card."
+  DEFVAL  { video }
+  ::= { mux8252TimingEntry 1 }
+
+--
+--  Table of ProcAmp parameters
+--
+mux8252ProcAmpTable     OBJECT-TYPE
+  SYNTAX      SEQUENCE OF Mux8252ProcAmpEntry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "A table containing proc amp settings for all MUX-8252 cards at this node.
+     This table is the expansion of the table 'openGearCardTable' in the
+     OPEN-GEAR-CARD-MIB. For each MUX-8252 card in the 'openGearCardTable',
+     there is a corresponding entry in this table, having the same indices -
+     'openGearFrameIndex' and 'openGearCardIndex'."
+  ::= { mux8252CardObjects 9 }
+
+mux8252ProcAmpEntry     OBJECT-TYPE
+  SYNTAX      Mux8252ProcAmpEntry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "A conceptual row within the 'mux8252ProcAmpTable'."
+  INDEX    { openGearFrameIndex, openGearCardIndex }
+  ::= { mux8252ProcAmpTable 1 }
+
+Mux8252ProcAmpEntry ::= SEQUENCE {
+  mux8252VideoGain           Integer32,
+  mux8252ChromaGain          Integer32,
+  mux8252CBGain              Integer32,
+  mux8252BlackOffset         Integer32,
+  mux8252ProcAmpReset        INTEGER,
+  mux8252BlankActiveLines    Integer32
+}
+
+mux8252VideoGain    OBJECT-TYPE
+  SYNTAX      Integer32 (0..200)
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "The video gain of the output proc amp, in percent."
+  DEFVAL  { 100 }
+  ::= { mux8252ProcAmpEntry 1 }
+
+mux8252ChromaGain    OBJECT-TYPE
+  SYNTAX      Integer32 (0..200)
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "The chroma gain of the output proc amp, in percent."
+  DEFVAL  { 100 }
+  ::= { mux8252ProcAmpEntry 2 }
+
+mux8252CBGain    OBJECT-TYPE
+  SYNTAX      Integer32 (0..200)
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "The Cb (chroma blue) gain of the output proc amp, in percent."
+  DEFVAL  { 100 }
+  ::= { mux8252ProcAmpEntry 3 }
+
+mux8252BlackOffset    OBJECT-TYPE
+  SYNTAX      Integer32 (-60..160)
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "The black offset of the output proc amp."
+  DEFVAL  { 0 }
+  ::= { mux8252ProcAmpEntry 4 }
+
+mux8252ProcAmpReset    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    reset      (0)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "Setting this parameter to reset (0) will set the proc amp settings
+     for this card to the factory default settings."
+  DEFVAL  { reset }
+  ::= { mux8252ProcAmpEntry 5 }
+
+--
+--  Special proc amp features
+--
+mux8252BlankActiveLines    OBJECT-TYPE
+  SYNTAX      Integer32 (0..3)
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "The number of lines to blank following the start of active video.
+     The purpose of this is to allow removal of closed captioning and
+     similar encoded information before format conversion."
+  DEFVAL  { 0 }
+  ::= { mux8252ProcAmpEntry 7 }
+
+--
+-- AES input configuration
+--
+mux8252AesConfig
+  OBJECT IDENTIFIER ::= { mux8252CardObjects 10 }
+
+mux8252AesInputCount OBJECT-TYPE
+  SYNTAX Integer32
+  MAX-ACCESS read-only
+  STATUS current
+  DESCRIPTION
+    "The number of AES audio inputs on each card."
+  ::= { mux8252AesConfig 1 }
+
+--
+-- Define a table to control AES input settings
+-- Indexed by frameIndex, cardIndex, aesIndex
+--
+mux8252AesInputTable OBJECT-TYPE
+  SYNTAX SEQUENCE OF Mux8252AesInputEntry
+  MAX-ACCESS not-accessible
+  STATUS current
+  DESCRIPTION
+    "A table containing general settings for the AES audio inputs."
+  ::= { mux8252AesConfig 2 }
+
+mux8252AesInputEntry OBJECT-TYPE
+  SYNTAX Mux8252AesInputEntry
+  MAX-ACCESS not-accessible
+  STATUS current
+  DESCRIPTION
+    "A row within the mux8252AesInputTable."
+  INDEX { openGearFrameIndex, openGearCardIndex, mux8252AesIndex }
+  ::= { mux8252AesInputTable 1 }
+
+Mux8252AesInputEntry ::= SEQUENCE {
+  mux8252AesIndex      Unsigned32,
+  mux8252AesSrcEnable  INTEGER,
+  mux8252AesChanSum    INTEGER,
+  mux8252AesInvertChA  INTEGER,
+  mux8252AesInvertChB  INTEGER,
+  mux8252AesReset      INTEGER
+}
+
+--
+-- Define the object containing the index
+--
+mux8252AesIndex OBJECT-TYPE
+  SYNTAX Unsigned32
+  MAX-ACCESS not-accessible
+  STATUS current
+  DESCRIPTION
+    "AES audio input channel index."
+  ::= { mux8252AesInputEntry 1 }
+
+mux8252AesSrcEnable OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    disable     (0),
+    enable      (1)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "Enable or disable sample rate conversion for this input."
+  DEFVAL  { enable }
+  ::= { mux8252AesInputEntry 2 }
+
+mux8252AesChanSum OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    no     (0),
+    yes    (1)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "Indicates whether channels should be summed or not."
+  DEFVAL  { no }
+  ::= { mux8252AesInputEntry 3 }
+
+mux8252AesInvertChA OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    no     (0),
+    yes    (1)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "Indicates whether or not to invert Channel A for this input."
+  DEFVAL  { no }
+  ::= { mux8252AesInputEntry 4 }
+
+mux8252AesInvertChB OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    no     (0),
+    yes    (1)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "Indicates whether or not to invert Channel B for this input."
+  DEFVAL  { no }
+  ::= { mux8252AesInputEntry 5 }
+
+mux8252AesReset OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    reset      (1)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "Select reset(1) to reset the settings for this input."
+  ::= { mux8252AesInputEntry 6 }
+
+--
+-- Define a table to control AES input delays
+-- Indexed by frameIndex, cardIndex, aesIndex
+--
+mux8252AesDelayTable OBJECT-TYPE
+  SYNTAX SEQUENCE OF Mux8252AesDelayEntry
+  MAX-ACCESS not-accessible
+  STATUS current
+  DESCRIPTION
+    "A table containing delay settings for the AES audio inputs."
+  ::= { mux8252AesConfig 3 }
+
+mux8252AesDelayEntry OBJECT-TYPE
+  SYNTAX Mux8252AesDelayEntry
+  MAX-ACCESS not-accessible
+  STATUS current
+  DESCRIPTION
+    "A row within the mux8252AesDelayTable."
+  INDEX { openGearFrameIndex, openGearCardIndex, mux8252AesIndex }
+  ::= { mux8252AesDelayTable 1 }
+
+Mux8252AesDelayEntry ::= SEQUENCE {
+  mux8252AesChanADelay  Integer32,
+  mux8252AesChanBDelay  Integer32,
+  mux8252AesLockABDelay INTEGER
+}
+
+mux8252AesChanADelay    OBJECT-TYPE
+  SYNTAX      Integer32 (0..1000)
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "Channel A delay in milliseconds for this input."
+  DEFVAL  { 0 }
+  ::= { mux8252AesDelayEntry 1 }
+
+mux8252AesChanBDelay    OBJECT-TYPE
+  SYNTAX      Integer32 (0..1000)
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "Channel B delay in milliseconds for this input."
+  DEFVAL  { 0 }
+  ::= { mux8252AesDelayEntry 2 }
+
+mux8252AesLockABDelay    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    no     (0),
+    yes    (1)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "Indicates whether or not to lock the Channel A & B delay settings
+     to each other."
+  DEFVAL  { no }
+  ::= { mux8252AesDelayEntry 3 }
+
+--
+-- Define a table to control AES input gain
+-- Indexed by frameIndex, cardIndex, aesIndex
+--
+mux8252AesGainTable OBJECT-TYPE
+  SYNTAX SEQUENCE OF Mux8252AesGainEntry
+  MAX-ACCESS not-accessible
+  STATUS current
+  DESCRIPTION
+    "A table containing gain settings for the AES audio inputs."
+  ::= { mux8252AesConfig 4 }
+
+mux8252AesGainEntry OBJECT-TYPE
+  SYNTAX Mux8252AesGainEntry
+  MAX-ACCESS not-accessible
+  STATUS current
+  DESCRIPTION
+    "A row within the mux8252AesGainTable."
+  INDEX { openGearFrameIndex, openGearCardIndex, mux8252AesIndex }
+  ::= { mux8252AesGainTable 1 }
+
+Mux8252AesGainEntry ::= SEQUENCE {
+  mux8252AesChanAGain  Integer32,
+  mux8252AesChanBGain  Integer32,
+  mux8252AesLockABGain INTEGER
+}
+
+mux8252AesChanAGain    OBJECT-TYPE
+  SYNTAX      Integer32 (-18..18)
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "Channel A gain in dB for this input."
+  DEFVAL  { 0 }
+  ::= { mux8252AesGainEntry 1 }
+
+mux8252AesChanBGain    OBJECT-TYPE
+  SYNTAX      Integer32 (-18..18)
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "Channel B gain in dB for this input."
+  DEFVAL  { 0 }
+  ::= { mux8252AesGainEntry 2 }
+
+mux8252AesLockABGain    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    no     (0),
+    yes    (1)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "Indicates whether or not to lock the Channel A & B gain settings
+     to each other."
+  DEFVAL  { no }
+  ::= { mux8252AesGainEntry 3 }
+
+--
+-- Embedded Audio Configuration
+--
+mux8252AudioGroupConfig
+  OBJECT IDENTIFIER ::= { mux8252CardObjects 11 }
+
+mux8252AudioGroupCount OBJECT-TYPE
+  SYNTAX Integer32
+  MAX-ACCESS read-only
+  STATUS current
+  DESCRIPTION
+    "The number of embedded audio groups on the video output of each card."
+  ::= { mux8252AudioGroupConfig 1 }
+
+--
+-- Define a table to control embedded audio settings
+-- Indexed by frameIndex, cardIndex, audioGroupIndex
+--
+mux8252AudioGroupTable OBJECT-TYPE
+  SYNTAX SEQUENCE OF Mux8252AudioGroupEntry
+  MAX-ACCESS not-accessible
+  STATUS current
+  DESCRIPTION
+    "A table containing settings for each embedded audio group."
+  ::= { mux8252AudioGroupConfig 2 }
+
+mux8252AudioGroupEntry OBJECT-TYPE
+  SYNTAX Mux8252AudioGroupEntry
+  MAX-ACCESS not-accessible
+  STATUS current
+  DESCRIPTION
+    "A row within the mux8252AudioGroupTable."
+  INDEX { openGearFrameIndex, openGearCardIndex, mux8252AudioGroupIndex }
+  ::= { mux8252AudioGroupTable 1 }
+
+Mux8252AudioGroupEntry ::= SEQUENCE {
+  mux8252AudioGroupIndex    Unsigned32,
+  mux8252AudioGroupMode     INTEGER,
+  mux8252AudioGroupNotify   INTEGER,
+  mux8252AudioGroupReset    INTEGER
+}
+
+--
+-- Define the object containing the index
+--
+mux8252AudioGroupIndex OBJECT-TYPE
+  SYNTAX Unsigned32
+  MAX-ACCESS not-accessible
+  STATUS current
+  DESCRIPTION
+    "Embedded audio group index."
+  ::= { mux8252AudioGroupEntry 1 }
+
+mux8252AudioGroupMode OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    disable     (0),
+    insert      (1),
+    overwrite   (2)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "Embedding mode for this audio group:
+       disable:    do not embed this audio group
+       insert:     insert audio from the source if group does not already exist
+                   (pass existing embedded audio if it exists)
+       overwrite:  always embed audio from the specified source
+                   (overwrite any existing audio for this group)"
+  DEFVAL  { insert }
+  ::= { mux8252AudioGroupEntry 2 }
+
+mux8252AudioGroupNotify OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    no     (0),
+    yes    (1)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "Indicates whether to raise an alarm in DashBoard when audio input
+     for this group is missing or asynchronous."
+  DEFVAL  { yes }
+  ::= { mux8252AudioGroupEntry 3 }
+
+mux8252AudioGroupReset OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    reset      (1)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "Set this value to reset (1) to reset all settings for this group."
+  ::= { mux8252AudioGroupEntry 4 }
+
+--
+-- Define a table to specify audio source for each embedded group
+-- Indexed by frameIndex, cardIndex, audioGroupIndex
+--
+mux8252AudioSourceTable OBJECT-TYPE
+  SYNTAX SEQUENCE OF Mux8252AudioSourceEntry
+  MAX-ACCESS not-accessible
+  STATUS current
+  DESCRIPTION
+    "A table specifying the audio source for each embedded audio group."
+  ::= { mux8252AudioGroupConfig 3 }
+
+mux8252AudioSourceEntry OBJECT-TYPE
+  SYNTAX Mux8252AudioSourceEntry
+  MAX-ACCESS not-accessible
+  STATUS current
+  DESCRIPTION
+    "A row within the mux8252AudioSourceTable."
+  INDEX { openGearFrameIndex, openGearCardIndex, mux8252AudioGroupIndex }
+  ::= { mux8252AudioSourceTable 1 }
+
+Mux8252AudioSourceEntry ::= SEQUENCE {
+  mux8252Channel1Source     INTEGER,
+  mux8252Channel2Source     INTEGER,
+  mux8252Channel3Source     INTEGER,
+  mux8252Channel4Source     INTEGER
+}
+
+--
+-- Define the channel source type
+-- Representing the available audio sources."
+--
+AudioSource ::= TEXTUAL-CONVENTION
+  STATUS       current
+  DESCRIPTION
+     "Represents the available audio sources. Available sources:
+       grpMchN:  embedded audio from input video, group M, channel N
+       aesMA/B:  AES audio input M (channel A or B)
+       mute:   audio silence
+       toneN:  sine-wave tone at 500 to 4000 Hz."
+  SYNTAX    INTEGER  {
+    mute         (0),
+    grp1ch1      (1),
+    grp1ch2      (2),
+    grp1ch3      (3),
+    grp1ch4      (4),
+    grp2ch1      (5),
+    grp2ch2      (6),
+    grp2ch3      (7),
+    grp2ch4      (8),
+    grp3ch1      (9),
+    grp3ch2     (10),
+    grp3ch3     (11),
+    grp3ch4     (12),
+    grp4ch1     (13),
+    grp4ch2     (14),
+    grp4ch3     (15),
+    grp4ch4     (16),
+    aes1A       (17),
+    aes1B       (18),
+    aes2A       (19),
+    aes2B       (20),
+    aes3A       (21),
+    aes3B       (22),
+    aes4A       (23),
+    aes4B       (24),
+    tone500     (25),
+    tone1kHz    (26),
+    tone2kHz    (27),
+    tone4kHz    (28)
+  }
+
+--
+-- Each channel has the same sources available.
+--
+mux8252Channel1Source OBJECT-TYPE
+  SYNTAX      AudioSource
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "Audio source for channel 1 of this group.
+     For definition of audio sources, see AudioSource."
+  DEFVAL  { mute }
+  ::= { mux8252AudioSourceEntry 1 }
+
+mux8252Channel2Source OBJECT-TYPE
+  SYNTAX      AudioSource
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "Audio source for channel 2 of this group.
+     For definition of audio sources, see AudioSource."
+  DEFVAL  { mute }
+  ::= { mux8252AudioSourceEntry 2 }
+
+mux8252Channel3Source OBJECT-TYPE
+  SYNTAX      AudioSource
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "Audio source for channel 3 of this group.
+     For definition of audio sources, see AudioSource."
+  DEFVAL  { mute }
+  ::= { mux8252AudioSourceEntry 3 }
+
+mux8252Channel4Source OBJECT-TYPE
+  SYNTAX      AudioSource
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "Audio source for channel 4 of this group.
+     For definition of audio sources, see AudioSource."
+  DEFVAL  { mute }
+  ::= { mux8252AudioSourceEntry 4 }
+
+--
+-- Conformance
+--
+mux8252CardMibCompliances
+  OBJECT IDENTIFIER ::= { mux8252CardConformance 1 }
+mux8252CardMibGroups
+  OBJECT IDENTIFIER ::= { mux8252CardConformance 2 }
+
+--
+-- Compliance Statement
+--
+mux8252CardCompliances MODULE-COMPLIANCE
+  STATUS      current
+  DESCRIPTION
+    "The compliance statement for MUX-8252 entities."
+
+  MODULE -- this module
+    MANDATORY-GROUPS { mux8252CardInfoGroup,
+                       mux8252CardNotifyGroup
+                     }
+
+  ::= { mux8252CardMibCompliances 1 }
+
+--
+-- MUX-8252 MIB groups
+--
+mux8252CardInfoGroup OBJECT-GROUP
+    OBJECTS { mux8252NumberOfCards,
+              mux8252FirmwareRev,
+              mux8252BoardRev,
+              mux8252SerialNumber,
+              mux8252RearModule,
+              mux8252CardVoltage,
+              mux8252CardCurrent,
+              mux8252EEBank,
+              mux8252HWStatus,
+              mux8252ReferenceStatus,
+              mux8252ReferenceFormat,
+              mux8252GenlockState,
+              mux8252InputStatus,
+              mux8252InputFormat,
+              mux8252AudioStatus,
+              mux8252Aes1Status,
+              mux8252Aes2Status,
+              mux8252Aes3Status,
+              mux8252Aes4Status,
+              mux8252EditPermission,
+              mux8252FactoryReset,
+              mux8252ResetAudioInputs,
+              mux8252ResetAudioGroups,
+              mux8252LossOfInput,
+              mux8252TestPattern,
+              mux8252MonitorFormat,
+              mux8252ReferenceSelect,
+              mux8252VideoGain,
+              mux8252ChromaGain,
+              mux8252CBGain,
+              mux8252BlackOffset,
+              mux8252ProcAmpReset,
+              mux8252BlankActiveLines,
+              mux8252AesInputCount, 
+              mux8252AesSrcEnable,
+              mux8252AesChanSum,
+              mux8252AesInvertChA,
+              mux8252AesInvertChB,
+              mux8252AesReset,
+              mux8252AesChanADelay,
+              mux8252AesChanBDelay,
+              mux8252AesLockABDelay,
+              mux8252AesChanAGain,
+              mux8252AesChanBGain,
+              mux8252AesLockABGain,
+              mux8252AudioGroupCount, 
+              mux8252AudioGroupMode,
+              mux8252AudioGroupNotify,
+              mux8252AudioGroupReset,
+              mux8252Channel1Source,
+              mux8252Channel2Source,
+              mux8252Channel3Source,
+              mux8252Channel4Source
+            }
+    STATUS  current
+    DESCRIPTION
+            "A collection of objects providing basic instrumentation
+            and control of an MUX-8252 card."
+    ::= { mux8252CardMibGroups 1 }
+
+mux8252CardNotifyGroup NOTIFICATION-GROUP
+  NOTIFICATIONS { mux8252HWStatusEvent,
+                  mux8252ReferenceStatusEvent,
+                  mux8252InputStatusEvent,
+                  mux8252AudioStatusEvent
+                }
+  STATUS current
+  DESCRIPTION
+    "The notifications relating to the MUX-8252 card"
+  ::= { mux8252CardMibGroups 2 }
+
+END

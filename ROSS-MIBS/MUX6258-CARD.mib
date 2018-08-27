@@ -1,0 +1,3244 @@
+MUX6258-CARD-MIB DEFINITIONS ::= BEGIN
+
+--
+-- Defines control and monitoring structures for the MUX6258 card.
+--
+
+IMPORTS
+  openGearFrameIndex
+    FROM OPEN-GEAR-FRAME-MIB
+
+  openGearCardIndex
+    FROM OPEN-GEAR-CARD-MIB
+
+  openGearObjects
+    FROM OPEN-GEAR-MIB
+
+  OBJECT-TYPE, NOTIFICATION-TYPE, MODULE-IDENTITY, Integer32
+    FROM SNMPv2-SMI
+
+  OBJECT-GROUP, NOTIFICATION-GROUP, MODULE-COMPLIANCE
+    FROM SNMPv2-CONF
+
+  DisplayString
+    FROM SNMPv2-TC;
+
+mux6258CardMib MODULE-IDENTITY
+  LAST-UPDATED "200911231200Z"
+  ORGANIZATION "www.rossvideo.org"
+  CONTACT-INFO
+    "postal:   Ross Video
+               8 John St. P.O. Box 220
+               Iroquois ON K0E 1K0
+
+      email:   support@rossvideo.com"
+
+  DESCRIPTION
+    "Defines control and monitoring structures for the MUX6258 card.
+     (Add more) ..."
+
+  REVISION     "200911231200Z"
+  DESCRIPTION
+    "... "
+  ::= { openGearObjects 20 }
+
+--
+--  Top level components in the MUX6258 MIB
+--
+mux6258CardNotifications
+  OBJECT IDENTIFIER ::= { mux6258CardMib 0 }
+
+mux6258CardObjects
+  OBJECT IDENTIFIER ::= { mux6258CardMib 1 }
+
+mux6258CardConformance
+  OBJECT IDENTIFIER ::= { mux6258CardMib 2 }
+
+--
+--  Notifications relating to the MUX6258 card
+--
+mux6258SignalAlarmEvent   NOTIFICATION-TYPE
+  OBJECTS { mux6258SignalAlarm }
+  STATUS current
+  DESCRIPTION
+    "... "
+  ::= { mux6258CardNotifications 1 }
+
+mux6258AudioAlarmEvent   NOTIFICATION-TYPE
+  OBJECTS { mux6258AudioAlarm }
+  STATUS current
+  DESCRIPTION
+    "... "
+  ::= { mux6258CardNotifications 2 }
+
+mux6258ReferenceAlarmEvent   NOTIFICATION-TYPE
+  OBJECTS { mux6258ReferenceAlarm }
+  STATUS current
+  DESCRIPTION
+    "... "
+  ::= { mux6258CardNotifications 3 }
+
+mux6258HwAlarmEvent   NOTIFICATION-TYPE
+  OBJECTS { mux6258HwAlarm }
+  STATUS current
+  DESCRIPTION
+    "... "
+  ::= { mux6258CardNotifications 4 }
+
+--
+--  MUX6258 Card information
+--
+--
+--  All the MUX6258 cards in the Open Gear frame
+--
+mux6258NumberOfCards    OBJECT-TYPE
+  SYNTAX      Integer32
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "The total number of MUX6258 cards in the open gear frame.
+"  ::= { mux6258CardObjects 1 }
+
+--
+--  Table of Product parameters
+--
+mux6258ProductTable     OBJECT-TYPE
+  SYNTAX      SEQUENCE OF Mux6258ProductEntry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "A table containing product info for all MUX6258 cards at this node.
+    This table is the expansion of the table 'openGearCardTable' in the
+    OPEN-GEAR-CARD-MIB. For each MUX6258 card in the 'openGearCardTable',
+    there is a corresponding entry in this table, having the same indices -
+    'openGearFrameIndex' and 'openGearCardIndex'."
+  ::= { mux6258CardObjects 2 }
+
+mux6258ProductEntry     OBJECT-TYPE
+  SYNTAX      Mux6258ProductEntry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "A conceptual row within the 'mux6258ProductTable'."
+  INDEX    { openGearFrameIndex, openGearCardIndex }
+  ::= { mux6258ProductTable 1 }
+
+Mux6258ProductEntry ::= SEQUENCE {
+  mux6258MuxProduct                DisplayString,
+  mux6258BoardRev                  DisplayString,
+  mux6258RearModule                DisplayString,
+  mux6258SerialNumber              DisplayString,
+  mux6258Firmware                  DisplayString,
+  mux6258DaughterCard              INTEGER
+}
+
+mux6258MuxProduct    OBJECT-TYPE
+  SYNTAX      DisplayString
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "... "
+  ::= { mux6258ProductEntry 4 }
+
+mux6258BoardRev    OBJECT-TYPE
+  SYNTAX      DisplayString
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "... "
+  ::= { mux6258ProductEntry 5 }
+
+mux6258RearModule    OBJECT-TYPE
+  SYNTAX      DisplayString
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "... "
+  ::= { mux6258ProductEntry 6 }
+
+mux6258SerialNumber    OBJECT-TYPE
+  SYNTAX      DisplayString
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "... "
+  ::= { mux6258ProductEntry 7 }
+
+mux6258Firmware    OBJECT-TYPE
+  SYNTAX      DisplayString
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "... "
+  ::= { mux6258ProductEntry 8 }
+
+mux6258DaughterCard    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    none                    (0),
+    analogInput             (1),
+    analogInput4Channel     (2),
+    balancedAESInput        (9)
+  }
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "... "
+  ::= { mux6258ProductEntry 9 }
+
+--
+--  Table of Hardware parameters
+--
+mux6258HardwareTable     OBJECT-TYPE
+  SYNTAX      SEQUENCE OF Mux6258HardwareEntry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "A table containing product info for all MUX6258 cards at this node.
+    This table is the expansion of the table 'openGearCardTable' in the
+    OPEN-GEAR-CARD-MIB. For each MUX6258 card in the 'openGearCardTable',
+    there is a corresponding entry in this table, having the same indices -
+    'openGearFrameIndex' and 'openGearCardIndex'."
+  ::= { mux6258CardObjects 3 }
+
+mux6258HardwareEntry     OBJECT-TYPE
+  SYNTAX      Mux6258HardwareEntry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "A conceptual row within the 'mux6258HardwareTable'."
+  INDEX    { openGearFrameIndex, openGearCardIndex }
+  ::= { mux6258HardwareTable 1 }
+
+Mux6258HardwareEntry ::= SEQUENCE {
+  mux6258HwAlarm                   Integer32,
+  mux6258CardVoltage               Integer32,
+  mux6258CardCurrent               Integer32,
+  mux6258SfpModuleTemp             Integer32,
+  mux6258OpticalWavelength         Integer32,
+  mux6258Headroom                  Integer32,
+  mux6258Ram                       Integer32
+}
+
+mux6258HwAlarm    OBJECT-TYPE
+  SYNTAX      Integer32
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "The status parameter is a bitfield where each bit indicates a
+    specific status. A value of zero means OK.
+    The status bits are defined as follows:
+      0x0001 - FPGA load invalid
+      0x0004 - Incomp I/O module
+      0x0002 - Current out of spec
+      0x0008 - Internal Error
+      0x0010 - Incompatible Daughter Card
+      0x0020 - SFP Temp Low
+      0x0040 - SFP Power Low
+      0x0080 - SFP Temp High
+      0x0100 - SFP Power High
+      0x0200 - SFP Tx Fault
+      0x0400 - SFP Not Detected
+    All other values are undefined."
+  ::= { mux6258HardwareEntry 1 }
+
+mux6258CardVoltage    OBJECT-TYPE
+  SYNTAX      Integer32
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "... "
+  ::= { mux6258HardwareEntry 2 }
+
+mux6258CardCurrent    OBJECT-TYPE
+  SYNTAX      Integer32
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "... "
+  ::= { mux6258HardwareEntry 3 }
+
+mux6258SfpModuleTemp    OBJECT-TYPE
+  SYNTAX      Integer32
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "... "
+  ::= { mux6258HardwareEntry 4 }
+
+mux6258OpticalWavelength    OBJECT-TYPE
+  SYNTAX      Integer32
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "... "
+  ::= { mux6258HardwareEntry 5 }
+
+mux6258Headroom    OBJECT-TYPE
+  SYNTAX      Integer32
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "... "
+  ::= { mux6258HardwareEntry 6 }
+
+mux6258Ram    OBJECT-TYPE
+  SYNTAX      Integer32
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "... "
+  ::= { mux6258HardwareEntry 7 }
+
+--
+--  Table of Signal parameters
+--
+mux6258SignalTable     OBJECT-TYPE
+  SYNTAX      SEQUENCE OF Mux6258SignalEntry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "A table containing product info for all MUX6258 cards at this node.
+    This table is the expansion of the table 'openGearCardTable' in the
+    OPEN-GEAR-CARD-MIB. For each MUX6258 card in the 'openGearCardTable',
+    there is a corresponding entry in this table, having the same indices -
+    'openGearFrameIndex' and 'openGearCardIndex'."
+  ::= { mux6258CardObjects 4 }
+
+mux6258SignalEntry     OBJECT-TYPE
+  SYNTAX      Mux6258SignalEntry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "A conceptual row within the 'mux6258SignalTable'."
+  INDEX    { openGearFrameIndex, openGearCardIndex }
+  ::= { mux6258SignalTable 1 }
+
+Mux6258SignalEntry ::= SEQUENCE {
+  mux6258SignalAlarm               Integer32,
+  mux6258AudioAlarm                Integer32,
+  mux6258ReferenceAlarm            Integer32,
+  mux6258Input                     INTEGER,
+  mux6258Reference                 INTEGER,
+  mux6258Output                    INTEGER,
+  mux6258SfpCh1Status              INTEGER,
+  mux6258SfpCh1TxPower             DisplayString
+}
+
+mux6258SignalAlarm    OBJECT-TYPE
+  SYNTAX      Integer32
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "The status parameter is a bitfield where each bit indicates a
+    specific status. A value of zero means OK.
+    The status bits are defined as follows:
+      0x0001 - No Input
+      0x0002 - Invalid Format
+      0x0004 - Incompatible
+      0x0020 - Non-Sync Video
+      0x0008 - Group Not Present
+      0x0010 - Group Channel Silent
+    All other values are undefined."
+  ::= { mux6258SignalEntry 1 }
+
+mux6258AudioAlarm    OBJECT-TYPE
+  SYNTAX      Integer32
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "The status parameter is a bitfield where each bit indicates a
+    specific status. A value of zero means OK.
+    The status bits are defined as follows:
+      0x0001 - AES Input Not Present
+      0x0002 - Source Missing
+      0x0004 - Source Async
+      0x0020 - AES Input Silent
+      0x0040 - Analog Input Silent
+      0x0080 - Grp4 reduced to 20bit
+      0x0008 - Backup Source Missing
+      0x0010 - Backup Source Async
+    All other values are undefined."
+  ::= { mux6258SignalEntry 2 }
+
+mux6258ReferenceAlarm    OBJECT-TYPE
+  SYNTAX      Integer32
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "The status parameter is a bitfield where each bit indicates a
+    specific status. A value of zero means OK.
+    The status bits are defined as follows:
+      0x0001 - No Reference - Video
+      0x0080 - No Reference - Free Run
+      0x0002 - Invalid Format - Video
+      0x0100 - Invalid Format - Free Run
+      0x0040 - Override - Video
+    All other values are undefined."
+  ::= { mux6258SignalEntry 3 }
+
+mux6258Input    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    none                    (0),
+    matchInput              (1),
+    unknown                 (2),
+    incompatible            (3),
+    v480i59dot94            (4),
+    v720p59dot94            (5),
+    v720p60                 (6),
+    v1080i59dot94           (7),
+    v1080i60                (8),
+    v1080p59dot94           (9),
+    v1080p60                (10),
+    v576i50                 (11),
+    v720p50                 (12),
+    v1080i50                (13),
+    v1080p50                (14),
+    v480p59dot94            (15),
+    v576p50                 (16),
+    v1080p30                (17),
+    v1080p29dot97           (18),
+    v1080p25                (19),
+    v1080p24                (20),
+    v1080p23dot98           (21),
+    v1080pSF24              (22),
+    v1080pSF23dot98         (23)
+  }
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "... "
+  ::= { mux6258SignalEntry 4 }
+
+mux6258Reference    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    none                    (0),
+    matchInput              (1),
+    unknown                 (2),
+    incompatible            (3),
+    v480i59dot94            (4),
+    v720p59dot94            (5),
+    v720p60                 (6),
+    v1080i59dot94           (7),
+    v1080i60                (8),
+    v1080p59dot94           (9),
+    v1080p60                (10),
+    v576i50                 (11),
+    v720p50                 (12),
+    v1080i50                (13),
+    v1080p50                (14),
+    v480p59dot94            (15),
+    v576p50                 (16),
+    v1080p30                (17),
+    v1080p29dot97           (18),
+    v1080p25                (19),
+    v1080p24                (20),
+    v1080p23dot98           (21),
+    v1080pSF24              (22),
+    v1080pSF23dot98         (23)
+  }
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "... "
+  ::= { mux6258SignalEntry 5 }
+
+mux6258Output    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    none                    (0),
+    matchInput              (1),
+    unknown                 (2),
+    incompatible            (3),
+    v480i59dot94            (4),
+    v720p59dot94            (5),
+    v720p60                 (6),
+    v1080i59dot94           (7),
+    v1080i60                (8),
+    v1080p59dot94           (9),
+    v1080p60                (10),
+    v576i50                 (11),
+    v720p50                 (12),
+    v1080i50                (13),
+    v1080p50                (14),
+    v480p59dot94            (15),
+    v576p50                 (16),
+    v1080p30                (17),
+    v1080p29dot97           (18),
+    v1080p25                (19),
+    v1080p24                (20),
+    v1080p23dot98           (21),
+    v1080pSF24              (22),
+    v1080pSF23dot98         (23)
+  }
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "... "
+  ::= { mux6258SignalEntry 6 }
+
+mux6258SfpCh1Status    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    oK                      (0),
+    tempLow                 (1),
+    rxPowerLow              (2),
+    txPowerLow              (3),
+    tempHigh                (4),
+    noSignal                (5),
+    txPowerHigh             (6),
+    rxPowerHigh             (7),
+    txFault                 (8),
+    txDisabled              (9),
+    notDetected             (10)
+  }
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "... "
+  ::= { mux6258SignalEntry 7 }
+
+mux6258SfpCh1TxPower    OBJECT-TYPE
+  SYNTAX      DisplayString
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "... "
+  ::= { mux6258SignalEntry 8 }
+
+--
+--  Table of Setup parameters
+--
+mux6258SetupTable     OBJECT-TYPE
+  SYNTAX      SEQUENCE OF Mux6258SetupEntry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "A table containing product info for all MUX6258 cards at this node.
+    This table is the expansion of the table 'openGearCardTable' in the
+    OPEN-GEAR-CARD-MIB. For each MUX6258 card in the 'openGearCardTable',
+    there is a corresponding entry in this table, having the same indices -
+    'openGearFrameIndex' and 'openGearCardIndex'."
+  ::= { mux6258CardObjects 5 }
+
+mux6258SetupEntry     OBJECT-TYPE
+  SYNTAX      Mux6258SetupEntry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "A conceptual row within the 'mux6258SetupTable'."
+  INDEX    { openGearFrameIndex, openGearCardIndex }
+  ::= { mux6258SetupTable 1 }
+
+Mux6258SetupEntry ::= SEQUENCE {
+  mux6258RefSource                 INTEGER,
+  mux6258MinimumDelay              INTEGER,
+  mux6258LoiColour                 INTEGER,
+  mux6258LoiY                      Integer32,
+  mux6258LoiCr                     Integer32,
+  mux6258LoiCb                     Integer32,
+  mux6258Pattern                   INTEGER,
+  mux6258SdAudioBitMode            INTEGER,
+  mux6258SilenceThreshold          Integer32,
+  mux6258SilenceTimeout            Integer32,
+  mux6258Access                    INTEGER,
+  mux6258AudioResetAll             INTEGER,
+  mux6258ResetAll                  INTEGER,
+  mux6258AesInputResetAll          INTEGER,
+  mux6258AesInputResetAllPg2       INTEGER,
+  mux6258AnalogInputResetAll       INTEGER
+}
+
+mux6258RefSource    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    frame1                  (0),
+    frame2                  (1),
+    video                   (3)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { frame1 }
+  ::= { mux6258SetupEntry 1 }
+
+mux6258MinimumDelay    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    no                      (0),
+    yes                     (1)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { yes }
+  ::= { mux6258SetupEntry 2 }
+
+mux6258LoiColour    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    black                   (0),
+    blue                    (1),
+    custom                  (2)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { custom }
+  ::= { mux6258SetupEntry 3 }
+
+mux6258LoiY    OBJECT-TYPE
+  SYNTAX      Integer32 (64..940)
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { 256 }
+  ::= { mux6258SetupEntry 17 }
+
+mux6258LoiCr    OBJECT-TYPE
+  SYNTAX      Integer32 (64..848)
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { 512 }
+  ::= { mux6258SetupEntry 18 }
+
+mux6258LoiCb    OBJECT-TYPE
+  SYNTAX      Integer32 (64..848)
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { 512 }
+  ::= { mux6258SetupEntry 19 }
+
+mux6258Pattern    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    none                    (0),
+    v100perColourBars       (1),
+    frequencySweep          (2),
+    black                   (3),
+    blue                    (4),
+    matrixPathological      (5),
+    lumaRamp                (6),
+    yCRamp                  (7),
+    v75perSMPTEBars         (8)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { none }
+  ::= { mux6258SetupEntry 4 }
+
+mux6258SdAudioBitMode    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    v20Bit                  (4),
+    v24Bit                  (8),
+    auto                    (9)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { v20Bit }
+  ::= { mux6258SetupEntry 5 }
+
+mux6258SilenceThreshold    OBJECT-TYPE
+  SYNTAX      Integer32 (-96..0)
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { -72 }
+  ::= { mux6258SetupEntry 6 }
+
+mux6258SilenceTimeout    OBJECT-TYPE
+  SYNTAX      Integer32 (1..60)
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { 5 }
+  ::= { mux6258SetupEntry 7 }
+
+mux6258Access    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    unlocked                (0),
+    locked                  (2)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { unlocked }
+  ::= { mux6258SetupEntry 9 }
+
+mux6258AudioResetAll    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    reset                   (1)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { reset }
+  ::= { mux6258SetupEntry 10 }
+
+mux6258ResetAll    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    reset                   (1)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { reset }
+  ::= { mux6258SetupEntry 11 }
+
+mux6258AesInputResetAll    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    reset                   (1)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { reset }
+  ::= { mux6258SetupEntry 12 }
+
+mux6258AesInputResetAllPg2    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    reset                   (1)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { reset }
+  ::= { mux6258SetupEntry 13 }
+
+mux6258AnalogInputResetAll    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    reset                   (1)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { reset }
+  ::= { mux6258SetupEntry 14 }
+
+--
+--  Table of InputStatus parameters
+--
+mux6258InputStatusTable     OBJECT-TYPE
+  SYNTAX      SEQUENCE OF Mux6258InputStatusEntry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "A table containing product info for all MUX6258 cards at this node.
+    This table is the expansion of the table 'openGearCardTable' in the
+    OPEN-GEAR-CARD-MIB. For each MUX6258 card in the 'openGearCardTable',
+    there is a corresponding entry in this table, having the same indices -
+    'openGearFrameIndex' and 'openGearCardIndex'."
+  ::= { mux6258CardObjects 6 }
+
+mux6258InputStatusEntry     OBJECT-TYPE
+  SYNTAX      Mux6258InputStatusEntry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "A conceptual row within the 'mux6258InputStatusTable'."
+  INDEX    { openGearFrameIndex, openGearCardIndex }
+  ::= { mux6258InputStatusTable 1 }
+
+Mux6258InputStatusEntry ::= SEQUENCE {
+  mux6258CrcError                  DisplayString,
+  mux6258CrcErrReset               INTEGER
+}
+
+mux6258CrcError    OBJECT-TYPE
+  SYNTAX      DisplayString
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "... "
+  ::= { mux6258InputStatusEntry 1 }
+
+mux6258CrcErrReset    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    reset                   (1)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { reset }
+  ::= { mux6258InputStatusEntry 2 }
+
+--
+--  Table of AESInputs1To4 parameters
+--
+mux6258AESInputs1To4ArrGrp
+  OBJECT IDENTIFIER ::= { mux6258CardObjects 7 }
+
+mux6258NumberOfElementsInmux6258AESInputs1To4ArrGrp OBJECT-TYPE
+  SYNTAX      Integer32
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "The total number of elements in mux6258AESInputs1To4ArrGrp."
+  ::= { mux6258AESInputs1To4ArrGrp 1 }
+
+mux6258AESInputs1To4Table     OBJECT-TYPE
+  SYNTAX      SEQUENCE OF Mux6258AESInputs1To4Entry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "A table containing product info for all MUX6258 cards at this node.
+    This table is the expansion of the table 'openGearCardTable' in the
+    OPEN-GEAR-CARD-MIB. For each MUX6258 card in the 'openGearCardTable',
+    there is a corresponding entry in this table, having the same indices -
+    'openGearFrameIndex' and 'openGearCardIndex'."
+  ::= { mux6258AESInputs1To4ArrGrp 2 }
+
+mux6258AESInputs1To4Entry     OBJECT-TYPE
+  SYNTAX      Mux6258AESInputs1To4Entry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "A conceptual row within the 'mux6258AESInputs1To4Table'."
+  INDEX    { openGearFrameIndex, openGearCardIndex,  mux6258AESInputs1To4Index}
+  ::= { mux6258AESInputs1To4Table 1 }
+
+Mux6258AESInputs1To4Entry ::= SEQUENCE {
+  mux6258AESInputs1To4Index        Unsigned32,
+  mux6258AesCh1Delay               Integer32,
+  mux6258AesCh2Delay               Integer32,
+  mux6258AesDelayLock              INTEGER,
+  mux6258AesCh1Gain                Integer32,
+  mux6258AesCh2Gain                Integer32,
+  mux6258AesGainLock               INTEGER,
+  mux6258AesCh1Invert              INTEGER,
+  mux6258AesCh2Invert              INTEGER,
+  mux6258AesSRConversion           INTEGER,
+  mux6258AesSum                    INTEGER,
+  mux6258AesInputReset             INTEGER,
+  mux6258AesInputChAStatus         INTEGER,
+  mux6258AesInputChBStatus         INTEGER,
+  mux6258AesInputWordLength        INTEGER,
+  mux6258AesEmph                   INTEGER,
+  mux6258AesInputSampleRate        INTEGER
+}
+
+mux6258AESInputs1To4Index   OBJECT-TYPE
+  SYNTAX      Unsigned32
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "It represents the array group index."
+  ::= { mux6258AESInputs1To4Entry 1 }
+
+mux6258AesCh1Delay    OBJECT-TYPE
+  SYNTAX      Integer32 (0..1000)
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { 0 }
+  ::= { mux6258AESInputs1To4Entry 2 }
+
+mux6258AesCh2Delay    OBJECT-TYPE
+  SYNTAX      Integer32 (0..1000)
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { 0 }
+  ::= { mux6258AESInputs1To4Entry 3 }
+
+mux6258AesDelayLock    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    no                      (0),
+    yes                     (1)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { yes }
+  ::= { mux6258AESInputs1To4Entry 4 }
+
+mux6258AesCh1Gain    OBJECT-TYPE
+  SYNTAX      Integer32 (-20..20)
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { 0 }
+  ::= { mux6258AESInputs1To4Entry 5 }
+
+mux6258AesCh2Gain    OBJECT-TYPE
+  SYNTAX      Integer32 (-20..20)
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { 0 }
+  ::= { mux6258AESInputs1To4Entry 6 }
+
+mux6258AesGainLock    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    no                      (0),
+    yes                     (1)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { yes }
+  ::= { mux6258AESInputs1To4Entry 7 }
+
+mux6258AesCh1Invert    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    no                      (0),
+    yes                     (1)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { yes }
+  ::= { mux6258AESInputs1To4Entry 8 }
+
+mux6258AesCh2Invert    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    no                      (0),
+    yes                     (1)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { no }
+  ::= { mux6258AESInputs1To4Entry 9 }
+
+mux6258AesSRConversion    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    off                     (0),
+    on                      (1)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { on }
+  ::= { mux6258AESInputs1To4Entry 10 }
+
+mux6258AesSum    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    no                      (0),
+    yes                     (1)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { no }
+  ::= { mux6258AESInputs1To4Entry 11 }
+
+mux6258AesInputReset    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    reset                   (1)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { reset }
+  ::= { mux6258AESInputs1To4Entry 12 }
+
+mux6258AesInputChAStatus    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    pCM                     (0),
+    noInput                 (1),
+    pCMSilent               (2),
+    nonPCM                  (3),
+    async                   (5),
+    mixed                   (6)
+  }
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "... "
+  ::= { mux6258AESInputs1To4Entry 13 }
+
+mux6258AesInputChBStatus    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    pCM                     (0),
+    noInput                 (1),
+    pCMSilent               (2),
+    nonPCM                  (3),
+    async                   (5),
+    mixed                   (6)
+  }
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "... "
+  ::= { mux6258AESInputs1To4Entry 14 }
+
+mux6258AesInputWordLength    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    v16Bit                  (0),
+    v20Bit                  (4),
+    v24Bit                  (8),
+    unknown                 (10)
+  }
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "... "
+  ::= { mux6258AESInputs1To4Entry 15 }
+
+mux6258AesEmph    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    notPresent              (0),
+    present                 (1)
+  }
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "... "
+  ::= { mux6258AESInputs1To4Entry 16 }
+
+mux6258AesInputSampleRate    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    v16KHz                  (0),
+    v32KHz                  (1),
+    v44dot1KHz              (2),
+    v48KHz                  (3),
+    v88KHz                  (4),
+    v96KHz                  (5),
+    v176KHz                 (6),
+    v192KHz                 (7),
+    unknown                 (8)
+  }
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "... "
+  ::= { mux6258AESInputs1To4Entry 17 }
+
+--
+--  Table of AESInputs5To8 parameters
+--
+mux6258AESInputs5To8ArrGrp
+  OBJECT IDENTIFIER ::= { mux6258CardObjects 8 }
+
+mux6258NumberOfElementsInmux6258AESInputs5To8ArrGrp OBJECT-TYPE
+  SYNTAX      Integer32
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "The total number of elements in mux6258AESInputs5To8ArrGrp."
+  ::= { mux6258AESInputs5To8ArrGrp 1 }
+
+mux6258AESInputs5To8Table     OBJECT-TYPE
+  SYNTAX      SEQUENCE OF Mux6258AESInputs5To8Entry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "A table containing product info for all MUX6258 cards at this node.
+    This table is the expansion of the table 'openGearCardTable' in the
+    OPEN-GEAR-CARD-MIB. For each MUX6258 card in the 'openGearCardTable',
+    there is a corresponding entry in this table, having the same indices -
+    'openGearFrameIndex' and 'openGearCardIndex'."
+  ::= { mux6258AESInputs5To8ArrGrp 2 }
+
+mux6258AESInputs5To8Entry     OBJECT-TYPE
+  SYNTAX      Mux6258AESInputs5To8Entry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "A conceptual row within the 'mux6258AESInputs5To8Table'."
+  INDEX    { openGearFrameIndex, openGearCardIndex,  mux6258AESInputs5To8Index}
+  ::= { mux6258AESInputs5To8Table 1 }
+
+Mux6258AESInputs5To8Entry ::= SEQUENCE {
+  mux6258AESInputs5To8Index        Unsigned32,
+  mux6258AesCh1DelayPg2            Integer32,
+  mux6258AesCh2DelayPg2            Integer32,
+  mux6258AesDelayLockPg2           INTEGER,
+  mux6258AesCh1GainPg2             Integer32,
+  mux6258AesCh2GainPg2             Integer32,
+  mux6258AesGainLockPg2            INTEGER,
+  mux6258AesCh1InvertPg2           INTEGER,
+  mux6258AesCh2InvertPg2           INTEGER,
+  mux6258AesSRConversionPg2        INTEGER,
+  mux6258AesSumPg2                 INTEGER,
+  mux6258AesInputResetPg2          INTEGER,
+  mux6258AesInputChAStatusPage2    INTEGER,
+  mux6258AesInputChBStatusPage2    INTEGER,
+  mux6258AesInputWordLengthPage2   INTEGER,
+  mux6258AesEmphPg2                INTEGER,
+  mux6258AesInputSampleRatePage2   INTEGER
+}
+
+mux6258AESInputs5To8Index   OBJECT-TYPE
+  SYNTAX      Unsigned32
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "It represents the array group index."
+  ::= { mux6258AESInputs5To8Entry 1 }
+
+mux6258AesCh1DelayPg2    OBJECT-TYPE
+  SYNTAX      Integer32 (0..1000)
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { 0 }
+  ::= { mux6258AESInputs5To8Entry 2 }
+
+mux6258AesCh2DelayPg2    OBJECT-TYPE
+  SYNTAX      Integer32 (0..1000)
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { 0 }
+  ::= { mux6258AESInputs5To8Entry 3 }
+
+mux6258AesDelayLockPg2    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    no                      (0),
+    yes                     (1)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { yes }
+  ::= { mux6258AESInputs5To8Entry 4 }
+
+mux6258AesCh1GainPg2    OBJECT-TYPE
+  SYNTAX      Integer32 (-20..20)
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { 0 }
+  ::= { mux6258AESInputs5To8Entry 5 }
+
+mux6258AesCh2GainPg2    OBJECT-TYPE
+  SYNTAX      Integer32 (-20..20)
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { 0 }
+  ::= { mux6258AESInputs5To8Entry 6 }
+
+mux6258AesGainLockPg2    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    no                      (0),
+    yes                     (1)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { no }
+  ::= { mux6258AESInputs5To8Entry 7 }
+
+mux6258AesCh1InvertPg2    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    no                      (0),
+    yes                     (1)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { no }
+  ::= { mux6258AESInputs5To8Entry 8 }
+
+mux6258AesCh2InvertPg2    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    no                      (0),
+    yes                     (1)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { no }
+  ::= { mux6258AESInputs5To8Entry 9 }
+
+mux6258AesSRConversionPg2    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    off                     (0),
+    on                      (1)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { on }
+  ::= { mux6258AESInputs5To8Entry 10 }
+
+mux6258AesSumPg2    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    no                      (0),
+    yes                     (1)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { no }
+  ::= { mux6258AESInputs5To8Entry 11 }
+
+mux6258AesInputResetPg2    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    reset                   (1)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { reset }
+  ::= { mux6258AESInputs5To8Entry 12 }
+
+mux6258AesInputChAStatusPage2    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    pCM                     (0),
+    noInput                 (1),
+    pCMSilent               (2),
+    nonPCM                  (3),
+    async                   (5),
+    mixed                   (6)
+  }
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "... "
+  ::= { mux6258AESInputs5To8Entry 13 }
+
+mux6258AesInputChBStatusPage2    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    pCM                     (0),
+    noInput                 (1),
+    pCMSilent               (2),
+    nonPCM                  (3),
+    async                   (5),
+    mixed                   (6)
+  }
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "... "
+  ::= { mux6258AESInputs5To8Entry 14 }
+
+mux6258AesInputWordLengthPage2    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    v16Bit                  (0),
+    v20Bit                  (4),
+    v24Bit                  (8),
+    unknown                 (10)
+  }
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "... "
+  ::= { mux6258AESInputs5To8Entry 15 }
+
+mux6258AesEmphPg2    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    notPresent              (0),
+    present                 (1)
+  }
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "... "
+  ::= { mux6258AESInputs5To8Entry 16 }
+
+mux6258AesInputSampleRatePage2    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    v16KHz                  (0),
+    v32KHz                  (1),
+    v44dot1KHz              (2),
+    v48KHz                  (3),
+    v88KHz                  (4),
+    v96KHz                  (5),
+    v176KHz                 (6),
+    v192KHz                 (7),
+    unknown                 (8)
+  }
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "... "
+  ::= { mux6258AESInputs5To8Entry 17 }
+
+--
+--  Table of EmbeddedOutputs parameters
+--
+mux6258EmbeddedOutputsArrGrp
+  OBJECT IDENTIFIER ::= { mux6258CardObjects 10 }
+
+mux6258NumberOfElementsInmux6258EmbeddedOutputsArrGrp OBJECT-TYPE
+  SYNTAX      Integer32
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "The total number of elements in mux6258EmbeddedOutputsArrGrp."
+  ::= { mux6258EmbeddedOutputsArrGrp 1 }
+
+mux6258EmbeddedOutputsTable     OBJECT-TYPE
+  SYNTAX      SEQUENCE OF Mux6258EmbeddedOutputsEntry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "A table containing product info for all MUX6258 cards at this node.
+    This table is the expansion of the table 'openGearCardTable' in the
+    OPEN-GEAR-CARD-MIB. For each MUX6258 card in the 'openGearCardTable',
+    there is a corresponding entry in this table, having the same indices -
+    'openGearFrameIndex' and 'openGearCardIndex'."
+  ::= { mux6258EmbeddedOutputsArrGrp 2 }
+
+mux6258EmbeddedOutputsEntry     OBJECT-TYPE
+  SYNTAX      Mux6258EmbeddedOutputsEntry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "A conceptual row within the 'mux6258EmbeddedOutputsTable'."
+  INDEX    { openGearFrameIndex, openGearCardIndex,  mux6258EmbeddedOutputsIndex}
+  ::= { mux6258EmbeddedOutputsTable 1 }
+
+Mux6258EmbeddedOutputsEntry ::= SEQUENCE {
+  mux6258EmbeddedOutputsIndex        Unsigned32,
+  mux6258GroupEnable               INTEGER,
+  mux6258GroupChan1SourceWithAES   INTEGER,
+  mux6258GroupChan2SourceWithAES   INTEGER,
+  mux6258GroupChan3SourceWithAES   INTEGER,
+  mux6258GroupChan4SourceWithAES   INTEGER,
+  mux6258GroupChan1BackupSourceWithAES INTEGER,
+  mux6258GroupChan2BackupSourceWithAES INTEGER,
+  mux6258GroupChan3BackupSourceWithAES INTEGER,
+  mux6258GroupChan4BackupSourceWithAES INTEGER,
+  mux6258GroupChan1SourceWithAlg   INTEGER,
+  mux6258GroupChan2SourceWithAlg   INTEGER,
+  mux6258GroupChan3SourceWithAlg   INTEGER,
+  mux6258GroupChan4SourceWithAlg   INTEGER,
+  mux6258GroupChan1BackupSourceWithAlg INTEGER,
+  mux6258GroupChan2BackupSourceWithAlg INTEGER,
+  mux6258GroupChan3BackupSourceWithAlg INTEGER,
+  mux6258GroupChan4BackupSourceWithAlg INTEGER,
+  mux6258GroupPresetPass           INTEGER,
+  mux6258GroupPresetInsert         INTEGER,
+  mux6258GroupPresetOverwrite      INTEGER
+}
+
+mux6258EmbeddedOutputsIndex   OBJECT-TYPE
+  SYNTAX      Unsigned32
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "It represents the array group index."
+  ::= { mux6258EmbeddedOutputsEntry 1 }
+
+mux6258GroupEnable    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    no                      (0),
+    yes                     (1)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { yes }
+  ::= { mux6258EmbeddedOutputsEntry 2 }
+
+mux6258GroupChan1SourceWithAES    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    mute                    (0),
+    group1Ch1               (1),
+    group1Ch2               (2),
+    group1Ch3               (3),
+    group1Ch4               (4),
+    group2Ch1               (5),
+    group2Ch2               (6),
+    group2Ch3               (7),
+    group2Ch4               (8),
+    group3Ch1               (9),
+    group3Ch2               (10),
+    group3Ch3               (11),
+    group3Ch4               (12),
+    group4Ch1               (13),
+    group4Ch2               (14),
+    group4Ch3               (15),
+    group4Ch4               (16),
+    aES1A                   (17),
+    aES1B                   (18),
+    aES2A                   (19),
+    aES2B                   (20),
+    aES3A                   (21),
+    aES3B                   (22),
+    aES4A                   (23),
+    aES4B                   (24),
+    aES5A                   (25),
+    aES5B                   (26),
+    aES6A                   (27),
+    aES6B                   (28),
+    aES7A                   (29),
+    aES7B                   (30),
+    aES8A                   (31),
+    aES8B                   (32),
+    v500HzTone              (33),
+    v1kHzTone               (34),
+    v2kHzTone               (35),
+    v4kHzTone               (36)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { mute }
+  ::= { mux6258EmbeddedOutputsEntry 3 }
+
+mux6258GroupChan2SourceWithAES    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    mute                    (0),
+    group1Ch1               (1),
+    group1Ch2               (2),
+    group1Ch3               (3),
+    group1Ch4               (4),
+    group2Ch1               (5),
+    group2Ch2               (6),
+    group2Ch3               (7),
+    group2Ch4               (8),
+    group3Ch1               (9),
+    group3Ch2               (10),
+    group3Ch3               (11),
+    group3Ch4               (12),
+    group4Ch1               (13),
+    group4Ch2               (14),
+    group4Ch3               (15),
+    group4Ch4               (16),
+    aES1A                   (17),
+    aES1B                   (18),
+    aES2A                   (19),
+    aES2B                   (20),
+    aES3A                   (21),
+    aES3B                   (22),
+    aES4A                   (23),
+    aES4B                   (24),
+    aES5A                   (25),
+    aES5B                   (26),
+    aES6A                   (27),
+    aES6B                   (28),
+    aES7A                   (29),
+    aES7B                   (30),
+    aES8A                   (31),
+    aES8B                   (32),
+    v500HzTone              (33),
+    v1kHzTone               (34),
+    v2kHzTone               (35),
+    v4kHzTone               (36)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { mute }
+  ::= { mux6258EmbeddedOutputsEntry 4 }
+
+mux6258GroupChan3SourceWithAES    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    mute                    (0),
+    group1Ch1               (1),
+    group1Ch2               (2),
+    group1Ch3               (3),
+    group1Ch4               (4),
+    group2Ch1               (5),
+    group2Ch2               (6),
+    group2Ch3               (7),
+    group2Ch4               (8),
+    group3Ch1               (9),
+    group3Ch2               (10),
+    group3Ch3               (11),
+    group3Ch4               (12),
+    group4Ch1               (13),
+    group4Ch2               (14),
+    group4Ch3               (15),
+    group4Ch4               (16),
+    aES1A                   (17),
+    aES1B                   (18),
+    aES2A                   (19),
+    aES2B                   (20),
+    aES3A                   (21),
+    aES3B                   (22),
+    aES4A                   (23),
+    aES4B                   (24),
+    aES5A                   (25),
+    aES5B                   (26),
+    aES6A                   (27),
+    aES6B                   (28),
+    aES7A                   (29),
+    aES7B                   (30),
+    aES8A                   (31),
+    aES8B                   (32),
+    v500HzTone              (33),
+    v1kHzTone               (34),
+    v2kHzTone               (35),
+    v4kHzTone               (36)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { mute }
+  ::= { mux6258EmbeddedOutputsEntry 5 }
+
+mux6258GroupChan4SourceWithAES    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    mute                    (0),
+    group1Ch1               (1),
+    group1Ch2               (2),
+    group1Ch3               (3),
+    group1Ch4               (4),
+    group2Ch1               (5),
+    group2Ch2               (6),
+    group2Ch3               (7),
+    group2Ch4               (8),
+    group3Ch1               (9),
+    group3Ch2               (10),
+    group3Ch3               (11),
+    group3Ch4               (12),
+    group4Ch1               (13),
+    group4Ch2               (14),
+    group4Ch3               (15),
+    group4Ch4               (16),
+    aES1A                   (17),
+    aES1B                   (18),
+    aES2A                   (19),
+    aES2B                   (20),
+    aES3A                   (21),
+    aES3B                   (22),
+    aES4A                   (23),
+    aES4B                   (24),
+    aES5A                   (25),
+    aES5B                   (26),
+    aES6A                   (27),
+    aES6B                   (28),
+    aES7A                   (29),
+    aES7B                   (30),
+    aES8A                   (31),
+    aES8B                   (32),
+    v500HzTone              (33),
+    v1kHzTone               (34),
+    v2kHzTone               (35),
+    v4kHzTone               (36)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { mute }
+  ::= { mux6258EmbeddedOutputsEntry 6 }
+
+mux6258GroupChan1BackupSourceWithAES    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    mute                    (0),
+    group1Ch1               (1),
+    group1Ch2               (2),
+    group1Ch3               (3),
+    group1Ch4               (4),
+    group2Ch1               (5),
+    group2Ch2               (6),
+    group2Ch3               (7),
+    group2Ch4               (8),
+    group3Ch1               (9),
+    group3Ch2               (10),
+    group3Ch3               (11),
+    group3Ch4               (12),
+    group4Ch1               (13),
+    group4Ch2               (14),
+    group4Ch3               (15),
+    group4Ch4               (16),
+    aES1A                   (17),
+    aES1B                   (18),
+    aES2A                   (19),
+    aES2B                   (20),
+    aES3A                   (21),
+    aES3B                   (22),
+    aES4A                   (23),
+    aES4B                   (24),
+    aES5A                   (25),
+    aES5B                   (26),
+    aES6A                   (27),
+    aES6B                   (28),
+    aES7A                   (29),
+    aES7B                   (30),
+    aES8A                   (31),
+    aES8B                   (32),
+    v500HzTone              (33),
+    v1kHzTone               (34),
+    v2kHzTone               (35),
+    v4kHzTone               (36)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { mute }
+  ::= { mux6258EmbeddedOutputsEntry 7 }
+
+mux6258GroupChan2BackupSourceWithAES    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    mute                    (0),
+    group1Ch1               (1),
+    group1Ch2               (2),
+    group1Ch3               (3),
+    group1Ch4               (4),
+    group2Ch1               (5),
+    group2Ch2               (6),
+    group2Ch3               (7),
+    group2Ch4               (8),
+    group3Ch1               (9),
+    group3Ch2               (10),
+    group3Ch3               (11),
+    group3Ch4               (12),
+    group4Ch1               (13),
+    group4Ch2               (14),
+    group4Ch3               (15),
+    group4Ch4               (16),
+    aES1A                   (17),
+    aES1B                   (18),
+    aES2A                   (19),
+    aES2B                   (20),
+    aES3A                   (21),
+    aES3B                   (22),
+    aES4A                   (23),
+    aES4B                   (24),
+    aES5A                   (25),
+    aES5B                   (26),
+    aES6A                   (27),
+    aES6B                   (28),
+    aES7A                   (29),
+    aES7B                   (30),
+    aES8A                   (31),
+    aES8B                   (32),
+    v500HzTone              (33),
+    v1kHzTone               (34),
+    v2kHzTone               (35),
+    v4kHzTone               (36)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { mute }
+  ::= { mux6258EmbeddedOutputsEntry 8 }
+
+mux6258GroupChan3BackupSourceWithAES    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    mute                    (0),
+    group1Ch1               (1),
+    group1Ch2               (2),
+    group1Ch3               (3),
+    group1Ch4               (4),
+    group2Ch1               (5),
+    group2Ch2               (6),
+    group2Ch3               (7),
+    group2Ch4               (8),
+    group3Ch1               (9),
+    group3Ch2               (10),
+    group3Ch3               (11),
+    group3Ch4               (12),
+    group4Ch1               (13),
+    group4Ch2               (14),
+    group4Ch3               (15),
+    group4Ch4               (16),
+    aES1A                   (17),
+    aES1B                   (18),
+    aES2A                   (19),
+    aES2B                   (20),
+    aES3A                   (21),
+    aES3B                   (22),
+    aES4A                   (23),
+    aES4B                   (24),
+    aES5A                   (25),
+    aES5B                   (26),
+    aES6A                   (27),
+    aES6B                   (28),
+    aES7A                   (29),
+    aES7B                   (30),
+    aES8A                   (31),
+    aES8B                   (32),
+    v500HzTone              (33),
+    v1kHzTone               (34),
+    v2kHzTone               (35),
+    v4kHzTone               (36)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { mute }
+  ::= { mux6258EmbeddedOutputsEntry 9 }
+
+mux6258GroupChan4BackupSourceWithAES    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    mute                    (0),
+    group1Ch1               (1),
+    group1Ch2               (2),
+    group1Ch3               (3),
+    group1Ch4               (4),
+    group2Ch1               (5),
+    group2Ch2               (6),
+    group2Ch3               (7),
+    group2Ch4               (8),
+    group3Ch1               (9),
+    group3Ch2               (10),
+    group3Ch3               (11),
+    group3Ch4               (12),
+    group4Ch1               (13),
+    group4Ch2               (14),
+    group4Ch3               (15),
+    group4Ch4               (16),
+    aES1A                   (17),
+    aES1B                   (18),
+    aES2A                   (19),
+    aES2B                   (20),
+    aES3A                   (21),
+    aES3B                   (22),
+    aES4A                   (23),
+    aES4B                   (24),
+    aES5A                   (25),
+    aES5B                   (26),
+    aES6A                   (27),
+    aES6B                   (28),
+    aES7A                   (29),
+    aES7B                   (30),
+    aES8A                   (31),
+    aES8B                   (32),
+    v500HzTone              (33),
+    v1kHzTone               (34),
+    v2kHzTone               (35),
+    v4kHzTone               (36)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { mute }
+  ::= { mux6258EmbeddedOutputsEntry 10 }
+
+mux6258GroupChan1SourceWithAlg    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    mute                    (0),
+    group1Ch1               (1),
+    group1Ch2               (2),
+    group1Ch3               (3),
+    group1Ch4               (4),
+    group2Ch1               (5),
+    group2Ch2               (6),
+    group2Ch3               (7),
+    group2Ch4               (8),
+    group3Ch1               (9),
+    group3Ch2               (10),
+    group3Ch3               (11),
+    group3Ch4               (12),
+    group4Ch1               (13),
+    group4Ch2               (14),
+    group4Ch3               (15),
+    group4Ch4               (16),
+    v500HzTone              (33),
+    v1kHzTone               (34),
+    v2kHzTone               (35),
+    v4kHzTone               (36),
+    analog1                 (37),
+    analog2                 (38),
+    analog3                 (39),
+    analog4                 (40),
+    analog5                 (41),
+    analog6                 (42),
+    analog7                 (43),
+    analog8                 (44)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { mute }
+  ::= { mux6258EmbeddedOutputsEntry 11 }
+
+mux6258GroupChan2SourceWithAlg    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    mute                    (0),
+    group1Ch1               (1),
+    group1Ch2               (2),
+    group1Ch3               (3),
+    group1Ch4               (4),
+    group2Ch1               (5),
+    group2Ch2               (6),
+    group2Ch3               (7),
+    group2Ch4               (8),
+    group3Ch1               (9),
+    group3Ch2               (10),
+    group3Ch3               (11),
+    group3Ch4               (12),
+    group4Ch1               (13),
+    group4Ch2               (14),
+    group4Ch3               (15),
+    group4Ch4               (16),
+    v500HzTone              (33),
+    v1kHzTone               (34),
+    v2kHzTone               (35),
+    v4kHzTone               (36),
+    analog1                 (37),
+    analog2                 (38),
+    analog3                 (39),
+    analog4                 (40),
+    analog5                 (41),
+    analog6                 (42),
+    analog7                 (43),
+    analog8                 (44)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { mute }
+  ::= { mux6258EmbeddedOutputsEntry 12 }
+
+mux6258GroupChan3SourceWithAlg    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    mute                    (0),
+    group1Ch1               (1),
+    group1Ch2               (2),
+    group1Ch3               (3),
+    group1Ch4               (4),
+    group2Ch1               (5),
+    group2Ch2               (6),
+    group2Ch3               (7),
+    group2Ch4               (8),
+    group3Ch1               (9),
+    group3Ch2               (10),
+    group3Ch3               (11),
+    group3Ch4               (12),
+    group4Ch1               (13),
+    group4Ch2               (14),
+    group4Ch3               (15),
+    group4Ch4               (16),
+    v500HzTone              (33),
+    v1kHzTone               (34),
+    v2kHzTone               (35),
+    v4kHzTone               (36),
+    analog1                 (37),
+    analog2                 (38),
+    analog3                 (39),
+    analog4                 (40),
+    analog5                 (41),
+    analog6                 (42),
+    analog7                 (43),
+    analog8                 (44)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { mute }
+  ::= { mux6258EmbeddedOutputsEntry 13 }
+
+mux6258GroupChan4SourceWithAlg    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    mute                    (0),
+    group1Ch1               (1),
+    group1Ch2               (2),
+    group1Ch3               (3),
+    group1Ch4               (4),
+    group2Ch1               (5),
+    group2Ch2               (6),
+    group2Ch3               (7),
+    group2Ch4               (8),
+    group3Ch1               (9),
+    group3Ch2               (10),
+    group3Ch3               (11),
+    group3Ch4               (12),
+    group4Ch1               (13),
+    group4Ch2               (14),
+    group4Ch3               (15),
+    group4Ch4               (16),
+    v500HzTone              (33),
+    v1kHzTone               (34),
+    v2kHzTone               (35),
+    v4kHzTone               (36),
+    analog1                 (37),
+    analog2                 (38),
+    analog3                 (39),
+    analog4                 (40),
+    analog5                 (41),
+    analog6                 (42),
+    analog7                 (43),
+    analog8                 (44)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { mute }
+  ::= { mux6258EmbeddedOutputsEntry 14 }
+
+mux6258GroupChan1BackupSourceWithAlg    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    mute                    (0),
+    group1Ch1               (1),
+    group1Ch2               (2),
+    group1Ch3               (3),
+    group1Ch4               (4),
+    group2Ch1               (5),
+    group2Ch2               (6),
+    group2Ch3               (7),
+    group2Ch4               (8),
+    group3Ch1               (9),
+    group3Ch2               (10),
+    group3Ch3               (11),
+    group3Ch4               (12),
+    group4Ch1               (13),
+    group4Ch2               (14),
+    group4Ch3               (15),
+    group4Ch4               (16),
+    v500HzTone              (33),
+    v1kHzTone               (34),
+    v2kHzTone               (35),
+    v4kHzTone               (36),
+    analog1                 (37),
+    analog2                 (38),
+    analog3                 (39),
+    analog4                 (40),
+    analog5                 (41),
+    analog6                 (42),
+    analog7                 (43),
+    analog8                 (44)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { mute }
+  ::= { mux6258EmbeddedOutputsEntry 15 }
+
+mux6258GroupChan2BackupSourceWithAlg    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    mute                    (0),
+    group1Ch1               (1),
+    group1Ch2               (2),
+    group1Ch3               (3),
+    group1Ch4               (4),
+    group2Ch1               (5),
+    group2Ch2               (6),
+    group2Ch3               (7),
+    group2Ch4               (8),
+    group3Ch1               (9),
+    group3Ch2               (10),
+    group3Ch3               (11),
+    group3Ch4               (12),
+    group4Ch1               (13),
+    group4Ch2               (14),
+    group4Ch3               (15),
+    group4Ch4               (16),
+    v500HzTone              (33),
+    v1kHzTone               (34),
+    v2kHzTone               (35),
+    v4kHzTone               (36),
+    analog1                 (37),
+    analog2                 (38),
+    analog3                 (39),
+    analog4                 (40),
+    analog5                 (41),
+    analog6                 (42),
+    analog7                 (43),
+    analog8                 (44)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { mute }
+  ::= { mux6258EmbeddedOutputsEntry 16 }
+
+mux6258GroupChan3BackupSourceWithAlg    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    mute                    (0),
+    group1Ch1               (1),
+    group1Ch2               (2),
+    group1Ch3               (3),
+    group1Ch4               (4),
+    group2Ch1               (5),
+    group2Ch2               (6),
+    group2Ch3               (7),
+    group2Ch4               (8),
+    group3Ch1               (9),
+    group3Ch2               (10),
+    group3Ch3               (11),
+    group3Ch4               (12),
+    group4Ch1               (13),
+    group4Ch2               (14),
+    group4Ch3               (15),
+    group4Ch4               (16),
+    v500HzTone              (33),
+    v1kHzTone               (34),
+    v2kHzTone               (35),
+    v4kHzTone               (36),
+    analog1                 (37),
+    analog2                 (38),
+    analog3                 (39),
+    analog4                 (40),
+    analog5                 (41),
+    analog6                 (42),
+    analog7                 (43),
+    analog8                 (44)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { mute }
+  ::= { mux6258EmbeddedOutputsEntry 17 }
+
+mux6258GroupChan4BackupSourceWithAlg    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    mute                    (0),
+    group1Ch1               (1),
+    group1Ch2               (2),
+    group1Ch3               (3),
+    group1Ch4               (4),
+    group2Ch1               (5),
+    group2Ch2               (6),
+    group2Ch3               (7),
+    group2Ch4               (8),
+    group3Ch1               (9),
+    group3Ch2               (10),
+    group3Ch3               (11),
+    group3Ch4               (12),
+    group4Ch1               (13),
+    group4Ch2               (14),
+    group4Ch3               (15),
+    group4Ch4               (16),
+    v500HzTone              (33),
+    v1kHzTone               (34),
+    v2kHzTone               (35),
+    v4kHzTone               (36),
+    analog1                 (37),
+    analog2                 (38),
+    analog3                 (39),
+    analog4                 (40),
+    analog5                 (41),
+    analog6                 (42),
+    analog7                 (43),
+    analog8                 (44)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { mute }
+  ::= { mux6258EmbeddedOutputsEntry 19 }
+
+mux6258GroupPresetPass    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    pass0                   (0),
+    pass1                   (1)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { pass1 }
+  ::= { mux6258EmbeddedOutputsEntry 20 }
+
+mux6258GroupPresetInsert    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    insert0                 (0),
+    insert2                 (2)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { insert2 }
+  ::= { mux6258EmbeddedOutputsEntry 21 }
+
+mux6258GroupPresetOverwrite    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    overwrite0              (0),
+    overwrite3              (3)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { overwrite3 }
+  ::= { mux6258EmbeddedOutputsEntry 22 }
+
+--
+--  Table of Alarms parameters
+--
+mux6258AlarmsTable     OBJECT-TYPE
+  SYNTAX      SEQUENCE OF Mux6258AlarmsEntry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "A table containing product info for all MUX6258 cards at this node.
+    This table is the expansion of the table 'openGearCardTable' in the
+    OPEN-GEAR-CARD-MIB. For each MUX6258 card in the 'openGearCardTable',
+    there is a corresponding entry in this table, having the same indices -
+    'openGearFrameIndex' and 'openGearCardIndex'."
+  ::= { mux6258CardObjects 11 }
+
+mux6258AlarmsEntry     OBJECT-TYPE
+  SYNTAX      Mux6258AlarmsEntry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "A conceptual row within the 'mux6258AlarmsTable'."
+  INDEX    { openGearFrameIndex, openGearCardIndex }
+  ::= { mux6258AlarmsTable 1 }
+
+Mux6258AlarmsEntry ::= SEQUENCE {
+  mux6258NoInputAlarm              INTEGER,
+  mux6258InvalidInputAlarm         INTEGER,
+  mux6258IncompatInputAlarm        INTEGER,
+  mux6258NonSyncInputAlarm         INTEGER,
+  mux6258NoRefAlarm                INTEGER,
+  mux6258InvalidRefAlarm           INTEGER,
+  mux6258OverrideRefAlarm          INTEGER,
+  mux6258IncompatRearModuleAlarm   INTEGER,
+  mux6258IncompatDaughterCardAlarm INTEGER,
+  mux6258SfpNotifyOnTemp           INTEGER,
+  mux6258SfpNotifyOnPower          INTEGER,
+  mux6258Sd24bitAlarm              INTEGER,
+  mux6258SetAllAlarms              INTEGER,
+  mux6258ClearAllAlarms            INTEGER
+}
+
+mux6258NoInputAlarm    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    no                      (0),
+    yes                     (1)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { no }
+  ::= { mux6258AlarmsEntry 2 }
+
+mux6258InvalidInputAlarm    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    no                      (0),
+    yes                     (1)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { no }
+  ::= { mux6258AlarmsEntry 3 }
+
+mux6258IncompatInputAlarm    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    no                      (0),
+    yes                     (1)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { no }
+  ::= { mux6258AlarmsEntry 4 }
+
+mux6258NonSyncInputAlarm    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    no                      (0),
+    yes                     (1)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { no }
+  ::= { mux6258AlarmsEntry 5 }
+
+mux6258NoRefAlarm    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    no                      (0),
+    yes                     (1)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { no }
+  ::= { mux6258AlarmsEntry 6 }
+
+mux6258InvalidRefAlarm    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    no                      (0),
+    yes                     (1)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { no }
+  ::= { mux6258AlarmsEntry 7 }
+
+mux6258OverrideRefAlarm    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    no                      (0),
+    yes                     (1)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { no }
+  ::= { mux6258AlarmsEntry 15 }
+
+mux6258IncompatRearModuleAlarm    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    no                      (0),
+    yes                     (1)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { no }
+  ::= { mux6258AlarmsEntry 8 }
+
+mux6258IncompatDaughterCardAlarm    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    no                      (0),
+    yes                     (1)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { no }
+  ::= { mux6258AlarmsEntry 9 }
+
+mux6258SfpNotifyOnTemp    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    ignore                  (0),
+    notify                  (1)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { notify }
+  ::= { mux6258AlarmsEntry 10 }
+
+mux6258SfpNotifyOnPower    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    ignore                  (0),
+    notify                  (1)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { notify }
+  ::= { mux6258AlarmsEntry 11 }
+
+mux6258Sd24bitAlarm    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    no                      (0),
+    yes                     (1)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { yes }
+  ::= { mux6258AlarmsEntry 12 }
+
+mux6258SetAllAlarms    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    set                     (1)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { set }
+  ::= { mux6258AlarmsEntry 13 }
+
+mux6258ClearAllAlarms    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    clear                   (1)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { clear }
+  ::= { mux6258AlarmsEntry 14 }
+
+--
+--  Table of EmbeddedInputAudio parameters
+--
+mux6258EmbeddedInputAudioArrGrp
+  OBJECT IDENTIFIER ::= { mux6258CardObjects 12 }
+
+mux6258NumberOfElementsInmux6258EmbeddedInputAudioArrGrp OBJECT-TYPE
+  SYNTAX      Integer32
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "The total number of elements in mux6258EmbeddedInputAudioArrGrp."
+  ::= { mux6258EmbeddedInputAudioArrGrp 1 }
+
+mux6258EmbeddedInputAudioTable     OBJECT-TYPE
+  SYNTAX      SEQUENCE OF Mux6258EmbeddedInputAudioEntry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "A table containing product info for all MUX6258 cards at this node.
+    This table is the expansion of the table 'openGearCardTable' in the
+    OPEN-GEAR-CARD-MIB. For each MUX6258 card in the 'openGearCardTable',
+    there is a corresponding entry in this table, having the same indices -
+    'openGearFrameIndex' and 'openGearCardIndex'."
+  ::= { mux6258EmbeddedInputAudioArrGrp 2 }
+
+mux6258EmbeddedInputAudioEntry     OBJECT-TYPE
+  SYNTAX      Mux6258EmbeddedInputAudioEntry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "A conceptual row within the 'mux6258EmbeddedInputAudioTable'."
+  INDEX    { openGearFrameIndex, openGearCardIndex,  mux6258EmbeddedInputAudioIndex}
+  ::= { mux6258EmbeddedInputAudioTable 1 }
+
+Mux6258EmbeddedInputAudioEntry ::= SEQUENCE {
+  mux6258EmbeddedInputAudioIndex        Unsigned32,
+  mux6258GroupAudioState           INTEGER,
+  mux6258EmbeddedChan1State        INTEGER,
+  mux6258EmbeddedChan2State        INTEGER,
+  mux6258EmbeddedChan3State        INTEGER,
+  mux6258EmbeddedChan4State        INTEGER,
+  mux6258EmbeddedAudioWordLength   INTEGER
+}
+
+mux6258EmbeddedInputAudioIndex   OBJECT-TYPE
+  SYNTAX      Unsigned32
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "It represents the array group index."
+  ::= { mux6258EmbeddedInputAudioEntry 1 }
+
+mux6258GroupAudioState    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    pCM                     (0),
+    noInput                 (1),
+    pCMSilent               (2),
+    nonPCM                  (3),
+    async                   (5),
+    mixed                   (6)
+  }
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "... "
+  ::= { mux6258EmbeddedInputAudioEntry 2 }
+
+mux6258EmbeddedChan1State    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    pCM                     (0),
+    noInput                 (1),
+    pCMSilent               (2),
+    nonPCM                  (3),
+    async                   (5),
+    mixed                   (6)
+  }
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "... "
+  ::= { mux6258EmbeddedInputAudioEntry 3 }
+
+mux6258EmbeddedChan2State    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    pCM                     (0),
+    noInput                 (1),
+    pCMSilent               (2),
+    nonPCM                  (3),
+    async                   (5),
+    mixed                   (6)
+  }
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "... "
+  ::= { mux6258EmbeddedInputAudioEntry 4 }
+
+mux6258EmbeddedChan3State    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    pCM                     (0),
+    noInput                 (1),
+    pCMSilent               (2),
+    nonPCM                  (3),
+    async                   (5),
+    mixed                   (6)
+  }
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "... "
+  ::= { mux6258EmbeddedInputAudioEntry 5 }
+
+mux6258EmbeddedChan4State    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    pCM                     (0),
+    noInput                 (1),
+    pCMSilent               (2),
+    nonPCM                  (3),
+    async                   (5),
+    mixed                   (6)
+  }
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "... "
+  ::= { mux6258EmbeddedInputAudioEntry 6 }
+
+mux6258EmbeddedAudioWordLength    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    v16Bit                  (0),
+    v20Bit                  (4),
+    v24Bit                  (8),
+    unknown                 (10)
+  }
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "... "
+  ::= { mux6258EmbeddedInputAudioEntry 7 }
+
+--
+--  Table of AnalogInputR1 parameters
+--
+mux6258AnalogInputR1ArrGrp
+  OBJECT IDENTIFIER ::= { mux6258CardObjects 13 }
+
+mux6258NumberOfElementsInmux6258AnalogInputR1ArrGrp OBJECT-TYPE
+  SYNTAX      Integer32
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "The total number of elements in mux6258AnalogInputR1ArrGrp."
+  ::= { mux6258AnalogInputR1ArrGrp 1 }
+
+mux6258AnalogInputR1Table     OBJECT-TYPE
+  SYNTAX      SEQUENCE OF Mux6258AnalogInputR1Entry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "A table containing product info for all MUX6258 cards at this node.
+    This table is the expansion of the table 'openGearCardTable' in the
+    OPEN-GEAR-CARD-MIB. For each MUX6258 card in the 'openGearCardTable',
+    there is a corresponding entry in this table, having the same indices -
+    'openGearFrameIndex' and 'openGearCardIndex'."
+  ::= { mux6258AnalogInputR1ArrGrp 2 }
+
+mux6258AnalogInputR1Entry     OBJECT-TYPE
+  SYNTAX      Mux6258AnalogInputR1Entry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "A conceptual row within the 'mux6258AnalogInputR1Table'."
+  INDEX    { openGearFrameIndex, openGearCardIndex,  mux6258AnalogInputR1Index}
+  ::= { mux6258AnalogInputR1Table 1 }
+
+Mux6258AnalogInputR1Entry ::= SEQUENCE {
+  mux6258AnalogInputR1Index        Unsigned32,
+  mux6258AnalogInputState          INTEGER,
+  mux6258AnalogInputDelay          Integer32,
+  mux6258AnalogInputGain           Integer32,
+  mux6258AnalogInputInvert         INTEGER,
+  mux6258AnalogInputReset          INTEGER
+}
+
+mux6258AnalogInputR1Index   OBJECT-TYPE
+  SYNTAX      Unsigned32
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "It represents the array group index."
+  ::= { mux6258AnalogInputR1Entry 1 }
+
+mux6258AnalogInputState    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    oK                      (0),
+    silent                  (2),
+    clipped                 (4)
+  }
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "... "
+  ::= { mux6258AnalogInputR1Entry 2 }
+
+mux6258AnalogInputDelay    OBJECT-TYPE
+  SYNTAX      Integer32 (0..1000)
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { 0 }
+  ::= { mux6258AnalogInputR1Entry 3 }
+
+mux6258AnalogInputGain    OBJECT-TYPE
+  SYNTAX      Integer32 (-20..20)
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { 0 }
+  ::= { mux6258AnalogInputR1Entry 4 }
+
+mux6258AnalogInputInvert    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    no                      (0),
+    yes                     (1)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { no }
+  ::= { mux6258AnalogInputR1Entry 5 }
+
+mux6258AnalogInputReset    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    reset                   (1)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { reset }
+  ::= { mux6258AnalogInputR1Entry 6 }
+
+--
+--  Table of AnalogInputR2 parameters
+--
+mux6258AnalogInputR2ArrGrp
+  OBJECT IDENTIFIER ::= { mux6258CardObjects 14 }
+
+mux6258NumberOfElementsInmux6258AnalogInputR2ArrGrp OBJECT-TYPE
+  SYNTAX      Integer32
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "The total number of elements in mux6258AnalogInputR2ArrGrp."
+  ::= { mux6258AnalogInputR2ArrGrp 1 }
+
+mux6258AnalogInputR2Table     OBJECT-TYPE
+  SYNTAX      SEQUENCE OF Mux6258AnalogInputR2Entry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "A table containing product info for all MUX6258 cards at this node.
+    This table is the expansion of the table 'openGearCardTable' in the
+    OPEN-GEAR-CARD-MIB. For each MUX6258 card in the 'openGearCardTable',
+    there is a corresponding entry in this table, having the same indices -
+    'openGearFrameIndex' and 'openGearCardIndex'."
+  ::= { mux6258AnalogInputR2ArrGrp 2 }
+
+mux6258AnalogInputR2Entry     OBJECT-TYPE
+  SYNTAX      Mux6258AnalogInputR2Entry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "A conceptual row within the 'mux6258AnalogInputR2Table'."
+  INDEX    { openGearFrameIndex, openGearCardIndex,  mux6258AnalogInputR2Index}
+  ::= { mux6258AnalogInputR2Table 1 }
+
+Mux6258AnalogInputR2Entry ::= SEQUENCE {
+  mux6258AnalogInputR2Index        Unsigned32,
+  mux6258AnalogInputStateRow2      INTEGER,
+  mux6258AnalogInputDelayRow2      Integer32,
+  mux6258AnalogInputGainRow2       Integer32,
+  mux6258AnalogInputInvertRow2     INTEGER,
+  mux6258AnalogInputResetRow2      INTEGER
+}
+
+mux6258AnalogInputR2Index   OBJECT-TYPE
+  SYNTAX      Unsigned32
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "It represents the array group index."
+  ::= { mux6258AnalogInputR2Entry 1 }
+
+mux6258AnalogInputStateRow2    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    oK                      (0),
+    silent                  (2),
+    clipped                 (4)
+  }
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "... "
+  ::= { mux6258AnalogInputR2Entry 2 }
+
+mux6258AnalogInputDelayRow2    OBJECT-TYPE
+  SYNTAX      Integer32 (0..1000)
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { 0 }
+  ::= { mux6258AnalogInputR2Entry 3 }
+
+mux6258AnalogInputGainRow2    OBJECT-TYPE
+  SYNTAX      Integer32 (-20..20)
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { 0 }
+  ::= { mux6258AnalogInputR2Entry 4 }
+
+mux6258AnalogInputInvertRow2    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    no                      (0),
+    yes                     (1)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { no }
+  ::= { mux6258AnalogInputR2Entry 5 }
+
+mux6258AnalogInputResetRow2    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    reset                   (1)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { reset }
+  ::= { mux6258AnalogInputR2Entry 6 }
+
+--
+--  Table of EmbeddedInputAudioAlarms parameters
+--
+mux6258EmbeddedInputAudioAlarmsArrGrp
+  OBJECT IDENTIFIER ::= { mux6258CardObjects 15 }
+
+mux6258NumberOfElementsInmux6258EmbeddedInputAudioAlarmsArrGrp OBJECT-TYPE
+  SYNTAX      Integer32
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "The total number of elements in mux6258EmbeddedInputAudioAlarmsArrGrp."
+  ::= { mux6258EmbeddedInputAudioAlarmsArrGrp 1 }
+
+mux6258EmbeddedInputAudioAlarmsTable     OBJECT-TYPE
+  SYNTAX      SEQUENCE OF Mux6258EmbeddedInputAudioAlarmsEntry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "A table containing product info for all MUX6258 cards at this node.
+    This table is the expansion of the table 'openGearCardTable' in the
+    OPEN-GEAR-CARD-MIB. For each MUX6258 card in the 'openGearCardTable',
+    there is a corresponding entry in this table, having the same indices -
+    'openGearFrameIndex' and 'openGearCardIndex'."
+  ::= { mux6258EmbeddedInputAudioAlarmsArrGrp 2 }
+
+mux6258EmbeddedInputAudioAlarmsEntry     OBJECT-TYPE
+  SYNTAX      Mux6258EmbeddedInputAudioAlarmsEntry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "A conceptual row within the 'mux6258EmbeddedInputAudioAlarmsTable'."
+  INDEX    { openGearFrameIndex, openGearCardIndex,  mux6258EmbeddedInputAudioAlarmsIndex}
+  ::= { mux6258EmbeddedInputAudioAlarmsTable 1 }
+
+Mux6258EmbeddedInputAudioAlarmsEntry ::= SEQUENCE {
+  mux6258EmbeddedInputAudioAlarmsIndex        Unsigned32,
+  mux6258GroupNotPresentAlarm      INTEGER,
+  mux6258GroupCh1SilentAlarm       INTEGER,
+  mux6258GroupCh2SilentAlarm       INTEGER,
+  mux6258GroupCh3SilentAlarm       INTEGER,
+  mux6258GroupCh4SilentAlarm       INTEGER
+}
+
+mux6258EmbeddedInputAudioAlarmsIndex   OBJECT-TYPE
+  SYNTAX      Unsigned32
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "It represents the array group index."
+  ::= { mux6258EmbeddedInputAudioAlarmsEntry 1 }
+
+mux6258GroupNotPresentAlarm    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    no                      (0),
+    yes                     (1)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { yes }
+  ::= { mux6258EmbeddedInputAudioAlarmsEntry 2 }
+
+mux6258GroupCh1SilentAlarm    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    no                      (0),
+    yes                     (1)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { yes }
+  ::= { mux6258EmbeddedInputAudioAlarmsEntry 3 }
+
+mux6258GroupCh2SilentAlarm    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    no                      (0),
+    yes                     (1)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { yes }
+  ::= { mux6258EmbeddedInputAudioAlarmsEntry 4 }
+
+mux6258GroupCh3SilentAlarm    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    no                      (0),
+    yes                     (1)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { yes }
+  ::= { mux6258EmbeddedInputAudioAlarmsEntry 5 }
+
+mux6258GroupCh4SilentAlarm    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    no                      (0),
+    yes                     (1)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { yes }
+  ::= { mux6258EmbeddedInputAudioAlarmsEntry 6 }
+
+--
+--  Table of AESInputAlarms parameters
+--
+mux6258AESInputAlarmsArrGrp
+  OBJECT IDENTIFIER ::= { mux6258CardObjects 16 }
+
+mux6258NumberOfElementsInmux6258AESInputAlarmsArrGrp OBJECT-TYPE
+  SYNTAX      Integer32
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "The total number of elements in mux6258AESInputAlarmsArrGrp."
+  ::= { mux6258AESInputAlarmsArrGrp 1 }
+
+mux6258AESInputAlarmsTable     OBJECT-TYPE
+  SYNTAX      SEQUENCE OF Mux6258AESInputAlarmsEntry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "A table containing product info for all MUX6258 cards at this node.
+    This table is the expansion of the table 'openGearCardTable' in the
+    OPEN-GEAR-CARD-MIB. For each MUX6258 card in the 'openGearCardTable',
+    there is a corresponding entry in this table, having the same indices -
+    'openGearFrameIndex' and 'openGearCardIndex'."
+  ::= { mux6258AESInputAlarmsArrGrp 2 }
+
+mux6258AESInputAlarmsEntry     OBJECT-TYPE
+  SYNTAX      Mux6258AESInputAlarmsEntry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "A conceptual row within the 'mux6258AESInputAlarmsTable'."
+  INDEX    { openGearFrameIndex, openGearCardIndex,  mux6258AESInputAlarmsIndex}
+  ::= { mux6258AESInputAlarmsTable 1 }
+
+Mux6258AESInputAlarmsEntry ::= SEQUENCE {
+  mux6258AESInputAlarmsIndex        Unsigned32,
+  mux6258AesInputNotPresentAlarm   INTEGER,
+  mux6258AesInputChASilentAlarm    INTEGER,
+  mux6258AesInputChBSilentAlarm    INTEGER
+}
+
+mux6258AESInputAlarmsIndex   OBJECT-TYPE
+  SYNTAX      Unsigned32
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "It represents the array group index."
+  ::= { mux6258AESInputAlarmsEntry 1 }
+
+mux6258AesInputNotPresentAlarm    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    no                      (0),
+    yes                     (1)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { yes }
+  ::= { mux6258AESInputAlarmsEntry 2 }
+
+mux6258AesInputChASilentAlarm    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    no                      (0),
+    yes                     (1)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { yes }
+  ::= { mux6258AESInputAlarmsEntry 3 }
+
+mux6258AesInputChBSilentAlarm    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    no                      (0),
+    yes                     (1)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { yes }
+  ::= { mux6258AESInputAlarmsEntry 4 }
+
+--
+--  Table of EmbeddedOutputAudioAlarms parameters
+--
+mux6258EmbeddedOutputAudioAlarmsArrGrp
+  OBJECT IDENTIFIER ::= { mux6258CardObjects 17 }
+
+mux6258NumberOfElementsInmux6258EmbeddedOutputAudioAlarmsArrGrp OBJECT-TYPE
+  SYNTAX      Integer32
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "The total number of elements in mux6258EmbeddedOutputAudioAlarmsArrGrp."
+  ::= { mux6258EmbeddedOutputAudioAlarmsArrGrp 1 }
+
+mux6258EmbeddedOutputAudioAlarmsTable     OBJECT-TYPE
+  SYNTAX      SEQUENCE OF Mux6258EmbeddedOutputAudioAlarmsEntry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "A table containing product info for all MUX6258 cards at this node.
+    This table is the expansion of the table 'openGearCardTable' in the
+    OPEN-GEAR-CARD-MIB. For each MUX6258 card in the 'openGearCardTable',
+    there is a corresponding entry in this table, having the same indices -
+    'openGearFrameIndex' and 'openGearCardIndex'."
+  ::= { mux6258EmbeddedOutputAudioAlarmsArrGrp 2 }
+
+mux6258EmbeddedOutputAudioAlarmsEntry     OBJECT-TYPE
+  SYNTAX      Mux6258EmbeddedOutputAudioAlarmsEntry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "A conceptual row within the 'mux6258EmbeddedOutputAudioAlarmsTable'."
+  INDEX    { openGearFrameIndex, openGearCardIndex,  mux6258EmbeddedOutputAudioAlarmsIndex}
+  ::= { mux6258EmbeddedOutputAudioAlarmsTable 1 }
+
+Mux6258EmbeddedOutputAudioAlarmsEntry ::= SEQUENCE {
+  mux6258EmbeddedOutputAudioAlarmsIndex        Unsigned32,
+  mux6258GroupSrcMissingAlarm      INTEGER,
+  mux6258GroupSrcAsyncAlarm        INTEGER,
+  mux6258GroupBkpSrcMissingAlarm   INTEGER,
+  mux6258GroupBkpSrcAsyncAlarm     INTEGER
+}
+
+mux6258EmbeddedOutputAudioAlarmsIndex   OBJECT-TYPE
+  SYNTAX      Unsigned32
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "It represents the array group index."
+  ::= { mux6258EmbeddedOutputAudioAlarmsEntry 1 }
+
+mux6258GroupSrcMissingAlarm    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    no                      (0),
+    yes                     (1)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { yes }
+  ::= { mux6258EmbeddedOutputAudioAlarmsEntry 2 }
+
+mux6258GroupSrcAsyncAlarm    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    no                      (0),
+    yes                     (1)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { yes }
+  ::= { mux6258EmbeddedOutputAudioAlarmsEntry 3 }
+
+mux6258GroupBkpSrcMissingAlarm    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    no                      (0),
+    yes                     (1)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { yes }
+  ::= { mux6258EmbeddedOutputAudioAlarmsEntry 4 }
+
+mux6258GroupBkpSrcAsyncAlarm    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    no                      (0),
+    yes                     (1)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { yes }
+  ::= { mux6258EmbeddedOutputAudioAlarmsEntry 5 }
+
+--
+--  Table of AnalogInputAlarms parameters
+--
+mux6258AnalogInputAlarmsArrGrp
+  OBJECT IDENTIFIER ::= { mux6258CardObjects 18 }
+
+mux6258NumberOfElementsInmux6258AnalogInputAlarmsArrGrp OBJECT-TYPE
+  SYNTAX      Integer32
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "The total number of elements in mux6258AnalogInputAlarmsArrGrp."
+  ::= { mux6258AnalogInputAlarmsArrGrp 1 }
+
+mux6258AnalogInputAlarmsTable     OBJECT-TYPE
+  SYNTAX      SEQUENCE OF Mux6258AnalogInputAlarmsEntry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "A table containing product info for all MUX6258 cards at this node.
+    This table is the expansion of the table 'openGearCardTable' in the
+    OPEN-GEAR-CARD-MIB. For each MUX6258 card in the 'openGearCardTable',
+    there is a corresponding entry in this table, having the same indices -
+    'openGearFrameIndex' and 'openGearCardIndex'."
+  ::= { mux6258AnalogInputAlarmsArrGrp 2 }
+
+mux6258AnalogInputAlarmsEntry     OBJECT-TYPE
+  SYNTAX      Mux6258AnalogInputAlarmsEntry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "A conceptual row within the 'mux6258AnalogInputAlarmsTable'."
+  INDEX    { openGearFrameIndex, openGearCardIndex,  mux6258AnalogInputAlarmsIndex}
+  ::= { mux6258AnalogInputAlarmsTable 1 }
+
+Mux6258AnalogInputAlarmsEntry ::= SEQUENCE {
+  mux6258AnalogInputAlarmsIndex        Unsigned32,
+  mux6258AnalogInputSilentAlarm    INTEGER
+}
+
+mux6258AnalogInputAlarmsIndex   OBJECT-TYPE
+  SYNTAX      Unsigned32
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "It represents the array group index."
+  ::= { mux6258AnalogInputAlarmsEntry 1 }
+
+mux6258AnalogInputSilentAlarm    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    no                      (0),
+    yes                     (1)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { yes }
+  ::= { mux6258AnalogInputAlarmsEntry 2 }
+
+--
+--  Table of AESAudioInputs parameters
+--
+mux6258AESAudioInputsArrGrp
+  OBJECT IDENTIFIER ::= { mux6258CardObjects 19 }
+
+mux6258NumberOfElementsInmux6258AESAudioInputsArrGrp OBJECT-TYPE
+  SYNTAX      Integer32
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "The total number of elements in mux6258AESAudioInputsArrGrp."
+  ::= { mux6258AESAudioInputsArrGrp 1 }
+
+mux6258AESAudioInputsTable     OBJECT-TYPE
+  SYNTAX      SEQUENCE OF Mux6258AESAudioInputsEntry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "A table containing product info for all MUX6258 cards at this node.
+    This table is the expansion of the table 'openGearCardTable' in the
+    OPEN-GEAR-CARD-MIB. For each MUX6258 card in the 'openGearCardTable',
+    there is a corresponding entry in this table, having the same indices -
+    'openGearFrameIndex' and 'openGearCardIndex'."
+  ::= { mux6258AESAudioInputsArrGrp 2 }
+
+mux6258AESAudioInputsEntry     OBJECT-TYPE
+  SYNTAX      Mux6258AESAudioInputsEntry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "A conceptual row within the 'mux6258AESAudioInputsTable'."
+  INDEX    { openGearFrameIndex, openGearCardIndex,  mux6258AESAudioInputsIndex}
+  ::= { mux6258AESAudioInputsTable 1 }
+
+Mux6258AESAudioInputsEntry ::= SEQUENCE {
+  mux6258AESAudioInputsIndex        Unsigned32,
+  mux6258AesInputState             INTEGER
+}
+
+mux6258AESAudioInputsIndex   OBJECT-TYPE
+  SYNTAX      Unsigned32
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "It represents the array group index."
+  ::= { mux6258AESAudioInputsEntry 1 }
+
+mux6258AesInputState    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    pCM                     (0),
+    noInput                 (1),
+    pCMSilent               (2),
+    nonPCM                  (3),
+    async                   (5),
+    mixed                   (6)
+  }
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "... "
+  ::= { mux6258AESAudioInputsEntry 2 }
+
+--
+-- Conformance
+--
+mux6258CardMibCompliances
+  OBJECT IDENTIFIER ::= { mux6258CardConformance 1 }
+mux6258CardMibGroups
+  OBJECT IDENTIFIER ::= { mux6258CardConformance 2 }
+--
+-- Compliance Statement
+--
+mux6258CardCompliances MODULE-COMPLIANCE
+  STATUS      current
+  DESCRIPTION
+    "The compliance statement for MUX6258 entities."
+  MODULE -- this module
+    MANDATORY-GROUPS { mux6258CardInfoGroup,
+                       mux6258CardNotifyGroup
+                     }
+
+  ::= { mux6258CardMibCompliances 1 }
+
+mux6258CardInfoGroup OBJECT-GROUP
+    OBJECTS { mux6258NumberOfCards,
+              mux6258MuxProduct,
+              mux6258BoardRev,
+              mux6258RearModule,
+              mux6258SerialNumber,
+              mux6258Firmware,
+              mux6258DaughterCard,
+              mux6258HwAlarm,
+              mux6258CardVoltage,
+              mux6258CardCurrent,
+              mux6258SfpModuleTemp,
+              mux6258OpticalWavelength,
+              mux6258Headroom,
+              mux6258Ram,
+              mux6258SignalAlarm,
+              mux6258AudioAlarm,
+              mux6258ReferenceAlarm,
+              mux6258Input,
+              mux6258Reference,
+              mux6258Output,
+              mux6258SfpCh1Status,
+              mux6258SfpCh1TxPower,
+              mux6258RefSource,
+              mux6258MinimumDelay,
+              mux6258LoiColour,
+              mux6258LoiY,
+              mux6258LoiCr,
+              mux6258LoiCb,
+              mux6258Pattern,
+              mux6258SdAudioBitMode,
+              mux6258SilenceThreshold,
+              mux6258SilenceTimeout,
+              mux6258Access,
+              mux6258AudioResetAll,
+              mux6258ResetAll,
+              mux6258AesInputResetAll,
+              mux6258AesInputResetAllPg2,
+              mux6258AnalogInputResetAll,
+              mux6258CrcError,
+              mux6258CrcErrReset,
+              mux6258AesCh1Delay,
+              mux6258AesCh2Delay,
+              mux6258AesDelayLock,
+              mux6258AesCh1Gain,
+              mux6258AesCh2Gain,
+              mux6258AesGainLock,
+              mux6258AesCh1Invert,
+              mux6258AesCh2Invert,
+              mux6258AesSRConversion,
+              mux6258AesSum,
+              mux6258AesInputReset,
+              mux6258AesInputChAStatus,
+              mux6258AesInputChBStatus,
+              mux6258AesInputWordLength,
+              mux6258AesEmph,
+              mux6258AesInputSampleRate,
+              mux6258AesCh1DelayPg2,
+              mux6258AesCh2DelayPg2,
+              mux6258AesDelayLockPg2,
+              mux6258AesCh1GainPg2,
+              mux6258AesCh2GainPg2,
+              mux6258AesGainLockPg2,
+              mux6258AesCh1InvertPg2,
+              mux6258AesCh2InvertPg2,
+              mux6258AesSRConversionPg2,
+              mux6258AesSumPg2,
+              mux6258AesInputResetPg2,
+              mux6258AesInputChAStatusPage2,
+              mux6258AesInputChBStatusPage2,
+              mux6258AesInputWordLengthPage2,
+              mux6258AesEmphPg2,
+              mux6258AesInputSampleRatePage2,
+              mux6258GroupEnable,
+              mux6258GroupChan1SourceWithAES,
+              mux6258GroupChan2SourceWithAES,
+              mux6258GroupChan3SourceWithAES,
+              mux6258GroupChan4SourceWithAES,
+              mux6258GroupChan1BackupSourceWithAES,
+              mux6258GroupChan2BackupSourceWithAES,
+              mux6258GroupChan3BackupSourceWithAES,
+              mux6258GroupChan4BackupSourceWithAES,
+              mux6258GroupChan1SourceWithAlg,
+              mux6258GroupChan2SourceWithAlg,
+              mux6258GroupChan3SourceWithAlg,
+              mux6258GroupChan4SourceWithAlg,
+              mux6258GroupChan1BackupSourceWithAlg,
+              mux6258GroupChan2BackupSourceWithAlg,
+              mux6258GroupChan3BackupSourceWithAlg,
+              mux6258GroupChan4BackupSourceWithAlg,
+              mux6258GroupPresetPass,
+              mux6258GroupPresetInsert,
+              mux6258GroupPresetOverwrite,
+              mux6258NoInputAlarm,
+              mux6258InvalidInputAlarm,
+              mux6258IncompatInputAlarm,
+              mux6258NonSyncInputAlarm,
+              mux6258NoRefAlarm,
+              mux6258InvalidRefAlarm,
+              mux6258OverrideRefAlarm,
+              mux6258IncompatRearModuleAlarm,
+              mux6258IncompatDaughterCardAlarm,
+              mux6258SfpNotifyOnTemp,
+              mux6258SfpNotifyOnPower,
+              mux6258Sd24bitAlarm,
+              mux6258SetAllAlarms,
+              mux6258ClearAllAlarms,
+              mux6258GroupAudioState,
+              mux6258EmbeddedChan1State,
+              mux6258EmbeddedChan2State,
+              mux6258EmbeddedChan3State,
+              mux6258EmbeddedChan4State,
+              mux6258EmbeddedAudioWordLength,
+              mux6258AnalogInputState,
+              mux6258AnalogInputDelay,
+              mux6258AnalogInputGain,
+              mux6258AnalogInputInvert,
+              mux6258AnalogInputReset,
+              mux6258AnalogInputStateRow2,
+              mux6258AnalogInputDelayRow2,
+              mux6258AnalogInputGainRow2,
+              mux6258AnalogInputInvertRow2,
+              mux6258AnalogInputResetRow2,
+              mux6258GroupNotPresentAlarm,
+              mux6258GroupCh1SilentAlarm,
+              mux6258GroupCh2SilentAlarm,
+              mux6258GroupCh3SilentAlarm,
+              mux6258GroupCh4SilentAlarm,
+              mux6258AesInputNotPresentAlarm,
+              mux6258AesInputChASilentAlarm,
+              mux6258AesInputChBSilentAlarm,
+              mux6258GroupSrcMissingAlarm,
+              mux6258GroupSrcAsyncAlarm,
+              mux6258GroupBkpSrcMissingAlarm,
+              mux6258GroupBkpSrcAsyncAlarm,
+              mux6258AnalogInputSilentAlarm,
+              mux6258AesInputState
+            }
+    STATUS  current
+    DESCRIPTION
+      "A collection of objects providing basic instrumentation
+        and control of an MUX6258 card."
+    ::= { mux6258CardMibGroups 1 }
+
+mux6258CardNotifyGroup NOTIFICATION-GROUP
+  NOTIFICATIONS { mux6258SignalAlarmEvent,
+                  mux6258AudioAlarmEvent,
+                  mux6258ReferenceAlarmEvent,
+                  mux6258HwAlarmEvent
+                }
+    STATUS  current
+    DESCRIPTION
+      "The notifications relating to the MUX6258 card."
+    ::= { mux6258CardMibGroups 2 }
+
+END

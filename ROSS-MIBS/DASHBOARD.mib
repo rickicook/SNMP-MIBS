@@ -1,0 +1,39 @@
+DASHBOARD-MIB DEFINITIONS ::= BEGIN
+
+--
+-- Top-level infrastructure of the DashBoard MIB tree
+--
+
+IMPORTS
+  rossVideo FROM ROSS-VIDEO-MIB
+
+  MODULE-IDENTITY FROM SNMPv2-SMI;
+
+DashBoard MODULE-IDENTITY
+  LAST-UPDATED "201004060000Z"
+  ORGANIZATION "www.rossvideo.com"
+  CONTACT-INFO
+    "postal:   Ross Video Limited
+               8 John St. P.O. Box 220
+               Iroquois ON K0E 1K0
+               Canada
+
+    email:    support@rossvideo.com"
+  DESCRIPTION
+    "Top-level infrastructure of the DashBoard MIB tree"
+  REVISION     "201004060000Z"
+  DESCRIPTION
+    "First draft"
+    ::= { rossVideo 1 }
+
+--
+--  DashBoard management objects
+--
+DashBoardServer              OBJECT IDENTIFIER ::= { DashBoard 1 }
+
+--
+--  DashBoardServer management objects
+--
+UserRightsManagement              OBJECT IDENTIFIER ::= { DashBoardServer 1 }
+
+END

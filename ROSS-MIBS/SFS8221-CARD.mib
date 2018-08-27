@@ -1,0 +1,768 @@
+SFS8221-CARD-MIB DEFINITIONS ::= BEGIN
+
+--
+-- Defines control and monitoring structures for the SFS-8221 card.
+--
+
+IMPORTS
+  openGearFrameIndex
+    FROM OPEN-GEAR-FRAME-MIB
+
+  openGearCardIndex
+    FROM OPEN-GEAR-CARD-MIB
+
+  openGearObjects
+    FROM OPEN-GEAR-MIB
+
+  OBJECT-TYPE, NOTIFICATION-TYPE, MODULE-IDENTITY, Integer32
+    FROM SNMPv2-SMI
+
+  OBJECT-GROUP, NOTIFICATION-GROUP, MODULE-COMPLIANCE
+    FROM SNMPv2-CONF
+
+  DisplayString
+    FROM SNMPv2-TC;
+
+sfs8221CardMib MODULE-IDENTITY
+  LAST-UPDATED "200703070000Z"
+  ORGANIZATION "www.rossvideo.org"
+  CONTACT-INFO
+    "postal:   Ross Video
+               8 John St. P.O. Box 220
+               Iroquois ON K0E 1K0
+
+       email:    support@rossvideo.com"
+  DESCRIPTION
+    "Defines control and monitoring structures for the SFS-8221 card."
+  REVISION     "200703070000Z"
+  DESCRIPTION
+    "First revision."
+  ::= { openGearObjects 4 }
+
+--
+--  Top level components in the SFS-8221 MIB
+--
+sfs8221CardNotifications
+  OBJECT IDENTIFIER ::= { sfs8221CardMib 0 }
+
+sfs8221CardObjects
+  OBJECT IDENTIFIER ::= { sfs8221CardMib 1 }
+
+sfs8221CardConformance
+  OBJECT IDENTIFIER ::= { sfs8221CardMib 2 }
+
+--
+--  Notifications relating to the SFS-8221 card
+--
+sfs8221HWStatusEvent   NOTIFICATION-TYPE
+  OBJECTS { sfs8221HWStatus }
+  STATUS current
+  DESCRIPTION
+    "An indication that the hw status has changed. The status value
+     is in sfs8221HWStatus"
+  ::= { sfs8221CardNotifications 1 }
+
+sfs8221ReferenceStatusEvent   NOTIFICATION-TYPE
+  OBJECTS { sfs8221ReferenceStatus }
+  STATUS current
+  DESCRIPTION
+    "An indication that status of the timing reference has changed.
+     The status value is in sfs8221ReferenceStatus"
+  ::= { sfs8221CardNotifications 2 }
+
+sfs8221InputStatusEvent   NOTIFICATION-TYPE
+  OBJECTS { sfs8221InputStatus }
+  STATUS current
+  DESCRIPTION
+    "An indication that status of the video input has changed.
+     The status value is in sfs8221InputStatus"
+  ::= { sfs8221CardNotifications 3 }
+
+
+--
+--  SFS8221 Card information
+--
+--
+--  All the SFS-8221 cards in the Open Gear frame
+--
+sfs8221NumberOfCards    OBJECT-TYPE
+  SYNTAX      Integer32
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "The total number of SFS-8221 cards in the open gear frame."
+  ::= { sfs8221CardObjects 1 }
+
+--
+--  Table of Product parameters
+--
+sfs8221ProductTable     OBJECT-TYPE
+  SYNTAX      SEQUENCE OF Sfs8221ProductEntry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "A table containing product info for all SFS-8221 cards at this node.
+     This table is the expansion of the table 'openGearCardTable' in the
+     OPEN-GEAR-CARD-MIB. For each SFS-8221 card in the 'openGearCardTable',
+     there is a corresponding entry in this table, having the same indices -
+     'openGearFrameIndex' and 'openGearCardIndex'."
+  ::= { sfs8221CardObjects 2 }
+
+sfs8221ProductEntry     OBJECT-TYPE
+  SYNTAX      Sfs8221ProductEntry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "A conceptual row within the 'sfs8221ProductTable'."
+  INDEX    { openGearFrameIndex, openGearCardIndex }
+  ::= { sfs8221ProductTable 1 }
+
+Sfs8221ProductEntry ::= SEQUENCE {
+  sfs8221FirmwareRev         DisplayString,
+  sfs8221SfsFirmware         DisplayString,
+  sfs8221BoardRev            DisplayString,
+  sfs8221OptionBoardType     Integer32
+}
+
+sfs8221FirmwareRev    OBJECT-TYPE
+  SYNTAX      DisplayString
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "The version number of the FPGA firmware on this card."
+  ::= { sfs8221ProductEntry 4 }
+
+sfs8221SfsFirmware    OBJECT-TYPE
+  SYNTAX      DisplayString
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "The version number of the frame synchronization firmware on this card."
+  ::= { sfs8221ProductEntry 5 }
+
+sfs8221BoardRev    OBJECT-TYPE
+  SYNTAX      DisplayString
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "The hardware (board) revision of this card."
+  ::= { sfs8221ProductEntry 6 }
+
+sfs8221OptionBoardType    OBJECT-TYPE
+  SYNTAX      Integer32
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "The type of option board installed on this card."
+  ::= { sfs8221ProductEntry 7 }
+
+--
+--  Table of Hardware parameters
+--
+sfs8221HardwareTable     OBJECT-TYPE
+  SYNTAX      SEQUENCE OF Sfs8221HardwareEntry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "A table containing hardware status for all SFS-8221 cards at this node.
+     This table is the expansion of the table 'openGearCardTable' in the
+     OPEN-GEAR-CARD-MIB. For each SFS-8221 card in the 'openGearCardTable',
+     there is a corresponding entry in this table, having the same indices -
+     'openGearFrameIndex' and 'openGearCardIndex'."
+  ::= { sfs8221CardObjects 3 }
+
+sfs8221HardwareEntry     OBJECT-TYPE
+  SYNTAX      Sfs8221HardwareEntry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "A conceptual row within the 'sfs8221HardwareTable'."
+  INDEX    { openGearFrameIndex, openGearCardIndex }
+  ::= { sfs8221HardwareTable 1 }
+
+Sfs8221HardwareEntry ::= SEQUENCE {
+  sfs8221HWStatus            Integer32,
+  sfs8221RearModule          Integer32,
+  sfs8221CardVoltage         Integer32,
+  sfs8221CardCurrent         Integer32,
+  sfs8221EEBank              Integer32
+}
+
+sfs8221HWStatus    OBJECT-TYPE
+  SYNTAX      Integer32
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "The hardware status of this card.  The status parameter is a bitfield
+     where each bit indicates a specific error.  A value of zero means there
+     are no hardware faults.  Any non-zero value indicates an error.
+     The error bits are defined as follows:
+        0x0001 - FPGA load invalid
+        0x0002 - Assembly Error (wrong option card installed)
+        0x0004 - Incompatible rear I/O module
+        0x0008 - Current consumption is out of spec
+        0x0010 - Undiagnosed internal error
+        0x0020 - Option card FPGA invalid
+     All other values are undefined."
+  ::= { sfs8221HardwareEntry 1 }
+
+sfs8221RearModule    OBJECT-TYPE
+  SYNTAX      Integer32
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "The type of rear I/O module present for this card."
+  ::= { sfs8221HardwareEntry 2 }
+
+sfs8221CardVoltage    OBJECT-TYPE
+  SYNTAX      Integer32
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "The supply voltage measured at this card, in milliVolts."
+  ::= { sfs8221HardwareEntry 3 }
+
+sfs8221CardCurrent    OBJECT-TYPE
+  SYNTAX      Integer32
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "The current consumption of this card in milliAmps."
+  ::= { sfs8221HardwareEntry 4 }
+
+sfs8221EEBank    OBJECT-TYPE
+  SYNTAX      Integer32
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "The index of the EEPROM storage bank used to store the persistent
+     configuration of this card.  This index will increment whenever
+     a new configuration is stored."
+  ::= { sfs8221HardwareEntry 5 }
+
+--
+--  Table of Signal Status parameters
+--
+sfs8221SignalTable     OBJECT-TYPE
+  SYNTAX      SEQUENCE OF Sfs8221SignalEntry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "A table containing signal status for all SFS-8221 cards at this node.
+     This table is the expansion of the table 'openGearCardTable' in the
+     OPEN-GEAR-CARD-MIB. For each SFS-8221 card in the 'openGearCardTable',
+     there is a corresponding entry in this table, having the same indices -
+     'openGearFrameIndex' and 'openGearCardIndex'."
+  ::= { sfs8221CardObjects 4 }
+
+sfs8221SignalEntry     OBJECT-TYPE
+  SYNTAX      Sfs8221SignalEntry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "A conceptual row within the 'sfs8221SignalTable'."
+  INDEX    { openGearFrameIndex, openGearCardIndex }
+  ::= { sfs8221SignalTable 1 }
+
+Sfs8221SignalEntry ::= SEQUENCE {
+  sfs8221ReferenceStatus     INTEGER,
+  sfs8221ReferenceFormat     DisplayString,
+  sfs8221TimingMode          INTEGER,
+  sfs8221InputStatus         INTEGER,
+  sfs8221InputFormat         DisplayString
+}
+
+sfs8221ReferenceStatus    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    noSignal  (0),
+    invalid   (1),
+    unlocked  (2),
+    locked    (3)
+  }
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "The status of the timing reference for this card.
+     Changes are reported as a trap - sfs8221ReferenceStatusEvent"
+  ::= { sfs8221SignalEntry 1 }
+
+sfs8221ReferenceFormat    OBJECT-TYPE
+  SYNTAX      DisplayString
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "The format of the video timing reference for this card."
+  ::= { sfs8221SignalEntry 2 }
+
+sfs8221TimingMode    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    frameSync  (0),
+    frameDelay (1)
+  }
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "The configured timing mode for this card:
+       'frameSync' - the output is being synchronized to a reference, or
+       'frameDelay' - the output is synchronized to the video input."
+  ::= { sfs8221SignalEntry 3 }
+
+sfs8221InputStatus    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    noSignal    (0),
+    unsupported (1),
+    mismatched  (2), -- does not match configuration
+    valid       (3)
+  }
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "The status of the video input for this card.
+     Changes are reported as a trap - sfs8221InputStatusEvent"
+  ::= { sfs8221SignalEntry 4 }
+
+sfs8221InputFormat    OBJECT-TYPE
+  SYNTAX      DisplayString
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "The format of the input video signal for this card."
+  ::= { sfs8221SignalEntry 5 }
+
+--
+--  Table of configuration control parameters
+--
+sfs8221SetupTable     OBJECT-TYPE
+  SYNTAX      SEQUENCE OF Sfs8221SetupEntry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "A table containing access settings for all SFS-8221 cards at this node.
+     This table is the expansion of the table 'openGearCardTable' in the
+     OPEN-GEAR-CARD-MIB. For each SFS-8221 card in the 'openGearCardTable',
+     there is a corresponding entry in this table, having the same indices -
+     'openGearFrameIndex' and 'openGearCardIndex'."
+  ::= { sfs8221CardObjects 5 }
+
+sfs8221SetupEntry     OBJECT-TYPE
+  SYNTAX      Sfs8221SetupEntry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "A conceptual row within the 'sfs8221SetupTable'."
+  INDEX    { openGearFrameIndex, openGearCardIndex }
+  ::= { sfs8221SetupTable 1 }
+
+Sfs8221SetupEntry ::= SEQUENCE {
+  sfs8221EditPermission      INTEGER,
+  sfs8221FactoryReset        INTEGER
+}
+
+sfs8221EditPermission    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    unlocked   (0),
+    locked     (1)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "The edit permission for read-write parameters of this card."
+  DEFVAL  { unlocked }
+  ::= { sfs8221SetupEntry 1 }
+
+sfs8221FactoryReset    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    reset      (0)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "Setting this parameter to zero will set the configuration of this card
+     to the factory default settings."
+  ::= { sfs8221SetupEntry 2 }
+
+--
+--  Table of Output parameters
+--
+sfs8221OutputTable     OBJECT-TYPE
+  SYNTAX      SEQUENCE OF Sfs8221OutputEntry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "A table containing output settings for all SFS-8221 cards at this node.
+     This table is the expansion of the table 'openGearCardTable' in the
+     OPEN-GEAR-CARD-MIB. For each SFS-8221 card in the 'openGearCardTable',
+     there is a corresponding entry in this table, having the same indices -
+     'openGearFrameIndex' and 'openGearCardIndex'."
+  ::= { sfs8221CardObjects 6 }
+
+sfs8221OutputEntry     OBJECT-TYPE
+  SYNTAX      Sfs8221OutputEntry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "A conceptual row within the 'sfs8221OutputTable'."
+  INDEX    { openGearFrameIndex, openGearCardIndex }
+  ::= { sfs8221OutputTable 1 }
+
+Sfs8221OutputEntry ::= SEQUENCE {
+  sfs8221AncillaryH          INTEGER,
+  sfs8221AncillaryV          INTEGER,
+  sfs8221VBitLine            INTEGER,
+  sfs8221LossOfInput         INTEGER,
+  sfs8221Freeze              INTEGER,
+  sfs8221ForceFreeze         INTEGER,
+  sfs8221TestPattern         INTEGER,
+  sfs8221MonitorFormat       INTEGER
+}
+
+sfs8221AncillaryH    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    pass  (0),
+    blank (1)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "Specifies whether to pass or blank ancilliary data in the horizontal
+     blanking interval."
+  DEFVAL  { pass }
+  ::= { sfs8221OutputEntry 1 }
+
+sfs8221AncillaryV    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    pass  (0),
+    blank (1)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "Specifies whether to pass or blank ancilliary data in the vertical
+     blanking interval."
+  DEFVAL  { pass }
+  ::= { sfs8221OutputEntry 2 }
+
+sfs8221VBitLine    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    line10   (0),
+    line20   (1),
+    auto     (2)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "The first line of active video for 480-line output formats.
+     This may be fixed at either line 10 or line 20, or configured in 'auto'
+     mode to follow the input."
+  DEFVAL  { line20 }
+  ::= { sfs8221OutputEntry 3 }
+
+sfs8221LossOfInput    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    black  (0),
+    freeze (2)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "Specifies what to output on loss of input (black or freeze frame).
+     Output will freeze on frame or field depending on the setting of
+     'sfs8221Freeze'."
+  DEFVAL  { black }
+  ::= { sfs8221OutputEntry 4 }
+
+sfs8221Freeze    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    frame  (0),
+    field1 (1)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "Specifies whether to freeze on a frame or on field 1,
+     on loss of input or force freeze."
+  DEFVAL  { frame }
+  ::= { sfs8221OutputEntry 5 }
+
+sfs8221ForceFreeze    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    disabled (0),
+    enabled  (1)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "Freezes the output when enabled.  Card outputs live video otherwise."
+  DEFVAL  { disabled }
+  ::= { sfs8221OutputEntry 6 }
+
+sfs8221TestPattern    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    smpteBars    (0),
+    p75Bars      (3),
+    disabled     (4)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "The test pattern to be output by this card."
+  DEFVAL  { disabled }
+  ::= { sfs8221OutputEntry 7 }
+
+sfs8221MonitorFormat    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    auto  (0),
+    ntsc  (1),
+    pal   (2),
+    video (3)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "The format of the analog monitoring output for this card."
+  DEFVAL  { auto }
+  ::= { sfs8221OutputEntry 8 }
+
+--
+--  Table of Timing parameters
+--
+sfs8221TimingTable     OBJECT-TYPE
+  SYNTAX      SEQUENCE OF Sfs8221TimingEntry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "A table containing timing settings for all SFS-8221 cards at this node.
+     This table is the expansion of the table 'openGearCardTable' in the
+     OPEN-GEAR-CARD-MIB. For each SFS-8221 card in the 'openGearCardTable',
+     there is a corresponding entry in this table, having the same indices -
+     'openGearFrameIndex' and 'openGearCardIndex'."
+  ::= { sfs8221CardObjects 7 }
+
+sfs8221TimingEntry     OBJECT-TYPE
+  SYNTAX      Sfs8221TimingEntry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "A conceptual row within the 'sfs8221TimingTable'."
+  INDEX    { openGearFrameIndex, openGearCardIndex }
+  ::= { sfs8221TimingTable 1 }
+
+Sfs8221TimingEntry ::= SEQUENCE {
+  sfs8221Reference           INTEGER,
+  sfs8221HorizontalDelay     Integer32,
+  sfs8221VerticalDelay       Integer32,
+  sfs8221FrameDelay          Integer32
+}
+
+sfs8221Reference        OBJECT-TYPE
+  SYNTAX  INTEGER {
+    frame1  (0),
+    frame2  (1),
+    local   (2)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "The selected video timing reference for this card."
+  DEFVAL  { frame1 }
+  ::= { sfs8221TimingEntry 1 }
+
+sfs8221HorizontalDelay    OBJECT-TYPE
+  SYNTAX      Integer32 (0..2750)
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "The horizontal delay of this card in pixels."
+  DEFVAL  { 0 }
+  ::= { sfs8221TimingEntry 2 }
+
+sfs8221VerticalDelay    OBJECT-TYPE
+  SYNTAX      Integer32 (0..1125)
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "The vertical delay of this card in lines."
+  DEFVAL  { 0 }
+  ::= { sfs8221TimingEntry 3 }
+
+sfs8221FrameDelay    OBJECT-TYPE
+  SYNTAX      Integer32 (0..105)
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "The delay of this card in frames.  Allowable delay depends on format:
+      format        max delay
+      480i/59.94    105 frames
+      720p/59.94     17
+      1080p/59.94    18
+      576i/50        87
+      720p/50        14
+      720p/50        14
+    "
+  DEFVAL  { 0 }
+  ::= { sfs8221TimingEntry 4 }
+
+--
+--  Table of ProcAmp parameters
+--
+sfs8221ProcAmpTable     OBJECT-TYPE
+  SYNTAX      SEQUENCE OF Sfs8221ProcAmpEntry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "A table containing proc amp settings for all SFS-8221 cards at this node.
+     This table is the expansion of the table 'openGearCardTable' in the
+     OPEN-GEAR-CARD-MIB. For each SFS-8221 card in the 'openGearCardTable',
+     there is a corresponding entry in this table, having the same indices -
+     'openGearFrameIndex' and 'openGearCardIndex'."
+  ::= { sfs8221CardObjects 8 }
+
+sfs8221ProcAmpEntry     OBJECT-TYPE
+  SYNTAX      Sfs8221ProcAmpEntry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "A conceptual row within the 'sfs8221ProcAmpTable'."
+  INDEX    { openGearFrameIndex, openGearCardIndex }
+  ::= { sfs8221ProcAmpTable 1 }
+
+Sfs8221ProcAmpEntry ::= SEQUENCE {
+  sfs8221VideoGain           Integer32,
+  sfs8221ChromaGain          Integer32,
+  sfs8221CBGain              Integer32,
+  sfs8221BlackOffset         Integer32,
+  sfs8221ProcAmpReset        INTEGER
+}
+
+sfs8221VideoGain    OBJECT-TYPE
+  SYNTAX      Integer32 (0..200)
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "The video gain of the output proc amp, in percent."
+  DEFVAL  { 100 }
+  ::= { sfs8221ProcAmpEntry 1 }
+
+sfs8221ChromaGain    OBJECT-TYPE
+  SYNTAX      Integer32 (0..200)
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "The chroma gain of the output proc amp, in percent."
+  DEFVAL  { 100 }
+  ::= { sfs8221ProcAmpEntry 2 }
+
+sfs8221CBGain    OBJECT-TYPE
+  SYNTAX      Integer32 (0..200)
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "The Cb (chroma blue) gain of the output proc amp, in percent."
+  DEFVAL  { 100 }
+  ::= { sfs8221ProcAmpEntry 3 }
+
+sfs8221BlackOffset    OBJECT-TYPE
+  SYNTAX      Integer32 (-60..160)
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "The black offset of the output proc amp."
+  DEFVAL  { 0 }
+  ::= { sfs8221ProcAmpEntry 4 }
+
+sfs8221ProcAmpReset    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    reset      (0)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "Setting this parameter to zero will set the configuration of this card
+     to the factory default settings."
+  DEFVAL  { reset }
+  ::= { sfs8221ProcAmpEntry 5 }
+
+--
+-- Conformance
+--
+sfs8221CardMibCompliances
+  OBJECT IDENTIFIER ::= { sfs8221CardConformance 1 }
+sfs8221CardMibGroups
+  OBJECT IDENTIFIER ::= { sfs8221CardConformance 2 }
+
+--
+-- Compliance Statement
+--
+sfs8221CardCompliances MODULE-COMPLIANCE
+  STATUS      current
+  DESCRIPTION
+    "The compliance statement for SFS-8221 entities."
+
+  MODULE -- this module
+    MANDATORY-GROUPS { sfs8221CardInfoGroup,
+                       sfs8221CardNotifyGroup
+                     }
+
+  ::= { sfs8221CardMibCompliances 1 }
+
+--
+-- SFS-8221 MIB groups
+--
+sfs8221CardInfoGroup OBJECT-GROUP
+    OBJECTS { sfs8221NumberOfCards,
+              sfs8221FirmwareRev,
+              sfs8221SfsFirmware,
+              sfs8221BoardRev,
+              sfs8221OptionBoardType,
+              sfs8221RearModule,
+              sfs8221CardVoltage,
+              sfs8221CardCurrent,
+              sfs8221EEBank,
+
+              sfs8221HWStatus,
+              sfs8221ReferenceStatus,
+              sfs8221ReferenceFormat,
+              sfs8221TimingMode,
+              sfs8221InputStatus,
+              sfs8221InputFormat,
+
+              sfs8221EditPermission,
+              sfs8221FactoryReset,
+
+              sfs8221AncillaryH,
+              sfs8221AncillaryV,
+              sfs8221VBitLine,
+              sfs8221LossOfInput,
+              sfs8221Freeze,
+              sfs8221ForceFreeze,
+              sfs8221TestPattern,
+              sfs8221MonitorFormat,
+
+              sfs8221Reference,
+              sfs8221HorizontalDelay,
+              sfs8221VerticalDelay,
+              sfs8221FrameDelay,
+
+              sfs8221VideoGain,
+              sfs8221ChromaGain,
+              sfs8221CBGain,
+              sfs8221BlackOffset,
+              sfs8221ProcAmpReset
+            }
+    STATUS  current
+    DESCRIPTION
+            "A collection of objects providing basic instrumentation
+            and control of an SFS-8221 card."
+    ::= { sfs8221CardMibGroups 1 }
+
+sfs8221CardNotifyGroup NOTIFICATION-GROUP
+  NOTIFICATIONS { sfs8221HWStatusEvent,
+                  sfs8221ReferenceStatusEvent,
+                  sfs8221InputStatusEvent
+                }
+  STATUS current
+  DESCRIPTION
+    "The notifications relating to the SFS-8221 card"
+  ::= { sfs8221CardMibGroups 2 }
+
+END

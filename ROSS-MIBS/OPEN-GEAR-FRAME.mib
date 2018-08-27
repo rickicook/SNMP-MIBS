@@ -1,0 +1,2896 @@
+OPEN-GEAR-FRAME-MIB DEFINITIONS ::= BEGIN
+
+--
+-- Defines control and monitoring structures for the Open Gear Frame.
+--
+
+IMPORTS
+  openGearObjects
+    FROM OPEN-GEAR-MIB
+
+  OBJECT-TYPE, NOTIFICATION-TYPE, MODULE-IDENTITY, Integer32, Unsigned32
+    FROM SNMPv2-SMI
+
+  OBJECT-GROUP, NOTIFICATION-GROUP, MODULE-COMPLIANCE
+    FROM SNMPv2-CONF
+
+  DisplayString
+    FROM SNMPv2-TC;
+
+openGearFrameMib MODULE-IDENTITY
+  LAST-UPDATED "201404041200Z"
+  ORGANIZATION "www.rossvideo.org"
+  CONTACT-INFO
+    "postal:   Ross Video Limited
+               8 John St. P.O. Box 220
+               Iroquois ON K0E 1K0
+               Canada
+
+     email:    support@rossvideo.com"
+  DESCRIPTION
+    "Fix another error relating to OG3 PSU status"
+  REVISION     "201404011200Z"
+  DESCRIPTION
+    "Fix syntax error in OG3 PSU software rev entry"
+  REVISION     "201404011200Z"
+  DESCRIPTION
+    "Correct fan speed ranges for OG3-FR high power frames"
+  REVISION     "201212091200Z"
+  DESCRIPTION
+    "Added additional fields for PS-OG3 power supply"
+  REVISION     "201211061200Z"
+  DESCRIPTION
+    "Added parameters to report absence/presence of each power supply unit."
+  REVISION     "201206041200Z"
+  DESCRIPTION
+    "Correct datatypes and default value for DataSafeSlot entries"
+  REVISION     "201010080800Z"
+  DESCRIPTION
+    "Add DataSafe paramters."
+  REVISION     "200909091200Z"
+  DESCRIPTION
+    "Defines control and monitoring structures for the Open Gear Frame."
+  REVISION     "200810311200Z"
+  DESCRIPTION
+    "Add new objects to support MFC-8320-N."
+  REVISION     "200807091200Z"
+  DESCRIPTION
+    "Added parameter to enable/disable reporting of card-specific faults."
+  REVISION     "200703070000Z"
+  DESCRIPTION
+    "First revision."
+  ::= { openGearObjects 2 }
+
+--
+--  Top level components in the OpenGear frame MIB
+--
+openGearFrameNotifications
+  OBJECT IDENTIFIER ::= { openGearFrameMib 0 }
+
+openGearFrameObjects
+  OBJECT IDENTIFIER ::= { openGearFrameMib 1 }
+
+openGearFrameConformance
+  OBJECT IDENTIFIER ::= { openGearFrameMib 2 }
+
+--
+--  Notifications relating to the frame and card
+--
+openGearFrameStatusEvent   NOTIFICATION-TYPE
+  OBJECTS { openGearFrameStatus }
+  STATUS current
+  DESCRIPTION
+    "An indication that the frame status has changed.
+     The frame status is provided in openGearFrameStatus."
+  ::= { openGearFrameNotifications 1 }
+
+openGearFrameFanDoorEvent   NOTIFICATION-TYPE
+  OBJECTS { openGearFrameFanDoor }
+  STATUS current
+  DESCRIPTION
+    "An indication that the fan door state has changed.
+     The fan door state is provided in mfc8310FanDoor."
+  ::= { openGearFrameNotifications 2 }
+
+openGearFrameAVRStateEvent   NOTIFICATION-TYPE
+  OBJECTS { openGearFrameAVRState }
+  STATUS current
+  DESCRIPTION
+    "An indication that the AVR state is changed."
+  ::= { openGearFrameNotifications 3 }
+
+openGearDataSafeStateEvent   NOTIFICATION-TYPE
+  OBJECTS { openGearDataSafeState }
+  STATUS current
+  DESCRIPTION
+    "An indication that the DataSafe state is changed."
+  ::= { openGearFrameNotifications 4 }
+
+openGearPSU1StatusEvent   NOTIFICATION-TYPE
+  OBJECTS { openGearPSU1Status }
+  STATUS current
+  DESCRIPTION
+    "An indication that power supply unit 1 has been added or removed."
+  ::= { openGearFrameNotifications 5 }
+
+openGearPSU2StatusEvent   NOTIFICATION-TYPE
+  OBJECTS { openGearPSU2Status }
+  STATUS current
+  DESCRIPTION
+    "An indication that power supply unit 2 has been added or removed."
+  ::= { openGearFrameNotifications 6 }
+
+--
+--  Open Gear Frame information
+--
+openGearNumberOfFrames    OBJECT-TYPE
+    SYNTAX      Unsigned32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION
+      "The total number of Open Gear Frames at this node."
+    ::= { openGearFrameObjects 1 }
+
+--
+--  Table of Product Info
+--
+openGearFrameTable     OBJECT-TYPE
+    SYNTAX      SEQUENCE OF OpenGearFrameEntry
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION
+      "A table containing product info for all openGear frames at this node.
+       Each entry in the table represents a frame.  The total number of
+       entries should be the value in 'openGearNumberOfFrames'."
+    ::= { openGearFrameObjects 2 }
+
+openGearFrameEntry     OBJECT-TYPE
+    SYNTAX      OpenGearFrameEntry
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION
+      "A conceptual row within 'openGearFrameTable'."
+    INDEX       { openGearFrameIndex }
+    ::= { openGearFrameTable 1 }
+
+OpenGearFrameEntry ::= SEQUENCE {
+    openGearFrameIndex          Unsigned32,
+    openGearFrameVersion        DisplayString,
+    openGearFrameName           DisplayString,
+    openGearFrameSupplier       DisplayString,
+    openGearFrameProduct        DisplayString,
+    openGearFrameBoardRev       DisplayString,
+    openGearFrameSoftware       DisplayString,
+    openGearFrameSerialNumber   DisplayString,
+    openGearFrameBoardSN        DisplayString,
+    openGearFrameMACAddress     DisplayString,
+    openGearFrameFirmwareRev    DisplayString
+}
+
+openGearFrameIndex    OBJECT-TYPE
+    SYNTAX      Unsigned32
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION
+      "The openGearFrameIndex represents the frame number, this is for
+       future use, right now it is always 1."
+    ::= { openGearFrameEntry 1 }
+
+openGearFrameVersion    OBJECT-TYPE
+    SYNTAX      DisplayString
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION
+      "The version number of the network software in this frame."
+    ::= { openGearFrameEntry 2 }
+
+openGearFrameName    OBJECT-TYPE
+    SYNTAX      DisplayString
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION
+      "The name of the open gear frame."
+    ::= { openGearFrameEntry 3 }
+
+openGearFrameSupplier   OBJECT-TYPE
+    SYNTAX      DisplayString
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION
+      "The manufacturer or supplier of the frame controller card."
+    ::= { openGearFrameEntry 4 }
+
+openGearFrameProduct   OBJECT-TYPE
+    SYNTAX      DisplayString
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION
+      "The product name of the frame controller card."
+    ::= { openGearFrameEntry 5 }
+
+openGearFrameBoardRev   OBJECT-TYPE
+    SYNTAX      DisplayString
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION
+      "The hardware (board) revision of the frame controller card."
+    ::= { openGearFrameEntry 6 }
+
+openGearFrameSoftware   OBJECT-TYPE
+    SYNTAX      DisplayString
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION
+      "The version number of the fan-control software in this frame."
+    ::= { openGearFrameEntry 7 }
+
+openGearFrameSerialNumber   OBJECT-TYPE
+    SYNTAX      DisplayString
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION
+      "The frame serial number."
+    ::= { openGearFrameEntry 8 }
+
+openGearFrameBoardSN        OBJECT-TYPE
+    SYNTAX      DisplayString
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION
+      "The network card serial number in this frame."
+    ::= { openGearFrameEntry 9 }
+
+openGearFrameMACAddress     OBJECT-TYPE
+    SYNTAX      DisplayString
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION
+      "The network card MAC address in this frame."
+    ::= { openGearFrameEntry 10 }
+
+openGearFrameFirmwareRev    OBJECT-TYPE
+    SYNTAX      DisplayString
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION
+      "The version number of the firmware in this frame."
+    ::= { openGearFrameEntry 11 }
+
+--
+--  Table of Hardware Info
+--
+openGearFrameHardwareTable     OBJECT-TYPE
+    SYNTAX      SEQUENCE OF OpenGearFrameHardwareEntry
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION
+      "A table containing hardware status for all openGear frames at this node.
+       This table is an expansion of the table 'openGearFrameTable'.
+       For each entry in 'openGearFrameTable', there is a corresponding
+       entry in this table, having the same index - openGearFrameIndex."
+    ::= { openGearFrameObjects 3 }
+
+openGearFrameHardwareEntry     OBJECT-TYPE
+    SYNTAX      OpenGearFrameHardwareEntry
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION
+      "A conceptual row within 'openGearFrameHardwareTable'."
+    INDEX       { openGearFrameIndex }
+    ::= { openGearFrameHardwareTable 1 }
+
+OpenGearFrameHardwareEntry ::= SEQUENCE {
+    openGearFrameStatus           Integer32,
+    openGearFrameFanDoor          INTEGER,
+    openGearFrameFanSpeed         Integer32,
+    openGearFrameAudioAlarm       INTEGER,
+    openGearFrameActiveSlots      Integer32,
+    openGearFrameVoltage          Integer32,
+    openGearFrameCurrent          Integer32,
+    openGearFrameNegativeRail     Integer32,
+    openGearFrameCPUHeadroom      DisplayString,
+    openGearFrameRAMAvailable     DisplayString,
+    openGearFrameAVRCPUHeadroom   Integer32,
+    openGearFrameAVRRAMAvailable  Integer32,
+    openGearFrameAVRState         INTEGER,
+    openGearFrameMidPlaneId       Integer32,
+    openGearDataSafeState         INTEGER,
+    openGearPSU1Status            INTEGER,
+    openGearPSU2Status            INTEGER
+}
+
+openGearFrameStatus    OBJECT-TYPE
+    SYNTAX      Integer32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION
+      "The overall hardware status of the frame.  Zero means all OK.
+       Any nonzero value indicates an error condition.  The status value
+       is a bitfield, where each bit represents a different error:
+          0x0001 - the fan door has been open too long.
+          0x0002 - a power supply fuse has blown
+          0x0004 - there is a power supply fault (typically no mains supply)
+          0x0008 - power supply is overloaded
+          0x0010 - a power-supply fan has stalled
+          0x0020 - a frame-door fan has stalled
+          0x0040 - error condition(s) reported by card(s)
+       The following additional bits apply to OG3-FR high power frame only:
+          0x0080 - the reference card is missing/faulty
+          0x0100 - an AC line cord is unplugged
+          0x0200 - one of the power supplies is switched OFF
+       "
+    ::= { openGearFrameHardwareEntry 1 }
+
+openGearFrameFanDoor    OBJECT-TYPE
+    SYNTAX      INTEGER  {
+      closed (1),
+      open   (2)
+    }
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION
+      "Indicates whether the fan door is open or closed."
+    ::= { openGearFrameHardwareEntry 2 }
+
+openGearFrameFanSpeed    OBJECT-TYPE
+    SYNTAX      Integer32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION
+      "The current fan speed off the fans in the door.
+       Will read 0 if the fan door is open, or if the
+       the frame is not equipped with fans.
+       Range 1 to 5 for DFR-8310 and DFR-832x frames.
+       Range 1 to 14 for OG3-FR high power frames." 
+    ::= { openGearFrameHardwareEntry 3 }
+
+openGearFrameAudioAlarm    OBJECT-TYPE
+    SYNTAX      INTEGER  {
+      disabled (0),
+      enabled  (1)
+    }
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION
+      "Indicates whether the audio alarm is enabled or disabled using the
+       jumper or DIP switch on the fan control card."
+    ::= { openGearFrameHardwareEntry 4 }
+
+openGearFrameActiveSlots    OBJECT-TYPE
+    SYNTAX      Integer32  (0..20)
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION
+      "The number of active slots in the frame."
+    ::= { openGearFrameHardwareEntry 5 }
+
+openGearFrameVoltage    OBJECT-TYPE
+    SYNTAX      Integer32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION
+      "The voltage in mV on the frame."
+    ::= { openGearFrameHardwareEntry 6 }
+
+openGearFrameCurrent    OBJECT-TYPE
+    SYNTAX      Integer32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION
+      "The current in mA on the frame."
+    ::= { openGearFrameHardwareEntry 7 }
+
+openGearFrameNegativeRail    OBJECT-TYPE
+    SYNTAX      Integer32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION
+      "The negative rail in mV on the frame."
+    ::= { openGearFrameHardwareEntry 8 }
+
+openGearFrameCPUHeadroom     OBJECT-TYPE
+    SYNTAX      DisplayString
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION
+      "The CPU headroom of the network card on this frame."
+    ::= { openGearFrameHardwareEntry 9 }
+
+openGearFrameRAMAvailable     OBJECT-TYPE
+    SYNTAX      DisplayString
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION
+      "The RAM available on the network card in this frame."
+    ::= { openGearFrameHardwareEntry 10 }
+
+openGearFrameAVRCPUHeadroom     OBJECT-TYPE
+    SYNTAX      Integer32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION
+      "The AVR CPU headroom on the network card in this frame."
+    ::= { openGearFrameHardwareEntry 11 }
+
+openGearFrameAVRRAMAvailable     OBJECT-TYPE
+    SYNTAX      Integer32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION
+      "The AVR RAM avilable on the network card in this frame."
+    ::= { openGearFrameHardwareEntry 12 }
+
+openGearFrameAVRState    OBJECT-TYPE
+    SYNTAX      INTEGER {
+      ok      (1),
+      wrongSw (2),
+      fault   (4)
+    }
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION
+      "Indicates AVR state on the network card in this frame."
+    ::= { openGearFrameHardwareEntry 13 }
+
+openGearFrameMidPlaneId    OBJECT-TYPE
+    SYNTAX      Integer32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION
+      "The frame's Mid-Plane ID."
+    ::= { openGearFrameHardwareEntry 14 }
+
+openGearDataSafeState    OBJECT-TYPE
+    SYNTAX      INTEGER {
+      ok              (1),
+      newCardInserted (2)
+    }
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION
+      "Indicates if there is a new card is inserted."
+    ::= { openGearFrameHardwareEntry 15 }
+
+openGearPSU1Status    OBJECT-TYPE
+    SYNTAX      INTEGER  {
+      present     (1),
+      notPresent  (2),
+      missing     (4)
+    }
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION
+      "The presence/absence status of the power supply unit PSU1."
+    ::= { openGearFrameHardwareEntry 16 }
+
+openGearPSU2Status    OBJECT-TYPE
+    SYNTAX      INTEGER  {
+      present     (1),
+      notPresent  (2),
+      missing     (4)
+    }
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION
+      "The presence/absence status of the power supply unit PSU2."
+    ::= { openGearFrameHardwareEntry 17 }
+
+--
+--  Table of Power readings
+--
+openGearFramePowerTable     OBJECT-TYPE
+    SYNTAX      SEQUENCE OF OpenGearFramePowerEntry
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION
+      "A table containing power readings for all openGear frames at this node.
+       This table is an expansion of the table 'openGearFrameTable'.
+       For each entry in 'openGearFrameTable', there is a corresponding
+       entry in this table, having the same index - openGearFrameIndex."
+    ::= { openGearFrameObjects 4 }
+
+openGearFramePowerEntry     OBJECT-TYPE
+    SYNTAX      OpenGearFramePowerEntry
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION
+      "A conceptual row within 'openGearFramePowerTable'."
+    INDEX       { openGearFrameIndex }
+    ::= { openGearFramePowerTable 1 }
+
+OpenGearFramePowerEntry ::= SEQUENCE {
+    openGearFramePower          Integer32,
+    openGearFramePSU1Current    Integer32,
+    openGearFramePSU2Current    Integer32,
+    openGearFrameMaxSlotCurrent Integer32,
+    openGearFramePSU1Temp       Integer32,
+    openGearFramePSU2Temp       Integer32,
+    openGearFrameAmbientTemp    Integer32,
+    openGearFramePSU1Model      DisplayString,
+    openGearFramePSU2Model      DisplayString,
+    openGearFramePSU1Serial     DisplayString,
+    openGearFramePSU2Serial     DisplayString,
+    openGearFramePSU1SoftwareRev DisplayString,
+    openGearFramePSU2SoftwareRev DisplayString,
+    openGearFramePSU1Current75  Integer32,
+    openGearFramePSU2Current75  Integer32
+}
+
+openGearFramePower    OBJECT-TYPE
+    SYNTAX      Integer32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION
+      "The total power consumption of the frame in watts."
+    ::= { openGearFramePowerEntry 1 }
+
+openGearFramePSU1Current    OBJECT-TYPE
+    SYNTAX      Integer32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION
+      "The +12V current reading (mA) from power supply 1.
+       This will read 0 if there is no power supply in slot 1."
+    ::= { openGearFramePowerEntry 2 }
+
+openGearFramePSU2Current    OBJECT-TYPE
+    SYNTAX      Integer32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION
+      "The +12V current reading (mA) from power supply 2.
+       This will read 0 if there is no power supply in slot 2."
+    ::= { openGearFramePowerEntry 3 }
+
+openGearFrameMaxSlotCurrent    OBJECT-TYPE
+    SYNTAX      Integer32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION
+      "The maximum current consumption (mA) reported by any card in the frame."
+    ::= { openGearFramePowerEntry 4 }
+
+openGearFramePSU1Temp    OBJECT-TYPE
+    SYNTAX      Integer32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION
+      "The temperature reading (C) for power supply 1.
+       This will read 0 if there is no power supply in slot 1."
+    ::= { openGearFramePowerEntry 5 }
+
+openGearFramePSU2Temp    OBJECT-TYPE
+    SYNTAX      Integer32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION
+      "The temperature reading (C) for power supply 2.
+       This will read 0 if there is no power supply in slot 2."
+    ::= { openGearFramePowerEntry 6 }
+
+openGearFrameAmbientTemp    OBJECT-TYPE
+    SYNTAX      Integer32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION
+      "The ambient air temperature (C) at the intake to the frame.
+       This will read 0 if the fan door is open."
+    ::= { openGearFramePowerEntry 7 }
+
+openGearFramePSU1Model      OBJECT-TYPE
+    SYNTAX      DisplayString
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION
+      "Model number of power supply 1 (PS-OG3 only)."
+    ::= { openGearFramePowerEntry 8 }
+
+openGearFramePSU2Model      OBJECT-TYPE
+    SYNTAX      DisplayString
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION
+      "Model number of power supply 2 (PS-OG3 only)."
+    ::= { openGearFramePowerEntry 9 }
+
+openGearFramePSU1Serial      OBJECT-TYPE
+    SYNTAX      DisplayString
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION
+      "Serial number of power supply 1 (PS-OG3 only)."
+    ::= { openGearFramePowerEntry 10 }
+
+openGearFramePSU2Serial      OBJECT-TYPE
+    SYNTAX      DisplayString
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION
+      "Serial number of power supply 2 (PS-OG3 only)."
+    ::= { openGearFramePowerEntry 11 }
+
+openGearFramePSU1SoftwareRev      OBJECT-TYPE
+    SYNTAX      DisplayString
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION
+      "Software revision of power supply 1 (PS-OG3 only)."
+    ::= { openGearFramePowerEntry 12 }
+
+openGearFramePSU2SoftwareRev      OBJECT-TYPE
+    SYNTAX      DisplayString
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION
+      "Software revision of power supply 2 (PS-OG3 only)."
+    ::= { openGearFramePowerEntry 13 }
+
+openGearFramePSU1Current75    OBJECT-TYPE
+    SYNTAX      Integer32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION
+      "The -7.5V current reading (mA) from power supply 1.
+       This will read 0 if there is no power supply in slot 1."
+    ::= { openGearFramePowerEntry 14 }
+
+openGearFramePSU2Current75    OBJECT-TYPE
+    SYNTAX      Integer32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION
+      "The -7.5V current reading (mA) from power supply 2.
+       This will read 0 if there is no power supply in slot 2."
+    ::= { openGearFramePowerEntry 15 }
+
+--
+--  Table of Setup parameters
+--
+openGearFrameSetupTable     OBJECT-TYPE
+    SYNTAX      SEQUENCE OF OpenGearFrameSetupEntry
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION
+      "A table containing setup parameters for all openGear frames at this node.
+       This table is an expansion of the table 'openGearFrameTable'.
+       For each entry in 'openGearFrameTable', there is a corresponding
+       entry in this table, having the same index - openGearFrameIndex."
+    ::= { openGearFrameObjects 5 }
+
+openGearFrameSetupEntry     OBJECT-TYPE
+    SYNTAX      OpenGearFrameSetupEntry
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION
+      "A conceptual row within 'openGearFrameSetupTable'."
+    INDEX       { openGearFrameIndex }
+    ::= { openGearFrameSetupTable 1 }
+
+OpenGearFrameSetupEntry ::= SEQUENCE {
+    openGearActionOnCardFault     INTEGER,
+    openGearFrameFanSpeedControl  INTEGER,
+    openGearActionOnPSU1Fault     INTEGER,
+    openGearActionOnPSU2Fault     INTEGER
+}
+
+openGearActionOnCardFault  OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    ignore (0),
+    notify (1)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "Specifies whether to assert an alarm condition when a fault is
+     reported by a card within the frame."
+  DEFVAL  { notify }
+  ::= { openGearFrameSetupEntry 1 }
+
+openGearFrameFanSpeedControl    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    max  (5),
+    auto (6)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "To control the fan speed in this frame, only MAX or AUTO."
+  DEFVAL  { auto }
+  ::= { openGearFrameSetupEntry 2 }
+
+openGearActionOnPSU1Fault  OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    ignore (0),
+    notify (1)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "Specifies whether to assert an alarm condition when PSU1
+    is missing from the frame."
+  DEFVAL  { ignore }
+  ::= { openGearFrameSetupEntry 3 }
+
+openGearActionOnPSU2Fault  OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    ignore (0),
+    notify (1)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "Specifies whether to assert an alarm condition when PSU2
+    is missing from the frame."
+  DEFVAL  { ignore }
+  ::= { openGearFrameSetupEntry 4 }
+
+--
+--  Table of DataSafe parameters
+--
+openGearDataSafeTable     OBJECT-TYPE
+    SYNTAX      SEQUENCE OF OpenGearDataSafeEntry
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION
+      "A table containing DataSafe parameters for all openGear frames at this node.
+       This table is an expansion of the table 'openGearFrameTable'.
+       For each entry in 'openGearFrameTable', there is a corresponding
+       entry in this table, having the same index - openGearFrameIndex."
+    ::= { openGearFrameObjects 6 }
+
+openGearDataSafeEntry     OBJECT-TYPE
+    SYNTAX      OpenGearDataSafeEntry
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION
+      "A conceptual row within 'openGearDataSafeTable'."
+    INDEX       { openGearFrameIndex }
+    ::= { openGearDataSafeTable 1 }
+
+OpenGearDataSafeEntry ::= SEQUENCE {
+    openGearDataSafeForceUpdate       INTEGER,
+    openGearMaskDataSafeWarning       INTEGER
+}
+
+openGearDataSafeForceUpdate     OBJECT-TYPE
+  SYNTAX      INTEGER {
+    force (0)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "For the DataSafe, force update all the saved cards with the new cards."
+  ::= { openGearDataSafeEntry 1 }
+
+openGearMaskDataSafeWarning OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    notify (0),
+    mask   (1)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "For the DataSafe to mask the Data Safe warning."
+  ::= { openGearDataSafeEntry 2 }
+
+--
+--  Data Safe Slot1 group
+--
+openGearDataSafeSlot1Group
+  OBJECT IDENTIFIER ::= { openGearFrameObjects 7 }
+
+openGearDataSafeSlot1 OBJECT-TYPE
+  SYNTAX Unsigned32
+  MAX-ACCESS read-only
+  STATUS current
+  DESCRIPTION
+    "The Slot1 Data Safe."
+  ::= { openGearDataSafeSlot1Group 1 }
+
+--
+--  Table of DataSafe Saved Card parameters
+--
+openGearDataSafeSlot1Table     OBJECT-TYPE
+    SYNTAX      SEQUENCE OF OpenGearDataSafeSlot1Entry
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION
+      "A table containing the DataSafe slot 1 parameters for this node.
+       This table is an expansion of the table 'openGearFrameTable'.
+       For each entry in 'openGearFrameTable', there is a corresponding
+       entry in this table, having the same index - openGearFrameIndex."
+    ::= { openGearDataSafeSlot1Group 2 }
+
+openGearDataSafeSlot1Entry     OBJECT-TYPE
+    SYNTAX      OpenGearDataSafeSlot1Entry
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION
+      "A conceptual row within 'openGearDataSafeSlot1Table'."
+    INDEX       { openGearFrameIndex, openGearDataSafeSlot1Index }
+    ::= { openGearDataSafeSlot1Table 1 }
+
+OpenGearDataSafeSlot1Entry ::= SEQUENCE {
+    openGearDataSafeSlot1Index   Unsigned32,
+    openGearSlot1SavedCard       DisplayString,
+    openGearSlot1UpdateSaved     INTEGER,
+    openGearSlot1NewCard         DisplayString,
+    openGearSlot1DataSafeDisable INTEGER
+}
+
+openGearDataSafeSlot1Index OBJECT-TYPE
+  SYNTAX Unsigned32
+  MAX-ACCESS not-accessible
+  STATUS current
+  DESCRIPTION
+    "DataSafe slot 1 index."
+  ::= { openGearDataSafeSlot1Entry 1 }
+
+openGearSlot1SavedCard  OBJECT-TYPE
+  SYNTAX      DisplayString
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "The saved card name and software version at slot 1."
+  DEFVAL  { "" }
+  ::= { openGearDataSafeSlot1Entry 2 }
+
+openGearSlot1UpdateSaved  OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    update    (0)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "Update the saved card with the new card at slot 1."
+  ::= { openGearDataSafeSlot1Entry 3 }
+
+openGearSlot1NewCard  OBJECT-TYPE
+  SYNTAX      DisplayString
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "The saved card name and software version at slot 1."
+  DEFVAL  { "" }
+  ::= { openGearDataSafeSlot1Entry 4 }
+
+openGearSlot1DataSafeDisable  OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    enable  (0),
+    disable (1)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "The saved card name and software version at slot 1."
+  DEFVAL  { disable }
+  ::= { openGearDataSafeSlot1Entry 5 }
+
+--
+--  Data Safe Slot2 group
+--
+openGearDataSafeSlot2Group
+  OBJECT IDENTIFIER ::= { openGearFrameObjects 8 }
+
+openGearDataSafeSlot2 OBJECT-TYPE
+  SYNTAX Unsigned32
+  MAX-ACCESS read-only
+  STATUS current
+  DESCRIPTION
+    "The Slot2 Data Safe."
+  ::= { openGearDataSafeSlot2Group 1 }
+
+--
+--  Table of DataSafe Saved Card parameters
+--
+openGearDataSafeSlot2Table     OBJECT-TYPE
+    SYNTAX      SEQUENCE OF OpenGearDataSafeSlot2Entry
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION
+      "A table containing the DataSafe slot 2 parameters for this node.
+       This table is an expansion of the table 'openGearFrameTable'.
+       For each entry in 'openGearFrameTable', there is a corresponding
+       entry in this table, having the same index - openGearFrameIndex."
+    ::= { openGearDataSafeSlot2Group 2 }
+
+openGearDataSafeSlot2Entry     OBJECT-TYPE
+    SYNTAX      OpenGearDataSafeSlot2Entry
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION
+      "A conceptual row within 'openGearDataSafeSlot2Table'."
+    INDEX       { openGearFrameIndex, openGearDataSafeSlot2Index }
+    ::= { openGearDataSafeSlot2Table 1 }
+
+OpenGearDataSafeSlot2Entry ::= SEQUENCE {
+    openGearDataSafeSlot2Index   Unsigned32,
+    openGearSlot2SavedCard       DisplayString,
+    openGearSlot2UpdateSaved     INTEGER,
+    openGearSlot2NewCard         DisplayString,
+    openGearSlot2DataSafeDisable INTEGER
+}
+
+openGearDataSafeSlot2Index OBJECT-TYPE
+  SYNTAX Unsigned32
+  MAX-ACCESS not-accessible
+  STATUS current
+  DESCRIPTION
+    "DataSafe slot 2 index."
+  ::= { openGearDataSafeSlot2Entry 1 }
+
+openGearSlot2SavedCard  OBJECT-TYPE
+  SYNTAX      DisplayString
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "The saved card name and software version at slot 2."
+  DEFVAL  { "" }
+  ::= { openGearDataSafeSlot2Entry 2 }
+
+openGearSlot2UpdateSaved  OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    update    (0)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "Update the saved card with the new card at slot 2."
+  ::= { openGearDataSafeSlot2Entry 3 }
+
+openGearSlot2NewCard  OBJECT-TYPE
+  SYNTAX      DisplayString
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "The saved card name and software version at slot 2."
+  DEFVAL  { "" }
+  ::= { openGearDataSafeSlot2Entry 4 }
+
+openGearSlot2DataSafeDisable  OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    enable  (0),
+    disable (1)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "The saved card name and software version at slot 2."
+  DEFVAL  { disable }
+  ::= { openGearDataSafeSlot2Entry 5 }
+
+--
+--  Data Safe Slot3 group
+--
+openGearDataSafeSlot3Group
+  OBJECT IDENTIFIER ::= { openGearFrameObjects 9 }
+
+openGearDataSafeSlot3 OBJECT-TYPE
+  SYNTAX Unsigned32
+  MAX-ACCESS read-only
+  STATUS current
+  DESCRIPTION
+    "The Slot3 Data Safe."
+  ::= { openGearDataSafeSlot3Group 1 }
+
+--
+--  Table of DataSafe Saved Card parameters
+--
+openGearDataSafeSlot3Table     OBJECT-TYPE
+    SYNTAX      SEQUENCE OF OpenGearDataSafeSlot3Entry
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION
+      "A table containing the DataSafe slot 3 parameters for this node.
+       This table is an expansion of the table 'openGearFrameTable'.
+       For each entry in 'openGearFrameTable', there is a corresponding
+       entry in this table, having the same index - openGearFrameIndex."
+    ::= { openGearDataSafeSlot3Group 2 }
+
+openGearDataSafeSlot3Entry     OBJECT-TYPE
+    SYNTAX      OpenGearDataSafeSlot3Entry
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION
+      "A conceptual row within 'openGearDataSafeSlot3Table'."
+    INDEX       { openGearFrameIndex, openGearDataSafeSlot3Index }
+    ::= { openGearDataSafeSlot3Table 1 }
+
+OpenGearDataSafeSlot3Entry ::= SEQUENCE {
+    openGearDataSafeSlot3Index   Unsigned32,
+    openGearSlot3SavedCard       DisplayString,
+    openGearSlot3UpdateSaved     INTEGER,
+    openGearSlot3NewCard         DisplayString,
+    openGearSlot3DataSafeDisable INTEGER
+}
+
+openGearDataSafeSlot3Index OBJECT-TYPE
+  SYNTAX Unsigned32
+  MAX-ACCESS not-accessible
+  STATUS current
+  DESCRIPTION
+    "DataSafe slot 3 index."
+  ::= { openGearDataSafeSlot3Entry 1 }
+
+openGearSlot3SavedCard  OBJECT-TYPE
+  SYNTAX      DisplayString
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "The saved card name and software version at slot 3."
+  DEFVAL  { "" }
+  ::= { openGearDataSafeSlot3Entry 2 }
+
+openGearSlot3UpdateSaved  OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    update    (0)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "Update the saved card with the new card at slot 3."
+  ::= { openGearDataSafeSlot3Entry 3 }
+
+openGearSlot3NewCard  OBJECT-TYPE
+  SYNTAX      DisplayString
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "The saved card name and software version at slot 3."
+  DEFVAL  { "" }
+  ::= { openGearDataSafeSlot3Entry 4 }
+
+openGearSlot3DataSafeDisable  OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    enable  (0),
+    disable (1)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "The saved card name and software version at slot 3."
+  DEFVAL  { disable }
+  ::= { openGearDataSafeSlot3Entry 5 }
+
+--
+--  Data Safe Slot4 group
+--
+openGearDataSafeSlot4Group
+  OBJECT IDENTIFIER ::= { openGearFrameObjects 10 }
+
+openGearDataSafeSlot4 OBJECT-TYPE
+  SYNTAX Unsigned32
+  MAX-ACCESS read-only
+  STATUS current
+  DESCRIPTION
+    "The Slot4 Data Safe."
+  ::= { openGearDataSafeSlot4Group 1 }
+
+--
+--  Table of DataSafe Saved Card parameters
+--
+openGearDataSafeSlot4Table     OBJECT-TYPE
+    SYNTAX      SEQUENCE OF OpenGearDataSafeSlot4Entry
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION
+      "A table containing the DataSafe slot 4 parameters for this node.
+       This table is an expansion of the table 'openGearFrameTable'.
+       For each entry in 'openGearFrameTable', there is a corresponding
+       entry in this table, having the same index - openGearFrameIndex."
+    ::= { openGearDataSafeSlot4Group 2 }
+
+openGearDataSafeSlot4Entry     OBJECT-TYPE
+    SYNTAX      OpenGearDataSafeSlot4Entry
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION
+      "A conceptual row within 'openGearDataSafeSlot4Table'."
+    INDEX       { openGearFrameIndex, openGearDataSafeSlot4Index }
+    ::= { openGearDataSafeSlot4Table 1 }
+
+OpenGearDataSafeSlot4Entry ::= SEQUENCE {
+    openGearDataSafeSlot4Index   Unsigned32,
+    openGearSlot4SavedCard       DisplayString,
+    openGearSlot4UpdateSaved     INTEGER,
+    openGearSlot4NewCard         DisplayString,
+    openGearSlot4DataSafeDisable INTEGER
+}
+
+openGearDataSafeSlot4Index OBJECT-TYPE
+  SYNTAX Unsigned32
+  MAX-ACCESS not-accessible
+  STATUS current
+  DESCRIPTION
+    "DataSafe slot 4 index."
+  ::= { openGearDataSafeSlot4Entry 1 }
+
+openGearSlot4SavedCard  OBJECT-TYPE
+  SYNTAX      DisplayString
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "The saved card name and software version at slot 4."
+  DEFVAL  { "" }
+  ::= { openGearDataSafeSlot4Entry 2 }
+
+openGearSlot4UpdateSaved  OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    update    (0)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "Update the saved card with the new card at slot 4."
+  ::= { openGearDataSafeSlot4Entry 3 }
+
+openGearSlot4NewCard  OBJECT-TYPE
+  SYNTAX      DisplayString
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "The saved card name and software version at slot 4."
+  DEFVAL  { "" }
+  ::= { openGearDataSafeSlot4Entry 4 }
+
+openGearSlot4DataSafeDisable  OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    enable  (0),
+    disable (1)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "The saved card name and software version at slot 4."
+  DEFVAL  { disable }
+  ::= { openGearDataSafeSlot4Entry 5 }
+
+--
+--  Data Safe Slot5 group
+--
+openGearDataSafeSlot5Group
+  OBJECT IDENTIFIER ::= { openGearFrameObjects 11 }
+
+openGearDataSafeSlot5 OBJECT-TYPE
+  SYNTAX Unsigned32
+  MAX-ACCESS read-only
+  STATUS current
+  DESCRIPTION
+    "The Slot5 Data Safe."
+  ::= { openGearDataSafeSlot5Group 1 }
+
+--
+--  Table of DataSafe Saved Card parameters
+--
+openGearDataSafeSlot5Table     OBJECT-TYPE
+    SYNTAX      SEQUENCE OF OpenGearDataSafeSlot5Entry
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION
+      "A table containing the DataSafe slot 5 parameters for this node.
+       This table is an expansion of the table 'openGearFrameTable'.
+       For each entry in 'openGearFrameTable', there is a corresponding
+       entry in this table, having the same index - openGearFrameIndex."
+    ::= { openGearDataSafeSlot5Group 2 }
+
+openGearDataSafeSlot5Entry     OBJECT-TYPE
+    SYNTAX      OpenGearDataSafeSlot5Entry
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION
+      "A conceptual row within 'openGearDataSafeSlot5Table'."
+    INDEX       { openGearFrameIndex, openGearDataSafeSlot5Index }
+    ::= { openGearDataSafeSlot5Table 1 }
+
+OpenGearDataSafeSlot5Entry ::= SEQUENCE {
+    openGearDataSafeSlot5Index   Unsigned32,
+    openGearSlot5SavedCard       DisplayString,
+    openGearSlot5UpdateSaved     INTEGER,
+    openGearSlot5NewCard         DisplayString,
+    openGearSlot5DataSafeDisable INTEGER
+}
+
+openGearDataSafeSlot5Index OBJECT-TYPE
+  SYNTAX Unsigned32
+  MAX-ACCESS not-accessible
+  STATUS current
+  DESCRIPTION
+    "DataSafe slot 5 index."
+  ::= { openGearDataSafeSlot5Entry 1 }
+
+openGearSlot5SavedCard  OBJECT-TYPE
+  SYNTAX      DisplayString
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "The saved card name and software version at slot 5."
+  DEFVAL  { "" }
+  ::= { openGearDataSafeSlot5Entry 2 }
+
+openGearSlot5UpdateSaved  OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    update    (0)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "Update the saved card with the new card at slot 5."
+  ::= { openGearDataSafeSlot5Entry 3 }
+
+openGearSlot5NewCard  OBJECT-TYPE
+  SYNTAX      DisplayString
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "The saved card name and software version at slot 5."
+  DEFVAL  { "" }
+  ::= { openGearDataSafeSlot5Entry 4 }
+
+openGearSlot5DataSafeDisable  OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    enable  (0),
+    disable (1)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "The saved card name and software version at slot 5."
+  DEFVAL  { disable }
+  ::= { openGearDataSafeSlot5Entry 5 }
+
+--
+--  Data Safe Slot6 group
+--
+openGearDataSafeSlot6Group
+  OBJECT IDENTIFIER ::= { openGearFrameObjects 12 }
+
+openGearDataSafeSlot6 OBJECT-TYPE
+  SYNTAX Unsigned32
+  MAX-ACCESS read-only
+  STATUS current
+  DESCRIPTION
+    "The Slot6 Data Safe."
+  ::= { openGearDataSafeSlot6Group 1 }
+
+--
+--  Table of DataSafe Saved Card parameters
+--
+openGearDataSafeSlot6Table     OBJECT-TYPE
+    SYNTAX      SEQUENCE OF OpenGearDataSafeSlot6Entry
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION
+      "A table containing the DataSafe slot 6 parameters for this node.
+       This table is an expansion of the table 'openGearFrameTable'.
+       For each entry in 'openGearFrameTable', there is a corresponding
+       entry in this table, having the same index - openGearFrameIndex."
+    ::= { openGearDataSafeSlot6Group 2 }
+
+openGearDataSafeSlot6Entry     OBJECT-TYPE
+    SYNTAX      OpenGearDataSafeSlot6Entry
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION
+      "A conceptual row within 'openGearDataSafeSlot6Table'."
+    INDEX       { openGearFrameIndex, openGearDataSafeSlot6Index }
+    ::= { openGearDataSafeSlot6Table 1 }
+
+OpenGearDataSafeSlot6Entry ::= SEQUENCE {
+    openGearDataSafeSlot6Index   Unsigned32,
+    openGearSlot6SavedCard       DisplayString,
+    openGearSlot6UpdateSaved     INTEGER,
+    openGearSlot6NewCard         DisplayString,
+    openGearSlot6DataSafeDisable INTEGER
+}
+
+openGearDataSafeSlot6Index OBJECT-TYPE
+  SYNTAX Unsigned32
+  MAX-ACCESS not-accessible
+  STATUS current
+  DESCRIPTION
+    "DataSafe slot 6 index."
+  ::= { openGearDataSafeSlot6Entry 1 }
+
+openGearSlot6SavedCard  OBJECT-TYPE
+  SYNTAX      DisplayString
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "The saved card name and software version at slot 6."
+  DEFVAL  { "" }
+  ::= { openGearDataSafeSlot6Entry 2 }
+
+openGearSlot6UpdateSaved  OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    update    (0)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "Update the saved card with the new card at slot 6."
+  ::= { openGearDataSafeSlot6Entry 3 }
+
+openGearSlot6NewCard  OBJECT-TYPE
+  SYNTAX      DisplayString
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "The saved card name and software version at slot 6."
+  DEFVAL  { "" }
+  ::= { openGearDataSafeSlot6Entry 4 }
+
+openGearSlot6DataSafeDisable  OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    enable  (0),
+    disable (1)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "The saved card name and software version at slot 6."
+  DEFVAL  { disable }
+  ::= { openGearDataSafeSlot6Entry 5 }
+
+--
+--  Data Safe Slot7 group
+--
+openGearDataSafeSlot7Group
+  OBJECT IDENTIFIER ::= { openGearFrameObjects 13 }
+
+openGearDataSafeSlot7 OBJECT-TYPE
+  SYNTAX Unsigned32
+  MAX-ACCESS read-only
+  STATUS current
+  DESCRIPTION
+    "The Slot7 Data Safe."
+  ::= { openGearDataSafeSlot7Group 1 }
+
+--
+--  Table of DataSafe Saved Card parameters
+--
+openGearDataSafeSlot7Table     OBJECT-TYPE
+    SYNTAX      SEQUENCE OF OpenGearDataSafeSlot7Entry
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION
+      "A table containing the DataSafe slot 7 parameters for this node.
+       This table is an expansion of the table 'openGearFrameTable'.
+       For each entry in 'openGearFrameTable', there is a corresponding
+       entry in this table, having the same index - openGearFrameIndex."
+    ::= { openGearDataSafeSlot7Group 2 }
+
+openGearDataSafeSlot7Entry     OBJECT-TYPE
+    SYNTAX      OpenGearDataSafeSlot7Entry
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION
+      "A conceptual row within 'openGearDataSafeSlot7Table'."
+    INDEX       { openGearFrameIndex, openGearDataSafeSlot7Index }
+    ::= { openGearDataSafeSlot7Table 1 }
+
+OpenGearDataSafeSlot7Entry ::= SEQUENCE {
+    openGearDataSafeSlot7Index   Unsigned32,
+    openGearSlot7SavedCard       DisplayString,
+    openGearSlot7UpdateSaved     INTEGER,
+    openGearSlot7NewCard         DisplayString,
+    openGearSlot7DataSafeDisable INTEGER
+}
+
+openGearDataSafeSlot7Index OBJECT-TYPE
+  SYNTAX Unsigned32
+  MAX-ACCESS not-accessible
+  STATUS current
+  DESCRIPTION
+    "DataSafe slot 7 index."
+  ::= { openGearDataSafeSlot7Entry 1 }
+
+openGearSlot7SavedCard  OBJECT-TYPE
+  SYNTAX      DisplayString
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "The saved card name and software version at slot 7."
+  DEFVAL  { "" }
+  ::= { openGearDataSafeSlot7Entry 2 }
+
+openGearSlot7UpdateSaved  OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    update    (0)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "Update the saved card with the new card at slot 7."
+  ::= { openGearDataSafeSlot7Entry 3 }
+
+openGearSlot7NewCard  OBJECT-TYPE
+  SYNTAX      DisplayString
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "The saved card name and software version at slot 7."
+  DEFVAL  { "" }
+  ::= { openGearDataSafeSlot7Entry 4 }
+
+openGearSlot7DataSafeDisable  OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    enable  (0),
+    disable (1)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "The saved card name and software version at slot 7."
+  DEFVAL  { disable }
+  ::= { openGearDataSafeSlot7Entry 5 }
+
+--
+--  Data Safe Slot8 group
+--
+openGearDataSafeSlot8Group
+  OBJECT IDENTIFIER ::= { openGearFrameObjects 14 }
+
+openGearDataSafeSlot8 OBJECT-TYPE
+  SYNTAX Unsigned32
+  MAX-ACCESS read-only
+  STATUS current
+  DESCRIPTION
+    "The Slot8 Data Safe."
+  ::= { openGearDataSafeSlot8Group 1 }
+
+--
+--  Table of DataSafe Saved Card parameters
+--
+openGearDataSafeSlot8Table     OBJECT-TYPE
+    SYNTAX      SEQUENCE OF OpenGearDataSafeSlot8Entry
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION
+      "A table containing the DataSafe slot 8 parameters for this node.
+       This table is an expansion of the table 'openGearFrameTable'.
+       For each entry in 'openGearFrameTable', there is a corresponding
+       entry in this table, having the same index - openGearFrameIndex."
+    ::= { openGearDataSafeSlot8Group 2 }
+
+openGearDataSafeSlot8Entry     OBJECT-TYPE
+    SYNTAX      OpenGearDataSafeSlot8Entry
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION
+      "A conceptual row within 'openGearDataSafeSlot8Table'."
+    INDEX       { openGearFrameIndex, openGearDataSafeSlot8Index }
+    ::= { openGearDataSafeSlot8Table 1 }
+
+OpenGearDataSafeSlot8Entry ::= SEQUENCE {
+    openGearDataSafeSlot8Index   Unsigned32,
+    openGearSlot8SavedCard       DisplayString,
+    openGearSlot8UpdateSaved     INTEGER,
+    openGearSlot8NewCard         DisplayString,
+    openGearSlot8DataSafeDisable INTEGER
+}
+
+openGearDataSafeSlot8Index OBJECT-TYPE
+  SYNTAX Unsigned32
+  MAX-ACCESS not-accessible
+  STATUS current
+  DESCRIPTION
+    "DataSafe slot 8 index."
+  ::= { openGearDataSafeSlot8Entry 1 }
+
+openGearSlot8SavedCard  OBJECT-TYPE
+  SYNTAX      DisplayString
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "The saved card name and software version at slot 8."
+  DEFVAL  { "" }
+  ::= { openGearDataSafeSlot8Entry 2 }
+
+openGearSlot8UpdateSaved  OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    update    (0)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "Update the saved card with the new card at slot 8."
+  ::= { openGearDataSafeSlot8Entry 3 }
+
+openGearSlot8NewCard  OBJECT-TYPE
+  SYNTAX      DisplayString
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "The saved card name and software version at slot 8."
+  DEFVAL  { "" }
+  ::= { openGearDataSafeSlot8Entry 4 }
+
+openGearSlot8DataSafeDisable  OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    enable  (0),
+    disable (1)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "The saved card name and software version at slot 8."
+  DEFVAL  { disable }
+  ::= { openGearDataSafeSlot8Entry 5 }
+
+--
+--  Data Safe Slot9 group
+--
+openGearDataSafeSlot9Group
+  OBJECT IDENTIFIER ::= { openGearFrameObjects 15 }
+
+openGearDataSafeSlot9 OBJECT-TYPE
+  SYNTAX Unsigned32
+  MAX-ACCESS read-only
+  STATUS current
+  DESCRIPTION
+    "The Slot9 Data Safe."
+  ::= { openGearDataSafeSlot9Group 1 }
+
+--
+--  Table of DataSafe Saved Card parameters
+--
+openGearDataSafeSlot9Table     OBJECT-TYPE
+    SYNTAX      SEQUENCE OF OpenGearDataSafeSlot9Entry
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION
+      "A table containing the DataSafe slot 9 parameters for this node.
+       This table is an expansion of the table 'openGearFrameTable'.
+       For each entry in 'openGearFrameTable', there is a corresponding
+       entry in this table, having the same index - openGearFrameIndex."
+    ::= { openGearDataSafeSlot9Group 2 }
+
+openGearDataSafeSlot9Entry     OBJECT-TYPE
+    SYNTAX      OpenGearDataSafeSlot9Entry
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION
+      "A conceptual row within 'openGearDataSafeSlot9Table'."
+    INDEX       { openGearFrameIndex, openGearDataSafeSlot9Index }
+    ::= { openGearDataSafeSlot9Table 1 }
+
+OpenGearDataSafeSlot9Entry ::= SEQUENCE {
+    openGearDataSafeSlot9Index   Unsigned32,
+    openGearSlot9SavedCard       DisplayString,
+    openGearSlot9UpdateSaved     INTEGER,
+    openGearSlot9NewCard         DisplayString,
+    openGearSlot9DataSafeDisable INTEGER
+}
+
+openGearDataSafeSlot9Index OBJECT-TYPE
+  SYNTAX Unsigned32
+  MAX-ACCESS not-accessible
+  STATUS current
+  DESCRIPTION
+    "DataSafe slot 9 index."
+  ::= { openGearDataSafeSlot9Entry 1 }
+
+openGearSlot9SavedCard  OBJECT-TYPE
+  SYNTAX      DisplayString
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "The saved card name and software version at slot 9."
+  DEFVAL  { "" }
+  ::= { openGearDataSafeSlot9Entry 2 }
+
+openGearSlot9UpdateSaved  OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    update    (0)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "Update the saved card with the new card at slot 9."
+  ::= { openGearDataSafeSlot9Entry 3 }
+
+openGearSlot9NewCard  OBJECT-TYPE
+  SYNTAX      DisplayString
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "The saved card name and software version at slot 9."
+  DEFVAL  { "" }
+  ::= { openGearDataSafeSlot9Entry 4 }
+
+openGearSlot9DataSafeDisable  OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    enable  (0),
+    disable (1)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "The saved card name and software version at slot 9."
+  DEFVAL  { disable }
+  ::= { openGearDataSafeSlot9Entry 5 }
+
+--
+--  Data Safe Slot10 group
+--
+openGearDataSafeSlot10Group
+  OBJECT IDENTIFIER ::= { openGearFrameObjects 16 }
+
+openGearDataSafeSlot10 OBJECT-TYPE
+  SYNTAX Unsigned32
+  MAX-ACCESS read-only
+  STATUS current
+  DESCRIPTION
+    "The Slot10 Data Safe."
+  ::= { openGearDataSafeSlot10Group 1 }
+
+--
+--  Table of DataSafe Saved Card parameters
+--
+openGearDataSafeSlot10Table     OBJECT-TYPE
+    SYNTAX      SEQUENCE OF OpenGearDataSafeSlot10Entry
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION
+      "A table containing the DataSafe slot 10 parameters for this node.
+       This table is an expansion of the table 'openGearFrameTable'.
+       For each entry in 'openGearFrameTable', there is a corresponding
+       entry in this table, having the same index - openGearFrameIndex."
+    ::= { openGearDataSafeSlot10Group 2 }
+
+openGearDataSafeSlot10Entry     OBJECT-TYPE
+    SYNTAX      OpenGearDataSafeSlot10Entry
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION
+      "A conceptual row within 'openGearDataSafeSlot10Table'."
+    INDEX       { openGearFrameIndex, openGearDataSafeSlot10Index }
+    ::= { openGearDataSafeSlot10Table 1 }
+
+OpenGearDataSafeSlot10Entry ::= SEQUENCE {
+    openGearDataSafeSlot10Index   Unsigned32,
+    openGearSlot10SavedCard       DisplayString,
+    openGearSlot10UpdateSaved     INTEGER,
+    openGearSlot10NewCard         DisplayString,
+    openGearSlot10DataSafeDisable INTEGER
+}
+
+openGearDataSafeSlot10Index OBJECT-TYPE
+  SYNTAX Unsigned32
+  MAX-ACCESS not-accessible
+  STATUS current
+  DESCRIPTION
+    "DataSafe slot 10 index."
+  ::= { openGearDataSafeSlot10Entry 1 }
+
+openGearSlot10SavedCard  OBJECT-TYPE
+  SYNTAX      DisplayString
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "The saved card name and software version at slot 10."
+  DEFVAL  { "" }
+  ::= { openGearDataSafeSlot10Entry 2 }
+
+openGearSlot10UpdateSaved  OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    update    (0)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "Update the saved card with the new card at slot 10."
+  ::= { openGearDataSafeSlot10Entry 3 }
+
+openGearSlot10NewCard  OBJECT-TYPE
+  SYNTAX      DisplayString
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "The saved card name and software version at slot 10."
+  DEFVAL  { "" }
+  ::= { openGearDataSafeSlot10Entry 4 }
+
+openGearSlot10DataSafeDisable  OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    enable  (0),
+    disable (1)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "The saved card name and software version at slot 10."
+  DEFVAL  { disable }
+  ::= { openGearDataSafeSlot10Entry 5 }
+
+--
+--  Data Safe Slot11 group
+--
+openGearDataSafeSlot11Group
+  OBJECT IDENTIFIER ::= { openGearFrameObjects 17 }
+
+openGearDataSafeSlot11 OBJECT-TYPE
+  SYNTAX Unsigned32
+  MAX-ACCESS read-only
+  STATUS current
+  DESCRIPTION
+    "The Slot11 Data Safe."
+  ::= { openGearDataSafeSlot11Group 1 }
+
+--
+--  Table of DataSafe Saved Card parameters
+--
+openGearDataSafeSlot11Table     OBJECT-TYPE
+    SYNTAX      SEQUENCE OF OpenGearDataSafeSlot11Entry
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION
+      "A table containing the DataSafe slot 11 parameters for this node.
+       This table is an expansion of the table 'openGearFrameTable'.
+       For each entry in 'openGearFrameTable', there is a corresponding
+       entry in this table, having the same index - openGearFrameIndex."
+    ::= { openGearDataSafeSlot11Group 2 }
+
+openGearDataSafeSlot11Entry     OBJECT-TYPE
+    SYNTAX      OpenGearDataSafeSlot11Entry
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION
+      "A conceptual row within 'openGearDataSafeSlot11Table'."
+    INDEX       { openGearFrameIndex, openGearDataSafeSlot11Index }
+    ::= { openGearDataSafeSlot11Table 1 }
+
+OpenGearDataSafeSlot11Entry ::= SEQUENCE {
+    openGearDataSafeSlot11Index   Unsigned32,
+    openGearSlot11SavedCard       DisplayString,
+    openGearSlot11UpdateSaved     INTEGER,
+    openGearSlot11NewCard         DisplayString,
+    openGearSlot11DataSafeDisable INTEGER
+}
+
+openGearDataSafeSlot11Index OBJECT-TYPE
+  SYNTAX Unsigned32
+  MAX-ACCESS not-accessible
+  STATUS current
+  DESCRIPTION
+    "DataSafe slot 11 index."
+  ::= { openGearDataSafeSlot11Entry 1 }
+
+openGearSlot11SavedCard  OBJECT-TYPE
+  SYNTAX      DisplayString
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "The saved card name and software version at slot 11."
+  DEFVAL  { "" }
+  ::= { openGearDataSafeSlot11Entry 2 }
+
+openGearSlot11UpdateSaved  OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    update    (0)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "Update the saved card with the new card at slot 11."
+  ::= { openGearDataSafeSlot11Entry 3 }
+
+openGearSlot11NewCard  OBJECT-TYPE
+  SYNTAX      DisplayString
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "The saved card name and software version at slot 11."
+  DEFVAL  { "" }
+  ::= { openGearDataSafeSlot11Entry 4 }
+
+openGearSlot11DataSafeDisable  OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    enable  (0),
+    disable (1)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "The saved card name and software version at slot 11."
+  DEFVAL  { disable }
+  ::= { openGearDataSafeSlot11Entry 5 }
+
+--
+--  Data Safe Slot12 group
+--
+openGearDataSafeSlot12Group
+  OBJECT IDENTIFIER ::= { openGearFrameObjects 18 }
+
+openGearDataSafeSlot12 OBJECT-TYPE
+  SYNTAX Unsigned32
+  MAX-ACCESS read-only
+  STATUS current
+  DESCRIPTION
+    "The Slot12 Data Safe."
+  ::= { openGearDataSafeSlot12Group 1 }
+
+--
+--  Table of DataSafe Saved Card parameters
+--
+openGearDataSafeSlot12Table     OBJECT-TYPE
+    SYNTAX      SEQUENCE OF OpenGearDataSafeSlot12Entry
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION
+      "A table containing the DataSafe slot 12 parameters for this node.
+       This table is an expansion of the table 'openGearFrameTable'.
+       For each entry in 'openGearFrameTable', there is a corresponding
+       entry in this table, having the same index - openGearFrameIndex."
+    ::= { openGearDataSafeSlot12Group 2 }
+
+openGearDataSafeSlot12Entry     OBJECT-TYPE
+    SYNTAX      OpenGearDataSafeSlot12Entry
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION
+      "A conceptual row within 'openGearDataSafeSlot12Table'."
+    INDEX       { openGearFrameIndex, openGearDataSafeSlot12Index }
+    ::= { openGearDataSafeSlot12Table 1 }
+
+OpenGearDataSafeSlot12Entry ::= SEQUENCE {
+    openGearDataSafeSlot12Index   Unsigned32,
+    openGearSlot12SavedCard       DisplayString,
+    openGearSlot12UpdateSaved     INTEGER,
+    openGearSlot12NewCard         DisplayString,
+    openGearSlot12DataSafeDisable INTEGER
+}
+
+openGearDataSafeSlot12Index OBJECT-TYPE
+  SYNTAX Unsigned32
+  MAX-ACCESS not-accessible
+  STATUS current
+  DESCRIPTION
+    "DataSafe slot 12 index."
+  ::= { openGearDataSafeSlot12Entry 1 }
+
+openGearSlot12SavedCard  OBJECT-TYPE
+  SYNTAX      DisplayString
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "The saved card name and software version at slot 12."
+  DEFVAL  { "" }
+  ::= { openGearDataSafeSlot12Entry 2 }
+
+openGearSlot12UpdateSaved  OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    update    (0)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "Update the saved card with the new card at slot 12."
+  ::= { openGearDataSafeSlot12Entry 3 }
+
+openGearSlot12NewCard  OBJECT-TYPE
+  SYNTAX      DisplayString
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "The saved card name and software version at slot 12."
+  DEFVAL  { "" }
+  ::= { openGearDataSafeSlot12Entry 4 }
+
+openGearSlot12DataSafeDisable  OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    enable  (0),
+    disable (1)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "The saved card name and software version at slot 12."
+  DEFVAL  { disable }
+  ::= { openGearDataSafeSlot12Entry 5 }
+
+--
+--  Data Safe Slot13 group
+--
+openGearDataSafeSlot13Group
+  OBJECT IDENTIFIER ::= { openGearFrameObjects 19 }
+
+openGearDataSafeSlot13 OBJECT-TYPE
+  SYNTAX Unsigned32
+  MAX-ACCESS read-only
+  STATUS current
+  DESCRIPTION
+    "The Slot13 Data Safe."
+  ::= { openGearDataSafeSlot13Group 1 }
+
+--
+--  Table of DataSafe Saved Card parameters
+--
+openGearDataSafeSlot13Table     OBJECT-TYPE
+    SYNTAX      SEQUENCE OF OpenGearDataSafeSlot13Entry
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION
+      "A table containing the DataSafe slot 13 parameters for this node.
+       This table is an expansion of the table 'openGearFrameTable'.
+       For each entry in 'openGearFrameTable', there is a corresponding
+       entry in this table, having the same index - openGearFrameIndex."
+    ::= { openGearDataSafeSlot13Group 2 }
+
+openGearDataSafeSlot13Entry     OBJECT-TYPE
+    SYNTAX      OpenGearDataSafeSlot13Entry
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION
+      "A conceptual row within 'openGearDataSafeSlot13Table'."
+    INDEX       { openGearFrameIndex, openGearDataSafeSlot13Index }
+    ::= { openGearDataSafeSlot13Table 1 }
+
+OpenGearDataSafeSlot13Entry ::= SEQUENCE {
+    openGearDataSafeSlot13Index   Unsigned32,
+    openGearSlot13SavedCard       DisplayString,
+    openGearSlot13UpdateSaved     INTEGER,
+    openGearSlot13NewCard         DisplayString,
+    openGearSlot13DataSafeDisable INTEGER
+}
+
+openGearDataSafeSlot13Index OBJECT-TYPE
+  SYNTAX Unsigned32
+  MAX-ACCESS not-accessible
+  STATUS current
+  DESCRIPTION
+    "DataSafe slot 13 index."
+  ::= { openGearDataSafeSlot13Entry 1 }
+
+openGearSlot13SavedCard  OBJECT-TYPE
+  SYNTAX      DisplayString
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "The saved card name and software version at slot 13."
+  DEFVAL  { "" }
+  ::= { openGearDataSafeSlot13Entry 2 }
+
+openGearSlot13UpdateSaved  OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    update    (0)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "Update the saved card with the new card at slot 13."
+  ::= { openGearDataSafeSlot13Entry 3 }
+
+openGearSlot13NewCard  OBJECT-TYPE
+  SYNTAX      DisplayString
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "The saved card name and software version at slot 13."
+  DEFVAL  { "" }
+  ::= { openGearDataSafeSlot13Entry 4 }
+
+openGearSlot13DataSafeDisable  OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    enable  (0),
+    disable (1)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "The saved card name and software version at slot 13."
+  DEFVAL  { disable }
+  ::= { openGearDataSafeSlot13Entry 5 }
+
+--
+--  Data Safe Slot14 group
+--
+openGearDataSafeSlot14Group
+  OBJECT IDENTIFIER ::= { openGearFrameObjects 20 }
+
+openGearDataSafeSlot14 OBJECT-TYPE
+  SYNTAX Unsigned32
+  MAX-ACCESS read-only
+  STATUS current
+  DESCRIPTION
+    "The Slot14 Data Safe."
+  ::= { openGearDataSafeSlot14Group 1 }
+
+--
+--  Table of DataSafe Saved Card parameters
+--
+openGearDataSafeSlot14Table     OBJECT-TYPE
+    SYNTAX      SEQUENCE OF OpenGearDataSafeSlot14Entry
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION
+      "A table containing the DataSafe slot 14 parameters for this node.
+       This table is an expansion of the table 'openGearFrameTable'.
+       For each entry in 'openGearFrameTable', there is a corresponding
+       entry in this table, having the same index - openGearFrameIndex."
+    ::= { openGearDataSafeSlot14Group 2 }
+
+openGearDataSafeSlot14Entry     OBJECT-TYPE
+    SYNTAX      OpenGearDataSafeSlot14Entry
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION
+      "A conceptual row within 'openGearDataSafeSlot14Table'."
+    INDEX       { openGearFrameIndex, openGearDataSafeSlot14Index }
+    ::= { openGearDataSafeSlot14Table 1 }
+
+OpenGearDataSafeSlot14Entry ::= SEQUENCE {
+    openGearDataSafeSlot14Index   Unsigned32,
+    openGearSlot14SavedCard       DisplayString,
+    openGearSlot14UpdateSaved     INTEGER,
+    openGearSlot14NewCard         DisplayString,
+    openGearSlot14DataSafeDisable INTEGER
+}
+
+openGearDataSafeSlot14Index OBJECT-TYPE
+  SYNTAX Unsigned32
+  MAX-ACCESS not-accessible
+  STATUS current
+  DESCRIPTION
+    "DataSafe slot 14 index."
+  ::= { openGearDataSafeSlot14Entry 1 }
+
+openGearSlot14SavedCard  OBJECT-TYPE
+  SYNTAX      DisplayString
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "The saved card name and software version at slot 14."
+  DEFVAL  { "" }
+  ::= { openGearDataSafeSlot14Entry 2 }
+
+openGearSlot14UpdateSaved  OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    update    (0)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "Update the saved card with the new card at slot 14."
+  ::= { openGearDataSafeSlot14Entry 3 }
+
+openGearSlot14NewCard  OBJECT-TYPE
+  SYNTAX      DisplayString
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "The saved card name and software version at slot 14."
+  DEFVAL  { "" }
+  ::= { openGearDataSafeSlot14Entry 4 }
+
+openGearSlot14DataSafeDisable  OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    enable  (0),
+    disable (1)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "The saved card name and software version at slot 14."
+  DEFVAL  { disable }
+  ::= { openGearDataSafeSlot14Entry 5 }
+
+--
+--  Data Safe Slot15 group
+--
+openGearDataSafeSlot15Group
+  OBJECT IDENTIFIER ::= { openGearFrameObjects 21 }
+
+openGearDataSafeSlot15 OBJECT-TYPE
+  SYNTAX Unsigned32
+  MAX-ACCESS read-only
+  STATUS current
+  DESCRIPTION
+    "The Slot15 Data Safe."
+  ::= { openGearDataSafeSlot15Group 1 }
+
+--
+--  Table of DataSafe Saved Card parameters
+--
+openGearDataSafeSlot15Table     OBJECT-TYPE
+    SYNTAX      SEQUENCE OF OpenGearDataSafeSlot15Entry
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION
+      "A table containing the DataSafe slot 15 parameters for this node.
+       This table is an expansion of the table 'openGearFrameTable'.
+       For each entry in 'openGearFrameTable', there is a corresponding
+       entry in this table, having the same index - openGearFrameIndex."
+    ::= { openGearDataSafeSlot15Group 2 }
+
+openGearDataSafeSlot15Entry     OBJECT-TYPE
+    SYNTAX      OpenGearDataSafeSlot15Entry
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION
+      "A conceptual row within 'openGearDataSafeSlot15Table'."
+    INDEX       { openGearFrameIndex, openGearDataSafeSlot15Index }
+    ::= { openGearDataSafeSlot15Table 1 }
+
+OpenGearDataSafeSlot15Entry ::= SEQUENCE {
+    openGearDataSafeSlot15Index   Unsigned32,
+    openGearSlot15SavedCard       DisplayString,
+    openGearSlot15UpdateSaved     INTEGER,
+    openGearSlot15NewCard         DisplayString,
+    openGearSlot15DataSafeDisable INTEGER
+}
+
+openGearDataSafeSlot15Index OBJECT-TYPE
+  SYNTAX Unsigned32
+  MAX-ACCESS not-accessible
+  STATUS current
+  DESCRIPTION
+    "DataSafe slot 15 index."
+  ::= { openGearDataSafeSlot15Entry 1 }
+
+openGearSlot15SavedCard  OBJECT-TYPE
+  SYNTAX      DisplayString
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "The saved card name and software version at slot 15."
+  DEFVAL  { "" }
+  ::= { openGearDataSafeSlot15Entry 2 }
+
+openGearSlot15UpdateSaved  OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    update    (0)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "Update the saved card with the new card at slot 15."
+  ::= { openGearDataSafeSlot15Entry 3 }
+
+openGearSlot15NewCard  OBJECT-TYPE
+  SYNTAX      DisplayString
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "The saved card name and software version at slot 15."
+  DEFVAL  { "" }
+  ::= { openGearDataSafeSlot15Entry 4 }
+
+openGearSlot15DataSafeDisable  OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    enable  (0),
+    disable (1)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "The saved card name and software version at slot 15."
+  DEFVAL  { disable }
+  ::= { openGearDataSafeSlot15Entry 5 }
+
+--
+--  Data Safe Slot16 group
+--
+openGearDataSafeSlot16Group
+  OBJECT IDENTIFIER ::= { openGearFrameObjects 22 }
+
+openGearDataSafeSlot16 OBJECT-TYPE
+  SYNTAX Unsigned32
+  MAX-ACCESS read-only
+  STATUS current
+  DESCRIPTION
+    "The Slot16 Data Safe."
+  ::= { openGearDataSafeSlot16Group 1 }
+
+--
+--  Table of DataSafe Saved Card parameters
+--
+openGearDataSafeSlot16Table     OBJECT-TYPE
+    SYNTAX      SEQUENCE OF OpenGearDataSafeSlot16Entry
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION
+      "A table containing the DataSafe slot 16 parameters for this node.
+       This table is an expansion of the table 'openGearFrameTable'.
+       For each entry in 'openGearFrameTable', there is a corresponding
+       entry in this table, having the same index - openGearFrameIndex."
+    ::= { openGearDataSafeSlot16Group 2 }
+
+openGearDataSafeSlot16Entry     OBJECT-TYPE
+    SYNTAX      OpenGearDataSafeSlot16Entry
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION
+      "A conceptual row within 'openGearDataSafeSlot16Table'."
+    INDEX       { openGearFrameIndex, openGearDataSafeSlot16Index }
+    ::= { openGearDataSafeSlot16Table 1 }
+
+OpenGearDataSafeSlot16Entry ::= SEQUENCE {
+    openGearDataSafeSlot16Index   Unsigned32,
+    openGearSlot16SavedCard       DisplayString,
+    openGearSlot16UpdateSaved     INTEGER,
+    openGearSlot16NewCard         DisplayString,
+    openGearSlot16DataSafeDisable INTEGER
+}
+
+openGearDataSafeSlot16Index OBJECT-TYPE
+  SYNTAX Unsigned32
+  MAX-ACCESS not-accessible
+  STATUS current
+  DESCRIPTION
+    "DataSafe slot 16 index."
+  ::= { openGearDataSafeSlot16Entry 1 }
+
+openGearSlot16SavedCard  OBJECT-TYPE
+  SYNTAX      DisplayString
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "The saved card name and software version at slot 16."
+  DEFVAL  { "" }
+  ::= { openGearDataSafeSlot16Entry 2 }
+
+openGearSlot16UpdateSaved  OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    update    (0)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "Update the saved card with the new card at slot 16."
+  ::= { openGearDataSafeSlot16Entry 3 }
+
+openGearSlot16NewCard  OBJECT-TYPE
+  SYNTAX      DisplayString
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "The saved card name and software version at slot 16."
+  DEFVAL  { "" }
+  ::= { openGearDataSafeSlot16Entry 4 }
+
+openGearSlot16DataSafeDisable  OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    enable  (0),
+    disable (1)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "The saved card name and software version at slot 16."
+  DEFVAL  { disable }
+  ::= { openGearDataSafeSlot16Entry 5 }
+
+--
+--  Data Safe Slot17 group
+--
+openGearDataSafeSlot17Group
+  OBJECT IDENTIFIER ::= { openGearFrameObjects 23 }
+
+openGearDataSafeSlot17 OBJECT-TYPE
+  SYNTAX Unsigned32
+  MAX-ACCESS read-only
+  STATUS current
+  DESCRIPTION
+    "The Slot17 Data Safe."
+  ::= { openGearDataSafeSlot17Group 1 }
+
+--
+--  Table of DataSafe Saved Card parameters
+--
+openGearDataSafeSlot17Table     OBJECT-TYPE
+    SYNTAX      SEQUENCE OF OpenGearDataSafeSlot17Entry
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION
+      "A table containing the DataSafe slot 17 parameters for this node.
+       This table is an expansion of the table 'openGearFrameTable'.
+       For each entry in 'openGearFrameTable', there is a corresponding
+       entry in this table, having the same index - openGearFrameIndex."
+    ::= { openGearDataSafeSlot17Group 2 }
+
+openGearDataSafeSlot17Entry     OBJECT-TYPE
+    SYNTAX      OpenGearDataSafeSlot17Entry
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION
+      "A conceptual row within 'openGearDataSafeSlot17Table'."
+    INDEX       { openGearFrameIndex, openGearDataSafeSlot17Index }
+    ::= { openGearDataSafeSlot17Table 1 }
+
+OpenGearDataSafeSlot17Entry ::= SEQUENCE {
+    openGearDataSafeSlot17Index   Unsigned32,
+    openGearSlot17SavedCard       DisplayString,
+    openGearSlot17UpdateSaved     INTEGER,
+    openGearSlot17NewCard         DisplayString,
+    openGearSlot17DataSafeDisable INTEGER
+}
+
+openGearDataSafeSlot17Index OBJECT-TYPE
+  SYNTAX Unsigned32
+  MAX-ACCESS not-accessible
+  STATUS current
+  DESCRIPTION
+    "DataSafe slot 17 index."
+  ::= { openGearDataSafeSlot17Entry 1 }
+
+openGearSlot17SavedCard  OBJECT-TYPE
+  SYNTAX      DisplayString
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "The saved card name and software version at slot 17."
+  DEFVAL  { "" }
+  ::= { openGearDataSafeSlot17Entry 2 }
+
+openGearSlot17UpdateSaved  OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    update    (0)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "Update the saved card with the new card at slot 17."
+  ::= { openGearDataSafeSlot17Entry 3 }
+
+openGearSlot17NewCard  OBJECT-TYPE
+  SYNTAX      DisplayString
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "The saved card name and software version at slot 17."
+  DEFVAL  { "" }
+  ::= { openGearDataSafeSlot17Entry 4 }
+
+openGearSlot17DataSafeDisable  OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    enable  (0),
+    disable (1)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "The saved card name and software version at slot 17."
+  DEFVAL  { disable }
+  ::= { openGearDataSafeSlot17Entry 5 }
+
+--
+--  Data Safe Slot18 group
+--
+openGearDataSafeSlot18Group
+  OBJECT IDENTIFIER ::= { openGearFrameObjects 24 }
+
+openGearDataSafeSlot18 OBJECT-TYPE
+  SYNTAX Unsigned32
+  MAX-ACCESS read-only
+  STATUS current
+  DESCRIPTION
+    "The Slot18 Data Safe."
+  ::= { openGearDataSafeSlot18Group 1 }
+
+--
+--  Table of DataSafe Saved Card parameters
+--
+openGearDataSafeSlot18Table     OBJECT-TYPE
+    SYNTAX      SEQUENCE OF OpenGearDataSafeSlot18Entry
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION
+      "A table containing the DataSafe slot 18 parameters for this node.
+       This table is an expansion of the table 'openGearFrameTable'.
+       For each entry in 'openGearFrameTable', there is a corresponding
+       entry in this table, having the same index - openGearFrameIndex."
+    ::= { openGearDataSafeSlot18Group 2 }
+
+openGearDataSafeSlot18Entry     OBJECT-TYPE
+    SYNTAX      OpenGearDataSafeSlot18Entry
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION
+      "A conceptual row within 'openGearDataSafeSlot18Table'."
+    INDEX       { openGearFrameIndex, openGearDataSafeSlot18Index }
+    ::= { openGearDataSafeSlot18Table 1 }
+
+OpenGearDataSafeSlot18Entry ::= SEQUENCE {
+    openGearDataSafeSlot18Index   Unsigned32,
+    openGearSlot18SavedCard       DisplayString,
+    openGearSlot18UpdateSaved     INTEGER,
+    openGearSlot18NewCard         DisplayString,
+    openGearSlot18DataSafeDisable INTEGER
+}
+
+openGearDataSafeSlot18Index OBJECT-TYPE
+  SYNTAX Unsigned32
+  MAX-ACCESS not-accessible
+  STATUS current
+  DESCRIPTION
+    "DataSafe slot 18 index."
+  ::= { openGearDataSafeSlot18Entry 1 }
+
+openGearSlot18SavedCard  OBJECT-TYPE
+  SYNTAX      DisplayString
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "The saved card name and software version at slot 18."
+  DEFVAL  { "" }
+  ::= { openGearDataSafeSlot18Entry 2 }
+
+openGearSlot18UpdateSaved  OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    update    (0)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "Update the saved card with the new card at slot 18."
+  ::= { openGearDataSafeSlot18Entry 3 }
+
+openGearSlot18NewCard  OBJECT-TYPE
+  SYNTAX      DisplayString
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "The saved card name and software version at slot 18."
+  DEFVAL  { "" }
+  ::= { openGearDataSafeSlot18Entry 4 }
+
+openGearSlot18DataSafeDisable  OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    enable  (0),
+    disable (1)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "The saved card name and software version at slot 18."
+  DEFVAL  { disable }
+  ::= { openGearDataSafeSlot18Entry 5 }
+
+--
+--  Data Safe Slot19 group
+--
+openGearDataSafeSlot19Group
+  OBJECT IDENTIFIER ::= { openGearFrameObjects 25 }
+
+openGearDataSafeSlot19 OBJECT-TYPE
+  SYNTAX Unsigned32
+  MAX-ACCESS read-only
+  STATUS current
+  DESCRIPTION
+    "The Slot19 Data Safe."
+  ::= { openGearDataSafeSlot19Group 1 }
+
+--
+--  Table of DataSafe Saved Card parameters
+--
+openGearDataSafeSlot19Table     OBJECT-TYPE
+    SYNTAX      SEQUENCE OF OpenGearDataSafeSlot19Entry
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION
+      "A table containing the DataSafe slot 19 parameters for this node.
+       This table is an expansion of the table 'openGearFrameTable'.
+       For each entry in 'openGearFrameTable', there is a corresponding
+       entry in this table, having the same index - openGearFrameIndex."
+    ::= { openGearDataSafeSlot19Group 2 }
+
+openGearDataSafeSlot19Entry     OBJECT-TYPE
+    SYNTAX      OpenGearDataSafeSlot19Entry
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION
+      "A conceptual row within 'openGearDataSafeSlot19Table'."
+    INDEX       { openGearFrameIndex, openGearDataSafeSlot19Index }
+    ::= { openGearDataSafeSlot19Table 1 }
+
+OpenGearDataSafeSlot19Entry ::= SEQUENCE {
+    openGearDataSafeSlot19Index   Unsigned32,
+    openGearSlot19SavedCard       DisplayString,
+    openGearSlot19UpdateSaved     INTEGER,
+    openGearSlot19NewCard         DisplayString,
+    openGearSlot19DataSafeDisable INTEGER
+}
+
+openGearDataSafeSlot19Index OBJECT-TYPE
+  SYNTAX Unsigned32
+  MAX-ACCESS not-accessible
+  STATUS current
+  DESCRIPTION
+    "DataSafe slot 19 index."
+  ::= { openGearDataSafeSlot19Entry 1 }
+
+openGearSlot19SavedCard  OBJECT-TYPE
+  SYNTAX      DisplayString
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "The saved card name and software version at slot 19."
+  DEFVAL  { "" }
+  ::= { openGearDataSafeSlot19Entry 2 }
+
+openGearSlot19UpdateSaved  OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    update    (0)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "Update the saved card with the new card at slot 19."
+  ::= { openGearDataSafeSlot19Entry 3 }
+
+openGearSlot19NewCard  OBJECT-TYPE
+  SYNTAX      DisplayString
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "The saved card name and software version at slot 19."
+  DEFVAL  { "" }
+  ::= { openGearDataSafeSlot19Entry 4 }
+
+openGearSlot19DataSafeDisable  OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    enable  (0),
+    disable (1)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "The saved card name and software version at slot 19."
+  DEFVAL  { disable }
+  ::= { openGearDataSafeSlot19Entry 5 }
+
+--
+--  Data Safe Slot20 group
+--
+openGearDataSafeSlot20Group
+  OBJECT IDENTIFIER ::= { openGearFrameObjects 26 }
+
+openGearDataSafeSlot20 OBJECT-TYPE
+  SYNTAX Unsigned32
+  MAX-ACCESS read-only
+  STATUS current
+  DESCRIPTION
+    "The Slot20 Data Safe."
+  ::= { openGearDataSafeSlot20Group 1 }
+
+--
+--  Table of DataSafe Saved Card parameters
+--
+openGearDataSafeSlot20Table     OBJECT-TYPE
+    SYNTAX      SEQUENCE OF OpenGearDataSafeSlot20Entry
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION
+      "A table containing the DataSafe slot 20 parameters for this node.
+       This table is an expansion of the table 'openGearFrameTable'.
+       For each entry in 'openGearFrameTable', there is a corresponding
+       entry in this table, having the same index - openGearFrameIndex."
+    ::= { openGearDataSafeSlot20Group 2 }
+
+openGearDataSafeSlot20Entry     OBJECT-TYPE
+    SYNTAX      OpenGearDataSafeSlot20Entry
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION
+      "A conceptual row within 'openGearDataSafeSlot20Table'."
+    INDEX       { openGearFrameIndex, openGearDataSafeSlot20Index }
+    ::= { openGearDataSafeSlot20Table 1 }
+
+OpenGearDataSafeSlot20Entry ::= SEQUENCE {
+    openGearDataSafeSlot20Index   Unsigned32,
+    openGearSlot20SavedCard       DisplayString,
+    openGearSlot20UpdateSaved     INTEGER,
+    openGearSlot20NewCard         DisplayString,
+    openGearSlot20DataSafeDisable INTEGER
+}
+
+openGearDataSafeSlot20Index OBJECT-TYPE
+  SYNTAX Unsigned32
+  MAX-ACCESS not-accessible
+  STATUS current
+  DESCRIPTION
+    "DataSafe slot 20 index."
+  ::= { openGearDataSafeSlot20Entry 1 }
+
+openGearSlot20SavedCard  OBJECT-TYPE
+  SYNTAX      DisplayString
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "The saved card name and software version at slot 20."
+  DEFVAL  { "" }
+  ::= { openGearDataSafeSlot20Entry 2 }
+
+openGearSlot20UpdateSaved  OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    update    (0)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "Update the saved card with the new card at slot 20."
+  ::= { openGearDataSafeSlot20Entry 3 }
+
+openGearSlot20NewCard  OBJECT-TYPE
+  SYNTAX      DisplayString
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "The saved card name and software version at slot 20."
+  DEFVAL  { "" }
+  ::= { openGearDataSafeSlot20Entry 4 }
+
+openGearSlot20DataSafeDisable  OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    enable  (0),
+    disable (1)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "The saved card name and software version at slot 20."
+  DEFVAL  { disable }
+  ::= { openGearDataSafeSlot20Entry 5 }
+
+--
+--  Table of Switch parameters
+--
+openGearFrameSwitchArrGrp
+  OBJECT IDENTIFIER ::= { openGearFrameObjects 27 }
+
+openGearFrameNumberOfElementsInopenGearFrameSwitchArrGrp OBJECT-TYPE
+  SYNTAX      Integer32
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+  "The total number of elements in openGearFrameSwitchArrGrp."
+  ::= { openGearFrameSwitchArrGrp 1 }
+
+openGearFrameSwitchTable     OBJECT-TYPE
+  SYNTAX      SEQUENCE OF OpenGearFrameSwitchEntry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+  "A table containing product info for all openGearFrame at this node.
+  This table is the expansion of the table 'openGearFrameTable' in the
+  OPEN-GEAR-CARD-MIB."
+  ::= { openGearFrameSwitchArrGrp 2 }
+
+openGearFrameSwitchEntry     OBJECT-TYPE
+  SYNTAX      OpenGearFrameSwitchEntry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+  "A conceptual row within the 'openGearFrameSwitchTable'."
+  INDEX    { openGearFrameIndex, openGearFrameSwitchIndex}
+  ::= { openGearFrameSwitchTable 1 }
+
+  OpenGearFrameSwitchEntry ::= SEQUENCE {
+    openGearFrameSwitchIndex        Unsigned32,
+    openGearFramePortStatusArray             INTEGER
+  }
+
+openGearFrameSwitchIndex   OBJECT-TYPE
+  SYNTAX      Unsigned32
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+  "It represents the array group index."
+  ::= { openGearFrameSwitchEntry 1 }
+
+openGearFramePortStatusArray    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    disabled        (0),
+    loopDetected    (1),
+    noLink          (2),
+    linkUp10m       (3),
+    linkUp100m      (4),
+    linkUp1000m     (5)
+  }
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+  "link status for port"
+  DEFVAL  { notify }
+  ::= { openGearFrameSwitchEntry 2 }
+
+--
+-- Conformance
+--
+openGearFrameMibCompliances
+  OBJECT IDENTIFIER ::= { openGearFrameConformance 1 }
+openGearFrameMibGroups
+  OBJECT IDENTIFIER ::= { openGearFrameConformance 2 }
+
+--
+-- Compliance Statement
+--
+openGearFrameCompliances MODULE-COMPLIANCE
+  STATUS      current
+  DESCRIPTION
+    "The compliance statement for Open Gear Frame entities."
+
+  MODULE -- this module
+    MANDATORY-GROUPS { openGearFrameInfoGroup,
+                       openGearFrameNotifyGroup
+                     }
+
+  ::= { openGearFrameMibCompliances 1 }
+
+--
+-- Open Gear Frame MIB groups
+--
+openGearFrameInfoGroup OBJECT-GROUP
+  OBJECTS {
+    openGearNumberOfFrames,
+    openGearFrameVersion,
+    openGearFrameName,
+    openGearFrameSupplier,
+    openGearFrameProduct,
+    openGearFrameBoardRev,
+    openGearFrameSoftware,
+    openGearFrameSerialNumber,
+    openGearFrameBoardSN,
+    openGearFrameMACAddress,
+    openGearFrameFirmwareRev,
+    openGearFrameStatus,
+    openGearFrameFanDoor,
+    openGearFrameFanSpeed,
+    openGearFrameAudioAlarm,
+    openGearFrameActiveSlots,
+    openGearFrameVoltage,
+    openGearFrameCurrent,
+    openGearFrameNegativeRail,
+    openGearFrameCPUHeadroom,
+    openGearFrameRAMAvailable,
+    openGearFrameAVRCPUHeadroom,
+    openGearFrameAVRRAMAvailable,
+    openGearFrameAVRState,
+    openGearFrameMidPlaneId,
+    openGearDataSafeState,
+    openGearPSU1Status,
+    openGearPSU2Status,
+    openGearFramePower,
+    openGearFramePSU1Current,
+    openGearFramePSU2Current,
+    openGearFrameMaxSlotCurrent,
+    openGearFramePSU1Temp,
+    openGearFramePSU2Temp,
+    openGearFrameAmbientTemp,
+    openGearFramePSU1Model,
+    openGearFramePSU2Model,
+    openGearFramePSU1Serial,
+    openGearFramePSU2Serial,
+    openGearFramePSU1SoftwareRev,
+    openGearFramePSU1SoftwareRev,
+    openGearFramePSU1Current75,
+    openGearFramePSU2Current75,
+    openGearActionOnCardFault,
+    openGearFrameFanSpeedControl,
+    openGearActionOnPSU1Fault,
+    openGearActionOnPSU2Fault,
+    openGearDataSafeSlot1,
+    openGearDataSafeSlot2,
+    openGearDataSafeSlot3,
+    openGearDataSafeSlot4,
+    openGearDataSafeSlot5,
+    openGearDataSafeSlot6,
+    openGearDataSafeSlot7,
+    openGearDataSafeSlot8,
+    openGearDataSafeSlot9,
+    openGearDataSafeSlot10,
+    openGearDataSafeSlot11,
+    openGearDataSafeSlot12,
+    openGearDataSafeSlot13,
+    openGearDataSafeSlot14,
+    openGearDataSafeSlot15,
+    openGearDataSafeSlot16,
+    openGearDataSafeSlot17,
+    openGearDataSafeSlot18,
+    openGearDataSafeSlot19,
+    openGearDataSafeSlot20,
+    openGearSlot1SavedCard,
+    openGearSlot2SavedCard,
+    openGearSlot3SavedCard,
+    openGearSlot4SavedCard,
+    openGearSlot5SavedCard,
+    openGearSlot6SavedCard,
+    openGearSlot7SavedCard,
+    openGearSlot8SavedCard,
+    openGearSlot9SavedCard,
+    openGearSlot10SavedCard,
+    openGearSlot11SavedCard,
+    openGearSlot12SavedCard,
+    openGearSlot13SavedCard,
+    openGearSlot14SavedCard,
+    openGearSlot15SavedCard,
+    openGearSlot16SavedCard,
+    openGearSlot17SavedCard,
+    openGearSlot18SavedCard,
+    openGearSlot19SavedCard,
+    openGearSlot20SavedCard,
+    openGearSlot1NewCard,
+    openGearSlot2NewCard,
+    openGearSlot3NewCard,
+    openGearSlot4NewCard,
+    openGearSlot5NewCard,
+    openGearSlot6NewCard,
+    openGearSlot7NewCard,
+    openGearSlot8NewCard,
+    openGearSlot9NewCard,
+    openGearSlot10NewCard,
+    openGearSlot11NewCard,
+    openGearSlot12NewCard,
+    openGearSlot13NewCard,
+    openGearSlot14NewCard,
+    openGearSlot15NewCard,
+    openGearSlot16NewCard,
+    openGearSlot17NewCard,
+    openGearSlot18NewCard,
+    openGearSlot19NewCard,
+    openGearSlot20NewCard,
+    openGearSlot1UpdateSaved,
+    openGearSlot2UpdateSaved,
+    openGearSlot3UpdateSaved,
+    openGearSlot4UpdateSaved,
+    openGearSlot5UpdateSaved,
+    openGearSlot6UpdateSaved,
+    openGearSlot7UpdateSaved,
+    openGearSlot8UpdateSaved,
+    openGearSlot9UpdateSaved,
+    openGearSlot10UpdateSaved,
+    openGearSlot11UpdateSaved,
+    openGearSlot12UpdateSaved,
+    openGearSlot13UpdateSaved,
+    openGearSlot14UpdateSaved,
+    openGearSlot15UpdateSaved,
+    openGearSlot16UpdateSaved,
+    openGearSlot17UpdateSaved,
+    openGearSlot18UpdateSaved,
+    openGearSlot19UpdateSaved,
+    openGearSlot20UpdateSaved,
+    openGearSlot1DataSafeDisable,
+    openGearSlot2DataSafeDisable,
+    openGearSlot3DataSafeDisable,
+    openGearSlot4DataSafeDisable,
+    openGearSlot5DataSafeDisable,
+    openGearSlot6DataSafeDisable,
+    openGearSlot7DataSafeDisable,
+    openGearSlot8DataSafeDisable,
+    openGearSlot9DataSafeDisable,
+    openGearSlot10DataSafeDisable,
+    openGearSlot11DataSafeDisable,
+    openGearSlot12DataSafeDisable,
+    openGearSlot13DataSafeDisable,
+    openGearSlot14DataSafeDisable,
+    openGearSlot15DataSafeDisable,
+    openGearSlot16DataSafeDisable,
+    openGearSlot17DataSafeDisable,
+    openGearSlot18DataSafeDisable,
+    openGearSlot19DataSafeDisable,
+    openGearSlot20DataSafeDisable,
+    openGearDataSafeForceUpdate,
+    openGearMaskDataSafeWarning
+  }
+  STATUS  current
+  DESCRIPTION
+    "A collection of objects providing basic instrumentation
+     and control of an Open Gear Frame."
+  ::= { openGearFrameMibGroups 1 }
+
+openGearFrameNotifyGroup NOTIFICATION-GROUP
+  NOTIFICATIONS {
+    openGearFrameStatusEvent,
+    openGearFrameFanDoorEvent,
+    openGearFrameAVRStateEvent,
+    openGearDataSafeStateEvent,
+    openGearPSU1StatusEvent,
+    openGearPSU2StatusEvent
+  }
+  STATUS current
+  DESCRIPTION
+    "The notifications relating to the Open Gear card"
+  ::= { openGearFrameMibGroups 3 }
+
+END

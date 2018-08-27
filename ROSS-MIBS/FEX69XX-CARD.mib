@@ -1,0 +1,2182 @@
+FEX69XX-CARD-MIB DEFINITIONS ::= BEGIN
+
+--
+-- Defines control and monitoring structures for the FEX69XX card.
+--
+
+IMPORTS
+  openGearFrameIndex
+    FROM OPEN-GEAR-FRAME-MIB
+
+  openGearCardIndex
+    FROM OPEN-GEAR-CARD-MIB
+
+  openGearObjects
+    FROM OPEN-GEAR-MIB
+
+  OBJECT-TYPE, NOTIFICATION-TYPE, MODULE-IDENTITY, Integer32
+    FROM SNMPv2-SMI
+
+  OBJECT-GROUP, NOTIFICATION-GROUP, MODULE-COMPLIANCE
+    FROM SNMPv2-CONF
+
+  DisplayString
+    FROM SNMPv2-TC;
+
+fex69xxCardMib MODULE-IDENTITY
+  LAST-UPDATED "201305171200Z"
+  ORGANIZATION "www.rossvideo.org"
+  CONTACT-INFO
+    "postal:   Ross Video
+               8 John St. P.O. Box 220
+               Iroquois ON K0E 1K0
+
+      email:   support@rossvideo.com"
+
+  DESCRIPTION
+    "Defines control and monitoring structures for the FEX69XX card."
+
+  REVISION     "201305171200Z"
+  DESCRIPTION
+    "... "
+  ::= { openGearObjects 30 }
+
+--
+--  Top level components in the FEX69XX MIB
+--
+fex69xxCardNotifications
+  OBJECT IDENTIFIER ::= { fex69xxCardMib 0 }
+
+fex69xxCardObjects
+  OBJECT IDENTIFIER ::= { fex69xxCardMib 1 }
+
+fex69xxCardConformance
+  OBJECT IDENTIFIER ::= { fex69xxCardMib 2 }
+
+--
+--  Notifications relating to the FEX69XX card
+--
+fex69xxHardwareStatusEvent   NOTIFICATION-TYPE
+  OBJECTS { fex69xxHardwareStatus }
+  STATUS current
+  DESCRIPTION
+    "... "
+  ::= { fex69xxCardNotifications 1 }
+
+--
+--  FEX69XX Card information
+--
+--
+--  All the FEX69XX cards in the Open Gear frame
+--
+fex69xxNumberOfCards    OBJECT-TYPE
+  SYNTAX      Integer32
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "The total number of FEX69XX cards in the open gear frame.
+"  ::= { fex69xxCardObjects 1 }
+
+--
+--  Table of Product parameters
+--
+fex69xxProductTable     OBJECT-TYPE
+  SYNTAX      SEQUENCE OF Fex69xxProductEntry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "A table containing product info for all FEX69XX cards at this node.
+    This table is the expansion of the table 'openGearCardTable' in the
+    OPEN-GEAR-CARD-MIB. For each FEX69XX card in the 'openGearCardTable',
+    there is a corresponding entry in this table, having the same indices -
+    'openGearFrameIndex' and 'openGearCardIndex'."
+  ::= { fex69xxCardObjects 2 }
+
+fex69xxProductEntry     OBJECT-TYPE
+  SYNTAX      Fex69xxProductEntry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "A conceptual row within the 'fex69xxProductTable'."
+  INDEX    { openGearFrameIndex, openGearCardIndex }
+  ::= { fex69xxProductTable 1 }
+
+Fex69xxProductEntry ::= SEQUENCE {
+  fex69xxBoardRev                  DisplayString,
+  fex69xxSerialNumber              DisplayString,
+  fex69xxRearModule                DisplayString
+}
+
+fex69xxBoardRev    OBJECT-TYPE
+  SYNTAX      DisplayString
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "... "
+  ::= { fex69xxProductEntry 4 }
+
+fex69xxSerialNumber    OBJECT-TYPE
+  SYNTAX      DisplayString
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "... "
+  ::= { fex69xxProductEntry 5 }
+
+fex69xxRearModule    OBJECT-TYPE
+  SYNTAX      DisplayString
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "... "
+  ::= { fex69xxProductEntry 6 }
+
+--
+--  Table of Hardware parameters
+--
+fex69xxHardwareTable     OBJECT-TYPE
+  SYNTAX      SEQUENCE OF Fex69xxHardwareEntry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "A table containing product info for all FEX69XX cards at this node.
+    This table is the expansion of the table 'openGearCardTable' in the
+    OPEN-GEAR-CARD-MIB. For each FEX69XX card in the 'openGearCardTable',
+    there is a corresponding entry in this table, having the same indices -
+    'openGearFrameIndex' and 'openGearCardIndex'."
+  ::= { fex69xxCardObjects 3 }
+
+fex69xxHardwareEntry     OBJECT-TYPE
+  SYNTAX      Fex69xxHardwareEntry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "A conceptual row within the 'fex69xxHardwareTable'."
+  INDEX    { openGearFrameIndex, openGearCardIndex }
+  ::= { fex69xxHardwareTable 1 }
+
+Fex69xxHardwareEntry ::= SEQUENCE {
+  fex69xxHardwareStatus            Integer32,
+  fex69xxCardVoltage               Integer32,
+  fex69xxCardCurrent               Integer32,
+  fex69xxConfigBank                Integer32
+}
+
+fex69xxHardwareStatus    OBJECT-TYPE
+  SYNTAX      Integer32
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "The status parameter is a bitfield where each bit indicates a
+    specific status. A value of zero means OK.
+    The status bits are defined as follows:
+      0x0800 - Incomp Rear Module
+    All other values are undefined."
+  ::= { fex69xxHardwareEntry 1 }
+
+fex69xxCardVoltage    OBJECT-TYPE
+  SYNTAX      Integer32
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "... "
+  ::= { fex69xxHardwareEntry 3 }
+
+fex69xxCardCurrent    OBJECT-TYPE
+  SYNTAX      Integer32
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "... "
+  ::= { fex69xxHardwareEntry 4 }
+
+fex69xxConfigBank    OBJECT-TYPE
+  SYNTAX      Integer32
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "... "
+  ::= { fex69xxHardwareEntry 5 }
+
+--
+--  Table of Signal parameters
+--
+fex69xxSignalTable     OBJECT-TYPE
+  SYNTAX      SEQUENCE OF Fex69xxSignalEntry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "A table containing product info for all FEX69XX cards at this node.
+    This table is the expansion of the table 'openGearCardTable' in the
+    OPEN-GEAR-CARD-MIB. For each FEX69XX card in the 'openGearCardTable',
+    there is a corresponding entry in this table, having the same indices -
+    'openGearFrameIndex' and 'openGearCardIndex'."
+  ::= { fex69xxCardObjects 4 }
+
+fex69xxSignalEntry     OBJECT-TYPE
+  SYNTAX      Fex69xxSignalEntry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "A conceptual row within the 'fex69xxSignalTable'."
+  INDEX    { openGearFrameIndex, openGearCardIndex }
+  ::= { fex69xxSignalTable 1 }
+
+Fex69xxSignalEntry ::= SEQUENCE {
+  fex69xxLink1Alarm                Integer32,
+  fex69xxLink2Alarm                Integer32,
+  fex69xxLink3Alarm                Integer32,
+  fex69xxLink4Alarm                Integer32,
+  fex69xxLink5Alarm                Integer32,
+  fex69xxLink6Alarm                Integer32,
+  fex69xxLink8Alarm                Integer32,
+  fex69xxLink7Alarm                Integer32,
+  fex69xxSpd_rj45_1                DisplayString,
+  fex69xxSpd_rj45_2                DisplayString,
+  fex69xxSpd_rj45_3                DisplayString,
+  fex69xxSpd_rj45_4                DisplayString,
+  fex69xxSpd_fiber_1               DisplayString,
+  fex69xxSpd_fiber_2               DisplayString,
+  fex69xxSpd_fiber_3               DisplayString,
+  fex69xxSpd_internal              DisplayString,
+  fex69xxOpt1ModAlarm              Integer32,
+  fex69xxSfp1_txpower              Integer32,
+  fex69xxSfp1_wavelength           Integer32,
+  fex69xxSfp1_rxpower              DisplayString,
+  fex69xxSfp1_temp                 Integer32,
+  fex69xxOpt2ModAlarm              Integer32,
+  fex69xxSfp2_txpower              Integer32,
+  fex69xxSfp2_wavelength           Integer32,
+  fex69xxSfp2_rxpower              DisplayString,
+  fex69xxSfp2_temp                 Integer32,
+  fex69xxOpt3ModAlarm              Integer32,
+  fex69xxSfp3_txpower              Integer32,
+  fex69xxSfp3_wavelength           Integer32,
+  fex69xxSfp3_rxpower              DisplayString,
+  fex69xxSfp3_temp                 Integer32
+}
+
+fex69xxLink1Alarm    OBJECT-TYPE
+  SYNTAX      Integer32
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "The status parameter is a bitfield where each bit indicates a
+    specific status. A value of zero means OK.
+    The status bits are defined as follows:
+      0x0001 - Link Failure
+      0x0002 - No Link
+      0x0004 - Abnormal Fiber Temp
+      0x0008 - Incompatible
+      0x0010 - TX Power High
+      0x0020 - TX Power Low
+      0x0040 - RX Power High
+      0x0080 - RX Power Low
+      0x0100 - Alarm Suppressed
+      0x0200 - Mismatch
+    All other values are undefined."
+  ::= { fex69xxSignalEntry 1 }
+
+fex69xxLink2Alarm    OBJECT-TYPE
+  SYNTAX      Integer32
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "The status parameter is a bitfield where each bit indicates a
+    specific status. A value of zero means OK.
+    The status bits are defined as follows:
+      0x0001 - Link Failure
+      0x0002 - No Link
+      0x0004 - Abnormal Fiber Temp
+      0x0008 - Incompatible
+      0x0010 - TX Power High
+      0x0020 - TX Power Low
+      0x0040 - RX Power High
+      0x0080 - RX Power Low
+      0x0100 - Alarm Suppressed
+      0x0200 - Mismatch
+    All other values are undefined."
+  ::= { fex69xxSignalEntry 2 }
+
+fex69xxLink3Alarm    OBJECT-TYPE
+  SYNTAX      Integer32
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "The status parameter is a bitfield where each bit indicates a
+    specific status. A value of zero means OK.
+    The status bits are defined as follows:
+      0x0001 - Link Failure
+      0x0002 - No Link
+      0x0004 - Abnormal Fiber Temp
+      0x0008 - Incompatible
+      0x0010 - TX Power High
+      0x0020 - TX Power Low
+      0x0040 - RX Power High
+      0x0080 - RX Power Low
+      0x0100 - Alarm Suppressed
+      0x0200 - Mismatch
+    All other values are undefined."
+  ::= { fex69xxSignalEntry 3 }
+
+fex69xxLink4Alarm    OBJECT-TYPE
+  SYNTAX      Integer32
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "The status parameter is a bitfield where each bit indicates a
+    specific status. A value of zero means OK.
+    The status bits are defined as follows:
+      0x0001 - Link Failure
+      0x0002 - No Link
+      0x0004 - Abnormal Fiber Temp
+      0x0008 - Incompatible
+      0x0010 - TX Power High
+      0x0020 - TX Power Low
+      0x0040 - RX Power High
+      0x0080 - RX Power Low
+      0x0100 - Alarm Suppressed
+      0x0200 - Mismatch
+    All other values are undefined."
+  ::= { fex69xxSignalEntry 4 }
+
+fex69xxLink5Alarm    OBJECT-TYPE
+  SYNTAX      Integer32
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "The status parameter is a bitfield where each bit indicates a
+    specific status. A value of zero means OK.
+    The status bits are defined as follows:
+      0x0001 - Link Failure
+      0x0002 - No Link
+      0x0004 - Abnormal Fiber Temp
+      0x0008 - Incompatible
+      0x0010 - TX Power High
+      0x0020 - TX Power Low
+      0x0040 - RX Power High
+      0x0080 - RX Power Low
+      0x0100 - Alarm Suppressed
+      0x0200 - Mismatch
+    All other values are undefined."
+  ::= { fex69xxSignalEntry 5 }
+
+fex69xxLink6Alarm    OBJECT-TYPE
+  SYNTAX      Integer32
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "The status parameter is a bitfield where each bit indicates a
+    specific status. A value of zero means OK.
+    The status bits are defined as follows:
+      0x0001 - Link Failure
+      0x0002 - No Link
+      0x0004 - Abnormal Fiber Temp
+      0x0008 - Incompatible
+      0x0010 - TX Power High
+      0x0020 - TX Power Low
+      0x0040 - RX Power High
+      0x0080 - RX Power Low
+      0x0100 - Alarm Suppressed
+      0x0200 - Mismatch
+    All other values are undefined."
+  ::= { fex69xxSignalEntry 6 }
+
+fex69xxLink8Alarm    OBJECT-TYPE
+  SYNTAX      Integer32
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "The status parameter is a bitfield where each bit indicates a
+    specific status. A value of zero means OK.
+    The status bits are defined as follows:
+      0x0001 - Link Failure
+      0x0002 - No Link
+      0x0004 - Abnormal Fiber Temp
+      0x0008 - Incompatible
+      0x0010 - TX Power High
+      0x0020 - TX Power Low
+      0x0040 - RX Power High
+      0x0080 - RX Power Low
+      0x0100 - Alarm Suppressed
+      0x0200 - Mismatch
+    All other values are undefined."
+  ::= { fex69xxSignalEntry 7 }
+
+fex69xxLink7Alarm    OBJECT-TYPE
+  SYNTAX      Integer32
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "The status parameter is a bitfield where each bit indicates a
+    specific status. A value of zero means OK.
+    The status bits are defined as follows:
+      0x0001 - Link Failure
+      0x0002 - No Link
+      0x0004 - Abnormal Fiber Temp
+      0x0008 - Incompatible
+      0x0010 - TX Power High
+      0x0020 - TX Power Low
+      0x0040 - RX Power High
+      0x0080 - RX Power Low
+      0x0100 - Alarm Suppressed
+      0x0200 - Mismatch
+    All other values are undefined."
+  ::= { fex69xxSignalEntry 8 }
+
+fex69xxSpd_rj45_1    OBJECT-TYPE
+  SYNTAX      DisplayString
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "... "
+  ::= { fex69xxSignalEntry 10 }
+
+fex69xxSpd_rj45_2    OBJECT-TYPE
+  SYNTAX      DisplayString
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "... "
+  ::= { fex69xxSignalEntry 11 }
+
+fex69xxSpd_rj45_3    OBJECT-TYPE
+  SYNTAX      DisplayString
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "... "
+  ::= { fex69xxSignalEntry 12 }
+
+fex69xxSpd_rj45_4    OBJECT-TYPE
+  SYNTAX      DisplayString
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "... "
+  ::= { fex69xxSignalEntry 13 }
+
+fex69xxSpd_fiber_1    OBJECT-TYPE
+  SYNTAX      DisplayString
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "... "
+  ::= { fex69xxSignalEntry 14 }
+
+fex69xxSpd_fiber_2    OBJECT-TYPE
+  SYNTAX      DisplayString
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "... "
+  ::= { fex69xxSignalEntry 15 }
+
+fex69xxSpd_fiber_3    OBJECT-TYPE
+  SYNTAX      DisplayString
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "... "
+  ::= { fex69xxSignalEntry 16 }
+
+fex69xxSpd_internal    OBJECT-TYPE
+  SYNTAX      DisplayString
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "... "
+  ::= { fex69xxSignalEntry 17 }
+
+fex69xxOpt1ModAlarm    OBJECT-TYPE
+  SYNTAX      Integer32
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "The status parameter is a bitfield where each bit indicates a
+    specific status. A value of zero means OK.
+    The status bits are defined as follows:
+      0x0001 - Link Failure
+      0x0002 - No Link
+      0x0004 - Abnormal Fiber Temp
+      0x0008 - Incompatible
+      0x0010 - TX Power High
+      0x0020 - TX Power Low
+      0x0040 - RX Power High
+      0x0080 - RX Power Low
+      0x0100 - Alarm Suppressed
+      0x0200 - Mismatch
+    All other values are undefined."
+  ::= { fex69xxSignalEntry 18 }
+
+fex69xxSfp1_txpower    OBJECT-TYPE
+  SYNTAX      Integer32
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "... "
+  ::= { fex69xxSignalEntry 19 }
+
+fex69xxSfp1_wavelength    OBJECT-TYPE
+  SYNTAX      Integer32
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "... "
+  ::= { fex69xxSignalEntry 20 }
+
+fex69xxSfp1_rxpower    OBJECT-TYPE
+  SYNTAX      DisplayString
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "... "
+  ::= { fex69xxSignalEntry 21 }
+
+fex69xxSfp1_temp    OBJECT-TYPE
+  SYNTAX      Integer32
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "... "
+  ::= { fex69xxSignalEntry 22 }
+
+fex69xxOpt2ModAlarm    OBJECT-TYPE
+  SYNTAX      Integer32
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "The status parameter is a bitfield where each bit indicates a
+    specific status. A value of zero means OK.
+    The status bits are defined as follows:
+      0x0001 - Link Failure
+      0x0002 - No Link
+      0x0004 - Abnormal Fiber Temp
+      0x0008 - Incompatible
+      0x0010 - TX Power High
+      0x0020 - TX Power Low
+      0x0040 - RX Power High
+      0x0080 - RX Power Low
+      0x0100 - Alarm Suppressed
+      0x0200 - Mismatch
+    All other values are undefined."
+  ::= { fex69xxSignalEntry 23 }
+
+fex69xxSfp2_txpower    OBJECT-TYPE
+  SYNTAX      Integer32
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "... "
+  ::= { fex69xxSignalEntry 24 }
+
+fex69xxSfp2_wavelength    OBJECT-TYPE
+  SYNTAX      Integer32
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "... "
+  ::= { fex69xxSignalEntry 25 }
+
+fex69xxSfp2_rxpower    OBJECT-TYPE
+  SYNTAX      DisplayString
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "... "
+  ::= { fex69xxSignalEntry 26 }
+
+fex69xxSfp2_temp    OBJECT-TYPE
+  SYNTAX      Integer32
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "... "
+  ::= { fex69xxSignalEntry 27 }
+
+fex69xxOpt3ModAlarm    OBJECT-TYPE
+  SYNTAX      Integer32
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "The status parameter is a bitfield where each bit indicates a
+    specific status. A value of zero means OK.
+    The status bits are defined as follows:
+      0x0001 - Link Failure
+      0x0002 - No Link
+      0x0004 - Abnormal Fiber Temp
+      0x0008 - Incompatible
+      0x0010 - TX Power High
+      0x0020 - TX Power Low
+      0x0040 - RX Power High
+      0x0080 - RX Power Low
+      0x0100 - Alarm Suppressed
+      0x0200 - Mismatch
+    All other values are undefined."
+  ::= { fex69xxSignalEntry 28 }
+
+fex69xxSfp3_txpower    OBJECT-TYPE
+  SYNTAX      Integer32
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "... "
+  ::= { fex69xxSignalEntry 29 }
+
+fex69xxSfp3_wavelength    OBJECT-TYPE
+  SYNTAX      Integer32
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "... "
+  ::= { fex69xxSignalEntry 30 }
+
+fex69xxSfp3_rxpower    OBJECT-TYPE
+  SYNTAX      DisplayString
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "... "
+  ::= { fex69xxSignalEntry 31 }
+
+fex69xxSfp3_temp    OBJECT-TYPE
+  SYNTAX      Integer32
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "... "
+  ::= { fex69xxSignalEntry 32 }
+
+--
+--  Table of AlarmEnable parameters
+--
+fex69xxAlarmEnableTable     OBJECT-TYPE
+  SYNTAX      SEQUENCE OF Fex69xxAlarmEnableEntry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "A table containing product info for all FEX69XX cards at this node.
+    This table is the expansion of the table 'openGearCardTable' in the
+    OPEN-GEAR-CARD-MIB. For each FEX69XX card in the 'openGearCardTable',
+    there is a corresponding entry in this table, having the same indices -
+    'openGearFrameIndex' and 'openGearCardIndex'."
+  ::= { fex69xxCardObjects 5 }
+
+fex69xxAlarmEnableEntry     OBJECT-TYPE
+  SYNTAX      Fex69xxAlarmEnableEntry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "A conceptual row within the 'fex69xxAlarmEnableTable'."
+  INDEX    { openGearFrameIndex, openGearCardIndex }
+  ::= { fex69xxAlarmEnableTable 1 }
+
+Fex69xxAlarmEnableEntry ::= SEQUENCE {
+  fex69xxAlarmEnable_RJ45_1        INTEGER,
+  fex69xxAlarmEnable_RJ45_2        INTEGER,
+  fex69xxAlarmEnable_RJ45_3        INTEGER,
+  fex69xxAlarmEnable_RJ45_4        INTEGER,
+  fex69xxAlarmEnable_Fiber_1       INTEGER,
+  fex69xxAlarmEnable_Fiber_2       INTEGER,
+  fex69xxAlarmEnable_Fiber_3       INTEGER,
+  fex69xxAlarmEnable_Internal      INTEGER,
+  fex69xxAlarmEnable_Rear_Module   INTEGER,
+  fex69xxAlarmEnable_Fiber_1_Temp  INTEGER,
+  fex69xxAlarmEnable_Fiber_1_Power INTEGER,
+  fex69xxTx_hi_alarm               INTEGER,
+  fex69xxTx_low_alarm              INTEGER,
+  fex69xxRx_hi_alarm               INTEGER,
+  fex69xxRx_low_alarm              INTEGER,
+  fex69xxAlarmEnable_Fiber_2_Temp  INTEGER,
+  fex69xxAlarmEnable_Fiber_2_Power INTEGER,
+  fex69xxTx_hi_alarm2              INTEGER,
+  fex69xxTx_low_alarm2             INTEGER,
+  fex69xxRx_hi_alarm2              INTEGER,
+  fex69xxRx_low_alarm2             INTEGER,
+  fex69xxAlarmEnable_Fiber_3_Temp  INTEGER,
+  fex69xxAlarmEnable_Fiber_3_Power INTEGER,
+  fex69xxTx_hi_alarm3              INTEGER,
+  fex69xxTx_low_alarm3             INTEGER,
+  fex69xxRx_hi_alarm3              INTEGER,
+  fex69xxRx_low_alarm3             INTEGER
+}
+
+fex69xxAlarmEnable_RJ45_1    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    disable                 (0),
+    enable                  (1)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { enable }
+  ::= { fex69xxAlarmEnableEntry 1 }
+
+fex69xxAlarmEnable_RJ45_2    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    disable                 (0),
+    enable                  (1)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { enable }
+  ::= { fex69xxAlarmEnableEntry 2 }
+
+fex69xxAlarmEnable_RJ45_3    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    disable                 (0),
+    enable                  (1)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { enable }
+  ::= { fex69xxAlarmEnableEntry 3 }
+
+fex69xxAlarmEnable_RJ45_4    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    disable                 (0),
+    enable                  (1)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { enable }
+  ::= { fex69xxAlarmEnableEntry 4 }
+
+fex69xxAlarmEnable_Fiber_1    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    disable                 (0),
+    enable                  (1)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { enable }
+  ::= { fex69xxAlarmEnableEntry 5 }
+
+fex69xxAlarmEnable_Fiber_2    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    disable                 (0),
+    enable                  (1)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { enable }
+  ::= { fex69xxAlarmEnableEntry 6 }
+
+fex69xxAlarmEnable_Fiber_3    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    disable                 (0),
+    enable                  (1)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { enable }
+  ::= { fex69xxAlarmEnableEntry 7 }
+
+fex69xxAlarmEnable_Internal    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    disable                 (0),
+    enable                  (1)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { enable }
+  ::= { fex69xxAlarmEnableEntry 8 }
+
+fex69xxAlarmEnable_Rear_Module    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    disable                 (0),
+    enable                  (1)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { enable }
+  ::= { fex69xxAlarmEnableEntry 9 }
+
+fex69xxAlarmEnable_Fiber_1_Temp    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    disable                 (0),
+    enable                  (1)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { enable }
+  ::= { fex69xxAlarmEnableEntry 10 }
+
+fex69xxAlarmEnable_Fiber_1_Power    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    disable                 (0),
+    enable                  (1)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { enable }
+  ::= { fex69xxAlarmEnableEntry 11 }
+
+fex69xxTx_hi_alarm    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    disable                 (0),
+    enable                  (1)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { enable }
+  ::= { fex69xxAlarmEnableEntry 12 }
+
+fex69xxTx_low_alarm    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    disable                 (0),
+    enable                  (1)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { enable }
+  ::= { fex69xxAlarmEnableEntry 13 }
+
+fex69xxRx_hi_alarm    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    disable                 (0),
+    enable                  (1)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { enable }
+  ::= { fex69xxAlarmEnableEntry 14 }
+
+fex69xxRx_low_alarm    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    disable                 (0),
+    enable                  (1)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { enable }
+  ::= { fex69xxAlarmEnableEntry 15 }
+
+fex69xxAlarmEnable_Fiber_2_Temp    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    disable                 (0),
+    enable                  (1)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { enable }
+  ::= { fex69xxAlarmEnableEntry 16 }
+
+fex69xxAlarmEnable_Fiber_2_Power    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    disable                 (0),
+    enable                  (1)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { enable }
+  ::= { fex69xxAlarmEnableEntry 17 }
+
+fex69xxTx_hi_alarm2    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    disable                 (0),
+    enable                  (1)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { enable }
+  ::= { fex69xxAlarmEnableEntry 18 }
+
+fex69xxTx_low_alarm2    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    disable                 (0),
+    enable                  (1)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { enable }
+  ::= { fex69xxAlarmEnableEntry 19 }
+
+fex69xxRx_hi_alarm2    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    disable                 (0),
+    enable                  (1)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { enable }
+  ::= { fex69xxAlarmEnableEntry 20 }
+
+fex69xxRx_low_alarm2    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    disable                 (0),
+    enable                  (1)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { enable }
+  ::= { fex69xxAlarmEnableEntry 21 }
+
+fex69xxAlarmEnable_Fiber_3_Temp    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    disable                 (0),
+    enable                  (1)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { enable }
+  ::= { fex69xxAlarmEnableEntry 22 }
+
+fex69xxAlarmEnable_Fiber_3_Power    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    disable                 (0),
+    enable                  (1)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { enable }
+  ::= { fex69xxAlarmEnableEntry 23 }
+
+fex69xxTx_hi_alarm3    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    disable                 (0),
+    enable                  (1)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { enable }
+  ::= { fex69xxAlarmEnableEntry 24 }
+
+fex69xxTx_low_alarm3    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    disable                 (0),
+    enable                  (1)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { enable }
+  ::= { fex69xxAlarmEnableEntry 25 }
+
+fex69xxRx_hi_alarm3    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    disable                 (0),
+    enable                  (1)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { enable }
+  ::= { fex69xxAlarmEnableEntry 26 }
+
+fex69xxRx_low_alarm3    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    disable                 (0),
+    enable                  (1)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { enable }
+  ::= { fex69xxAlarmEnableEntry 27 }
+
+--
+--  Table of Setup parameters
+--
+fex69xxSetupTable     OBJECT-TYPE
+  SYNTAX      SEQUENCE OF Fex69xxSetupEntry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "A table containing product info for all FEX69XX cards at this node.
+    This table is the expansion of the table 'openGearCardTable' in the
+    OPEN-GEAR-CARD-MIB. For each FEX69XX card in the 'openGearCardTable',
+    there is a corresponding entry in this table, having the same indices -
+    'openGearFrameIndex' and 'openGearCardIndex'."
+  ::= { fex69xxCardObjects 6 }
+
+fex69xxSetupEntry     OBJECT-TYPE
+  SYNTAX      Fex69xxSetupEntry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "A conceptual row within the 'fex69xxSetupTable'."
+  INDEX    { openGearFrameIndex, openGearCardIndex }
+  ::= { fex69xxSetupTable 1 }
+
+Fex69xxSetupEntry ::= SEQUENCE {
+  fex69xxEnableTrunking            INTEGER,
+  fex69xxFactoryDef                INTEGER
+}
+
+fex69xxEnableTrunking    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    disable                 (0),
+    enable                  (1)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { disable }
+  ::= { fex69xxSetupEntry 1 }
+
+fex69xxFactoryDef    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    reset                   (0)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { reset }
+  ::= { fex69xxSetupEntry 2 }
+
+--
+--  Table of PortStats parameters
+--
+fex69xxPortStatsTable     OBJECT-TYPE
+  SYNTAX      SEQUENCE OF Fex69xxPortStatsEntry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "A table containing product info for all FEX69XX cards at this node.
+    This table is the expansion of the table 'openGearCardTable' in the
+    OPEN-GEAR-CARD-MIB. For each FEX69XX card in the 'openGearCardTable',
+    there is a corresponding entry in this table, having the same indices -
+    'openGearFrameIndex' and 'openGearCardIndex'."
+  ::= { fex69xxCardObjects 7 }
+
+fex69xxPortStatsEntry     OBJECT-TYPE
+  SYNTAX      Fex69xxPortStatsEntry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "A conceptual row within the 'fex69xxPortStatsTable'."
+  INDEX    { openGearFrameIndex, openGearCardIndex }
+  ::= { fex69xxPortStatsTable 1 }
+
+Fex69xxPortStatsEntry ::= SEQUENCE {
+  fex69xxRj45_1_rxpackets_         Integer32,
+  fex69xxRj45_1_rxerrors_          Integer32,
+  fex69xxRj45_1_rxdropped_         Integer32,
+  fex69xxRj45_1_txpackets_         Integer32,
+  fex69xxRj45_1_txdropped_         Integer32,
+  fex69xxRj45_1_txcollisions_      Integer32,
+  fex69xxRj45_2_rxpackets_         Integer32,
+  fex69xxRj45_2_rxerrors_          Integer32,
+  fex69xxRj45_2_rxdropped_         Integer32,
+  fex69xxRj45_2_txpackets_         Integer32,
+  fex69xxRj45_2_txdropped_         Integer32,
+  fex69xxRj45_2_txcollisions_      Integer32,
+  fex69xxRj45_3_rxpackets_         Integer32,
+  fex69xxRj45_3_rxerrors_          Integer32,
+  fex69xxRj45_3_rxdropped_         Integer32,
+  fex69xxRj45_3_txpackets_         Integer32,
+  fex69xxRj45_3_txdropped_         Integer32,
+  fex69xxRj45_3_txcollisions_      Integer32,
+  fex69xxRj45_4_rxpackets_         Integer32,
+  fex69xxRj45_4_rxerrors_          Integer32,
+  fex69xxRj45_4_rxdropped_         Integer32,
+  fex69xxRj45_4_txpackets_         Integer32,
+  fex69xxRj45_4_txdropped_         Integer32,
+  fex69xxRj45_4_txcollisions_      Integer32,
+  fex69xxFibre_1_rxpackets_        Integer32,
+  fex69xxFibre_1_rxerrors_         Integer32,
+  fex69xxFibre_1_rxdropped_        Integer32,
+  fex69xxFibre_1_txpackets_        Integer32,
+  fex69xxFibre_1_txdropped_        Integer32,
+  fex69xxFibre_1_txcollisions_     Integer32,
+  fex69xxFibre_2_rxpackets_        Integer32,
+  fex69xxFibre_2_rxerrors_         Integer32,
+  fex69xxFibre_2_rxdropped_        Integer32,
+  fex69xxFibre_2_txpackets_        Integer32,
+  fex69xxFibre_2_txdropped_        Integer32,
+  fex69xxFibre_2_txcollisions_     Integer32,
+  fex69xxInternal_rxpackets_       Integer32,
+  fex69xxInternal_rxerrors_        Integer32,
+  fex69xxInternal_rxdropped_       Integer32,
+  fex69xxInternal_txpackets_       Integer32,
+  fex69xxInternal_txdropped_       Integer32,
+  fex69xxInternal_txcollisions_    Integer32,
+  fex69xxStatP1Enable              INTEGER
+}
+
+fex69xxRj45_1_rxpackets_    OBJECT-TYPE
+  SYNTAX      Integer32
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "... "
+  ::= { fex69xxPortStatsEntry 1 }
+
+fex69xxRj45_1_rxerrors_    OBJECT-TYPE
+  SYNTAX      Integer32
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "... "
+  ::= { fex69xxPortStatsEntry 2 }
+
+fex69xxRj45_1_rxdropped_    OBJECT-TYPE
+  SYNTAX      Integer32
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "... "
+  ::= { fex69xxPortStatsEntry 3 }
+
+fex69xxRj45_1_txpackets_    OBJECT-TYPE
+  SYNTAX      Integer32
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "... "
+  ::= { fex69xxPortStatsEntry 4 }
+
+fex69xxRj45_1_txdropped_    OBJECT-TYPE
+  SYNTAX      Integer32
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "... "
+  ::= { fex69xxPortStatsEntry 5 }
+
+fex69xxRj45_1_txcollisions_    OBJECT-TYPE
+  SYNTAX      Integer32
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "... "
+  ::= { fex69xxPortStatsEntry 6 }
+
+fex69xxRj45_2_rxpackets_    OBJECT-TYPE
+  SYNTAX      Integer32
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "... "
+  ::= { fex69xxPortStatsEntry 7 }
+
+fex69xxRj45_2_rxerrors_    OBJECT-TYPE
+  SYNTAX      Integer32
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "... "
+  ::= { fex69xxPortStatsEntry 8 }
+
+fex69xxRj45_2_rxdropped_    OBJECT-TYPE
+  SYNTAX      Integer32
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "... "
+  ::= { fex69xxPortStatsEntry 9 }
+
+fex69xxRj45_2_txpackets_    OBJECT-TYPE
+  SYNTAX      Integer32
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "... "
+  ::= { fex69xxPortStatsEntry 10 }
+
+fex69xxRj45_2_txdropped_    OBJECT-TYPE
+  SYNTAX      Integer32
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "... "
+  ::= { fex69xxPortStatsEntry 11 }
+
+fex69xxRj45_2_txcollisions_    OBJECT-TYPE
+  SYNTAX      Integer32
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "... "
+  ::= { fex69xxPortStatsEntry 12 }
+
+fex69xxRj45_3_rxpackets_    OBJECT-TYPE
+  SYNTAX      Integer32
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "... "
+  ::= { fex69xxPortStatsEntry 13 }
+
+fex69xxRj45_3_rxerrors_    OBJECT-TYPE
+  SYNTAX      Integer32
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "... "
+  ::= { fex69xxPortStatsEntry 14 }
+
+fex69xxRj45_3_rxdropped_    OBJECT-TYPE
+  SYNTAX      Integer32
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "... "
+  ::= { fex69xxPortStatsEntry 15 }
+
+fex69xxRj45_3_txpackets_    OBJECT-TYPE
+  SYNTAX      Integer32
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "... "
+  ::= { fex69xxPortStatsEntry 16 }
+
+fex69xxRj45_3_txdropped_    OBJECT-TYPE
+  SYNTAX      Integer32
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "... "
+  ::= { fex69xxPortStatsEntry 17 }
+
+fex69xxRj45_3_txcollisions_    OBJECT-TYPE
+  SYNTAX      Integer32
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "... "
+  ::= { fex69xxPortStatsEntry 18 }
+
+fex69xxRj45_4_rxpackets_    OBJECT-TYPE
+  SYNTAX      Integer32
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "... "
+  ::= { fex69xxPortStatsEntry 19 }
+
+fex69xxRj45_4_rxerrors_    OBJECT-TYPE
+  SYNTAX      Integer32
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "... "
+  ::= { fex69xxPortStatsEntry 20 }
+
+fex69xxRj45_4_rxdropped_    OBJECT-TYPE
+  SYNTAX      Integer32
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "... "
+  ::= { fex69xxPortStatsEntry 21 }
+
+fex69xxRj45_4_txpackets_    OBJECT-TYPE
+  SYNTAX      Integer32
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "... "
+  ::= { fex69xxPortStatsEntry 22 }
+
+fex69xxRj45_4_txdropped_    OBJECT-TYPE
+  SYNTAX      Integer32
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "... "
+  ::= { fex69xxPortStatsEntry 23 }
+
+fex69xxRj45_4_txcollisions_    OBJECT-TYPE
+  SYNTAX      Integer32
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "... "
+  ::= { fex69xxPortStatsEntry 24 }
+
+fex69xxFibre_1_rxpackets_    OBJECT-TYPE
+  SYNTAX      Integer32
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "... "
+  ::= { fex69xxPortStatsEntry 25 }
+
+fex69xxFibre_1_rxerrors_    OBJECT-TYPE
+  SYNTAX      Integer32
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "... "
+  ::= { fex69xxPortStatsEntry 26 }
+
+fex69xxFibre_1_rxdropped_    OBJECT-TYPE
+  SYNTAX      Integer32
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "... "
+  ::= { fex69xxPortStatsEntry 27 }
+
+fex69xxFibre_1_txpackets_    OBJECT-TYPE
+  SYNTAX      Integer32
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "... "
+  ::= { fex69xxPortStatsEntry 28 }
+
+fex69xxFibre_1_txdropped_    OBJECT-TYPE
+  SYNTAX      Integer32
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "... "
+  ::= { fex69xxPortStatsEntry 29 }
+
+fex69xxFibre_1_txcollisions_    OBJECT-TYPE
+  SYNTAX      Integer32
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "... "
+  ::= { fex69xxPortStatsEntry 30 }
+
+fex69xxFibre_2_rxpackets_    OBJECT-TYPE
+  SYNTAX      Integer32
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "... "
+  ::= { fex69xxPortStatsEntry 31 }
+
+fex69xxFibre_2_rxerrors_    OBJECT-TYPE
+  SYNTAX      Integer32
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "... "
+  ::= { fex69xxPortStatsEntry 32 }
+
+fex69xxFibre_2_rxdropped_    OBJECT-TYPE
+  SYNTAX      Integer32
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "... "
+  ::= { fex69xxPortStatsEntry 33 }
+
+fex69xxFibre_2_txpackets_    OBJECT-TYPE
+  SYNTAX      Integer32
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "... "
+  ::= { fex69xxPortStatsEntry 34 }
+
+fex69xxFibre_2_txdropped_    OBJECT-TYPE
+  SYNTAX      Integer32
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "... "
+  ::= { fex69xxPortStatsEntry 35 }
+
+fex69xxFibre_2_txcollisions_    OBJECT-TYPE
+  SYNTAX      Integer32
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "... "
+  ::= { fex69xxPortStatsEntry 36 }
+
+fex69xxInternal_rxpackets_    OBJECT-TYPE
+  SYNTAX      Integer32
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "... "
+  ::= { fex69xxPortStatsEntry 37 }
+
+fex69xxInternal_rxerrors_    OBJECT-TYPE
+  SYNTAX      Integer32
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "... "
+  ::= { fex69xxPortStatsEntry 38 }
+
+fex69xxInternal_rxdropped_    OBJECT-TYPE
+  SYNTAX      Integer32
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "... "
+  ::= { fex69xxPortStatsEntry 39 }
+
+fex69xxInternal_txpackets_    OBJECT-TYPE
+  SYNTAX      Integer32
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "... "
+  ::= { fex69xxPortStatsEntry 40 }
+
+fex69xxInternal_txdropped_    OBJECT-TYPE
+  SYNTAX      Integer32
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "... "
+  ::= { fex69xxPortStatsEntry 41 }
+
+fex69xxInternal_txcollisions_    OBJECT-TYPE
+  SYNTAX      Integer32
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "... "
+  ::= { fex69xxPortStatsEntry 42 }
+
+fex69xxStatP1Enable    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    disabled                (0),
+    v2Sec                   (1),
+    v10Sec                  (2),
+    v30Sec                  (3)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { disabled }
+  ::= { fex69xxPortStatsEntry 43 }
+
+--
+--  Table of Setup_CES8940 parameters
+--
+fex69xxSetup_CES8940ArrGrp
+  OBJECT IDENTIFIER ::= { fex69xxCardObjects 8 }
+
+fex69xxNumberOfElementsInfex69xxSetup_CES8940ArrGrp OBJECT-TYPE
+  SYNTAX      Integer32
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "The total number of elements in fex69xxSetup_CES8940ArrGrp."
+  ::= { fex69xxSetup_CES8940ArrGrp 1 }
+
+fex69xxSetup_CES8940Table     OBJECT-TYPE
+  SYNTAX      SEQUENCE OF Fex69xxSetup_CES8940Entry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "A table containing product info for all FEX69XX cards at this node.
+    This table is the expansion of the table 'openGearCardTable' in the
+    OPEN-GEAR-CARD-MIB. For each FEX69XX card in the 'openGearCardTable',
+    there is a corresponding entry in this table, having the same indices -
+    'openGearFrameIndex' and 'openGearCardIndex'."
+  ::= { fex69xxSetup_CES8940ArrGrp 2 }
+
+fex69xxSetup_CES8940Entry     OBJECT-TYPE
+  SYNTAX      Fex69xxSetup_CES8940Entry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "A conceptual row within the 'fex69xxSetup_CES8940Table'."
+  INDEX    { openGearFrameIndex, openGearCardIndex,  fex69xxSetup_CES8940Index}
+  ::= { fex69xxSetup_CES8940Table 1 }
+
+Fex69xxSetup_CES8940Entry ::= SEQUENCE {
+  fex69xxSetup_CES8940Index        Unsigned32,
+  fex69xxTrunk1_5_Ports            INTEGER,
+  fex69xxTrunk2_5_Ports            INTEGER,
+  fex69xxPort_enables_4_Ports      INTEGER
+}
+
+fex69xxSetup_CES8940Index   OBJECT-TYPE
+  SYNTAX      Unsigned32
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "It represents the array group index."
+  ::= { fex69xxSetup_CES8940Entry 1 }
+
+fex69xxTrunk1_5_Ports    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    no                      (0),
+    yes                     (1)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { no }
+  ::= { fex69xxSetup_CES8940Entry 2 }
+
+fex69xxTrunk2_5_Ports    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    no                      (0),
+    yes                     (1)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { no }
+  ::= { fex69xxSetup_CES8940Entry 3 }
+
+fex69xxPort_enables_4_Ports    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    no                      (0),
+    yes                     (1)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { yes }
+  ::= { fex69xxSetup_CES8940Entry 7 }
+
+--
+--  Table of VLAN_CES8940 parameters
+--
+fex69xxVLAN_CES8940ArrGrp
+  OBJECT IDENTIFIER ::= { fex69xxCardObjects 9 }
+
+fex69xxNumberOfElementsInfex69xxVLAN_CES8940ArrGrp OBJECT-TYPE
+  SYNTAX      Integer32
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "The total number of elements in fex69xxVLAN_CES8940ArrGrp."
+  ::= { fex69xxVLAN_CES8940ArrGrp 1 }
+
+fex69xxVLAN_CES8940Table     OBJECT-TYPE
+  SYNTAX      SEQUENCE OF Fex69xxVLAN_CES8940Entry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "A table containing product info for all FEX69XX cards at this node.
+    This table is the expansion of the table 'openGearCardTable' in the
+    OPEN-GEAR-CARD-MIB. For each FEX69XX card in the 'openGearCardTable',
+    there is a corresponding entry in this table, having the same indices -
+    'openGearFrameIndex' and 'openGearCardIndex'."
+  ::= { fex69xxVLAN_CES8940ArrGrp 2 }
+
+fex69xxVLAN_CES8940Entry     OBJECT-TYPE
+  SYNTAX      Fex69xxVLAN_CES8940Entry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "A conceptual row within the 'fex69xxVLAN_CES8940Table'."
+  INDEX    { openGearFrameIndex, openGearCardIndex,  fex69xxVLAN_CES8940Index}
+  ::= { fex69xxVLAN_CES8940Table 1 }
+
+Fex69xxVLAN_CES8940Entry ::= SEQUENCE {
+  fex69xxVLAN_CES8940Index        Unsigned32,
+  fex69xxVlan1_5_Ports             INTEGER,
+  fex69xxVlan2_5_Ports             INTEGER,
+  fex69xxVlan3_5_Ports             INTEGER
+}
+
+fex69xxVLAN_CES8940Index   OBJECT-TYPE
+  SYNTAX      Unsigned32
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "It represents the array group index."
+  ::= { fex69xxVLAN_CES8940Entry 1 }
+
+fex69xxVlan1_5_Ports    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    no                      (0),
+    yes                     (1)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { yes }
+  ::= { fex69xxVLAN_CES8940Entry 2 }
+
+fex69xxVlan2_5_Ports    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    no                      (0),
+    yes                     (1)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { no }
+  ::= { fex69xxVLAN_CES8940Entry 3 }
+
+fex69xxVlan3_5_Ports    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    no                      (0),
+    yes                     (1)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { no }
+  ::= { fex69xxVLAN_CES8940Entry 4 }
+
+--
+--  Table of Setup_FED6944_FES6941_FES_6942 parameters
+--
+fex69xxSetup_FED6944_FES6941_FES_6942ArrGrp
+  OBJECT IDENTIFIER ::= { fex69xxCardObjects 10 }
+
+fex69xxNumberOfElementsInfex69xxSetup_FED6944_FES6941_FES_6942ArrGrp OBJECT-TYPE
+  SYNTAX      Integer32
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "The total number of elements in fex69xxSetup_FED6944_FES6941_FES_6942ArrGrp."
+  ::= { fex69xxSetup_FED6944_FES6941_FES_6942ArrGrp 1 }
+
+fex69xxSetup_FED6944_FES6941_FES_6942Table     OBJECT-TYPE
+  SYNTAX      SEQUENCE OF Fex69xxSetup_FED6944_FES6941_FES_6942Entry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "A table containing product info for all FEX69XX cards at this node.
+    This table is the expansion of the table 'openGearCardTable' in the
+    OPEN-GEAR-CARD-MIB. For each FEX69XX card in the 'openGearCardTable',
+    there is a corresponding entry in this table, having the same indices -
+    'openGearFrameIndex' and 'openGearCardIndex'."
+  ::= { fex69xxSetup_FED6944_FES6941_FES_6942ArrGrp 2 }
+
+fex69xxSetup_FED6944_FES6941_FES_6942Entry     OBJECT-TYPE
+  SYNTAX      Fex69xxSetup_FED6944_FES6941_FES_6942Entry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "A conceptual row within the 'fex69xxSetup_FED6944_FES6941_FES_6942Table'."
+  INDEX    { openGearFrameIndex, openGearCardIndex,  fex69xxSetup_FED6944_FES6941_FES_6942Index}
+  ::= { fex69xxSetup_FED6944_FES6941_FES_6942Table 1 }
+
+Fex69xxSetup_FED6944_FES6941_FES_6942Entry ::= SEQUENCE {
+  fex69xxSetup_FED6944_FES6941_FES_6942Index        Unsigned32,
+  fex69xxTrunk1_6_Ports            INTEGER,
+  fex69xxTrunk2_6_Ports            INTEGER,
+  fex69xxPort_enables_5_Ports      INTEGER
+}
+
+fex69xxSetup_FED6944_FES6941_FES_6942Index   OBJECT-TYPE
+  SYNTAX      Unsigned32
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "It represents the array group index."
+  ::= { fex69xxSetup_FED6944_FES6941_FES_6942Entry 1 }
+
+fex69xxTrunk1_6_Ports    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    no                      (0),
+    yes                     (1)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { no }
+  ::= { fex69xxSetup_FED6944_FES6941_FES_6942Entry 2 }
+
+fex69xxTrunk2_6_Ports    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    no                      (0),
+    yes                     (1)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { no }
+  ::= { fex69xxSetup_FED6944_FES6941_FES_6942Entry 3 }
+
+fex69xxPort_enables_5_Ports    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    no                      (0),
+    yes                     (1)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { yes }
+  ::= { fex69xxSetup_FED6944_FES6941_FES_6942Entry 4 }
+
+--
+--  Table of VLAN_FED6944_FES6941_FES_6942 parameters
+--
+fex69xxVLAN_FED6944_FES6941_FES_6942ArrGrp
+  OBJECT IDENTIFIER ::= { fex69xxCardObjects 11 }
+
+fex69xxNumberOfElementsInfex69xxVLAN_FED6944_FES6941_FES_6942ArrGrp OBJECT-TYPE
+  SYNTAX      Integer32
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "The total number of elements in fex69xxVLAN_FED6944_FES6941_FES_6942ArrGrp."
+  ::= { fex69xxVLAN_FED6944_FES6941_FES_6942ArrGrp 1 }
+
+fex69xxVLAN_FED6944_FES6941_FES_6942Table     OBJECT-TYPE
+  SYNTAX      SEQUENCE OF Fex69xxVLAN_FED6944_FES6941_FES_6942Entry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "A table containing product info for all FEX69XX cards at this node.
+    This table is the expansion of the table 'openGearCardTable' in the
+    OPEN-GEAR-CARD-MIB. For each FEX69XX card in the 'openGearCardTable',
+    there is a corresponding entry in this table, having the same indices -
+    'openGearFrameIndex' and 'openGearCardIndex'."
+  ::= { fex69xxVLAN_FED6944_FES6941_FES_6942ArrGrp 2 }
+
+fex69xxVLAN_FED6944_FES6941_FES_6942Entry     OBJECT-TYPE
+  SYNTAX      Fex69xxVLAN_FED6944_FES6941_FES_6942Entry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "A conceptual row within the 'fex69xxVLAN_FED6944_FES6941_FES_6942Table'."
+  INDEX    { openGearFrameIndex, openGearCardIndex,  fex69xxVLAN_FED6944_FES6941_FES_6942Index}
+  ::= { fex69xxVLAN_FED6944_FES6941_FES_6942Table 1 }
+
+Fex69xxVLAN_FED6944_FES6941_FES_6942Entry ::= SEQUENCE {
+  fex69xxVLAN_FED6944_FES6941_FES_6942Index        Unsigned32,
+  fex69xxVlan1_6_Ports             INTEGER,
+  fex69xxVlan2_6_Ports             INTEGER,
+  fex69xxVlan3_6_Ports             INTEGER
+}
+
+fex69xxVLAN_FED6944_FES6941_FES_6942Index   OBJECT-TYPE
+  SYNTAX      Unsigned32
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "It represents the array group index."
+  ::= { fex69xxVLAN_FED6944_FES6941_FES_6942Entry 1 }
+
+fex69xxVlan1_6_Ports    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    no                      (0),
+    yes                     (1)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { yes }
+  ::= { fex69xxVLAN_FED6944_FES6941_FES_6942Entry 2 }
+
+fex69xxVlan2_6_Ports    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    no                      (0),
+    yes                     (1)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { no }
+  ::= { fex69xxVLAN_FED6944_FES6941_FES_6942Entry 3 }
+
+fex69xxVlan3_6_Ports    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    no                      (0),
+    yes                     (1)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { no }
+  ::= { fex69xxVLAN_FED6944_FES6941_FES_6942Entry 4 }
+
+--
+--  Table of Setup_FET6945_FET6946_FED6943 parameters
+--
+fex69xxSetup_FET6945_FET6946_FED6943ArrGrp
+  OBJECT IDENTIFIER ::= { fex69xxCardObjects 12 }
+
+fex69xxNumberOfElementsInfex69xxSetup_FET6945_FET6946_FED6943ArrGrp OBJECT-TYPE
+  SYNTAX      Integer32
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "The total number of elements in fex69xxSetup_FET6945_FET6946_FED6943ArrGrp."
+  ::= { fex69xxSetup_FET6945_FET6946_FED6943ArrGrp 1 }
+
+fex69xxSetup_FET6945_FET6946_FED6943Table     OBJECT-TYPE
+  SYNTAX      SEQUENCE OF Fex69xxSetup_FET6945_FET6946_FED6943Entry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "A table containing product info for all FEX69XX cards at this node.
+    This table is the expansion of the table 'openGearCardTable' in the
+    OPEN-GEAR-CARD-MIB. For each FEX69XX card in the 'openGearCardTable',
+    there is a corresponding entry in this table, having the same indices -
+    'openGearFrameIndex' and 'openGearCardIndex'."
+  ::= { fex69xxSetup_FET6945_FET6946_FED6943ArrGrp 2 }
+
+fex69xxSetup_FET6945_FET6946_FED6943Entry     OBJECT-TYPE
+  SYNTAX      Fex69xxSetup_FET6945_FET6946_FED6943Entry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "A conceptual row within the 'fex69xxSetup_FET6945_FET6946_FED6943Table'."
+  INDEX    { openGearFrameIndex, openGearCardIndex,  fex69xxSetup_FET6945_FET6946_FED6943Index}
+  ::= { fex69xxSetup_FET6945_FET6946_FED6943Table 1 }
+
+Fex69xxSetup_FET6945_FET6946_FED6943Entry ::= SEQUENCE {
+  fex69xxSetup_FET6945_FET6946_FED6943Index        Unsigned32,
+  fex69xxTrunk1_7_Ports            INTEGER,
+  fex69xxTrunk2_7_Ports            INTEGER,
+  fex69xxPort_enables_6_Ports      INTEGER
+}
+
+fex69xxSetup_FET6945_FET6946_FED6943Index   OBJECT-TYPE
+  SYNTAX      Unsigned32
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "It represents the array group index."
+  ::= { fex69xxSetup_FET6945_FET6946_FED6943Entry 1 }
+
+fex69xxTrunk1_7_Ports    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    no                      (0),
+    yes                     (1)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { no }
+  ::= { fex69xxSetup_FET6945_FET6946_FED6943Entry 2 }
+
+fex69xxTrunk2_7_Ports    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    no                      (0),
+    yes                     (1)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { no }
+  ::= { fex69xxSetup_FET6945_FET6946_FED6943Entry 3 }
+
+fex69xxPort_enables_6_Ports    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    no                      (0),
+    yes                     (1)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { yes }
+  ::= { fex69xxSetup_FET6945_FET6946_FED6943Entry 4 }
+
+--
+--  Table of VLAN_FET6945_FET6946_FED6943 parameters
+--
+fex69xxVLAN_FET6945_FET6946_FED6943ArrGrp
+  OBJECT IDENTIFIER ::= { fex69xxCardObjects 13 }
+
+fex69xxNumberOfElementsInfex69xxVLAN_FET6945_FET6946_FED6943ArrGrp OBJECT-TYPE
+  SYNTAX      Integer32
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "The total number of elements in fex69xxVLAN_FET6945_FET6946_FED6943ArrGrp."
+  ::= { fex69xxVLAN_FET6945_FET6946_FED6943ArrGrp 1 }
+
+fex69xxVLAN_FET6945_FET6946_FED6943Table     OBJECT-TYPE
+  SYNTAX      SEQUENCE OF Fex69xxVLAN_FET6945_FET6946_FED6943Entry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "A table containing product info for all FEX69XX cards at this node.
+    This table is the expansion of the table 'openGearCardTable' in the
+    OPEN-GEAR-CARD-MIB. For each FEX69XX card in the 'openGearCardTable',
+    there is a corresponding entry in this table, having the same indices -
+    'openGearFrameIndex' and 'openGearCardIndex'."
+  ::= { fex69xxVLAN_FET6945_FET6946_FED6943ArrGrp 2 }
+
+fex69xxVLAN_FET6945_FET6946_FED6943Entry     OBJECT-TYPE
+  SYNTAX      Fex69xxVLAN_FET6945_FET6946_FED6943Entry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "A conceptual row within the 'fex69xxVLAN_FET6945_FET6946_FED6943Table'."
+  INDEX    { openGearFrameIndex, openGearCardIndex,  fex69xxVLAN_FET6945_FET6946_FED6943Index}
+  ::= { fex69xxVLAN_FET6945_FET6946_FED6943Table 1 }
+
+Fex69xxVLAN_FET6945_FET6946_FED6943Entry ::= SEQUENCE {
+  fex69xxVLAN_FET6945_FET6946_FED6943Index        Unsigned32,
+  fex69xxVlan1_7_Ports             INTEGER,
+  fex69xxVlan2_7_Ports             INTEGER,
+  fex69xxVlan3_7_Ports             INTEGER
+}
+
+fex69xxVLAN_FET6945_FET6946_FED6943Index   OBJECT-TYPE
+  SYNTAX      Unsigned32
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "It represents the array group index."
+  ::= { fex69xxVLAN_FET6945_FET6946_FED6943Entry 1 }
+
+fex69xxVlan1_7_Ports    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    no                      (0),
+    yes                     (1)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { yes }
+  ::= { fex69xxVLAN_FET6945_FET6946_FED6943Entry 2 }
+
+fex69xxVlan2_7_Ports    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    no                      (0),
+    yes                     (1)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { no }
+  ::= { fex69xxVLAN_FET6945_FET6946_FED6943Entry 3 }
+
+fex69xxVlan3_7_Ports    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    no                      (0),
+    yes                     (1)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { no }
+  ::= { fex69xxVLAN_FET6945_FET6946_FED6943Entry 4 }
+
+--
+-- Conformance
+--
+fex69xxCardMibCompliances
+  OBJECT IDENTIFIER ::= { fex69xxCardConformance 1 }
+fex69xxCardMibGroups
+  OBJECT IDENTIFIER ::= { fex69xxCardConformance 2 }
+--
+-- Compliance Statement
+--
+fex69xxCardCompliances MODULE-COMPLIANCE
+  STATUS      current
+  DESCRIPTION
+    "The compliance statement for FEX69XX entities."
+  MODULE -- this module
+    MANDATORY-GROUPS { fex69xxCardInfoGroup,
+                       fex69xxCardNotifyGroup
+                     }
+
+  ::= { fex69xxCardMibCompliances 1 }
+
+fex69xxCardInfoGroup OBJECT-GROUP
+    OBJECTS { fex69xxNumberOfCards,
+              fex69xxBoardRev,
+              fex69xxSerialNumber,
+              fex69xxRearModule,
+              fex69xxHardwareStatus,
+              fex69xxCardVoltage,
+              fex69xxCardCurrent,
+              fex69xxConfigBank,
+              fex69xxLink1Alarm,
+              fex69xxLink2Alarm,
+              fex69xxLink3Alarm,
+              fex69xxLink4Alarm,
+              fex69xxLink5Alarm,
+              fex69xxLink6Alarm,
+              fex69xxLink8Alarm,
+              fex69xxLink7Alarm,
+              fex69xxSpd_rj45_1,
+              fex69xxSpd_rj45_2,
+              fex69xxSpd_rj45_3,
+              fex69xxSpd_rj45_4,
+              fex69xxSpd_fiber_1,
+              fex69xxSpd_fiber_2,
+              fex69xxSpd_fiber_3,
+              fex69xxSpd_internal,
+              fex69xxOpt1ModAlarm,
+              fex69xxSfp1_txpower,
+              fex69xxSfp1_wavelength,
+              fex69xxSfp1_rxpower,
+              fex69xxSfp1_temp,
+              fex69xxOpt2ModAlarm,
+              fex69xxSfp2_txpower,
+              fex69xxSfp2_wavelength,
+              fex69xxSfp2_rxpower,
+              fex69xxSfp2_temp,
+              fex69xxOpt3ModAlarm,
+              fex69xxSfp3_txpower,
+              fex69xxSfp3_wavelength,
+              fex69xxSfp3_rxpower,
+              fex69xxSfp3_temp,
+              fex69xxAlarmEnable_RJ45_1,
+              fex69xxAlarmEnable_RJ45_2,
+              fex69xxAlarmEnable_RJ45_3,
+              fex69xxAlarmEnable_RJ45_4,
+              fex69xxAlarmEnable_Fiber_1,
+              fex69xxAlarmEnable_Fiber_2,
+              fex69xxAlarmEnable_Fiber_3,
+              fex69xxAlarmEnable_Internal,
+              fex69xxAlarmEnable_Rear_Module,
+              fex69xxAlarmEnable_Fiber_1_Temp,
+              fex69xxAlarmEnable_Fiber_1_Power,
+              fex69xxTx_hi_alarm,
+              fex69xxTx_low_alarm,
+              fex69xxRx_hi_alarm,
+              fex69xxRx_low_alarm,
+              fex69xxAlarmEnable_Fiber_2_Temp,
+              fex69xxAlarmEnable_Fiber_2_Power,
+              fex69xxTx_hi_alarm2,
+              fex69xxTx_low_alarm2,
+              fex69xxRx_hi_alarm2,
+              fex69xxRx_low_alarm2,
+              fex69xxAlarmEnable_Fiber_3_Temp,
+              fex69xxAlarmEnable_Fiber_3_Power,
+              fex69xxTx_hi_alarm3,
+              fex69xxTx_low_alarm3,
+              fex69xxRx_hi_alarm3,
+              fex69xxRx_low_alarm3,
+              fex69xxEnableTrunking,
+              fex69xxFactoryDef,
+              fex69xxRj45_1_rxpackets_,
+              fex69xxRj45_1_rxerrors_,
+              fex69xxRj45_1_rxdropped_,
+              fex69xxRj45_1_txpackets_,
+              fex69xxRj45_1_txdropped_,
+              fex69xxRj45_1_txcollisions_,
+              fex69xxRj45_2_rxpackets_,
+              fex69xxRj45_2_rxerrors_,
+              fex69xxRj45_2_rxdropped_,
+              fex69xxRj45_2_txpackets_,
+              fex69xxRj45_2_txdropped_,
+              fex69xxRj45_2_txcollisions_,
+              fex69xxRj45_3_rxpackets_,
+              fex69xxRj45_3_rxerrors_,
+              fex69xxRj45_3_rxdropped_,
+              fex69xxRj45_3_txpackets_,
+              fex69xxRj45_3_txdropped_,
+              fex69xxRj45_3_txcollisions_,
+              fex69xxRj45_4_rxpackets_,
+              fex69xxRj45_4_rxerrors_,
+              fex69xxRj45_4_rxdropped_,
+              fex69xxRj45_4_txpackets_,
+              fex69xxRj45_4_txdropped_,
+              fex69xxRj45_4_txcollisions_,
+              fex69xxFibre_1_rxpackets_,
+              fex69xxFibre_1_rxerrors_,
+              fex69xxFibre_1_rxdropped_,
+              fex69xxFibre_1_txpackets_,
+              fex69xxFibre_1_txdropped_,
+              fex69xxFibre_1_txcollisions_,
+              fex69xxFibre_2_rxpackets_,
+              fex69xxFibre_2_rxerrors_,
+              fex69xxFibre_2_rxdropped_,
+              fex69xxFibre_2_txpackets_,
+              fex69xxFibre_2_txdropped_,
+              fex69xxFibre_2_txcollisions_,
+              fex69xxInternal_rxpackets_,
+              fex69xxInternal_rxerrors_,
+              fex69xxInternal_rxdropped_,
+              fex69xxInternal_txpackets_,
+              fex69xxInternal_txdropped_,
+              fex69xxInternal_txcollisions_,
+              fex69xxStatP1Enable,
+              fex69xxTrunk1_5_Ports,
+              fex69xxTrunk2_5_Ports,
+              fex69xxPort_enables_4_Ports,
+              fex69xxVlan1_5_Ports,
+              fex69xxVlan2_5_Ports,
+              fex69xxVlan3_5_Ports,
+              fex69xxTrunk1_6_Ports,
+              fex69xxTrunk2_6_Ports,
+              fex69xxPort_enables_5_Ports,
+              fex69xxVlan1_6_Ports,
+              fex69xxVlan2_6_Ports,
+              fex69xxVlan3_6_Ports,
+              fex69xxTrunk1_7_Ports,
+              fex69xxTrunk2_7_Ports,
+              fex69xxPort_enables_6_Ports,
+              fex69xxVlan1_7_Ports,
+              fex69xxVlan2_7_Ports,
+              fex69xxVlan3_7_Ports
+            }
+    STATUS  current
+    DESCRIPTION
+      "A collection of objects providing basic instrumentation
+        and control of an FEX69XX card."
+    ::= { fex69xxCardMibGroups 1 }
+
+fex69xxCardNotifyGroup NOTIFICATION-GROUP
+  NOTIFICATIONS { fex69xxHardwareStatusEvent
+                }
+    STATUS  current
+    DESCRIPTION
+      "The notifications relating to the FEX69XX card."
+    ::= { fex69xxCardMibGroups 2 }
+
+END

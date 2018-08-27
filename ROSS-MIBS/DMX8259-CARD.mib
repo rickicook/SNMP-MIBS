@@ -1,0 +1,2487 @@
+DMX8259-CARD-MIB DEFINITIONS ::= BEGIN
+
+--
+-- Defines control and monitoring structures for the DMX8259 card.
+--
+
+IMPORTS
+  openGearFrameIndex
+    FROM OPEN-GEAR-FRAME-MIB
+
+  openGearCardIndex
+    FROM OPEN-GEAR-CARD-MIB
+
+  openGearObjects
+    FROM OPEN-GEAR-MIB
+
+  OBJECT-TYPE, NOTIFICATION-TYPE, MODULE-IDENTITY, Integer32
+    FROM SNMPv2-SMI
+
+  OBJECT-GROUP, NOTIFICATION-GROUP, MODULE-COMPLIANCE
+    FROM SNMPv2-CONF
+
+  DisplayString
+    FROM SNMPv2-TC;
+
+dmx8259CardMib MODULE-IDENTITY
+  LAST-UPDATED "200911241200Z"
+  ORGANIZATION "www.rossvideo.org"
+  CONTACT-INFO
+    "postal:   Ross Video
+               8 John St. P.O. Box 220
+               Iroquois ON K0E 1K0
+
+      email:   support@rossvideo.com"
+
+  DESCRIPTION
+    "Defines control and monitoring structures for the DMX8259 card.
+     (Add more) ..."
+
+  REVISION     "200911241200Z"
+  DESCRIPTION
+    "... "
+  ::= { openGearObjects 19 }
+
+--
+--  Top level components in the DMX8259 MIB
+--
+dmx8259CardNotifications
+  OBJECT IDENTIFIER ::= { dmx8259CardMib 0 }
+
+dmx8259CardObjects
+  OBJECT IDENTIFIER ::= { dmx8259CardMib 1 }
+
+dmx8259CardConformance
+  OBJECT IDENTIFIER ::= { dmx8259CardMib 2 }
+
+--
+--  Notifications relating to the DMX8259 card
+--
+dmx8259SignalAlarmEvent   NOTIFICATION-TYPE
+  OBJECTS { dmx8259SignalAlarm }
+  STATUS current
+  DESCRIPTION
+    "... "
+  ::= { dmx8259CardNotifications 1 }
+
+dmx8259AudioAlarmEvent   NOTIFICATION-TYPE
+  OBJECTS { dmx8259AudioAlarm }
+  STATUS current
+  DESCRIPTION
+    "... "
+  ::= { dmx8259CardNotifications 2 }
+
+dmx8259ReferenceAlarmEvent   NOTIFICATION-TYPE
+  OBJECTS { dmx8259ReferenceAlarm }
+  STATUS current
+  DESCRIPTION
+    "... "
+  ::= { dmx8259CardNotifications 3 }
+
+dmx8259HwAlarmEvent   NOTIFICATION-TYPE
+  OBJECTS { dmx8259HwAlarm }
+  STATUS current
+  DESCRIPTION
+    "... "
+  ::= { dmx8259CardNotifications 4 }
+
+--
+--  DMX8259 Card information
+--
+--
+--  All the DMX8259 cards in the Open Gear frame
+--
+dmx8259NumberOfCards    OBJECT-TYPE
+  SYNTAX      Integer32
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "The total number of DMX8259 cards in the open gear frame.
+"  ::= { dmx8259CardObjects 1 }
+
+--
+--  Table of Product parameters
+--
+dmx8259ProductTable     OBJECT-TYPE
+  SYNTAX      SEQUENCE OF Dmx8259ProductEntry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "A table containing product info for all DMX8259 cards at this node.
+    This table is the expansion of the table 'openGearCardTable' in the
+    OPEN-GEAR-CARD-MIB. For each DMX8259 card in the 'openGearCardTable',
+    there is a corresponding entry in this table, having the same indices -
+    'openGearFrameIndex' and 'openGearCardIndex'."
+  ::= { dmx8259CardObjects 2 }
+
+dmx8259ProductEntry     OBJECT-TYPE
+  SYNTAX      Dmx8259ProductEntry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "A conceptual row within the 'dmx8259ProductTable'."
+  INDEX    { openGearFrameIndex, openGearCardIndex }
+  ::= { dmx8259ProductTable 1 }
+
+Dmx8259ProductEntry ::= SEQUENCE {
+  dmx8259DmxProduct                DisplayString,
+  dmx8259BoardRev                  DisplayString,
+  dmx8259RearModule                DisplayString,
+  dmx8259SerialNumber              DisplayString,
+  dmx8259Firmware                  DisplayString,
+  dmx8259DaughterCard              INTEGER
+}
+
+dmx8259DmxProduct    OBJECT-TYPE
+  SYNTAX      DisplayString
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "... "
+  ::= { dmx8259ProductEntry 4 }
+
+dmx8259BoardRev    OBJECT-TYPE
+  SYNTAX      DisplayString
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "... "
+  ::= { dmx8259ProductEntry 5 }
+
+dmx8259RearModule    OBJECT-TYPE
+  SYNTAX      DisplayString
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "... "
+  ::= { dmx8259ProductEntry 6 }
+
+dmx8259SerialNumber    OBJECT-TYPE
+  SYNTAX      DisplayString
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "... "
+  ::= { dmx8259ProductEntry 7 }
+
+dmx8259Firmware    OBJECT-TYPE
+  SYNTAX      DisplayString
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "... "
+  ::= { dmx8259ProductEntry 8 }
+
+dmx8259DaughterCard    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    none                    (0),
+    analogInput             (1),
+    analogInput4Channel     (2),
+    analogOutput            (5),
+    analogOutput4Channel    (6),
+    balancedAESInput        (9),
+    balancedAESOutput       (11)
+  }
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "... "
+  ::= { dmx8259ProductEntry 9 }
+
+--
+--  Table of Hardware parameters
+--
+dmx8259HardwareTable     OBJECT-TYPE
+  SYNTAX      SEQUENCE OF Dmx8259HardwareEntry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "A table containing product info for all DMX8259 cards at this node.
+    This table is the expansion of the table 'openGearCardTable' in the
+    OPEN-GEAR-CARD-MIB. For each DMX8259 card in the 'openGearCardTable',
+    there is a corresponding entry in this table, having the same indices -
+    'openGearFrameIndex' and 'openGearCardIndex'."
+  ::= { dmx8259CardObjects 3 }
+
+dmx8259HardwareEntry     OBJECT-TYPE
+  SYNTAX      Dmx8259HardwareEntry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "A conceptual row within the 'dmx8259HardwareTable'."
+  INDEX    { openGearFrameIndex, openGearCardIndex }
+  ::= { dmx8259HardwareTable 1 }
+
+Dmx8259HardwareEntry ::= SEQUENCE {
+  dmx8259HwAlarm                   Integer32,
+  dmx8259CardVoltage               Integer32,
+  dmx8259CardCurrent               Integer32,
+  dmx8259SfpModuleTemp             Integer32,
+  dmx8259Headroom                  Integer32,
+  dmx8259Ram                       Integer32
+}
+
+dmx8259HwAlarm    OBJECT-TYPE
+  SYNTAX      Integer32
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "The status parameter is a bitfield where each bit indicates a
+    specific status. A value of zero means OK.
+    The status bits are defined as follows:
+      0x0001 - FPGA load invalid
+      0x0004 - Incomp I/O module
+      0x0002 - Current out of spec
+      0x0008 - Internal Error
+      0x0010 - Incompatible Daughter Card
+      0x0020 - SFP Temp Low
+      0x0040 - SFP Power Low
+      0x0080 - SFP Temp High
+      0x0100 - SFP Power High
+      0x0200 - SFP Tx Fault
+      0x0400 - SFP Not Detected
+    All other values are undefined."
+  ::= { dmx8259HardwareEntry 1 }
+
+dmx8259CardVoltage    OBJECT-TYPE
+  SYNTAX      Integer32
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "... "
+  ::= { dmx8259HardwareEntry 2 }
+
+dmx8259CardCurrent    OBJECT-TYPE
+  SYNTAX      Integer32
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "... "
+  ::= { dmx8259HardwareEntry 3 }
+
+dmx8259SfpModuleTemp    OBJECT-TYPE
+  SYNTAX      Integer32
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "... "
+  ::= { dmx8259HardwareEntry 4 }
+
+dmx8259Headroom    OBJECT-TYPE
+  SYNTAX      Integer32
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "... "
+  ::= { dmx8259HardwareEntry 5 }
+
+dmx8259Ram    OBJECT-TYPE
+  SYNTAX      Integer32
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "... "
+  ::= { dmx8259HardwareEntry 6 }
+
+--
+--  Table of Signal parameters
+--
+dmx8259SignalTable     OBJECT-TYPE
+  SYNTAX      SEQUENCE OF Dmx8259SignalEntry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "A table containing product info for all DMX8259 cards at this node.
+    This table is the expansion of the table 'openGearCardTable' in the
+    OPEN-GEAR-CARD-MIB. For each DMX8259 card in the 'openGearCardTable',
+    there is a corresponding entry in this table, having the same indices -
+    'openGearFrameIndex' and 'openGearCardIndex'."
+  ::= { dmx8259CardObjects 4 }
+
+dmx8259SignalEntry     OBJECT-TYPE
+  SYNTAX      Dmx8259SignalEntry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "A conceptual row within the 'dmx8259SignalTable'."
+  INDEX    { openGearFrameIndex, openGearCardIndex }
+  ::= { dmx8259SignalTable 1 }
+
+Dmx8259SignalEntry ::= SEQUENCE {
+  dmx8259SignalAlarm               Integer32,
+  dmx8259AudioAlarm                Integer32,
+  dmx8259ReferenceAlarm            Integer32,
+  dmx8259Input                     INTEGER,
+  dmx8259Reference                 INTEGER,
+  dmx8259Output                    INTEGER,
+  dmx8259SfpCh1Status              INTEGER,
+  dmx8259SfpCh1RxPower             DisplayString
+}
+
+dmx8259SignalAlarm    OBJECT-TYPE
+  SYNTAX      Integer32
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "The status parameter is a bitfield where each bit indicates a
+    specific status. A value of zero means OK.
+    The status bits are defined as follows:
+      0x0001 - No Input
+      0x0002 - Invalid Format
+      0x0004 - Incompatible
+      0x0020 - Non-Sync Video
+      0x0008 - Group Not Present
+      0x0010 - Group Channel Silent
+    All other values are undefined."
+  ::= { dmx8259SignalEntry 2 }
+
+dmx8259AudioAlarm    OBJECT-TYPE
+  SYNTAX      Integer32
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "The status parameter is a bitfield where each bit indicates a
+    specific status. A value of zero means OK.
+    The status bits are defined as follows:
+      0x0002 - Source Missing
+      0x0004 - Source Async
+      0x0080 - Grp4 reduced to 20bit
+    All other values are undefined."
+  ::= { dmx8259SignalEntry 3 }
+
+dmx8259ReferenceAlarm    OBJECT-TYPE
+  SYNTAX      Integer32
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "The status parameter is a bitfield where each bit indicates a
+    specific status. A value of zero means OK.
+    The status bits are defined as follows:
+      0x0001 - No Reference - Video
+      0x0080 - No Reference - Free Run
+      0x0002 - Invalid Format - Video
+      0x0100 - Invalid Format - Free Run
+      0x0040 - Override - Video
+    All other values are undefined."
+  ::= { dmx8259SignalEntry 4 }
+
+dmx8259Input    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    none                    (0),
+    matchInput              (1),
+    unknown                 (2),
+    incompatible            (3),
+    v480i59dot94            (4),
+    v720p59dot94            (5),
+    v720p60                 (6),
+    v1080i59dot94           (7),
+    v1080i60                (8),
+    v1080p59dot94           (9),
+    v1080p60                (10),
+    v576i50                 (11),
+    v720p50                 (12),
+    v1080i50                (13),
+    v1080p50                (14),
+    v480p59dot94            (15),
+    v576p50                 (16),
+    v1080p30                (17),
+    v1080p29dot97           (18),
+    v1080p25                (19),
+    v1080p24                (20),
+    v1080p23dot98           (21),
+    v1080pSF24              (22),
+    v1080pSF23dot98         (23)
+  }
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "... "
+  ::= { dmx8259SignalEntry 6 }
+
+dmx8259Reference    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    none                    (0),
+    matchInput              (1),
+    unknown                 (2),
+    incompatible            (3),
+    v480i59dot94            (4),
+    v720p59dot94            (5),
+    v720p60                 (6),
+    v1080i59dot94           (7),
+    v1080i60                (8),
+    v1080p59dot94           (9),
+    v1080p60                (10),
+    v576i50                 (11),
+    v720p50                 (12),
+    v1080i50                (13),
+    v1080p50                (14),
+    v480p59dot94            (15),
+    v576p50                 (16),
+    v1080p30                (17),
+    v1080p29dot97           (18),
+    v1080p25                (19),
+    v1080p24                (20),
+    v1080p23dot98           (21),
+    v1080pSF24              (22),
+    v1080pSF23dot98         (23)
+  }
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "... "
+  ::= { dmx8259SignalEntry 7 }
+
+dmx8259Output    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    none                    (0),
+    matchInput              (1),
+    unknown                 (2),
+    incompatible            (3),
+    v480i59dot94            (4),
+    v720p59dot94            (5),
+    v720p60                 (6),
+    v1080i59dot94           (7),
+    v1080i60                (8),
+    v1080p59dot94           (9),
+    v1080p60                (10),
+    v576i50                 (11),
+    v720p50                 (12),
+    v1080i50                (13),
+    v1080p50                (14),
+    v480p59dot94            (15),
+    v576p50                 (16),
+    v1080p30                (17),
+    v1080p29dot97           (18),
+    v1080p25                (19),
+    v1080p24                (20),
+    v1080p23dot98           (21),
+    v1080pSF24              (22),
+    v1080pSF23dot98         (23)
+  }
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "... "
+  ::= { dmx8259SignalEntry 8 }
+
+dmx8259SfpCh1Status    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    oK                      (0),
+    tempLow                 (1),
+    rxPowerLow              (2),
+    txPowerLow              (3),
+    tempHigh                (4),
+    noSignal                (5),
+    txPowerHigh             (6),
+    rxPowerHigh             (7),
+    txFault                 (8),
+    txDisabled              (9),
+    notDetected             (10)
+  }
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "... "
+  ::= { dmx8259SignalEntry 9 }
+
+dmx8259SfpCh1RxPower    OBJECT-TYPE
+  SYNTAX      DisplayString
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "... "
+  ::= { dmx8259SignalEntry 10 }
+
+--
+--  Table of Setup parameters
+--
+dmx8259SetupTable     OBJECT-TYPE
+  SYNTAX      SEQUENCE OF Dmx8259SetupEntry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "A table containing product info for all DMX8259 cards at this node.
+    This table is the expansion of the table 'openGearCardTable' in the
+    OPEN-GEAR-CARD-MIB. For each DMX8259 card in the 'openGearCardTable',
+    there is a corresponding entry in this table, having the same indices -
+    'openGearFrameIndex' and 'openGearCardIndex'."
+  ::= { dmx8259CardObjects 5 }
+
+dmx8259SetupEntry     OBJECT-TYPE
+  SYNTAX      Dmx8259SetupEntry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "A conceptual row within the 'dmx8259SetupTable'."
+  INDEX    { openGearFrameIndex, openGearCardIndex }
+  ::= { dmx8259SetupTable 1 }
+
+Dmx8259SetupEntry ::= SEQUENCE {
+  dmx8259RefSource                 INTEGER,
+  dmx8259MinimumDelay              INTEGER,
+  dmx8259LoiColour                 INTEGER,
+  dmx8259LoiY                      Integer32,
+  dmx8259LoiCr                     Integer32,
+  dmx8259LoiCb                     Integer32,
+  dmx8259Pattern                   INTEGER,
+  dmx8259SdAudioBitMode            INTEGER,
+  dmx8259SilenceThreshold          Integer32,
+  dmx8259SilenceTimeout            Integer32,
+  dmx8259Access                    INTEGER,
+  dmx8259AudioResetAll             INTEGER,
+  dmx8259ResetAll                  INTEGER,
+  dmx8259AnalogOutputResetAll      INTEGER,
+  dmx8259AesOutputResetAll         INTEGER,
+  dmx8259AesOutputResetAllPg2      INTEGER,
+  dmx8259GroupResetAll             INTEGER,
+  dmx8259SdiInSelection            INTEGER
+}
+
+dmx8259RefSource    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    frame1                  (0),
+    frame2                  (1),
+    video                   (3)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { frame1 }
+  ::= { dmx8259SetupEntry 1 }
+
+dmx8259MinimumDelay    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    no                      (0),
+    yes                     (1)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { yes }
+  ::= { dmx8259SetupEntry 2 }
+
+dmx8259LoiColour    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    black                   (0),
+    blue                    (1),
+    custom                  (2)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { custom }
+  ::= { dmx8259SetupEntry 3 }
+
+dmx8259LoiY    OBJECT-TYPE
+  SYNTAX      Integer32 (64..940)
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { 256 }
+  ::= { dmx8259SetupEntry 17 }
+
+dmx8259LoiCr    OBJECT-TYPE
+  SYNTAX      Integer32 (64..848)
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { 512 }
+  ::= { dmx8259SetupEntry 18 }
+
+dmx8259LoiCb    OBJECT-TYPE
+  SYNTAX      Integer32 (64..848)
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { 512 }
+  ::= { dmx8259SetupEntry 19 }
+
+dmx8259Pattern    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    none                    (0),
+    v100perColourBars       (1),
+    frequencySweep          (2),
+    black                   (3),
+    blue                    (4),
+    matrixPathological      (5),
+    lumaRamp                (6),
+    yCRamp                  (7),
+    v75perSMPTEBars         (8)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { none }
+  ::= { dmx8259SetupEntry 4 }
+
+dmx8259SdAudioBitMode    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    v20Bit                  (4),
+    v24Bit                  (8),
+    auto                    (9)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { v20Bit }
+  ::= { dmx8259SetupEntry 5 }
+
+dmx8259SilenceThreshold    OBJECT-TYPE
+  SYNTAX      Integer32 (-96..0)
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { -72 }
+  ::= { dmx8259SetupEntry 6 }
+
+dmx8259SilenceTimeout    OBJECT-TYPE
+  SYNTAX      Integer32 (1..60)
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { 5 }
+  ::= { dmx8259SetupEntry 7 }
+
+dmx8259Access    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    unlocked                (0),
+    locked                  (2)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { unlocked }
+  ::= { dmx8259SetupEntry 8 }
+
+dmx8259AudioResetAll    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    reset                   (1)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { reset }
+  ::= { dmx8259SetupEntry 9 }
+
+dmx8259ResetAll    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    reset                   (1)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { reset }
+  ::= { dmx8259SetupEntry 10 }
+
+dmx8259AnalogOutputResetAll    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    reset                   (1)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { reset }
+  ::= { dmx8259SetupEntry 11 }
+
+dmx8259AesOutputResetAll    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    reset                   (1)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { reset }
+  ::= { dmx8259SetupEntry 12 }
+
+dmx8259AesOutputResetAllPg2    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    reset                   (1)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { reset }
+  ::= { dmx8259SetupEntry 13 }
+
+dmx8259GroupResetAll    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    reset                   (1)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { reset }
+  ::= { dmx8259SetupEntry 14 }
+
+dmx8259SdiInSelection    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    copper                  (0),
+    optical                 (1)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { optical }
+  ::= { dmx8259SetupEntry 15 }
+
+--
+--  Table of InputStatus parameters
+--
+dmx8259InputStatusTable     OBJECT-TYPE
+  SYNTAX      SEQUENCE OF Dmx8259InputStatusEntry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "A table containing product info for all DMX8259 cards at this node.
+    This table is the expansion of the table 'openGearCardTable' in the
+    OPEN-GEAR-CARD-MIB. For each DMX8259 card in the 'openGearCardTable',
+    there is a corresponding entry in this table, having the same indices -
+    'openGearFrameIndex' and 'openGearCardIndex'."
+  ::= { dmx8259CardObjects 6 }
+
+dmx8259InputStatusEntry     OBJECT-TYPE
+  SYNTAX      Dmx8259InputStatusEntry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "A conceptual row within the 'dmx8259InputStatusTable'."
+  INDEX    { openGearFrameIndex, openGearCardIndex }
+  ::= { dmx8259InputStatusTable 1 }
+
+Dmx8259InputStatusEntry ::= SEQUENCE {
+  dmx8259CrcError                  DisplayString,
+  dmx8259CrcErrReset               INTEGER
+}
+
+dmx8259CrcError    OBJECT-TYPE
+  SYNTAX      DisplayString
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "... "
+  ::= { dmx8259InputStatusEntry 1 }
+
+dmx8259CrcErrReset    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    reset                   (1)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { reset }
+  ::= { dmx8259InputStatusEntry 2 }
+
+--
+--  Table of AESOutputs1To4 parameters
+--
+dmx8259AESOutputs1To4ArrGrp
+  OBJECT IDENTIFIER ::= { dmx8259CardObjects 7 }
+
+dmx8259NumberOfElementsIndmx8259AESOutputs1To4ArrGrp OBJECT-TYPE
+  SYNTAX      Integer32
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "The total number of elements in dmx8259AESOutputs1To4ArrGrp."
+  ::= { dmx8259AESOutputs1To4ArrGrp 1 }
+
+dmx8259AESOutputs1To4Table     OBJECT-TYPE
+  SYNTAX      SEQUENCE OF Dmx8259AESOutputs1To4Entry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "A table containing product info for all DMX8259 cards at this node.
+    This table is the expansion of the table 'openGearCardTable' in the
+    OPEN-GEAR-CARD-MIB. For each DMX8259 card in the 'openGearCardTable',
+    there is a corresponding entry in this table, having the same indices -
+    'openGearFrameIndex' and 'openGearCardIndex'."
+  ::= { dmx8259AESOutputs1To4ArrGrp 2 }
+
+dmx8259AESOutputs1To4Entry     OBJECT-TYPE
+  SYNTAX      Dmx8259AESOutputs1To4Entry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "A conceptual row within the 'dmx8259AESOutputs1To4Table'."
+  INDEX    { openGearFrameIndex, openGearCardIndex,  dmx8259AESOutputs1To4Index}
+  ::= { dmx8259AESOutputs1To4Table 1 }
+
+Dmx8259AESOutputs1To4Entry ::= SEQUENCE {
+  dmx8259AESOutputs1To4Index        Unsigned32,
+  dmx8259AesCh1Source              INTEGER,
+  dmx8259AesCh2Source              INTEGER,
+  dmx8259AesCh1Delay               Integer32,
+  dmx8259AesCh2Delay               Integer32,
+  dmx8259AesDelayLock              INTEGER,
+  dmx8259AesCh1Gain                Integer32,
+  dmx8259AesCh2Gain                Integer32,
+  dmx8259AesGainLock               INTEGER,
+  dmx8259AesCh1Invert              INTEGER,
+  dmx8259AesCh2Invert              INTEGER,
+  dmx8259AesOutputReset            INTEGER
+}
+
+dmx8259AESOutputs1To4Index   OBJECT-TYPE
+  SYNTAX      Unsigned32
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "It represents the array group index."
+  ::= { dmx8259AESOutputs1To4Entry 1 }
+
+dmx8259AesCh1Source    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    mute                    (0),
+    group1Ch1               (1),
+    group1Ch2               (2),
+    group1Ch3               (3),
+    group1Ch4               (4),
+    group2Ch1               (5),
+    group2Ch2               (6),
+    group2Ch3               (7),
+    group2Ch4               (8),
+    group3Ch1               (9),
+    group3Ch2               (10),
+    group3Ch3               (11),
+    group3Ch4               (12),
+    group4Ch1               (13),
+    group4Ch2               (14),
+    group4Ch3               (15),
+    group4Ch4               (16),
+    v500HzTone              (33),
+    v1kHzTone               (34),
+    v2kHzTone               (35),
+    v4kHzTone               (36)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { mute }
+  ::= { dmx8259AESOutputs1To4Entry 2 }
+
+dmx8259AesCh2Source    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    mute                    (0),
+    group1Ch1               (1),
+    group1Ch2               (2),
+    group1Ch3               (3),
+    group1Ch4               (4),
+    group2Ch1               (5),
+    group2Ch2               (6),
+    group2Ch3               (7),
+    group2Ch4               (8),
+    group3Ch1               (9),
+    group3Ch2               (10),
+    group3Ch3               (11),
+    group3Ch4               (12),
+    group4Ch1               (13),
+    group4Ch2               (14),
+    group4Ch3               (15),
+    group4Ch4               (16),
+    v500HzTone              (33),
+    v1kHzTone               (34),
+    v2kHzTone               (35),
+    v4kHzTone               (36)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { mute }
+  ::= { dmx8259AESOutputs1To4Entry 3 }
+
+dmx8259AesCh1Delay    OBJECT-TYPE
+  SYNTAX      Integer32 (0..1000)
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { 0 }
+  ::= { dmx8259AESOutputs1To4Entry 4 }
+
+dmx8259AesCh2Delay    OBJECT-TYPE
+  SYNTAX      Integer32 (0..1000)
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { 0 }
+  ::= { dmx8259AESOutputs1To4Entry 5 }
+
+dmx8259AesDelayLock    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    no                      (0),
+    yes                     (1)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { yes }
+  ::= { dmx8259AESOutputs1To4Entry 6 }
+
+dmx8259AesCh1Gain    OBJECT-TYPE
+  SYNTAX      Integer32 (-20..20)
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { 0 }
+  ::= { dmx8259AESOutputs1To4Entry 7 }
+
+dmx8259AesCh2Gain    OBJECT-TYPE
+  SYNTAX      Integer32 (-20..20)
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { 0 }
+  ::= { dmx8259AESOutputs1To4Entry 8 }
+
+dmx8259AesGainLock    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    no                      (0),
+    yes                     (1)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { yes }
+  ::= { dmx8259AESOutputs1To4Entry 9 }
+
+dmx8259AesCh1Invert    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    no                      (0),
+    yes                     (1)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { yes }
+  ::= { dmx8259AESOutputs1To4Entry 10 }
+
+dmx8259AesCh2Invert    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    no                      (0),
+    yes                     (1)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { no }
+  ::= { dmx8259AESOutputs1To4Entry 11 }
+
+dmx8259AesOutputReset    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    reset                   (1)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { reset }
+  ::= { dmx8259AESOutputs1To4Entry 12 }
+
+--
+--  Table of AESOutputs5To8 parameters
+--
+dmx8259AESOutputs5To8ArrGrp
+  OBJECT IDENTIFIER ::= { dmx8259CardObjects 8 }
+
+dmx8259NumberOfElementsIndmx8259AESOutputs5To8ArrGrp OBJECT-TYPE
+  SYNTAX      Integer32
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "The total number of elements in dmx8259AESOutputs5To8ArrGrp."
+  ::= { dmx8259AESOutputs5To8ArrGrp 1 }
+
+dmx8259AESOutputs5To8Table     OBJECT-TYPE
+  SYNTAX      SEQUENCE OF Dmx8259AESOutputs5To8Entry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "A table containing product info for all DMX8259 cards at this node.
+    This table is the expansion of the table 'openGearCardTable' in the
+    OPEN-GEAR-CARD-MIB. For each DMX8259 card in the 'openGearCardTable',
+    there is a corresponding entry in this table, having the same indices -
+    'openGearFrameIndex' and 'openGearCardIndex'."
+  ::= { dmx8259AESOutputs5To8ArrGrp 2 }
+
+dmx8259AESOutputs5To8Entry     OBJECT-TYPE
+  SYNTAX      Dmx8259AESOutputs5To8Entry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "A conceptual row within the 'dmx8259AESOutputs5To8Table'."
+  INDEX    { openGearFrameIndex, openGearCardIndex,  dmx8259AESOutputs5To8Index}
+  ::= { dmx8259AESOutputs5To8Table 1 }
+
+Dmx8259AESOutputs5To8Entry ::= SEQUENCE {
+  dmx8259AESOutputs5To8Index        Unsigned32,
+  dmx8259AesCh1SourcePg2           INTEGER,
+  dmx8259AesCh2SourcePg2           INTEGER,
+  dmx8259AesCh1DelayPg2            Integer32,
+  dmx8259AesCh2DelayPg2            Integer32,
+  dmx8259AesDelayLockPg2           INTEGER,
+  dmx8259AesCh1GainPg2             Integer32,
+  dmx8259AesCh2GainPg2             Integer32,
+  dmx8259AesGainLockPg2            INTEGER,
+  dmx8259AesCh1InvertPg2           INTEGER,
+  dmx8259AesCh2InvertPg2           INTEGER,
+  dmx8259AesOutputResetPg2         INTEGER
+}
+
+dmx8259AESOutputs5To8Index   OBJECT-TYPE
+  SYNTAX      Unsigned32
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "It represents the array group index."
+  ::= { dmx8259AESOutputs5To8Entry 1 }
+
+dmx8259AesCh1SourcePg2    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    mute                    (0),
+    group1Ch1               (1),
+    group1Ch2               (2),
+    group1Ch3               (3),
+    group1Ch4               (4),
+    group2Ch1               (5),
+    group2Ch2               (6),
+    group2Ch3               (7),
+    group2Ch4               (8),
+    group3Ch1               (9),
+    group3Ch2               (10),
+    group3Ch3               (11),
+    group3Ch4               (12),
+    group4Ch1               (13),
+    group4Ch2               (14),
+    group4Ch3               (15),
+    group4Ch4               (16),
+    v500HzTone              (33),
+    v1kHzTone               (34),
+    v2kHzTone               (35),
+    v4kHzTone               (36)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { mute }
+  ::= { dmx8259AESOutputs5To8Entry 2 }
+
+dmx8259AesCh2SourcePg2    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    mute                    (0),
+    group1Ch1               (1),
+    group1Ch2               (2),
+    group1Ch3               (3),
+    group1Ch4               (4),
+    group2Ch1               (5),
+    group2Ch2               (6),
+    group2Ch3               (7),
+    group2Ch4               (8),
+    group3Ch1               (9),
+    group3Ch2               (10),
+    group3Ch3               (11),
+    group3Ch4               (12),
+    group4Ch1               (13),
+    group4Ch2               (14),
+    group4Ch3               (15),
+    group4Ch4               (16),
+    v500HzTone              (33),
+    v1kHzTone               (34),
+    v2kHzTone               (35),
+    v4kHzTone               (36)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { mute }
+  ::= { dmx8259AESOutputs5To8Entry 3 }
+
+dmx8259AesCh1DelayPg2    OBJECT-TYPE
+  SYNTAX      Integer32 (0..1000)
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { 0 }
+  ::= { dmx8259AESOutputs5To8Entry 4 }
+
+dmx8259AesCh2DelayPg2    OBJECT-TYPE
+  SYNTAX      Integer32 (0..1000)
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { 0 }
+  ::= { dmx8259AESOutputs5To8Entry 5 }
+
+dmx8259AesDelayLockPg2    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    no                      (0),
+    yes                     (1)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { yes }
+  ::= { dmx8259AESOutputs5To8Entry 6 }
+
+dmx8259AesCh1GainPg2    OBJECT-TYPE
+  SYNTAX      Integer32 (-20..20)
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { 0 }
+  ::= { dmx8259AESOutputs5To8Entry 7 }
+
+dmx8259AesCh2GainPg2    OBJECT-TYPE
+  SYNTAX      Integer32 (-20..20)
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { 0 }
+  ::= { dmx8259AESOutputs5To8Entry 8 }
+
+dmx8259AesGainLockPg2    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    no                      (0),
+    yes                     (1)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { no }
+  ::= { dmx8259AESOutputs5To8Entry 9 }
+
+dmx8259AesCh1InvertPg2    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    no                      (0),
+    yes                     (1)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { no }
+  ::= { dmx8259AESOutputs5To8Entry 10 }
+
+dmx8259AesCh2InvertPg2    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    no                      (0),
+    yes                     (1)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { no }
+  ::= { dmx8259AESOutputs5To8Entry 11 }
+
+dmx8259AesOutputResetPg2    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    reset                   (1)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { reset }
+  ::= { dmx8259AESOutputs5To8Entry 12 }
+
+--
+--  Table of EmbeddedOutputs parameters
+--
+dmx8259EmbeddedOutputsArrGrp
+  OBJECT IDENTIFIER ::= { dmx8259CardObjects 10 }
+
+dmx8259NumberOfElementsIndmx8259EmbeddedOutputsArrGrp OBJECT-TYPE
+  SYNTAX      Integer32
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "The total number of elements in dmx8259EmbeddedOutputsArrGrp."
+  ::= { dmx8259EmbeddedOutputsArrGrp 1 }
+
+dmx8259EmbeddedOutputsTable     OBJECT-TYPE
+  SYNTAX      SEQUENCE OF Dmx8259EmbeddedOutputsEntry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "A table containing product info for all DMX8259 cards at this node.
+    This table is the expansion of the table 'openGearCardTable' in the
+    OPEN-GEAR-CARD-MIB. For each DMX8259 card in the 'openGearCardTable',
+    there is a corresponding entry in this table, having the same indices -
+    'openGearFrameIndex' and 'openGearCardIndex'."
+  ::= { dmx8259EmbeddedOutputsArrGrp 2 }
+
+dmx8259EmbeddedOutputsEntry     OBJECT-TYPE
+  SYNTAX      Dmx8259EmbeddedOutputsEntry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "A conceptual row within the 'dmx8259EmbeddedOutputsTable'."
+  INDEX    { openGearFrameIndex, openGearCardIndex,  dmx8259EmbeddedOutputsIndex}
+  ::= { dmx8259EmbeddedOutputsTable 1 }
+
+Dmx8259EmbeddedOutputsEntry ::= SEQUENCE {
+  dmx8259EmbeddedOutputsIndex        Unsigned32,
+  dmx8259GroupEnable               INTEGER,
+  dmx8259GroupChan1Source          INTEGER,
+  dmx8259GroupChan2Source          INTEGER,
+  dmx8259GroupChan3Source          INTEGER,
+  dmx8259GroupChan4Source          INTEGER,
+  dmx8259GroupReset                INTEGER
+}
+
+dmx8259EmbeddedOutputsIndex   OBJECT-TYPE
+  SYNTAX      Unsigned32
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "It represents the array group index."
+  ::= { dmx8259EmbeddedOutputsEntry 1 }
+
+dmx8259GroupEnable    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    no                      (0),
+    yes                     (1)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { yes }
+  ::= { dmx8259EmbeddedOutputsEntry 2 }
+
+dmx8259GroupChan1Source    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    mute                    (0),
+    group1Ch1               (1),
+    group1Ch2               (2),
+    group1Ch3               (3),
+    group1Ch4               (4),
+    group2Ch1               (5),
+    group2Ch2               (6),
+    group2Ch3               (7),
+    group2Ch4               (8),
+    group3Ch1               (9),
+    group3Ch2               (10),
+    group3Ch3               (11),
+    group3Ch4               (12),
+    group4Ch1               (13),
+    group4Ch2               (14),
+    group4Ch3               (15),
+    group4Ch4               (16),
+    v500HzTone              (33),
+    v1kHzTone               (34),
+    v2kHzTone               (35),
+    v4kHzTone               (36)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { mute }
+  ::= { dmx8259EmbeddedOutputsEntry 3 }
+
+dmx8259GroupChan2Source    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    mute                    (0),
+    group1Ch1               (1),
+    group1Ch2               (2),
+    group1Ch3               (3),
+    group1Ch4               (4),
+    group2Ch1               (5),
+    group2Ch2               (6),
+    group2Ch3               (7),
+    group2Ch4               (8),
+    group3Ch1               (9),
+    group3Ch2               (10),
+    group3Ch3               (11),
+    group3Ch4               (12),
+    group4Ch1               (13),
+    group4Ch2               (14),
+    group4Ch3               (15),
+    group4Ch4               (16),
+    v500HzTone              (33),
+    v1kHzTone               (34),
+    v2kHzTone               (35),
+    v4kHzTone               (36)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { mute }
+  ::= { dmx8259EmbeddedOutputsEntry 4 }
+
+dmx8259GroupChan3Source    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    mute                    (0),
+    group1Ch1               (1),
+    group1Ch2               (2),
+    group1Ch3               (3),
+    group1Ch4               (4),
+    group2Ch1               (5),
+    group2Ch2               (6),
+    group2Ch3               (7),
+    group2Ch4               (8),
+    group3Ch1               (9),
+    group3Ch2               (10),
+    group3Ch3               (11),
+    group3Ch4               (12),
+    group4Ch1               (13),
+    group4Ch2               (14),
+    group4Ch3               (15),
+    group4Ch4               (16),
+    v500HzTone              (33),
+    v1kHzTone               (34),
+    v2kHzTone               (35),
+    v4kHzTone               (36)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { mute }
+  ::= { dmx8259EmbeddedOutputsEntry 5 }
+
+dmx8259GroupChan4Source    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    mute                    (0),
+    group1Ch1               (1),
+    group1Ch2               (2),
+    group1Ch3               (3),
+    group1Ch4               (4),
+    group2Ch1               (5),
+    group2Ch2               (6),
+    group2Ch3               (7),
+    group2Ch4               (8),
+    group3Ch1               (9),
+    group3Ch2               (10),
+    group3Ch3               (11),
+    group3Ch4               (12),
+    group4Ch1               (13),
+    group4Ch2               (14),
+    group4Ch3               (15),
+    group4Ch4               (16),
+    v500HzTone              (33),
+    v1kHzTone               (34),
+    v2kHzTone               (35),
+    v4kHzTone               (36)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { mute }
+  ::= { dmx8259EmbeddedOutputsEntry 6 }
+
+dmx8259GroupReset    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    reset                   (1)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { reset }
+  ::= { dmx8259EmbeddedOutputsEntry 7 }
+
+--
+--  Table of Alarms parameters
+--
+dmx8259AlarmsTable     OBJECT-TYPE
+  SYNTAX      SEQUENCE OF Dmx8259AlarmsEntry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "A table containing product info for all DMX8259 cards at this node.
+    This table is the expansion of the table 'openGearCardTable' in the
+    OPEN-GEAR-CARD-MIB. For each DMX8259 card in the 'openGearCardTable',
+    there is a corresponding entry in this table, having the same indices -
+    'openGearFrameIndex' and 'openGearCardIndex'."
+  ::= { dmx8259CardObjects 11 }
+
+dmx8259AlarmsEntry     OBJECT-TYPE
+  SYNTAX      Dmx8259AlarmsEntry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "A conceptual row within the 'dmx8259AlarmsTable'."
+  INDEX    { openGearFrameIndex, openGearCardIndex }
+  ::= { dmx8259AlarmsTable 1 }
+
+Dmx8259AlarmsEntry ::= SEQUENCE {
+  dmx8259NoInputAlarm              INTEGER,
+  dmx8259InvalidInputAlarm         INTEGER,
+  dmx8259IncompatInputAlarm        INTEGER,
+  dmx8259NonSyncInputAlarm         INTEGER,
+  dmx8259NoRefAlarm                INTEGER,
+  dmx8259InvalidRefAlarm           INTEGER,
+  dmx8259OverrideRefAlarm          INTEGER,
+  dmx8259IncompatRearModuleAlarm   INTEGER,
+  dmx8259IncompatDaughterCardAlarm INTEGER,
+  dmx8259SfpNotifyOnTemp           INTEGER,
+  dmx8259SfpNotifyOnPower          INTEGER,
+  dmx8259Sd24bitAlarm              INTEGER,
+  dmx8259SetAllAlarms              INTEGER,
+  dmx8259ClearAllAlarms            INTEGER
+}
+
+dmx8259NoInputAlarm    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    no                      (0),
+    yes                     (1)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { no }
+  ::= { dmx8259AlarmsEntry 2 }
+
+dmx8259InvalidInputAlarm    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    no                      (0),
+    yes                     (1)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { no }
+  ::= { dmx8259AlarmsEntry 3 }
+
+dmx8259IncompatInputAlarm    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    no                      (0),
+    yes                     (1)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { no }
+  ::= { dmx8259AlarmsEntry 4 }
+
+dmx8259NonSyncInputAlarm    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    no                      (0),
+    yes                     (1)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { no }
+  ::= { dmx8259AlarmsEntry 5 }
+
+dmx8259NoRefAlarm    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    no                      (0),
+    yes                     (1)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { no }
+  ::= { dmx8259AlarmsEntry 6 }
+
+dmx8259InvalidRefAlarm    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    no                      (0),
+    yes                     (1)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { no }
+  ::= { dmx8259AlarmsEntry 7 }
+
+dmx8259OverrideRefAlarm    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    no                      (0),
+    yes                     (1)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { no }
+  ::= { dmx8259AlarmsEntry 16 }
+
+dmx8259IncompatRearModuleAlarm    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    no                      (0),
+    yes                     (1)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { no }
+  ::= { dmx8259AlarmsEntry 8 }
+
+dmx8259IncompatDaughterCardAlarm    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    no                      (0),
+    yes                     (1)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { no }
+  ::= { dmx8259AlarmsEntry 9 }
+
+dmx8259SfpNotifyOnTemp    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    ignore                  (0),
+    notify                  (1)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { notify }
+  ::= { dmx8259AlarmsEntry 10 }
+
+dmx8259SfpNotifyOnPower    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    ignore                  (0),
+    notify                  (1)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { notify }
+  ::= { dmx8259AlarmsEntry 11 }
+
+dmx8259Sd24bitAlarm    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    no                      (0),
+    yes                     (1)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { yes }
+  ::= { dmx8259AlarmsEntry 13 }
+
+dmx8259SetAllAlarms    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    set                     (1)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { set }
+  ::= { dmx8259AlarmsEntry 14 }
+
+dmx8259ClearAllAlarms    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    clear                   (1)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { clear }
+  ::= { dmx8259AlarmsEntry 15 }
+
+--
+--  Table of EmbeddedInputAudioAlarms parameters
+--
+dmx8259EmbeddedInputAudioAlarmsArrGrp
+  OBJECT IDENTIFIER ::= { dmx8259CardObjects 12 }
+
+dmx8259NumberOfElementsIndmx8259EmbeddedInputAudioAlarmsArrGrp OBJECT-TYPE
+  SYNTAX      Integer32
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "The total number of elements in dmx8259EmbeddedInputAudioAlarmsArrGrp."
+  ::= { dmx8259EmbeddedInputAudioAlarmsArrGrp 1 }
+
+dmx8259EmbeddedInputAudioAlarmsTable     OBJECT-TYPE
+  SYNTAX      SEQUENCE OF Dmx8259EmbeddedInputAudioAlarmsEntry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "A table containing product info for all DMX8259 cards at this node.
+    This table is the expansion of the table 'openGearCardTable' in the
+    OPEN-GEAR-CARD-MIB. For each DMX8259 card in the 'openGearCardTable',
+    there is a corresponding entry in this table, having the same indices -
+    'openGearFrameIndex' and 'openGearCardIndex'."
+  ::= { dmx8259EmbeddedInputAudioAlarmsArrGrp 2 }
+
+dmx8259EmbeddedInputAudioAlarmsEntry     OBJECT-TYPE
+  SYNTAX      Dmx8259EmbeddedInputAudioAlarmsEntry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "A conceptual row within the 'dmx8259EmbeddedInputAudioAlarmsTable'."
+  INDEX    { openGearFrameIndex, openGearCardIndex,  dmx8259EmbeddedInputAudioAlarmsIndex}
+  ::= { dmx8259EmbeddedInputAudioAlarmsTable 1 }
+
+Dmx8259EmbeddedInputAudioAlarmsEntry ::= SEQUENCE {
+  dmx8259EmbeddedInputAudioAlarmsIndex        Unsigned32,
+  dmx8259GroupNotPresentAlarm      INTEGER,
+  dmx8259GroupCh1SilentAlarm       INTEGER,
+  dmx8259GroupCh2SilentAlarm       INTEGER,
+  dmx8259GroupCh3SilentAlarm       INTEGER,
+  dmx8259GroupCh4SilentAlarm       INTEGER
+}
+
+dmx8259EmbeddedInputAudioAlarmsIndex   OBJECT-TYPE
+  SYNTAX      Unsigned32
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "It represents the array group index."
+  ::= { dmx8259EmbeddedInputAudioAlarmsEntry 1 }
+
+dmx8259GroupNotPresentAlarm    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    no                      (0),
+    yes                     (1)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { yes }
+  ::= { dmx8259EmbeddedInputAudioAlarmsEntry 2 }
+
+dmx8259GroupCh1SilentAlarm    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    no                      (0),
+    yes                     (1)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { yes }
+  ::= { dmx8259EmbeddedInputAudioAlarmsEntry 3 }
+
+dmx8259GroupCh2SilentAlarm    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    no                      (0),
+    yes                     (1)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { yes }
+  ::= { dmx8259EmbeddedInputAudioAlarmsEntry 4 }
+
+dmx8259GroupCh3SilentAlarm    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    no                      (0),
+    yes                     (1)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { yes }
+  ::= { dmx8259EmbeddedInputAudioAlarmsEntry 5 }
+
+dmx8259GroupCh4SilentAlarm    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    no                      (0),
+    yes                     (1)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { yes }
+  ::= { dmx8259EmbeddedInputAudioAlarmsEntry 6 }
+
+--
+--  Table of EmbeddedOutputAudioAlarms parameters
+--
+dmx8259EmbeddedOutputAudioAlarmsArrGrp
+  OBJECT IDENTIFIER ::= { dmx8259CardObjects 13 }
+
+dmx8259NumberOfElementsIndmx8259EmbeddedOutputAudioAlarmsArrGrp OBJECT-TYPE
+  SYNTAX      Integer32
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "The total number of elements in dmx8259EmbeddedOutputAudioAlarmsArrGrp."
+  ::= { dmx8259EmbeddedOutputAudioAlarmsArrGrp 1 }
+
+dmx8259EmbeddedOutputAudioAlarmsTable     OBJECT-TYPE
+  SYNTAX      SEQUENCE OF Dmx8259EmbeddedOutputAudioAlarmsEntry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "A table containing product info for all DMX8259 cards at this node.
+    This table is the expansion of the table 'openGearCardTable' in the
+    OPEN-GEAR-CARD-MIB. For each DMX8259 card in the 'openGearCardTable',
+    there is a corresponding entry in this table, having the same indices -
+    'openGearFrameIndex' and 'openGearCardIndex'."
+  ::= { dmx8259EmbeddedOutputAudioAlarmsArrGrp 2 }
+
+dmx8259EmbeddedOutputAudioAlarmsEntry     OBJECT-TYPE
+  SYNTAX      Dmx8259EmbeddedOutputAudioAlarmsEntry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "A conceptual row within the 'dmx8259EmbeddedOutputAudioAlarmsTable'."
+  INDEX    { openGearFrameIndex, openGearCardIndex,  dmx8259EmbeddedOutputAudioAlarmsIndex}
+  ::= { dmx8259EmbeddedOutputAudioAlarmsTable 1 }
+
+Dmx8259EmbeddedOutputAudioAlarmsEntry ::= SEQUENCE {
+  dmx8259EmbeddedOutputAudioAlarmsIndex        Unsigned32,
+  dmx8259GroupSrcMissingAlarm      INTEGER,
+  dmx8259GroupSrcAsyncAlarm        INTEGER
+}
+
+dmx8259EmbeddedOutputAudioAlarmsIndex   OBJECT-TYPE
+  SYNTAX      Unsigned32
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "It represents the array group index."
+  ::= { dmx8259EmbeddedOutputAudioAlarmsEntry 1 }
+
+dmx8259GroupSrcMissingAlarm    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    no                      (0),
+    yes                     (1)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { yes }
+  ::= { dmx8259EmbeddedOutputAudioAlarmsEntry 2 }
+
+dmx8259GroupSrcAsyncAlarm    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    no                      (0),
+    yes                     (1)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { yes }
+  ::= { dmx8259EmbeddedOutputAudioAlarmsEntry 3 }
+
+--
+--  Table of DiscreteOutputAlarms parameters
+--
+dmx8259DiscreteOutputAlarmsArrGrp
+  OBJECT IDENTIFIER ::= { dmx8259CardObjects 14 }
+
+dmx8259NumberOfElementsIndmx8259DiscreteOutputAlarmsArrGrp OBJECT-TYPE
+  SYNTAX      Integer32
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "The total number of elements in dmx8259DiscreteOutputAlarmsArrGrp."
+  ::= { dmx8259DiscreteOutputAlarmsArrGrp 1 }
+
+dmx8259DiscreteOutputAlarmsTable     OBJECT-TYPE
+  SYNTAX      SEQUENCE OF Dmx8259DiscreteOutputAlarmsEntry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "A table containing product info for all DMX8259 cards at this node.
+    This table is the expansion of the table 'openGearCardTable' in the
+    OPEN-GEAR-CARD-MIB. For each DMX8259 card in the 'openGearCardTable',
+    there is a corresponding entry in this table, having the same indices -
+    'openGearFrameIndex' and 'openGearCardIndex'."
+  ::= { dmx8259DiscreteOutputAlarmsArrGrp 2 }
+
+dmx8259DiscreteOutputAlarmsEntry     OBJECT-TYPE
+  SYNTAX      Dmx8259DiscreteOutputAlarmsEntry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "A conceptual row within the 'dmx8259DiscreteOutputAlarmsTable'."
+  INDEX    { openGearFrameIndex, openGearCardIndex,  dmx8259DiscreteOutputAlarmsIndex}
+  ::= { dmx8259DiscreteOutputAlarmsTable 1 }
+
+Dmx8259DiscreteOutputAlarmsEntry ::= SEQUENCE {
+  dmx8259DiscreteOutputAlarmsIndex        Unsigned32,
+  dmx8259DiscreteOutSourceMissingAlarm INTEGER,
+  dmx8259DiscreteOutSourceAsyncAlarm INTEGER
+}
+
+dmx8259DiscreteOutputAlarmsIndex   OBJECT-TYPE
+  SYNTAX      Unsigned32
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "It represents the array group index."
+  ::= { dmx8259DiscreteOutputAlarmsEntry 1 }
+
+dmx8259DiscreteOutSourceMissingAlarm    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    no                      (0),
+    yes                     (1)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { yes }
+  ::= { dmx8259DiscreteOutputAlarmsEntry 2 }
+
+dmx8259DiscreteOutSourceAsyncAlarm    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    no                      (0),
+    yes                     (1)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { yes }
+  ::= { dmx8259DiscreteOutputAlarmsEntry 3 }
+
+--
+--  Table of EmbeddedInputAudioStatus parameters
+--
+dmx8259EmbeddedInputAudioStatusArrGrp
+  OBJECT IDENTIFIER ::= { dmx8259CardObjects 15 }
+
+dmx8259NumberOfElementsIndmx8259EmbeddedInputAudioStatusArrGrp OBJECT-TYPE
+  SYNTAX      Integer32
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "The total number of elements in dmx8259EmbeddedInputAudioStatusArrGrp."
+  ::= { dmx8259EmbeddedInputAudioStatusArrGrp 1 }
+
+dmx8259EmbeddedInputAudioStatusTable     OBJECT-TYPE
+  SYNTAX      SEQUENCE OF Dmx8259EmbeddedInputAudioStatusEntry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "A table containing product info for all DMX8259 cards at this node.
+    This table is the expansion of the table 'openGearCardTable' in the
+    OPEN-GEAR-CARD-MIB. For each DMX8259 card in the 'openGearCardTable',
+    there is a corresponding entry in this table, having the same indices -
+    'openGearFrameIndex' and 'openGearCardIndex'."
+  ::= { dmx8259EmbeddedInputAudioStatusArrGrp 2 }
+
+dmx8259EmbeddedInputAudioStatusEntry     OBJECT-TYPE
+  SYNTAX      Dmx8259EmbeddedInputAudioStatusEntry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "A conceptual row within the 'dmx8259EmbeddedInputAudioStatusTable'."
+  INDEX    { openGearFrameIndex, openGearCardIndex,  dmx8259EmbeddedInputAudioStatusIndex}
+  ::= { dmx8259EmbeddedInputAudioStatusTable 1 }
+
+Dmx8259EmbeddedInputAudioStatusEntry ::= SEQUENCE {
+  dmx8259EmbeddedInputAudioStatusIndex        Unsigned32,
+  dmx8259GroupAudioState           INTEGER,
+  dmx8259EmbeddedChan1State        INTEGER,
+  dmx8259EmbeddedChan2State        INTEGER,
+  dmx8259EmbeddedChan3State        INTEGER,
+  dmx8259EmbeddedChan4State        INTEGER,
+  dmx8259EmbeddedAudioWordLength   INTEGER
+}
+
+dmx8259EmbeddedInputAudioStatusIndex   OBJECT-TYPE
+  SYNTAX      Unsigned32
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "It represents the array group index."
+  ::= { dmx8259EmbeddedInputAudioStatusEntry 1 }
+
+dmx8259GroupAudioState    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    pCM                     (0),
+    noInput                 (1),
+    pCMSilent               (2),
+    nonPCM                  (3),
+    async                   (5),
+    mixed                   (6)
+  }
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "... "
+  ::= { dmx8259EmbeddedInputAudioStatusEntry 2 }
+
+dmx8259EmbeddedChan1State    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    pCM                     (0),
+    noInput                 (1),
+    pCMSilent               (2),
+    nonPCM                  (3),
+    async                   (5),
+    mixed                   (6)
+  }
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "... "
+  ::= { dmx8259EmbeddedInputAudioStatusEntry 3 }
+
+dmx8259EmbeddedChan2State    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    pCM                     (0),
+    noInput                 (1),
+    pCMSilent               (2),
+    nonPCM                  (3),
+    async                   (5),
+    mixed                   (6)
+  }
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "... "
+  ::= { dmx8259EmbeddedInputAudioStatusEntry 4 }
+
+dmx8259EmbeddedChan3State    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    pCM                     (0),
+    noInput                 (1),
+    pCMSilent               (2),
+    nonPCM                  (3),
+    async                   (5),
+    mixed                   (6)
+  }
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "... "
+  ::= { dmx8259EmbeddedInputAudioStatusEntry 5 }
+
+dmx8259EmbeddedChan4State    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    pCM                     (0),
+    noInput                 (1),
+    pCMSilent               (2),
+    nonPCM                  (3),
+    async                   (5),
+    mixed                   (6)
+  }
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "... "
+  ::= { dmx8259EmbeddedInputAudioStatusEntry 6 }
+
+dmx8259EmbeddedAudioWordLength    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    v16Bit                  (0),
+    v20Bit                  (4),
+    v24Bit                  (8),
+    unknown                 (10)
+  }
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "... "
+  ::= { dmx8259EmbeddedInputAudioStatusEntry 7 }
+
+--
+--  Table of AnalogOutput1To4 parameters
+--
+dmx8259AnalogOutput1To4ArrGrp
+  OBJECT IDENTIFIER ::= { dmx8259CardObjects 9 }
+
+dmx8259NumberOfElementsIndmx8259AnalogOutput1To4ArrGrp OBJECT-TYPE
+  SYNTAX      Integer32
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "The total number of elements in dmx8259AnalogOutput1To4ArrGrp."
+  ::= { dmx8259AnalogOutput1To4ArrGrp 1 }
+
+dmx8259AnalogOutput1To4Table     OBJECT-TYPE
+  SYNTAX      SEQUENCE OF Dmx8259AnalogOutput1To4Entry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "A table containing product info for all DMX8259 cards at this node.
+    This table is the expansion of the table 'openGearCardTable' in the
+    OPEN-GEAR-CARD-MIB. For each DMX8259 card in the 'openGearCardTable',
+    there is a corresponding entry in this table, having the same indices -
+    'openGearFrameIndex' and 'openGearCardIndex'."
+  ::= { dmx8259AnalogOutput1To4ArrGrp 2 }
+
+dmx8259AnalogOutput1To4Entry     OBJECT-TYPE
+  SYNTAX      Dmx8259AnalogOutput1To4Entry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "A conceptual row within the 'dmx8259AnalogOutput1To4Table'."
+  INDEX    { openGearFrameIndex, openGearCardIndex,  dmx8259AnalogOutput1To4Index}
+  ::= { dmx8259AnalogOutput1To4Table 1 }
+
+Dmx8259AnalogOutput1To4Entry ::= SEQUENCE {
+  dmx8259AnalogOutput1To4Index        Unsigned32,
+  dmx8259AnalogSource              INTEGER,
+  dmx8259AnalogOutputDelay         Integer32,
+  dmx8259AnalogOutputGain          Integer32,
+  dmx8259AnalogOutputInvert        INTEGER,
+  dmx8259AnalogOutputReset         INTEGER
+}
+
+dmx8259AnalogOutput1To4Index   OBJECT-TYPE
+  SYNTAX      Unsigned32
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "It represents the array group index."
+  ::= { dmx8259AnalogOutput1To4Entry 1 }
+
+dmx8259AnalogSource    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    mute                    (0),
+    group1Ch1               (1),
+    group1Ch2               (2),
+    group1Ch3               (3),
+    group1Ch4               (4),
+    group2Ch1               (5),
+    group2Ch2               (6),
+    group2Ch3               (7),
+    group2Ch4               (8),
+    group3Ch1               (9),
+    group3Ch2               (10),
+    group3Ch3               (11),
+    group3Ch4               (12),
+    group4Ch1               (13),
+    group4Ch2               (14),
+    group4Ch3               (15),
+    group4Ch4               (16),
+    v500HzTone              (33),
+    v1kHzTone               (34),
+    v2kHzTone               (35),
+    v4kHzTone               (36)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { mute }
+  ::= { dmx8259AnalogOutput1To4Entry 2 }
+
+dmx8259AnalogOutputDelay    OBJECT-TYPE
+  SYNTAX      Integer32 (0..1000)
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { 0 }
+  ::= { dmx8259AnalogOutput1To4Entry 3 }
+
+dmx8259AnalogOutputGain    OBJECT-TYPE
+  SYNTAX      Integer32 (-20..20)
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { 0 }
+  ::= { dmx8259AnalogOutput1To4Entry 4 }
+
+dmx8259AnalogOutputInvert    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    no                      (0),
+    yes                     (1)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { no }
+  ::= { dmx8259AnalogOutput1To4Entry 5 }
+
+dmx8259AnalogOutputReset    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    reset                   (1)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { reset }
+  ::= { dmx8259AnalogOutput1To4Entry 6 }
+
+--
+--  Table of AnalogOutput5To8 parameters
+--
+dmx8259AnalogOutput5To8ArrGrp
+  OBJECT IDENTIFIER ::= { dmx8259CardObjects 16 }
+
+dmx8259NumberOfElementsIndmx8259AnalogOutput5To8ArrGrp OBJECT-TYPE
+  SYNTAX      Integer32
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "The total number of elements in dmx8259AnalogOutput5To8ArrGrp."
+  ::= { dmx8259AnalogOutput5To8ArrGrp 1 }
+
+dmx8259AnalogOutput5To8Table     OBJECT-TYPE
+  SYNTAX      SEQUENCE OF Dmx8259AnalogOutput5To8Entry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "A table containing product info for all DMX8259 cards at this node.
+    This table is the expansion of the table 'openGearCardTable' in the
+    OPEN-GEAR-CARD-MIB. For each DMX8259 card in the 'openGearCardTable',
+    there is a corresponding entry in this table, having the same indices -
+    'openGearFrameIndex' and 'openGearCardIndex'."
+  ::= { dmx8259AnalogOutput5To8ArrGrp 2 }
+
+dmx8259AnalogOutput5To8Entry     OBJECT-TYPE
+  SYNTAX      Dmx8259AnalogOutput5To8Entry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "A conceptual row within the 'dmx8259AnalogOutput5To8Table'."
+  INDEX    { openGearFrameIndex, openGearCardIndex,  dmx8259AnalogOutput5To8Index}
+  ::= { dmx8259AnalogOutput5To8Table 1 }
+
+Dmx8259AnalogOutput5To8Entry ::= SEQUENCE {
+  dmx8259AnalogOutput5To8Index        Unsigned32,
+  dmx8259AnalogSourceRow2          INTEGER,
+  dmx8259AnalogOutputDelayRow2     Integer32,
+  dmx8259AnalogOutputGainRow2      Integer32,
+  dmx8259AnalogOutputInvertRow2    INTEGER,
+  dmx8259AnalogOutputResetRow2     INTEGER
+}
+
+dmx8259AnalogOutput5To8Index   OBJECT-TYPE
+  SYNTAX      Unsigned32
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "It represents the array group index."
+  ::= { dmx8259AnalogOutput5To8Entry 1 }
+
+dmx8259AnalogSourceRow2    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    mute                    (0),
+    group1Ch1               (1),
+    group1Ch2               (2),
+    group1Ch3               (3),
+    group1Ch4               (4),
+    group2Ch1               (5),
+    group2Ch2               (6),
+    group2Ch3               (7),
+    group2Ch4               (8),
+    group3Ch1               (9),
+    group3Ch2               (10),
+    group3Ch3               (11),
+    group3Ch4               (12),
+    group4Ch1               (13),
+    group4Ch2               (14),
+    group4Ch3               (15),
+    group4Ch4               (16),
+    v500HzTone              (33),
+    v1kHzTone               (34),
+    v2kHzTone               (35),
+    v4kHzTone               (36)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { mute }
+  ::= { dmx8259AnalogOutput5To8Entry 2 }
+
+dmx8259AnalogOutputDelayRow2    OBJECT-TYPE
+  SYNTAX      Integer32 (0..1000)
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { 0 }
+  ::= { dmx8259AnalogOutput5To8Entry 3 }
+
+dmx8259AnalogOutputGainRow2    OBJECT-TYPE
+  SYNTAX      Integer32 (-20..20)
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { 0 }
+  ::= { dmx8259AnalogOutput5To8Entry 4 }
+
+dmx8259AnalogOutputInvertRow2    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    no                      (0),
+    yes                     (1)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { no }
+  ::= { dmx8259AnalogOutput5To8Entry 5 }
+
+dmx8259AnalogOutputResetRow2    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    reset                   (1)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { reset }
+  ::= { dmx8259AnalogOutput5To8Entry 6 }
+
+--
+--  Table of AnalogOutputDeEmphasis parameters
+--
+dmx8259AnalogOutputDeEmphasisArrGrp
+  OBJECT IDENTIFIER ::= { dmx8259CardObjects 17 }
+
+dmx8259NumberOfElementsIndmx8259AnalogOutputDeEmphasisArrGrp OBJECT-TYPE
+  SYNTAX      Integer32
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "The total number of elements in dmx8259AnalogOutputDeEmphasisArrGrp."
+  ::= { dmx8259AnalogOutputDeEmphasisArrGrp 1 }
+
+dmx8259AnalogOutputDeEmphasisTable     OBJECT-TYPE
+  SYNTAX      SEQUENCE OF Dmx8259AnalogOutputDeEmphasisEntry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "A table containing product info for all DMX8259 cards at this node.
+    This table is the expansion of the table 'openGearCardTable' in the
+    OPEN-GEAR-CARD-MIB. For each DMX8259 card in the 'openGearCardTable',
+    there is a corresponding entry in this table, having the same indices -
+    'openGearFrameIndex' and 'openGearCardIndex'."
+  ::= { dmx8259AnalogOutputDeEmphasisArrGrp 2 }
+
+dmx8259AnalogOutputDeEmphasisEntry     OBJECT-TYPE
+  SYNTAX      Dmx8259AnalogOutputDeEmphasisEntry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "A conceptual row within the 'dmx8259AnalogOutputDeEmphasisTable'."
+  INDEX    { openGearFrameIndex, openGearCardIndex,  dmx8259AnalogOutputDeEmphasisIndex}
+  ::= { dmx8259AnalogOutputDeEmphasisTable 1 }
+
+Dmx8259AnalogOutputDeEmphasisEntry ::= SEQUENCE {
+  dmx8259AnalogOutputDeEmphasisIndex        Unsigned32,
+  dmx8259AnalogOutputDeEmph        INTEGER
+}
+
+dmx8259AnalogOutputDeEmphasisIndex   OBJECT-TYPE
+  SYNTAX      Unsigned32
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "It represents the array group index."
+  ::= { dmx8259AnalogOutputDeEmphasisEntry 1 }
+
+dmx8259AnalogOutputDeEmph    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    off                     (0),
+    on                      (1),
+    auto                    (2)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { off }
+  ::= { dmx8259AnalogOutputDeEmphasisEntry 2 }
+
+--
+-- Conformance
+--
+dmx8259CardMibCompliances
+  OBJECT IDENTIFIER ::= { dmx8259CardConformance 1 }
+dmx8259CardMibGroups
+  OBJECT IDENTIFIER ::= { dmx8259CardConformance 2 }
+--
+-- Compliance Statement
+--
+dmx8259CardCompliances MODULE-COMPLIANCE
+  STATUS      current
+  DESCRIPTION
+    "The compliance statement for DMX8259 entities."
+  MODULE -- this module
+    MANDATORY-GROUPS { dmx8259CardInfoGroup,
+                       dmx8259CardNotifyGroup
+                     }
+
+  ::= { dmx8259CardMibCompliances 1 }
+
+dmx8259CardInfoGroup OBJECT-GROUP
+    OBJECTS { dmx8259NumberOfCards,
+              dmx8259DmxProduct,
+              dmx8259BoardRev,
+              dmx8259RearModule,
+              dmx8259SerialNumber,
+              dmx8259Firmware,
+              dmx8259DaughterCard,
+              dmx8259HwAlarm,
+              dmx8259CardVoltage,
+              dmx8259CardCurrent,
+              dmx8259SfpModuleTemp,
+              dmx8259Headroom,
+              dmx8259Ram,
+              dmx8259SignalAlarm,
+              dmx8259AudioAlarm,
+              dmx8259ReferenceAlarm,
+              dmx8259Input,
+              dmx8259Reference,
+              dmx8259Output,
+              dmx8259SfpCh1Status,
+              dmx8259SfpCh1RxPower,
+              dmx8259RefSource,
+              dmx8259MinimumDelay,
+              dmx8259LoiColour,
+              dmx8259LoiY,
+              dmx8259LoiCr,
+              dmx8259LoiCb,
+              dmx8259Pattern,
+              dmx8259SdAudioBitMode,
+              dmx8259SilenceThreshold,
+              dmx8259SilenceTimeout,
+              dmx8259Access,
+              dmx8259AudioResetAll,
+              dmx8259ResetAll,
+              dmx8259AnalogOutputResetAll,
+              dmx8259AesOutputResetAll,
+              dmx8259AesOutputResetAllPg2,
+              dmx8259GroupResetAll,
+              dmx8259SdiInSelection,
+              dmx8259CrcError,
+              dmx8259CrcErrReset,
+              dmx8259AesCh1Source,
+              dmx8259AesCh2Source,
+              dmx8259AesCh1Delay,
+              dmx8259AesCh2Delay,
+              dmx8259AesDelayLock,
+              dmx8259AesCh1Gain,
+              dmx8259AesCh2Gain,
+              dmx8259AesGainLock,
+              dmx8259AesCh1Invert,
+              dmx8259AesCh2Invert,
+              dmx8259AesOutputReset,
+              dmx8259AesCh1SourcePg2,
+              dmx8259AesCh2SourcePg2,
+              dmx8259AesCh1DelayPg2,
+              dmx8259AesCh2DelayPg2,
+              dmx8259AesDelayLockPg2,
+              dmx8259AesCh1GainPg2,
+              dmx8259AesCh2GainPg2,
+              dmx8259AesGainLockPg2,
+              dmx8259AesCh1InvertPg2,
+              dmx8259AesCh2InvertPg2,
+              dmx8259AesOutputResetPg2,
+              dmx8259GroupEnable,
+              dmx8259GroupChan1Source,
+              dmx8259GroupChan2Source,
+              dmx8259GroupChan3Source,
+              dmx8259GroupChan4Source,
+              dmx8259GroupReset,
+              dmx8259NoInputAlarm,
+              dmx8259InvalidInputAlarm,
+              dmx8259IncompatInputAlarm,
+              dmx8259NonSyncInputAlarm,
+              dmx8259NoRefAlarm,
+              dmx8259InvalidRefAlarm,
+              dmx8259OverrideRefAlarm,
+              dmx8259IncompatRearModuleAlarm,
+              dmx8259IncompatDaughterCardAlarm,
+              dmx8259SfpNotifyOnTemp,
+              dmx8259SfpNotifyOnPower,
+              dmx8259Sd24bitAlarm,
+              dmx8259SetAllAlarms,
+              dmx8259ClearAllAlarms,
+              dmx8259GroupNotPresentAlarm,
+              dmx8259GroupCh1SilentAlarm,
+              dmx8259GroupCh2SilentAlarm,
+              dmx8259GroupCh3SilentAlarm,
+              dmx8259GroupCh4SilentAlarm,
+              dmx8259GroupSrcMissingAlarm,
+              dmx8259GroupSrcAsyncAlarm,
+              dmx8259DiscreteOutSourceMissingAlarm,
+              dmx8259DiscreteOutSourceAsyncAlarm,
+              dmx8259GroupAudioState,
+              dmx8259EmbeddedChan1State,
+              dmx8259EmbeddedChan2State,
+              dmx8259EmbeddedChan3State,
+              dmx8259EmbeddedChan4State,
+              dmx8259EmbeddedAudioWordLength,
+              dmx8259AnalogSource,
+              dmx8259AnalogOutputDelay,
+              dmx8259AnalogOutputGain,
+              dmx8259AnalogOutputInvert,
+              dmx8259AnalogOutputReset,
+              dmx8259AnalogSourceRow2,
+              dmx8259AnalogOutputDelayRow2,
+              dmx8259AnalogOutputGainRow2,
+              dmx8259AnalogOutputInvertRow2,
+              dmx8259AnalogOutputResetRow2,
+              dmx8259AnalogOutputDeEmph
+            }
+    STATUS  current
+    DESCRIPTION
+      "A collection of objects providing basic instrumentation
+        and control of an DMX8259 card."
+    ::= { dmx8259CardMibGroups 1 }
+
+dmx8259CardNotifyGroup NOTIFICATION-GROUP
+  NOTIFICATIONS { dmx8259SignalAlarmEvent,
+                  dmx8259AudioAlarmEvent,
+                  dmx8259ReferenceAlarmEvent,
+                  dmx8259HwAlarmEvent
+                }
+    STATUS  current
+    DESCRIPTION
+      "The notifications relating to the DMX8259 card."
+    ::= { dmx8259CardMibGroups 2 }
+
+END

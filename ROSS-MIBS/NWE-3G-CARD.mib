@@ -1,0 +1,2324 @@
+NWE3G-CARD-MIB DEFINITIONS ::= BEGIN
+
+--
+-- Defines control and monitoring structures for the NWE3G card.
+--
+
+IMPORTS
+  openGearFrameIndex
+    FROM OPEN-GEAR-FRAME-MIB
+
+  openGearCardIndex
+    FROM OPEN-GEAR-CARD-MIB
+
+  openGearObjects
+    FROM OPEN-GEAR-MIB
+
+  OBJECT-TYPE, NOTIFICATION-TYPE, MODULE-IDENTITY, Integer32
+    FROM SNMPv2-SMI
+
+  OBJECT-GROUP, NOTIFICATION-GROUP, MODULE-COMPLIANCE
+    FROM SNMPv2-CONF
+
+  DisplayString
+    FROM SNMPv2-TC;
+
+nwe3gCardMib MODULE-IDENTITY
+  LAST-UPDATED "201303011200Z"
+  ORGANIZATION "www.rossvideo.org"
+  CONTACT-INFO
+    "postal:   Ross Video
+               8 John St. P.O. Box 220
+               Iroquois ON K0E 1K0
+
+      email:   support@rossvideo.com"
+
+  DESCRIPTION
+    "Defines control and monitoring structures for the NWE3G card.
+     (Add more) ..."
+
+  REVISION     "201303011200Z"
+  DESCRIPTION
+    "... "
+  ::= { openGearObjects 26 }
+
+--
+--  Top level components in the NWE3G MIB
+--
+nwe3gCardNotifications
+  OBJECT IDENTIFIER ::= { nwe3gCardMib 0 }
+
+nwe3gCardObjects
+  OBJECT IDENTIFIER ::= { nwe3gCardMib 1 }
+
+nwe3gCardConformance
+  OBJECT IDENTIFIER ::= { nwe3gCardMib 2 }
+
+--
+--  Notifications relating to the NWE3G card
+--
+nwe3gSignalAlarmEvent   NOTIFICATION-TYPE
+  OBJECTS { nwe3gSignalAlarm }
+  STATUS current
+  DESCRIPTION
+    "... "
+  ::= { nwe3gCardNotifications 1 }
+
+nwe3gAudioAlarmEvent   NOTIFICATION-TYPE
+  OBJECTS { nwe3gAudioAlarm }
+  STATUS current
+  DESCRIPTION
+    "... "
+  ::= { nwe3gCardNotifications 2 }
+
+nwe3gReferenceAlarmEvent   NOTIFICATION-TYPE
+  OBJECTS { nwe3gReferenceAlarm }
+  STATUS current
+  DESCRIPTION
+    "... "
+  ::= { nwe3gCardNotifications 3 }
+
+nwe3gHwAlarmEvent   NOTIFICATION-TYPE
+  OBJECTS { nwe3gHwAlarm }
+  STATUS current
+  DESCRIPTION
+    "... "
+  ::= { nwe3gCardNotifications 4 }
+
+nwe3gWatermarkAlarmEvent   NOTIFICATION-TYPE
+  OBJECTS { nwe3gWatermarkAlarm }
+  STATUS current
+  DESCRIPTION
+    "... "
+  ::= { nwe3gCardNotifications 5 }
+
+nwe3gAudioClusterAlarmEvent   NOTIFICATION-TYPE
+  OBJECTS { nwe3gAudioClusterAlarm }
+  STATUS current
+  DESCRIPTION
+    "... "
+  ::= { nwe3gCardNotifications 6 }
+
+nwe3gTimeAlarmEvent   NOTIFICATION-TYPE
+  OBJECTS { nwe3gTimeAlarm }
+  STATUS current
+  DESCRIPTION
+    "... "
+  ::= { nwe3gCardNotifications 7 }
+
+--
+--  NWE3G Card information
+--
+--
+--  All the NWE3G cards in the Open Gear frame
+--
+nwe3gNumberOfCards    OBJECT-TYPE
+  SYNTAX      Integer32
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "The total number of NWE3G cards in the open gear frame.
+"  ::= { nwe3gCardObjects 1 }
+
+--
+--  Table of Product parameters
+--
+nwe3gProductTable     OBJECT-TYPE
+  SYNTAX      SEQUENCE OF Nwe3gProductEntry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "A table containing product info for all NWE3G cards at this node.
+    This table is the expansion of the table 'openGearCardTable' in the
+    OPEN-GEAR-CARD-MIB. For each NWE3G card in the 'openGearCardTable',
+    there is a corresponding entry in this table, having the same indices -
+    'openGearFrameIndex' and 'openGearCardIndex'."
+  ::= { nwe3gCardObjects 2 }
+
+nwe3gProductEntry     OBJECT-TYPE
+  SYNTAX      Nwe3gProductEntry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "A conceptual row within the 'nwe3gProductTable'."
+  INDEX    { openGearFrameIndex, openGearCardIndex }
+  ::= { nwe3gProductTable 1 }
+
+Nwe3gProductEntry ::= SEQUENCE {
+  nwe3gBoardRev                    DisplayString,
+  nwe3gRearModule                  DisplayString,
+  nwe3gSerialNumber                DisplayString,
+  nwe3gFirmware                    DisplayString,
+  nwe3gDaughterCard                INTEGER,
+  nwe3gDspHardware                 DisplayString,
+  nwe3gDspSoftware                 DisplayString,
+  nwe3gDspFpga                     DisplayString
+}
+
+nwe3gBoardRev    OBJECT-TYPE
+  SYNTAX      DisplayString
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "... "
+  ::= { nwe3gProductEntry 4 }
+
+nwe3gRearModule    OBJECT-TYPE
+  SYNTAX      DisplayString
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "... "
+  ::= { nwe3gProductEntry 5 }
+
+nwe3gSerialNumber    OBJECT-TYPE
+  SYNTAX      DisplayString
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "... "
+  ::= { nwe3gProductEntry 6 }
+
+nwe3gFirmware    OBJECT-TYPE
+  SYNTAX      DisplayString
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "... "
+  ::= { nwe3gProductEntry 7 }
+
+nwe3gDaughterCard    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    none                    (0),
+    analogInput8Channel     (1),
+    analogInput4Channel     (2),
+    analogOutput8Channel    (5),
+    analogOutput4Channel    (6),
+    balancedAESInput        (9),
+    balancedAESOutput       (11),
+    dSPProcessor            (13)
+  }
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "... "
+  ::= { nwe3gProductEntry 8 }
+
+nwe3gDspHardware    OBJECT-TYPE
+  SYNTAX      DisplayString
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "... "
+  ::= { nwe3gProductEntry 9 }
+
+nwe3gDspSoftware    OBJECT-TYPE
+  SYNTAX      DisplayString
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "... "
+  ::= { nwe3gProductEntry 10 }
+
+nwe3gDspFpga    OBJECT-TYPE
+  SYNTAX      DisplayString
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "... "
+  ::= { nwe3gProductEntry 11 }
+
+--
+--  Table of Hardware parameters
+--
+nwe3gHardwareTable     OBJECT-TYPE
+  SYNTAX      SEQUENCE OF Nwe3gHardwareEntry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "A table containing product info for all NWE3G cards at this node.
+    This table is the expansion of the table 'openGearCardTable' in the
+    OPEN-GEAR-CARD-MIB. For each NWE3G card in the 'openGearCardTable',
+    there is a corresponding entry in this table, having the same indices -
+    'openGearFrameIndex' and 'openGearCardIndex'."
+  ::= { nwe3gCardObjects 3 }
+
+nwe3gHardwareEntry     OBJECT-TYPE
+  SYNTAX      Nwe3gHardwareEntry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "A conceptual row within the 'nwe3gHardwareTable'."
+  INDEX    { openGearFrameIndex, openGearCardIndex }
+  ::= { nwe3gHardwareTable 1 }
+
+Nwe3gHardwareEntry ::= SEQUENCE {
+  nwe3gHwAlarm                     Integer32,
+  nwe3gCardVoltage                 Integer32,
+  nwe3gCardCurrent                 Integer32,
+  nwe3gHeadroom                    Integer32,
+  nwe3gRam                         Integer32
+}
+
+nwe3gHwAlarm    OBJECT-TYPE
+  SYNTAX      Integer32
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "The status parameter is a bitfield where each bit indicates a
+    specific status. A value of zero means OK.
+    The status bits are defined as follows:
+      0x000001 - FPGA load invalid
+      0x000800 - Board Incompatible
+      0x000004 - Incomp I/O module
+      0x000002 - Current out of spec
+      0x000008 - Internal Error
+      0x000010 - Incompatible Daughter Card
+      0x001000 - Internal Audio Error
+      0x002000 - DSP FPGA load invalid
+      0x004000 - Watermarking System Failure
+      0x008000 - DSP com failure - Restarting
+      0x010000 - Missing Diagnostics Upload
+      0x020000 - Running Diagnostics
+      0x040000 - DSP System Failure
+    All other values are undefined."
+  ::= { nwe3gHardwareEntry 1 }
+
+nwe3gCardVoltage    OBJECT-TYPE
+  SYNTAX      Integer32
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "... "
+  ::= { nwe3gHardwareEntry 2 }
+
+nwe3gCardCurrent    OBJECT-TYPE
+  SYNTAX      Integer32
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "... "
+  ::= { nwe3gHardwareEntry 3 }
+
+nwe3gHeadroom    OBJECT-TYPE
+  SYNTAX      Integer32
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "... "
+  ::= { nwe3gHardwareEntry 6 }
+
+nwe3gRam    OBJECT-TYPE
+  SYNTAX      Integer32
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "... "
+  ::= { nwe3gHardwareEntry 7 }
+
+--
+--  Table of Signal parameters
+--
+nwe3gSignalTable     OBJECT-TYPE
+  SYNTAX      SEQUENCE OF Nwe3gSignalEntry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "A table containing product info for all NWE3G cards at this node.
+    This table is the expansion of the table 'openGearCardTable' in the
+    OPEN-GEAR-CARD-MIB. For each NWE3G card in the 'openGearCardTable',
+    there is a corresponding entry in this table, having the same indices -
+    'openGearFrameIndex' and 'openGearCardIndex'."
+  ::= { nwe3gCardObjects 4 }
+
+nwe3gSignalEntry     OBJECT-TYPE
+  SYNTAX      Nwe3gSignalEntry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "A conceptual row within the 'nwe3gSignalTable'."
+  INDEX    { openGearFrameIndex, openGearCardIndex }
+  ::= { nwe3gSignalTable 1 }
+
+Nwe3gSignalEntry ::= SEQUENCE {
+  nwe3gSignalAlarm                 Integer32,
+  nwe3gAudioAlarm                  Integer32,
+  nwe3gReferenceAlarm              Integer32,
+  nwe3gWatermarkAlarm              Integer32,
+  nwe3gAudioClusterAlarm           Integer32,
+  nwe3gInput                       INTEGER,
+  nwe3gReference                   INTEGER,
+  nwe3gOutput                      INTEGER,
+  nwe3gCrcError                    DisplayString,
+  nwe3gCrcErrReset                 INTEGER
+}
+
+nwe3gSignalAlarm    OBJECT-TYPE
+  SYNTAX      Integer32
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "The status parameter is a bitfield where each bit indicates a
+    specific status. A value of zero means OK.
+    The status bits are defined as follows:
+      0x0001 - Bypass Relay Enabled
+      0x0002 - No Input
+      0x0004 - Invalid Format
+      0x0008 - Unsupported Format
+      0x0010 - Incompatible
+      0x0080 - Non-Sync Video
+      0x0020 - Group Not Present
+      0x0040 - Group Channel Silent
+    All other values are undefined."
+  ::= { nwe3gSignalEntry 1 }
+
+nwe3gAudioAlarm    OBJECT-TYPE
+  SYNTAX      Integer32
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "The status parameter is a bitfield where each bit indicates a
+    specific status. A value of zero means OK.
+    The status bits are defined as follows:
+      0x0001 - AES Input Not Present
+      0x0020 - AES Input Invalid
+      0x0040 - AES Input Invalid
+      0x0100 - Grp4 reduced to 20bit
+    All other values are undefined."
+  ::= { nwe3gSignalEntry 2 }
+
+nwe3gReferenceAlarm    OBJECT-TYPE
+  SYNTAX      Integer32
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "The status parameter is a bitfield where each bit indicates a
+    specific status. A value of zero means OK.
+    The status bits are defined as follows:
+      0x0002 - No Reference - Video
+      0x0200 - No Reference - Free Run
+      0x0004 - Invalid Format - Video
+      0x0400 - Invalid Format - Free Run
+    All other values are undefined."
+  ::= { nwe3gSignalEntry 3 }
+
+nwe3gWatermarkAlarm    OBJECT-TYPE
+  SYNTAX      Integer32
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "The status parameter is a bitfield where each bit indicates a
+    specific status. A value of zero means OK.
+    The status bits are defined as follows:
+      0x0002 - Off
+      0x0001 - Invalid Check Code
+    All other values are undefined."
+  ::= { nwe3gSignalEntry 4 }
+
+nwe3gAudioClusterAlarm    OBJECT-TYPE
+  SYNTAX      Integer32
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "The status parameter is a bitfield where each bit indicates a
+    specific status. A value of zero means OK.
+    The status bits are defined as follows:
+      0x0001 - Empty
+      0x0002 - Unassigned Source
+      0x0004 - Mixed Audio Sources
+    All other values are undefined."
+  ::= { nwe3gSignalEntry 5 }
+
+nwe3gInput    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    none                    (0),
+    matchInput              (1),
+    unknown                 (2),
+    incompatible            (3),
+    v480i59dot94            (4),
+    v720p59dot94            (5),
+    v720p60                 (6),
+    v1080i59dot94           (7),
+    v1080i60                (8),
+    v1080p59dot94           (9),
+    v1080p60                (10),
+    v576i50                 (11),
+    v720p50                 (12),
+    v1080i50                (13),
+    v1080p50                (14),
+    v480p59dot94            (15),
+    v576p50                 (16),
+    v1080p30                (17),
+    v1080p29dot97           (18),
+    v1080p25                (19),
+    v1080p24                (20),
+    v1080p23dot98           (21),
+    v1080pSF24              (22),
+    v1080pSF23dot98         (23)
+  }
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "... "
+  ::= { nwe3gSignalEntry 6 }
+
+nwe3gReference    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    none                    (0),
+    matchInput              (1),
+    unknown                 (2),
+    incompatible            (3),
+    v480i59dot94            (4),
+    v720p59dot94            (5),
+    v720p60                 (6),
+    v1080i59dot94           (7),
+    v1080i60                (8),
+    v1080p59dot94           (9),
+    v1080p60                (10),
+    v576i50                 (11),
+    v720p50                 (12),
+    v1080i50                (13),
+    v1080p50                (14),
+    v480p59dot94            (15),
+    v576p50                 (16),
+    v1080p30                (17),
+    v1080p29dot97           (18),
+    v1080p25                (19),
+    v1080p24                (20),
+    v1080p23dot98           (21),
+    v1080pSF24              (22),
+    v1080pSF23dot98         (23)
+  }
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "... "
+  ::= { nwe3gSignalEntry 7 }
+
+nwe3gOutput    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    none                    (0),
+    matchInput              (1),
+    unknown                 (2),
+    incompatible            (3),
+    v480i59dot94            (4),
+    v720p59dot94            (5),
+    v720p60                 (6),
+    v1080i59dot94           (7),
+    v1080i60                (8),
+    v1080p59dot94           (9),
+    v1080p60                (10),
+    v576i50                 (11),
+    v720p50                 (12),
+    v1080i50                (13),
+    v1080p50                (14),
+    v480p59dot94            (15),
+    v576p50                 (16),
+    v1080p30                (17),
+    v1080p29dot97           (18),
+    v1080p25                (19),
+    v1080p24                (20),
+    v1080p23dot98           (21),
+    v1080pSF24              (22),
+    v1080pSF23dot98         (23)
+  }
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "... "
+  ::= { nwe3gSignalEntry 8 }
+
+nwe3gCrcError    OBJECT-TYPE
+  SYNTAX      DisplayString
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "... "
+  ::= { nwe3gSignalEntry 9 }
+
+nwe3gCrcErrReset    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    reset                   (1)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { reset }
+  ::= { nwe3gSignalEntry 10 }
+
+--
+--  Table of AudioAESStatus parameters
+--
+nwe3gAudioAESStatusArrGrp
+  OBJECT IDENTIFIER ::= { nwe3gCardObjects 5 }
+
+nwe3gNumberOfElementsInnwe3gAudioAESStatusArrGrp OBJECT-TYPE
+  SYNTAX      Integer32
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "The total number of elements in nwe3gAudioAESStatusArrGrp."
+  ::= { nwe3gAudioAESStatusArrGrp 1 }
+
+nwe3gAudioAESStatusTable     OBJECT-TYPE
+  SYNTAX      SEQUENCE OF Nwe3gAudioAESStatusEntry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "A table containing product info for all NWE3G cards at this node.
+    This table is the expansion of the table 'openGearCardTable' in the
+    OPEN-GEAR-CARD-MIB. For each NWE3G card in the 'openGearCardTable',
+    there is a corresponding entry in this table, having the same indices -
+    'openGearFrameIndex' and 'openGearCardIndex'."
+  ::= { nwe3gAudioAESStatusArrGrp 2 }
+
+nwe3gAudioAESStatusEntry     OBJECT-TYPE
+  SYNTAX      Nwe3gAudioAESStatusEntry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "A conceptual row within the 'nwe3gAudioAESStatusTable'."
+  INDEX    { openGearFrameIndex, openGearCardIndex,  nwe3gAudioAESStatusIndex}
+  ::= { nwe3gAudioAESStatusTable 1 }
+
+Nwe3gAudioAESStatusEntry ::= SEQUENCE {
+  nwe3gAudioAESStatusIndex        Unsigned32,
+  nwe3gGroupAudioState             INTEGER,
+  nwe3gAesInputState               INTEGER
+}
+
+nwe3gAudioAESStatusIndex   OBJECT-TYPE
+  SYNTAX      Unsigned32
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "It represents the array group index."
+  ::= { nwe3gAudioAESStatusEntry 1 }
+
+nwe3gGroupAudioState    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    pCM                     (0),
+    noInput                 (1),
+    pCMSilent               (2),
+    nonPCM                  (3),
+    async                   (5),
+    mixed                   (6)
+  }
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "... "
+  ::= { nwe3gAudioAESStatusEntry 2 }
+
+nwe3gAesInputState    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    pCM                     (0),
+    noInput                 (1),
+    pCMSilent               (2),
+    nonPCM                  (3),
+    async                   (5),
+    mixed                   (6)
+  }
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "... "
+  ::= { nwe3gAudioAESStatusEntry 3 }
+
+--
+--  Table of TimeStatus parameters
+--
+nwe3gTimeStatusTable     OBJECT-TYPE
+  SYNTAX      SEQUENCE OF Nwe3gTimeStatusEntry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "A table containing product info for all NWE3G cards at this node.
+    This table is the expansion of the table 'openGearCardTable' in the
+    OPEN-GEAR-CARD-MIB. For each NWE3G card in the 'openGearCardTable',
+    there is a corresponding entry in this table, having the same indices -
+    'openGearFrameIndex' and 'openGearCardIndex'."
+  ::= { nwe3gCardObjects 6 }
+
+nwe3gTimeStatusEntry     OBJECT-TYPE
+  SYNTAX      Nwe3gTimeStatusEntry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "A conceptual row within the 'nwe3gTimeStatusTable'."
+  INDEX    { openGearFrameIndex, openGearCardIndex }
+  ::= { nwe3gTimeStatusTable 1 }
+
+Nwe3gTimeStatusEntry ::= SEQUENCE {
+  nwe3gTimeAlarm                   Integer32,
+  nwe3gEncTime                     DisplayString,
+  nwe3gEncDate                     DisplayString,
+  nwe3gNtpTime                     DisplayString,
+  nwe3gNtpDate                     DisplayString,
+  nwe3gLtcBalancedTime             DisplayString,
+  nwe3gLtcUnbalancedTime           DisplayString
+}
+
+nwe3gTimeAlarm    OBJECT-TYPE
+  SYNTAX      Integer32
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "The status parameter is a bitfield where each bit indicates a
+    specific status. A value of zero means OK.
+    The status bits are defined as follows:
+      0x0001 - Time Source Missing
+    All other values are undefined."
+  ::= { nwe3gTimeStatusEntry 1 }
+
+nwe3gEncTime    OBJECT-TYPE
+  SYNTAX      DisplayString
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "... "
+  ::= { nwe3gTimeStatusEntry 2 }
+
+nwe3gEncDate    OBJECT-TYPE
+  SYNTAX      DisplayString
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "... "
+  ::= { nwe3gTimeStatusEntry 3 }
+
+nwe3gNtpTime    OBJECT-TYPE
+  SYNTAX      DisplayString
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "... "
+  ::= { nwe3gTimeStatusEntry 4 }
+
+nwe3gNtpDate    OBJECT-TYPE
+  SYNTAX      DisplayString
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "... "
+  ::= { nwe3gTimeStatusEntry 5 }
+
+nwe3gLtcBalancedTime    OBJECT-TYPE
+  SYNTAX      DisplayString
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "... "
+  ::= { nwe3gTimeStatusEntry 6 }
+
+nwe3gLtcUnbalancedTime    OBJECT-TYPE
+  SYNTAX      DisplayString
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "... "
+  ::= { nwe3gTimeStatusEntry 7 }
+
+--
+--  Table of Config parameters
+--
+nwe3gConfigTable     OBJECT-TYPE
+  SYNTAX      SEQUENCE OF Nwe3gConfigEntry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "A table containing product info for all NWE3G cards at this node.
+    This table is the expansion of the table 'openGearCardTable' in the
+    OPEN-GEAR-CARD-MIB. For each NWE3G card in the 'openGearCardTable',
+    there is a corresponding entry in this table, having the same indices -
+    'openGearFrameIndex' and 'openGearCardIndex'."
+  ::= { nwe3gCardObjects 7 }
+
+nwe3gConfigEntry     OBJECT-TYPE
+  SYNTAX      Nwe3gConfigEntry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "A conceptual row within the 'nwe3gConfigTable'."
+  INDEX    { openGearFrameIndex, openGearCardIndex }
+  ::= { nwe3gConfigTable 1 }
+
+Nwe3gConfigEntry ::= SEQUENCE {
+  nwe3gRefSource                   INTEGER,
+  nwe3gLoiColour                   INTEGER,
+  nwe3gLoiY                        Integer32,
+  nwe3gLoiCr                       Integer32,
+  nwe3gLoiCb                       Integer32,
+  nwe3gSilenceThreshold            Integer32,
+  nwe3gSilenceTimeout              Integer32,
+  nwe3gAccess                      INTEGER,
+  nwe3gResetAll                    INTEGER
+}
+
+nwe3gRefSource    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    frame1                  (0),
+    frame2                  (1),
+    video                   (3)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { video }
+  ::= { nwe3gConfigEntry 1 }
+
+nwe3gLoiColour    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    black                   (0),
+    blue                    (1),
+    custom                  (2)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { custom }
+  ::= { nwe3gConfigEntry 2 }
+
+nwe3gLoiY    OBJECT-TYPE
+  SYNTAX      Integer32 (64..940)
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { 256 }
+  ::= { nwe3gConfigEntry 3 }
+
+nwe3gLoiCr    OBJECT-TYPE
+  SYNTAX      Integer32 (64..960)
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { 512 }
+  ::= { nwe3gConfigEntry 4 }
+
+nwe3gLoiCb    OBJECT-TYPE
+  SYNTAX      Integer32 (64..960)
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { 512 }
+  ::= { nwe3gConfigEntry 5 }
+
+nwe3gSilenceThreshold    OBJECT-TYPE
+  SYNTAX      Integer32 (-96..0)
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { -96 }
+  ::= { nwe3gConfigEntry 7 }
+
+nwe3gSilenceTimeout    OBJECT-TYPE
+  SYNTAX      Integer32 (1..60)
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { 30 }
+  ::= { nwe3gConfigEntry 8 }
+
+nwe3gAccess    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    unlocked                (0),
+    locked                  (2)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { unlocked }
+  ::= { nwe3gConfigEntry 9 }
+
+nwe3gResetAll    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    reset                   (1)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { reset }
+  ::= { nwe3gConfigEntry 10 }
+
+--
+--  Table of TimeSetup parameters
+--
+nwe3gTimeSetupTable     OBJECT-TYPE
+  SYNTAX      SEQUENCE OF Nwe3gTimeSetupEntry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "A table containing product info for all NWE3G cards at this node.
+    This table is the expansion of the table 'openGearCardTable' in the
+    OPEN-GEAR-CARD-MIB. For each NWE3G card in the 'openGearCardTable',
+    there is a corresponding entry in this table, having the same indices -
+    'openGearFrameIndex' and 'openGearCardIndex'."
+  ::= { nwe3gCardObjects 8 }
+
+nwe3gTimeSetupEntry     OBJECT-TYPE
+  SYNTAX      Nwe3gTimeSetupEntry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "A conceptual row within the 'nwe3gTimeSetupTable'."
+  INDEX    { openGearFrameIndex, openGearCardIndex }
+  ::= { nwe3gTimeSetupTable 1 }
+
+Nwe3gTimeSetupEntry ::= SEQUENCE {
+  nwe3gTimeSource                  INTEGER,
+  nwe3gLtcFollowsDst               INTEGER,
+  nwe3gNtpHours                    INTEGER,
+  nwe3gNtpMinutes                  INTEGER,
+  nwe3gNtpHemisphere               INTEGER,
+  nwe3gManualYear                  Integer32,
+  nwe3gManualMonth                 INTEGER,
+  nwe3gManualDay                   Integer32,
+  nwe3gManualHour                  Integer32,
+  nwe3gManualMinute                Integer32,
+  nwe3gManualSecond                Integer32,
+  nwe3gAcceptManualTime            INTEGER,
+  nwe3gDstMode                     INTEGER,
+  nwe3gDstSetting                  INTEGER
+}
+
+nwe3gTimeSource    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    manual                  (0),
+    networkTime             (1),
+    lTCBalanced             (2),
+    lTCUnbalanced           (3)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { networkTime }
+  ::= { nwe3gTimeSetupEntry 1 }
+
+nwe3gLtcFollowsDst    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    disabled                (0),
+    enabled                 (1)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { disabled }
+  ::= { nwe3gTimeSetupEntry 2 }
+
+nwe3gNtpHours    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    v0                      (0),
+    v1                      (1),
+    v2                      (2),
+    v3                      (3),
+    v4                      (4),
+    v5                      (5),
+    v6                      (6),
+    v7                      (7),
+    v8                      (8),
+    v9                      (9),
+    v10                     (10),
+    v11                     (11),
+    v12                     (12),
+    v13                     (13)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { v5 }
+  ::= { nwe3gTimeSetupEntry 3 }
+
+nwe3gNtpMinutes    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    v00                     (0),
+    v15                     (15),
+    v30                     (30),
+    v45                     (45)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { 5 }
+  ::= { nwe3gTimeSetupEntry 4 }
+
+nwe3gNtpHemisphere    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    west                    (0),
+    east                    (1)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { west }
+  ::= { nwe3gTimeSetupEntry 5 }
+
+nwe3gManualYear    OBJECT-TYPE
+  SYNTAX      Integer32 (1995..2063)
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { 2011 }
+  ::= { nwe3gTimeSetupEntry 6 }
+
+nwe3gManualMonth    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    january                 (1),
+    february                (2),
+    march                   (3),
+    april                   (4),
+    may                     (5),
+    june                    (6),
+    july                    (7),
+    august                  (8),
+    september               (9),
+    october                 (10),
+    november                (11),
+    december                (12)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { january }
+  ::= { nwe3gTimeSetupEntry 7 }
+
+nwe3gManualDay    OBJECT-TYPE
+  SYNTAX      Integer32
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { 1 }
+  ::= { nwe3gTimeSetupEntry 8 }
+
+nwe3gManualHour    OBJECT-TYPE
+  SYNTAX      Integer32
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { 2 }
+  ::= { nwe3gTimeSetupEntry 9 }
+
+nwe3gManualMinute    OBJECT-TYPE
+  SYNTAX      Integer32
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { 0 }
+  ::= { nwe3gTimeSetupEntry 10 }
+
+nwe3gManualSecond    OBJECT-TYPE
+  SYNTAX      Integer32
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { 0 }
+  ::= { nwe3gTimeSetupEntry 11 }
+
+nwe3gAcceptManualTime    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    acceptManualTime        (0)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { acceptManualTime }
+  ::= { nwe3gTimeSetupEntry 12 }
+
+nwe3gDstMode    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    auto                    (0),
+    manual                  (1)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { auto }
+  ::= { nwe3gTimeSetupEntry 13 }
+
+nwe3gDstSetting    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    standardTime            (0),
+    daylightSavingTime      (1)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { standardTime }
+  ::= { nwe3gTimeSetupEntry 14 }
+
+--
+--  Table of DSTSettings parameters
+--
+nwe3gDSTSettingsArrGrp
+  OBJECT IDENTIFIER ::= { nwe3gCardObjects 9 }
+
+nwe3gNumberOfElementsInnwe3gDSTSettingsArrGrp OBJECT-TYPE
+  SYNTAX      Integer32
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "The total number of elements in nwe3gDSTSettingsArrGrp."
+  ::= { nwe3gDSTSettingsArrGrp 1 }
+
+nwe3gDSTSettingsTable     OBJECT-TYPE
+  SYNTAX      SEQUENCE OF Nwe3gDSTSettingsEntry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "A table containing product info for all NWE3G cards at this node.
+    This table is the expansion of the table 'openGearCardTable' in the
+    OPEN-GEAR-CARD-MIB. For each NWE3G card in the 'openGearCardTable',
+    there is a corresponding entry in this table, having the same indices -
+    'openGearFrameIndex' and 'openGearCardIndex'."
+  ::= { nwe3gDSTSettingsArrGrp 2 }
+
+nwe3gDSTSettingsEntry     OBJECT-TYPE
+  SYNTAX      Nwe3gDSTSettingsEntry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "A conceptual row within the 'nwe3gDSTSettingsTable'."
+  INDEX    { openGearFrameIndex, openGearCardIndex,  nwe3gDSTSettingsIndex}
+  ::= { nwe3gDSTSettingsTable 1 }
+
+Nwe3gDSTSettingsEntry ::= SEQUENCE {
+  nwe3gDSTSettingsIndex        Unsigned32,
+  nwe3gDstMonth                    INTEGER,
+  nwe3gDstWeek                     INTEGER,
+  nwe3gDstDay                      INTEGER,
+  nwe3gDstHour                     Integer32
+}
+
+nwe3gDSTSettingsIndex   OBJECT-TYPE
+  SYNTAX      Unsigned32
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "It represents the array group index."
+  ::= { nwe3gDSTSettingsEntry 1 }
+
+nwe3gDstMonth    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    january                 (1),
+    february                (2),
+    march                   (3),
+    april                   (4),
+    may                     (5),
+    june                    (6),
+    july                    (7),
+    august                  (8),
+    september               (9),
+    october                 (10),
+    november                (11),
+    december                (12)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { march }
+  ::= { nwe3gDSTSettingsEntry 2 }
+
+nwe3gDstWeek    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    first                   (1),
+    second                  (2),
+    third                   (3),
+    fourth                  (4),
+    last                    (5)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { first }
+  ::= { nwe3gDSTSettingsEntry 3 }
+
+nwe3gDstDay    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    sunday                  (1),
+    monday                  (2),
+    tuesday                 (3),
+    wednesday               (4),
+    thursday                (5),
+    friday                  (6),
+    saturday                (7)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { sunday }
+  ::= { nwe3gDSTSettingsEntry 4 }
+
+nwe3gDstHour    OBJECT-TYPE
+  SYNTAX      Integer32
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { 2 }
+  ::= { nwe3gDSTSettingsEntry 5 }
+
+--
+--  Table of WatermarkSetup parameters
+--
+nwe3gWatermarkSetupTable     OBJECT-TYPE
+  SYNTAX      SEQUENCE OF Nwe3gWatermarkSetupEntry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "A table containing product info for all NWE3G cards at this node.
+    This table is the expansion of the table 'openGearCardTable' in the
+    OPEN-GEAR-CARD-MIB. For each NWE3G card in the 'openGearCardTable',
+    there is a corresponding entry in this table, having the same indices -
+    'openGearFrameIndex' and 'openGearCardIndex'."
+  ::= { nwe3gCardObjects 10 }
+
+nwe3gWatermarkSetupEntry     OBJECT-TYPE
+  SYNTAX      Nwe3gWatermarkSetupEntry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "A conceptual row within the 'nwe3gWatermarkSetupTable'."
+  INDEX    { openGearFrameIndex, openGearCardIndex }
+  ::= { nwe3gWatermarkSetupTable 1 }
+
+Nwe3gWatermarkSetupEntry ::= SEQUENCE {
+  nwe3gWatermarkEnabled            INTEGER,
+  nwe3gSidEdit                     Integer32,
+  nwe3gSidCheckCodeText            DisplayString,
+  nwe3gCodeType                    INTEGER,
+  nwe3gLevelOverflow               INTEGER,
+  nwe3gAudioPassword               DisplayString
+}
+
+nwe3gWatermarkEnabled    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    disabled                (0),
+    enabled                 (1)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { enabled }
+  ::= { nwe3gWatermarkSetupEntry 2 }
+
+nwe3gSidEdit    OBJECT-TYPE
+  SYNTAX      Integer32
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { DEFAULT_SID }
+  ::= { nwe3gWatermarkSetupEntry 3 }
+
+nwe3gSidCheckCodeText    OBJECT-TYPE
+  SYNTAX      DisplayString
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  {  }
+  ::= { nwe3gWatermarkSetupEntry 4 }
+
+nwe3gCodeType    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    programContent          (0),
+    finalDistributor        (1)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { finalDistributor }
+  ::= { nwe3gWatermarkSetupEntry 5 }
+
+nwe3gLevelOverflow    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    refrain                 (0),
+    overwrite               (1)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { overwrite }
+  ::= { nwe3gWatermarkSetupEntry 6 }
+
+nwe3gAudioPassword    OBJECT-TYPE
+  SYNTAX      DisplayString
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  {  }
+  ::= { nwe3gWatermarkSetupEntry 7 }
+
+--
+--  Table of AudioParameters parameters
+--
+nwe3gAudioParametersArrGrp
+  OBJECT IDENTIFIER ::= { nwe3gCardObjects 11 }
+
+nwe3gNumberOfElementsInnwe3gAudioParametersArrGrp OBJECT-TYPE
+  SYNTAX      Integer32
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "The total number of elements in nwe3gAudioParametersArrGrp."
+  ::= { nwe3gAudioParametersArrGrp 1 }
+
+nwe3gAudioParametersTable     OBJECT-TYPE
+  SYNTAX      SEQUENCE OF Nwe3gAudioParametersEntry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "A table containing product info for all NWE3G cards at this node.
+    This table is the expansion of the table 'openGearCardTable' in the
+    OPEN-GEAR-CARD-MIB. For each NWE3G card in the 'openGearCardTable',
+    there is a corresponding entry in this table, having the same indices -
+    'openGearFrameIndex' and 'openGearCardIndex'."
+  ::= { nwe3gAudioParametersArrGrp 2 }
+
+nwe3gAudioParametersEntry     OBJECT-TYPE
+  SYNTAX      Nwe3gAudioParametersEntry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "A conceptual row within the 'nwe3gAudioParametersTable'."
+  INDEX    { openGearFrameIndex, openGearCardIndex,  nwe3gAudioParametersIndex}
+  ::= { nwe3gAudioParametersTable 1 }
+
+Nwe3gAudioParametersEntry ::= SEQUENCE {
+  nwe3gAudioParametersIndex        Unsigned32,
+  nwe3gEditAudio                   Integer32
+}
+
+nwe3gAudioParametersIndex   OBJECT-TYPE
+  SYNTAX      Unsigned32
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "It represents the array group index."
+  ::= { nwe3gAudioParametersEntry 1 }
+
+nwe3gEditAudio    OBJECT-TYPE
+  SYNTAX      Integer32 (-128..127)
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { 0 }
+  ::= { nwe3gAudioParametersEntry 2 }
+
+--
+--  Table of AudioClusters parameters
+--
+nwe3gAudioClustersArrGrp
+  OBJECT IDENTIFIER ::= { nwe3gCardObjects 12 }
+
+nwe3gNumberOfElementsInnwe3gAudioClustersArrGrp OBJECT-TYPE
+  SYNTAX      Integer32
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "The total number of elements in nwe3gAudioClustersArrGrp."
+  ::= { nwe3gAudioClustersArrGrp 1 }
+
+nwe3gAudioClustersTable     OBJECT-TYPE
+  SYNTAX      SEQUENCE OF Nwe3gAudioClustersEntry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "A table containing product info for all NWE3G cards at this node.
+    This table is the expansion of the table 'openGearCardTable' in the
+    OPEN-GEAR-CARD-MIB. For each NWE3G card in the 'openGearCardTable',
+    there is a corresponding entry in this table, having the same indices -
+    'openGearFrameIndex' and 'openGearCardIndex'."
+  ::= { nwe3gAudioClustersArrGrp 2 }
+
+nwe3gAudioClustersEntry     OBJECT-TYPE
+  SYNTAX      Nwe3gAudioClustersEntry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "A conceptual row within the 'nwe3gAudioClustersTable'."
+  INDEX    { openGearFrameIndex, openGearCardIndex,  nwe3gAudioClustersIndex}
+  ::= { nwe3gAudioClustersTable 1 }
+
+Nwe3gAudioClustersEntry ::= SEQUENCE {
+  nwe3gAudioClustersIndex        Unsigned32,
+  nwe3gClusterNumberChoice         INTEGER,
+  nwe3gClusterTypeChoice           INTEGER,
+  nwe3gChannelContentsChoice       INTEGER,
+  nwe3gClusterNameArray            DisplayString,
+  nwe3gAudioSourceChoice           INTEGER
+}
+
+nwe3gAudioClustersIndex   OBJECT-TYPE
+  SYNTAX      Unsigned32
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "It represents the array group index."
+  ::= { nwe3gAudioClustersEntry 1 }
+
+nwe3gClusterNumberChoice    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    BLANK                   (0),
+    cluster1                (1),
+    cluster2                (2),
+    cluster3                (3),
+    cluster4                (4),
+    cluster5                (5),
+    cluster6                (6),
+    cluster7                (7),
+    cluster8                (8)
+  }
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "... "
+  ::= { nwe3gAudioClustersEntry 2 }
+
+nwe3gClusterTypeChoice    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    BLANK                   (0),
+    v5dot1                  (1),
+    stereo                  (2),
+    mono                    (3)
+  }
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "... "
+  ::= { nwe3gAudioClustersEntry 3 }
+
+nwe3gChannelContentsChoice    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    BLANK                   (0),
+    l                       (1),
+    r                       (2),
+    c                       (3),
+    lFE                     (4),
+    lR                      (5),
+    rR                      (6),
+    m                       (7)
+  }
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "... "
+  ::= { nwe3gAudioClustersEntry 4 }
+
+nwe3gClusterNameArray    OBJECT-TYPE
+  SYNTAX      DisplayString
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { NULL }
+  ::= { nwe3gAudioClustersEntry 5 }
+
+nwe3gAudioSourceChoice    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    unassigned              (0),
+    group1Ch1               (1),
+    group1Ch2               (2),
+    group1Ch3               (3),
+    group1Ch4               (4),
+    group2Ch1               (5),
+    group2Ch2               (6),
+    group2Ch3               (7),
+    group2Ch4               (8),
+    group3Ch1               (9),
+    group3Ch2               (10),
+    group3Ch3               (11),
+    group3Ch4               (12),
+    group4Ch1               (13),
+    group4Ch2               (14),
+    group4Ch3               (15),
+    group4Ch4               (16),
+    aES1A                   (17),
+    aES1B                   (18),
+    aES2A                   (19),
+    aES2B                   (20),
+    aES3A                   (21),
+    aES3B                   (22),
+    aES4A                   (23),
+    aES4B                   (24)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { unassigned }
+  ::= { nwe3gAudioClustersEntry 6 }
+
+--
+--  Table of EditAudioClusters parameters
+--
+nwe3gEditAudioClustersTable     OBJECT-TYPE
+  SYNTAX      SEQUENCE OF Nwe3gEditAudioClustersEntry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "A table containing product info for all NWE3G cards at this node.
+    This table is the expansion of the table 'openGearCardTable' in the
+    OPEN-GEAR-CARD-MIB. For each NWE3G card in the 'openGearCardTable',
+    there is a corresponding entry in this table, having the same indices -
+    'openGearFrameIndex' and 'openGearCardIndex'."
+  ::= { nwe3gCardObjects 13 }
+
+nwe3gEditAudioClustersEntry     OBJECT-TYPE
+  SYNTAX      Nwe3gEditAudioClustersEntry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "A conceptual row within the 'nwe3gEditAudioClustersTable'."
+  INDEX    { openGearFrameIndex, openGearCardIndex }
+  ::= { nwe3gEditAudioClustersTable 1 }
+
+Nwe3gEditAudioClustersEntry ::= SEQUENCE {
+  nwe3gAdd5_1Cluster               INTEGER,
+  nwe3gAddStereo                   INTEGER,
+  nwe3gAddMono                     INTEGER,
+  nwe3gRemoveCluster1              INTEGER,
+  nwe3gRemoveCluster2              INTEGER,
+  nwe3gRemoveCluster3              INTEGER,
+  nwe3gRemoveCluster4              INTEGER,
+  nwe3gRemoveCluster5              INTEGER,
+  nwe3gRemoveCluster6              INTEGER,
+  nwe3gRemoveCluster7              INTEGER,
+  nwe3gRemoveCluster8              INTEGER
+}
+
+nwe3gAdd5_1Cluster    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    add5_1Cluster           (1)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { add5_1Cluster }
+  ::= { nwe3gEditAudioClustersEntry 1 }
+
+nwe3gAddStereo    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    addStereo               (2)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { addStereo }
+  ::= { nwe3gEditAudioClustersEntry 2 }
+
+nwe3gAddMono    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    addMono                 (3)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { addMono }
+  ::= { nwe3gEditAudioClustersEntry 3 }
+
+nwe3gRemoveCluster1    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    removeCluster1          (1)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { removeCluster1 }
+  ::= { nwe3gEditAudioClustersEntry 4 }
+
+nwe3gRemoveCluster2    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    removeCluster2          (2)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { removeCluster2 }
+  ::= { nwe3gEditAudioClustersEntry 5 }
+
+nwe3gRemoveCluster3    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    removeCluster3          (3)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { removeCluster3 }
+  ::= { nwe3gEditAudioClustersEntry 6 }
+
+nwe3gRemoveCluster4    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    removeCluster4          (4)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { removeCluster4 }
+  ::= { nwe3gEditAudioClustersEntry 7 }
+
+nwe3gRemoveCluster5    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    removeCluster5          (5)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { removeCluster5 }
+  ::= { nwe3gEditAudioClustersEntry 8 }
+
+nwe3gRemoveCluster6    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    removeCluster6          (6)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { removeCluster6 }
+  ::= { nwe3gEditAudioClustersEntry 9 }
+
+nwe3gRemoveCluster7    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    removeCluster7          (7)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { removeCluster7 }
+  ::= { nwe3gEditAudioClustersEntry 10 }
+
+nwe3gRemoveCluster8    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    removeCluster8          (8)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { removeCluster8 }
+  ::= { nwe3gEditAudioClustersEntry 11 }
+
+--
+--  Table of EmbeddedInputAudio parameters
+--
+nwe3gEmbeddedInputAudioArrGrp
+  OBJECT IDENTIFIER ::= { nwe3gCardObjects 14 }
+
+nwe3gNumberOfElementsInnwe3gEmbeddedInputAudioArrGrp OBJECT-TYPE
+  SYNTAX      Integer32
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "The total number of elements in nwe3gEmbeddedInputAudioArrGrp."
+  ::= { nwe3gEmbeddedInputAudioArrGrp 1 }
+
+nwe3gEmbeddedInputAudioTable     OBJECT-TYPE
+  SYNTAX      SEQUENCE OF Nwe3gEmbeddedInputAudioEntry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "A table containing product info for all NWE3G cards at this node.
+    This table is the expansion of the table 'openGearCardTable' in the
+    OPEN-GEAR-CARD-MIB. For each NWE3G card in the 'openGearCardTable',
+    there is a corresponding entry in this table, having the same indices -
+    'openGearFrameIndex' and 'openGearCardIndex'."
+  ::= { nwe3gEmbeddedInputAudioArrGrp 2 }
+
+nwe3gEmbeddedInputAudioEntry     OBJECT-TYPE
+  SYNTAX      Nwe3gEmbeddedInputAudioEntry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "A conceptual row within the 'nwe3gEmbeddedInputAudioTable'."
+  INDEX    { openGearFrameIndex, openGearCardIndex,  nwe3gEmbeddedInputAudioIndex}
+  ::= { nwe3gEmbeddedInputAudioTable 1 }
+
+Nwe3gEmbeddedInputAudioEntry ::= SEQUENCE {
+  nwe3gEmbeddedInputAudioIndex        Unsigned32,
+  nwe3gEmbeddedChan1State          INTEGER,
+  nwe3gEmbeddedChan2State          INTEGER,
+  nwe3gEmbeddedChan3State          INTEGER,
+  nwe3gEmbeddedChan4State          INTEGER,
+  nwe3gEmbeddedAudioWordLength     INTEGER
+}
+
+nwe3gEmbeddedInputAudioIndex   OBJECT-TYPE
+  SYNTAX      Unsigned32
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "It represents the array group index."
+  ::= { nwe3gEmbeddedInputAudioEntry 1 }
+
+nwe3gEmbeddedChan1State    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    pCM                     (0),
+    noInput                 (1),
+    pCMSilent               (2),
+    nonPCM                  (3),
+    async                   (5),
+    mixed                   (6)
+  }
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "... "
+  ::= { nwe3gEmbeddedInputAudioEntry 2 }
+
+nwe3gEmbeddedChan2State    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    pCM                     (0),
+    noInput                 (1),
+    pCMSilent               (2),
+    nonPCM                  (3),
+    async                   (5),
+    mixed                   (6)
+  }
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "... "
+  ::= { nwe3gEmbeddedInputAudioEntry 3 }
+
+nwe3gEmbeddedChan3State    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    pCM                     (0),
+    noInput                 (1),
+    pCMSilent               (2),
+    nonPCM                  (3),
+    async                   (5),
+    mixed                   (6)
+  }
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "... "
+  ::= { nwe3gEmbeddedInputAudioEntry 4 }
+
+nwe3gEmbeddedChan4State    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    pCM                     (0),
+    noInput                 (1),
+    pCMSilent               (2),
+    nonPCM                  (3),
+    async                   (5),
+    mixed                   (6)
+  }
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "... "
+  ::= { nwe3gEmbeddedInputAudioEntry 5 }
+
+nwe3gEmbeddedAudioWordLength    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    v16Bit                  (0),
+    v20Bit                  (4),
+    v24Bit                  (8),
+    unknown                 (10)
+  }
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "... "
+  ::= { nwe3gEmbeddedInputAudioEntry 6 }
+
+--
+--  Table of Alarms parameters
+--
+nwe3gAlarmsTable     OBJECT-TYPE
+  SYNTAX      SEQUENCE OF Nwe3gAlarmsEntry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "A table containing product info for all NWE3G cards at this node.
+    This table is the expansion of the table 'openGearCardTable' in the
+    OPEN-GEAR-CARD-MIB. For each NWE3G card in the 'openGearCardTable',
+    there is a corresponding entry in this table, having the same indices -
+    'openGearFrameIndex' and 'openGearCardIndex'."
+  ::= { nwe3gCardObjects 15 }
+
+nwe3gAlarmsEntry     OBJECT-TYPE
+  SYNTAX      Nwe3gAlarmsEntry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "A conceptual row within the 'nwe3gAlarmsTable'."
+  INDEX    { openGearFrameIndex, openGearCardIndex }
+  ::= { nwe3gAlarmsTable 1 }
+
+Nwe3gAlarmsEntry ::= SEQUENCE {
+  nwe3gNoInputAlarm                INTEGER,
+  nwe3gInvalidInputAlarm           INTEGER,
+  nwe3gIncompatInputAlarm          INTEGER,
+  nwe3gNonSyncInputAlarm           INTEGER,
+  nwe3gNoRefAlarm                  INTEGER,
+  nwe3gInvalidRefAlarm             INTEGER,
+  nwe3gIncompatRearModuleAlarm     INTEGER,
+  nwe3gIncompatDaughterCardAlarm   INTEGER,
+  nwe3gSetAllAlarms                INTEGER,
+  nwe3gTimeStatusAlarm             INTEGER,
+  nwe3gClearAllAlarms              INTEGER
+}
+
+nwe3gNoInputAlarm    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    no                      (0),
+    yes                     (1)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { no }
+  ::= { nwe3gAlarmsEntry 2 }
+
+nwe3gInvalidInputAlarm    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    no                      (0),
+    yes                     (1)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { no }
+  ::= { nwe3gAlarmsEntry 3 }
+
+nwe3gIncompatInputAlarm    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    no                      (0),
+    yes                     (1)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { no }
+  ::= { nwe3gAlarmsEntry 4 }
+
+nwe3gNonSyncInputAlarm    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    no                      (0),
+    yes                     (1)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { no }
+  ::= { nwe3gAlarmsEntry 5 }
+
+nwe3gNoRefAlarm    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    no                      (0),
+    yes                     (1)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { no }
+  ::= { nwe3gAlarmsEntry 6 }
+
+nwe3gInvalidRefAlarm    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    no                      (0),
+    yes                     (1)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { no }
+  ::= { nwe3gAlarmsEntry 7 }
+
+nwe3gIncompatRearModuleAlarm    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    no                      (0),
+    yes                     (1)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { no }
+  ::= { nwe3gAlarmsEntry 8 }
+
+nwe3gIncompatDaughterCardAlarm    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    no                      (0),
+    yes                     (1)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { no }
+  ::= { nwe3gAlarmsEntry 9 }
+
+nwe3gSetAllAlarms    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    set                     (1)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { set }
+  ::= { nwe3gAlarmsEntry 10 }
+
+nwe3gTimeStatusAlarm    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    no                      (0),
+    yes                     (1)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { no }
+  ::= { nwe3gAlarmsEntry 11 }
+
+nwe3gClearAllAlarms    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    clear                   (1)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { clear }
+  ::= { nwe3gAlarmsEntry 12 }
+
+--
+--  Table of EmbeddedInputAudioAlarms parameters
+--
+nwe3gEmbeddedInputAudioAlarmsArrGrp
+  OBJECT IDENTIFIER ::= { nwe3gCardObjects 16 }
+
+nwe3gNumberOfElementsInnwe3gEmbeddedInputAudioAlarmsArrGrp OBJECT-TYPE
+  SYNTAX      Integer32
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "The total number of elements in nwe3gEmbeddedInputAudioAlarmsArrGrp."
+  ::= { nwe3gEmbeddedInputAudioAlarmsArrGrp 1 }
+
+nwe3gEmbeddedInputAudioAlarmsTable     OBJECT-TYPE
+  SYNTAX      SEQUENCE OF Nwe3gEmbeddedInputAudioAlarmsEntry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "A table containing product info for all NWE3G cards at this node.
+    This table is the expansion of the table 'openGearCardTable' in the
+    OPEN-GEAR-CARD-MIB. For each NWE3G card in the 'openGearCardTable',
+    there is a corresponding entry in this table, having the same indices -
+    'openGearFrameIndex' and 'openGearCardIndex'."
+  ::= { nwe3gEmbeddedInputAudioAlarmsArrGrp 2 }
+
+nwe3gEmbeddedInputAudioAlarmsEntry     OBJECT-TYPE
+  SYNTAX      Nwe3gEmbeddedInputAudioAlarmsEntry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "A conceptual row within the 'nwe3gEmbeddedInputAudioAlarmsTable'."
+  INDEX    { openGearFrameIndex, openGearCardIndex,  nwe3gEmbeddedInputAudioAlarmsIndex}
+  ::= { nwe3gEmbeddedInputAudioAlarmsTable 1 }
+
+Nwe3gEmbeddedInputAudioAlarmsEntry ::= SEQUENCE {
+  nwe3gEmbeddedInputAudioAlarmsIndex        Unsigned32,
+  nwe3gGroupNotPresentAlarm        INTEGER,
+  nwe3gGroupCh1SilentAlarm         INTEGER,
+  nwe3gGroupCh2SilentAlarm         INTEGER,
+  nwe3gGroupCh3SilentAlarm         INTEGER,
+  nwe3gGroupCh4SilentAlarm         INTEGER
+}
+
+nwe3gEmbeddedInputAudioAlarmsIndex   OBJECT-TYPE
+  SYNTAX      Unsigned32
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "It represents the array group index."
+  ::= { nwe3gEmbeddedInputAudioAlarmsEntry 1 }
+
+nwe3gGroupNotPresentAlarm    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    no                      (0),
+    yes                     (1)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { yes }
+  ::= { nwe3gEmbeddedInputAudioAlarmsEntry 2 }
+
+nwe3gGroupCh1SilentAlarm    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    no                      (0),
+    yes                     (1)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { yes }
+  ::= { nwe3gEmbeddedInputAudioAlarmsEntry 3 }
+
+nwe3gGroupCh2SilentAlarm    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    no                      (0),
+    yes                     (1)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { yes }
+  ::= { nwe3gEmbeddedInputAudioAlarmsEntry 4 }
+
+nwe3gGroupCh3SilentAlarm    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    no                      (0),
+    yes                     (1)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { yes }
+  ::= { nwe3gEmbeddedInputAudioAlarmsEntry 5 }
+
+nwe3gGroupCh4SilentAlarm    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    no                      (0),
+    yes                     (1)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { yes }
+  ::= { nwe3gEmbeddedInputAudioAlarmsEntry 6 }
+
+--
+--  Table of EmbeddedInputAlarm parameters
+--
+nwe3gEmbeddedInputAlarmTable     OBJECT-TYPE
+  SYNTAX      SEQUENCE OF Nwe3gEmbeddedInputAlarmEntry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "A table containing product info for all NWE3G cards at this node.
+    This table is the expansion of the table 'openGearCardTable' in the
+    OPEN-GEAR-CARD-MIB. For each NWE3G card in the 'openGearCardTable',
+    there is a corresponding entry in this table, having the same indices -
+    'openGearFrameIndex' and 'openGearCardIndex'."
+  ::= { nwe3gCardObjects 17 }
+
+nwe3gEmbeddedInputAlarmEntry     OBJECT-TYPE
+  SYNTAX      Nwe3gEmbeddedInputAlarmEntry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "A conceptual row within the 'nwe3gEmbeddedInputAlarmTable'."
+  INDEX    { openGearFrameIndex, openGearCardIndex }
+  ::= { nwe3gEmbeddedInputAlarmTable 1 }
+
+Nwe3gEmbeddedInputAlarmEntry ::= SEQUENCE {
+  nwe3gSd24bitAlarm                INTEGER
+}
+
+nwe3gSd24bitAlarm    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    no                      (0),
+    yes                     (1)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { yes }
+  ::= { nwe3gEmbeddedInputAlarmEntry 1 }
+
+--
+--  Table of AESInputAlarms parameters
+--
+nwe3gAESInputAlarmsArrGrp
+  OBJECT IDENTIFIER ::= { nwe3gCardObjects 18 }
+
+nwe3gNumberOfElementsInnwe3gAESInputAlarmsArrGrp OBJECT-TYPE
+  SYNTAX      Integer32
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "The total number of elements in nwe3gAESInputAlarmsArrGrp."
+  ::= { nwe3gAESInputAlarmsArrGrp 1 }
+
+nwe3gAESInputAlarmsTable     OBJECT-TYPE
+  SYNTAX      SEQUENCE OF Nwe3gAESInputAlarmsEntry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "A table containing product info for all NWE3G cards at this node.
+    This table is the expansion of the table 'openGearCardTable' in the
+    OPEN-GEAR-CARD-MIB. For each NWE3G card in the 'openGearCardTable',
+    there is a corresponding entry in this table, having the same indices -
+    'openGearFrameIndex' and 'openGearCardIndex'."
+  ::= { nwe3gAESInputAlarmsArrGrp 2 }
+
+nwe3gAESInputAlarmsEntry     OBJECT-TYPE
+  SYNTAX      Nwe3gAESInputAlarmsEntry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "A conceptual row within the 'nwe3gAESInputAlarmsTable'."
+  INDEX    { openGearFrameIndex, openGearCardIndex,  nwe3gAESInputAlarmsIndex}
+  ::= { nwe3gAESInputAlarmsTable 1 }
+
+Nwe3gAESInputAlarmsEntry ::= SEQUENCE {
+  nwe3gAESInputAlarmsIndex        Unsigned32,
+  nwe3gAesInputNotPresentAlarm     INTEGER,
+  nwe3gAesInputChAInvalidAlarm     INTEGER,
+  nwe3gAesInputChBInvalidAlarm     INTEGER
+}
+
+nwe3gAESInputAlarmsIndex   OBJECT-TYPE
+  SYNTAX      Unsigned32
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "It represents the array group index."
+  ::= { nwe3gAESInputAlarmsEntry 1 }
+
+nwe3gAesInputNotPresentAlarm    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    no                      (0),
+    yes                     (1)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { yes }
+  ::= { nwe3gAESInputAlarmsEntry 2 }
+
+nwe3gAesInputChAInvalidAlarm    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    no                      (0),
+    yes                     (1)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { yes }
+  ::= { nwe3gAESInputAlarmsEntry 3 }
+
+nwe3gAesInputChBInvalidAlarm    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    no                      (0),
+    yes                     (1)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { yes }
+  ::= { nwe3gAESInputAlarmsEntry 4 }
+
+--
+-- Conformance
+--
+nwe3gCardMibCompliances
+  OBJECT IDENTIFIER ::= { nwe3gCardConformance 1 }
+nwe3gCardMibGroups
+  OBJECT IDENTIFIER ::= { nwe3gCardConformance 2 }
+--
+-- Compliance Statement
+--
+nwe3gCardCompliances MODULE-COMPLIANCE
+  STATUS      current
+  DESCRIPTION
+    "The compliance statement for NWE3G entities."
+  MODULE -- this module
+    MANDATORY-GROUPS { nwe3gCardInfoGroup,
+                       nwe3gCardNotifyGroup
+                     }
+
+  ::= { nwe3gCardMibCompliances 1 }
+
+nwe3gCardInfoGroup OBJECT-GROUP
+    OBJECTS { nwe3gNumberOfCards,
+              nwe3gBoardRev,
+              nwe3gRearModule,
+              nwe3gSerialNumber,
+              nwe3gFirmware,
+              nwe3gDaughterCard,
+              nwe3gDspHardware,
+              nwe3gDspSoftware,
+              nwe3gDspFpga,
+              nwe3gHwAlarm,
+              nwe3gCardVoltage,
+              nwe3gCardCurrent,
+              nwe3gHeadroom,
+              nwe3gRam,
+              nwe3gSignalAlarm,
+              nwe3gAudioAlarm,
+              nwe3gReferenceAlarm,
+              nwe3gWatermarkAlarm,
+              nwe3gAudioClusterAlarm,
+              nwe3gInput,
+              nwe3gReference,
+              nwe3gOutput,
+              nwe3gCrcError,
+              nwe3gCrcErrReset,
+              nwe3gGroupAudioState,
+              nwe3gAesInputState,
+              nwe3gTimeAlarm,
+              nwe3gEncTime,
+              nwe3gEncDate,
+              nwe3gNtpTime,
+              nwe3gNtpDate,
+              nwe3gLtcBalancedTime,
+              nwe3gLtcUnbalancedTime,
+              nwe3gRefSource,
+              nwe3gLoiColour,
+              nwe3gLoiY,
+              nwe3gLoiCr,
+              nwe3gLoiCb,
+              nwe3gSilenceThreshold,
+              nwe3gSilenceTimeout,
+              nwe3gAccess,
+              nwe3gResetAll,
+              nwe3gTimeSource,
+              nwe3gLtcFollowsDst,
+              nwe3gNtpHours,
+              nwe3gNtpMinutes,
+              nwe3gNtpHemisphere,
+              nwe3gManualYear,
+              nwe3gManualMonth,
+              nwe3gManualDay,
+              nwe3gManualHour,
+              nwe3gManualMinute,
+              nwe3gManualSecond,
+              nwe3gAcceptManualTime,
+              nwe3gDstMode,
+              nwe3gDstSetting,
+              nwe3gDstMonth,
+              nwe3gDstWeek,
+              nwe3gDstDay,
+              nwe3gDstHour,
+              nwe3gWatermarkEnabled,
+              nwe3gSidEdit,
+              nwe3gSidCheckCodeText,
+              nwe3gCodeType,
+              nwe3gLevelOverflow,
+              nwe3gAudioPassword,
+              nwe3gEditAudio,
+              nwe3gClusterNumberChoice,
+              nwe3gClusterTypeChoice,
+              nwe3gChannelContentsChoice,
+              nwe3gClusterNameArray,
+              nwe3gAudioSourceChoice,
+              nwe3gAdd5_1Cluster,
+              nwe3gAddStereo,
+              nwe3gAddMono,
+              nwe3gRemoveCluster1,
+              nwe3gRemoveCluster2,
+              nwe3gRemoveCluster3,
+              nwe3gRemoveCluster4,
+              nwe3gRemoveCluster5,
+              nwe3gRemoveCluster6,
+              nwe3gRemoveCluster7,
+              nwe3gRemoveCluster8,
+              nwe3gEmbeddedChan1State,
+              nwe3gEmbeddedChan2State,
+              nwe3gEmbeddedChan3State,
+              nwe3gEmbeddedChan4State,
+              nwe3gEmbeddedAudioWordLength,
+              nwe3gNoInputAlarm,
+              nwe3gInvalidInputAlarm,
+              nwe3gIncompatInputAlarm,
+              nwe3gNonSyncInputAlarm,
+              nwe3gNoRefAlarm,
+              nwe3gInvalidRefAlarm,
+              nwe3gIncompatRearModuleAlarm,
+              nwe3gIncompatDaughterCardAlarm,
+              nwe3gSetAllAlarms,
+              nwe3gTimeStatusAlarm,
+              nwe3gClearAllAlarms,
+              nwe3gGroupNotPresentAlarm,
+              nwe3gGroupCh1SilentAlarm,
+              nwe3gGroupCh2SilentAlarm,
+              nwe3gGroupCh3SilentAlarm,
+              nwe3gGroupCh4SilentAlarm,
+              nwe3gSd24bitAlarm,
+              nwe3gAesInputNotPresentAlarm,
+              nwe3gAesInputChAInvalidAlarm,
+              nwe3gAesInputChBInvalidAlarm
+            }
+    STATUS  current
+    DESCRIPTION
+      "A collection of objects providing basic instrumentation
+        and control of an NWE3G card."
+    ::= { nwe3gCardMibGroups 1 }
+
+nwe3gCardNotifyGroup NOTIFICATION-GROUP
+  NOTIFICATIONS { nwe3gSignalAlarmEvent,
+                  nwe3gAudioAlarmEvent,
+                  nwe3gReferenceAlarmEvent,
+                  nwe3gHwAlarmEvent,
+                  nwe3gWatermarkAlarmEvent,
+                  nwe3gAudioClusterAlarmEvent,
+                  nwe3gTimeAlarmEvent
+                }
+    STATUS  current
+    DESCRIPTION
+      "The notifications relating to the NWE3G card."
+    ::= { nwe3gCardMibGroups 2 }
+
+END

@@ -1,0 +1,3592 @@
+SFSX622-CARD-MIB DEFINITIONS ::= BEGIN
+
+--
+-- Defines control and monitoring structures for the SFSX622 card.
+--
+
+IMPORTS
+  openGearFrameIndex
+    FROM OPEN-GEAR-FRAME-MIB
+
+  openGearCardIndex
+    FROM OPEN-GEAR-CARD-MIB
+
+  openGearObjects
+    FROM OPEN-GEAR-MIB
+
+  OBJECT-TYPE, NOTIFICATION-TYPE, MODULE-IDENTITY, Integer32
+    FROM SNMPv2-SMI
+
+  OBJECT-GROUP, NOTIFICATION-GROUP, MODULE-COMPLIANCE
+    FROM SNMPv2-CONF
+
+  DisplayString
+    FROM SNMPv2-TC;
+
+sfsx622CardMib MODULE-IDENTITY
+  LAST-UPDATED "201503051200Z"
+  ORGANIZATION "www.rossvideo.org"
+  CONTACT-INFO
+    "postal:   Ross Video
+               8 John St. P.O. Box 220
+               Iroquois ON K0E 1K0
+
+      email:   support@rossvideo.com"
+
+  DESCRIPTION
+    "Defines control and monitoring structures for the SFSX622 card."
+
+  REVISION     "201503051200Z"
+  DESCRIPTION
+    "... "
+  ::= { openGearObjects 34 }
+
+--
+--  Top level components in the SFSX622 MIB
+--
+sfsx622CardNotifications
+  OBJECT IDENTIFIER ::= { sfsx622CardMib 0 }
+
+sfsx622CardObjects
+  OBJECT IDENTIFIER ::= { sfsx622CardMib 1 }
+
+sfsx622CardConformance
+  OBJECT IDENTIFIER ::= { sfsx622CardMib 2 }
+
+--
+--  Notifications relating to the SFSX622 card
+--
+sfsx622SignalAlarmEvent   NOTIFICATION-TYPE
+  OBJECTS { sfsx622SignalAlarm }
+  STATUS current
+  DESCRIPTION
+    "... "
+  ::= { sfsx622CardNotifications 1 }
+
+sfsx622AudioAlarmEvent   NOTIFICATION-TYPE
+  OBJECTS { sfsx622AudioAlarm }
+  STATUS current
+  DESCRIPTION
+    "... "
+  ::= { sfsx622CardNotifications 2 }
+
+sfsx622ReferenceAlarmEvent   NOTIFICATION-TYPE
+  OBJECTS { sfsx622ReferenceAlarm }
+  STATUS current
+  DESCRIPTION
+    "... "
+  ::= { sfsx622CardNotifications 3 }
+
+sfsx622HwAlarmEvent   NOTIFICATION-TYPE
+  OBJECTS { sfsx622HwAlarm }
+  STATUS current
+  DESCRIPTION
+    "... "
+  ::= { sfsx622CardNotifications 4 }
+
+--
+--  SFSX622 Card information
+--
+--
+--  All the SFSX622 cards in the Open Gear frame
+--
+sfsx622NumberOfCards    OBJECT-TYPE
+  SYNTAX      Integer32
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "The total number of SFSX622 cards in the open gear frame.
+"  ::= { sfsx622CardObjects 1 }
+
+--
+--  Table of Product parameters
+--
+sfsx622ProductTable     OBJECT-TYPE
+  SYNTAX      SEQUENCE OF Sfsx622ProductEntry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "A table containing product info for all SFSX622 cards at this node.
+    This table is the expansion of the table 'openGearCardTable' in the
+    OPEN-GEAR-CARD-MIB. For each SFSX622 card in the 'openGearCardTable',
+    there is a corresponding entry in this table, having the same indices -
+    'openGearFrameIndex' and 'openGearCardIndex'."
+  ::= { sfsx622CardObjects 2 }
+
+sfsx622ProductEntry     OBJECT-TYPE
+  SYNTAX      Sfsx622ProductEntry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "A conceptual row within the 'sfsx622ProductTable'."
+  INDEX    { openGearFrameIndex, openGearCardIndex }
+  ::= { sfsx622ProductTable 1 }
+
+Sfsx622ProductEntry ::= SEQUENCE {
+  sfsx622MuxFeature                DisplayString,
+  sfsx622BoardRev                  DisplayString,
+  sfsx622RearModule                DisplayString,
+  sfsx622SerialNumber              DisplayString,
+  sfsx622Firmware                  DisplayString,
+  sfsx622DaughterCard              INTEGER
+}
+
+sfsx622MuxFeature    OBJECT-TYPE
+  SYNTAX      DisplayString
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "... "
+  ::= { sfsx622ProductEntry 4 }
+
+sfsx622BoardRev    OBJECT-TYPE
+  SYNTAX      DisplayString
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "... "
+  ::= { sfsx622ProductEntry 5 }
+
+sfsx622RearModule    OBJECT-TYPE
+  SYNTAX      DisplayString
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "... "
+  ::= { sfsx622ProductEntry 6 }
+
+sfsx622SerialNumber    OBJECT-TYPE
+  SYNTAX      DisplayString
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "... "
+  ::= { sfsx622ProductEntry 7 }
+
+sfsx622Firmware    OBJECT-TYPE
+  SYNTAX      DisplayString
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "... "
+  ::= { sfsx622ProductEntry 8 }
+
+sfsx622DaughterCard    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    none                    (0),
+    analogInput8Channel     (1),
+    analogInput4Channel     (2),
+    analogOutput8Channel    (5),
+    analogOutput4Channel    (6),
+    balancedAESIO           (9)
+  }
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "... "
+  ::= { sfsx622ProductEntry 9 }
+
+--
+--  Table of Hardware parameters
+--
+sfsx622HardwareTable     OBJECT-TYPE
+  SYNTAX      SEQUENCE OF Sfsx622HardwareEntry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "A table containing product info for all SFSX622 cards at this node.
+    This table is the expansion of the table 'openGearCardTable' in the
+    OPEN-GEAR-CARD-MIB. For each SFSX622 card in the 'openGearCardTable',
+    there is a corresponding entry in this table, having the same indices -
+    'openGearFrameIndex' and 'openGearCardIndex'."
+  ::= { sfsx622CardObjects 3 }
+
+sfsx622HardwareEntry     OBJECT-TYPE
+  SYNTAX      Sfsx622HardwareEntry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "A conceptual row within the 'sfsx622HardwareTable'."
+  INDEX    { openGearFrameIndex, openGearCardIndex }
+  ::= { sfsx622HardwareTable 1 }
+
+Sfsx622HardwareEntry ::= SEQUENCE {
+  sfsx622HwAlarm                   Integer32,
+  sfsx622CardVoltage               Integer32,
+  sfsx622CardCurrent               Integer32,
+  sfsx622Headroom                  Integer32,
+  sfsx622Ram                       Integer32
+}
+
+sfsx622HwAlarm    OBJECT-TYPE
+  SYNTAX      Integer32
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "The status parameter is a bitfield where each bit indicates a
+    specific status. A value of zero means OK.
+    The status bits are defined as follows:
+      0x0001 - FPGA load invalid
+      0x0004 - Incomp I/O module
+      0x0002 - Current out of spec
+      0x0008 - Internal Error
+      0x0010 - Incompatible Daughter Card
+      0x0020 - SFP Temp Low
+      0x0040 - SFP Power Low
+      0x0080 - SFP Temp High
+      0x0100 - SFP Power High
+      0x0200 - SFP Tx Fault
+      0x0400 - SFP Not Detected
+    All other values are undefined."
+  ::= { sfsx622HardwareEntry 1 }
+
+sfsx622CardVoltage    OBJECT-TYPE
+  SYNTAX      Integer32
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "... "
+  ::= { sfsx622HardwareEntry 2 }
+
+sfsx622CardCurrent    OBJECT-TYPE
+  SYNTAX      Integer32
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "... "
+  ::= { sfsx622HardwareEntry 3 }
+
+sfsx622Headroom    OBJECT-TYPE
+  SYNTAX      Integer32
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "... "
+  ::= { sfsx622HardwareEntry 6 }
+
+sfsx622Ram    OBJECT-TYPE
+  SYNTAX      Integer32
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "... "
+  ::= { sfsx622HardwareEntry 7 }
+
+--
+--  Table of Signal parameters
+--
+sfsx622SignalTable     OBJECT-TYPE
+  SYNTAX      SEQUENCE OF Sfsx622SignalEntry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "A table containing product info for all SFSX622 cards at this node.
+    This table is the expansion of the table 'openGearCardTable' in the
+    OPEN-GEAR-CARD-MIB. For each SFSX622 card in the 'openGearCardTable',
+    there is a corresponding entry in this table, having the same indices -
+    'openGearFrameIndex' and 'openGearCardIndex'."
+  ::= { sfsx622CardObjects 4 }
+
+sfsx622SignalEntry     OBJECT-TYPE
+  SYNTAX      Sfsx622SignalEntry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "A conceptual row within the 'sfsx622SignalTable'."
+  INDEX    { openGearFrameIndex, openGearCardIndex }
+  ::= { sfsx622SignalTable 1 }
+
+Sfsx622SignalEntry ::= SEQUENCE {
+  sfsx622SignalAlarm               Integer32,
+  sfsx622AudioAlarm                Integer32,
+  sfsx622ReferenceAlarm            Integer32,
+  sfsx622Input                     INTEGER,
+  sfsx622Reference                 INTEGER,
+  sfsx622Output                    INTEGER,
+  sfsx622InputTiming               DisplayString
+}
+
+sfsx622SignalAlarm    OBJECT-TYPE
+  SYNTAX      Integer32
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "The status parameter is a bitfield where each bit indicates a
+    specific status. A value of zero means OK.
+    The status bits are defined as follows:
+      0x0002 - No Input
+      0x0004 - Invalid Format
+      0x0010 - Incompatible
+      0x0080 - Unlocked Input
+      0x0020 - Group Not Present
+      0x0040 - Group Channel Silent
+    All other values are undefined."
+  ::= { sfsx622SignalEntry 1 }
+
+sfsx622AudioAlarm    OBJECT-TYPE
+  SYNTAX      Integer32
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "The status parameter is a bitfield where each bit indicates a
+    specific status. A value of zero means OK.
+    The status bits are defined as follows:
+      0x0001 - AES Input Not Present
+      0x0002 - AES Input Async
+      0x0004 - Source Missing
+      0x0008 - Source Async
+      0x0040 - AES Input Silent
+      0x0100 - Analog Input Silent
+      0x0200 - Grp4 reduced to 20bit
+      0x0010 - Backup Source Missing
+      0x0020 - Backup Source Async
+    All other values are undefined."
+  ::= { sfsx622SignalEntry 2 }
+
+sfsx622ReferenceAlarm    OBJECT-TYPE
+  SYNTAX      Integer32
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "The status parameter is a bitfield where each bit indicates a
+    specific status. A value of zero means OK.
+    The status bits are defined as follows:
+      0x0002 - No Reference - Video
+      0x0200 - No Reference - Free Run
+      0x0004 - Invalid Format - Video
+      0x0400 - Invalid Format - Free Run
+      0x0100 - Override - Video
+    All other values are undefined."
+  ::= { sfsx622SignalEntry 3 }
+
+sfsx622Input    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    none                    (0),
+    matchInput              (1),
+    unknown                 (2),
+    incompatible            (3),
+    v480i59dot94            (4),
+    v720p59dot94            (5),
+    v720p60                 (6),
+    v1080i59dot94           (7),
+    v1080i60                (8),
+    v1080p59dot94           (9),
+    v1080p60                (10),
+    v576i50                 (11),
+    v720p50                 (12),
+    v1080i50                (13),
+    v1080p50                (14),
+    v480p59dot94            (15),
+    v576p50                 (16),
+    v1080p30                (17),
+    v1080p29dot97           (18),
+    v1080p25                (19),
+    v1080p24                (20),
+    v1080p23dot98           (21),
+    v1080pSF24              (22),
+    v1080pSF23dot98         (23)
+  }
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "... "
+  ::= { sfsx622SignalEntry 4 }
+
+sfsx622Reference    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    none                    (0),
+    matchInput              (1),
+    unknown                 (2),
+    incompatible            (3),
+    v480i59dot94            (4),
+    v720p59dot94            (5),
+    v720p60                 (6),
+    v1080i59dot94           (7),
+    v1080i60                (8),
+    v1080p59dot94           (9),
+    v1080p60                (10),
+    v576i50                 (11),
+    v720p50                 (12),
+    v1080i50                (13),
+    v1080p50                (14),
+    v480p59dot94            (15),
+    v576p50                 (16),
+    v1080p30                (17),
+    v1080p29dot97           (18),
+    v1080p25                (19),
+    v1080p24                (20),
+    v1080p23dot98           (21),
+    v1080pSF24              (22),
+    v1080pSF23dot98         (23)
+  }
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "... "
+  ::= { sfsx622SignalEntry 5 }
+
+sfsx622Output    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    none                    (0),
+    matchInput              (1),
+    unknown                 (2),
+    incompatible            (3),
+    v480i59dot94            (4),
+    v720p59dot94            (5),
+    v720p60                 (6),
+    v1080i59dot94           (7),
+    v1080i60                (8),
+    v1080p59dot94           (9),
+    v1080p60                (10),
+    v576i50                 (11),
+    v720p50                 (12),
+    v1080i50                (13),
+    v1080p50                (14),
+    v480p59dot94            (15),
+    v576p50                 (16),
+    v1080p30                (17),
+    v1080p29dot97           (18),
+    v1080p25                (19),
+    v1080p24                (20),
+    v1080p23dot98           (21),
+    v1080pSF24              (22),
+    v1080pSF23dot98         (23)
+  }
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "... "
+  ::= { sfsx622SignalEntry 6 }
+
+sfsx622InputTiming    OBJECT-TYPE
+  SYNTAX      DisplayString
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "... "
+  ::= { sfsx622SignalEntry 10 }
+
+--
+--  Table of Setup parameters
+--
+sfsx622SetupTable     OBJECT-TYPE
+  SYNTAX      SEQUENCE OF Sfsx622SetupEntry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "A table containing product info for all SFSX622 cards at this node.
+    This table is the expansion of the table 'openGearCardTable' in the
+    OPEN-GEAR-CARD-MIB. For each SFSX622 card in the 'openGearCardTable',
+    there is a corresponding entry in this table, having the same indices -
+    'openGearFrameIndex' and 'openGearCardIndex'."
+  ::= { sfsx622CardObjects 5 }
+
+sfsx622SetupEntry     OBJECT-TYPE
+  SYNTAX      Sfsx622SetupEntry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "A conceptual row within the 'sfsx622SetupTable'."
+  INDEX    { openGearFrameIndex, openGearCardIndex }
+  ::= { sfsx622SetupTable 1 }
+
+Sfsx622SetupEntry ::= SEQUENCE {
+  sfsx622RefSource                 INTEGER,
+  sfsx622LoiVideo                  INTEGER,
+  sfsx622Pattern                   INTEGER,
+  sfsx622SdAudioBitMode            INTEGER,
+  sfsx622SilenceThreshold          Integer32,
+  sfsx622SilenceTimeout            Integer32,
+  sfsx622Access                    INTEGER,
+  sfsx622AudioResetAll             INTEGER,
+  sfsx622ResetAll                  INTEGER,
+  sfsx622AesIOResetAll             INTEGER,
+  sfsx622AesIOResetAllPg2          INTEGER,
+  sfsx622AnalogResetAll            INTEGER,
+  sfsx622SdiInSelection            INTEGER,
+  sfsx622CustomColor               Integer32,
+  sfsx622DmxSRCMode                INTEGER,
+  sfsx622HDelay                    Integer32,
+  sfsx622VDelay                    Integer32,
+  sfsx622FDelay                    Integer32,
+  sfsx622LoiFormat                 INTEGER
+}
+
+sfsx622RefSource    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    frame1                  (0),
+    frame2                  (1),
+    video                   (3)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { frame1 }
+  ::= { sfsx622SetupEntry 1 }
+
+sfsx622LoiVideo    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    black                   (0),
+    blue                    (1),
+    customColor             (2),
+    v75perSMPTEBars         (3),
+    matrixPathological      (4),
+    freeze                  (5)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { freeze }
+  ::= { sfsx622SetupEntry 3 }
+
+sfsx622Pattern    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    none                    (0),
+    v100perColorBars        (1),
+    black                   (2),
+    blue                    (3),
+    matrixPathological      (4),
+    lumaRamp                (5),
+    yCRamp                  (6),
+    v75perColorBars         (7),
+    v75perSMPTEBars         (9),
+    customColor             (10)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { none }
+  ::= { sfsx622SetupEntry 4 }
+
+sfsx622SdAudioBitMode    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    v20Bit                  (4),
+    v24Bit                  (8),
+    auto                    (9)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { v20Bit }
+  ::= { sfsx622SetupEntry 5 }
+
+sfsx622SilenceThreshold    OBJECT-TYPE
+  SYNTAX      Integer32 (-96..0)
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { -72 }
+  ::= { sfsx622SetupEntry 6 }
+
+sfsx622SilenceTimeout    OBJECT-TYPE
+  SYNTAX      Integer32 (1..60)
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { 5 }
+  ::= { sfsx622SetupEntry 7 }
+
+sfsx622Access    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    unlocked                (0),
+    locked                  (2)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { unlocked }
+  ::= { sfsx622SetupEntry 9 }
+
+sfsx622AudioResetAll    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    reset                   (1)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { reset }
+  ::= { sfsx622SetupEntry 10 }
+
+sfsx622ResetAll    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    reset                   (1)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { reset }
+  ::= { sfsx622SetupEntry 11 }
+
+sfsx622AesIOResetAll    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    reset                   (1)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { 0 }
+  ::= { sfsx622SetupEntry 12 }
+
+sfsx622AesIOResetAllPg2    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    reset                   (1)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { reset }
+  ::= { sfsx622SetupEntry 13 }
+
+sfsx622AnalogResetAll    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    reset                   (1)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { reset }
+  ::= { sfsx622SetupEntry 14 }
+
+sfsx622SdiInSelection    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    copper                  (0),
+    optical                 (1)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { optical }
+  ::= { sfsx622SetupEntry 15 }
+
+sfsx622CustomColor    OBJECT-TYPE
+  SYNTAX      Integer32
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { -10132123 }
+  ::= { sfsx622SetupEntry 16 }
+
+sfsx622DmxSRCMode    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    no                      (0),
+    yes                     (1)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { yes }
+  ::= { sfsx622SetupEntry 17 }
+
+sfsx622HDelay    OBJECT-TYPE
+  SYNTAX      Integer32
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { 0 }
+  ::= { sfsx622SetupEntry 18 }
+
+sfsx622VDelay    OBJECT-TYPE
+  SYNTAX      Integer32
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { 0 }
+  ::= { sfsx622SetupEntry 19 }
+
+sfsx622FDelay    OBJECT-TYPE
+  SYNTAX      Integer32
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { 1 }
+  ::= { sfsx622SetupEntry 20 }
+
+sfsx622LoiFormat    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    lastInputFormat         (1),
+    v480i59dot94            (4),
+    v720p59dot94            (5),
+    v720p60                 (6),
+    v1080i59dot94           (7),
+    v1080i60                (8),
+    v1080p59dot94           (9),
+    v1080p60                (10),
+    v576i50                 (11),
+    v720p50                 (12),
+    v1080i50                (13),
+    v1080p50                (14),
+    v1080p30                (17),
+    v1080p29dot97           (18),
+    v1080p25                (19),
+    v1080p24                (20),
+    v1080p23dot98           (21),
+    v1080pSF24              (22),
+    v1080pSF23dot98         (23)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { lastInputFormat }
+  ::= { sfsx622SetupEntry 21 }
+
+--
+--  Table of InputStatus parameters
+--
+sfsx622InputStatusTable     OBJECT-TYPE
+  SYNTAX      SEQUENCE OF Sfsx622InputStatusEntry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "A table containing product info for all SFSX622 cards at this node.
+    This table is the expansion of the table 'openGearCardTable' in the
+    OPEN-GEAR-CARD-MIB. For each SFSX622 card in the 'openGearCardTable',
+    there is a corresponding entry in this table, having the same indices -
+    'openGearFrameIndex' and 'openGearCardIndex'."
+  ::= { sfsx622CardObjects 6 }
+
+sfsx622InputStatusEntry     OBJECT-TYPE
+  SYNTAX      Sfsx622InputStatusEntry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "A conceptual row within the 'sfsx622InputStatusTable'."
+  INDEX    { openGearFrameIndex, openGearCardIndex }
+  ::= { sfsx622InputStatusTable 1 }
+
+Sfsx622InputStatusEntry ::= SEQUENCE {
+  sfsx622CrcError                  DisplayString,
+  sfsx622CrcErrReset               INTEGER
+}
+
+sfsx622CrcError    OBJECT-TYPE
+  SYNTAX      DisplayString
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "... "
+  ::= { sfsx622InputStatusEntry 1 }
+
+sfsx622CrcErrReset    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    reset                   (1)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { reset }
+  ::= { sfsx622InputStatusEntry 2 }
+
+--
+--  Table of AESOutputsP1 parameters
+--
+sfsx622AESOutputsP1ArrGrp
+  OBJECT IDENTIFIER ::= { sfsx622CardObjects 7 }
+
+sfsx622NumberOfElementsInsfsx622AESOutputsP1ArrGrp OBJECT-TYPE
+  SYNTAX      Integer32
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "The total number of elements in sfsx622AESOutputsP1ArrGrp."
+  ::= { sfsx622AESOutputsP1ArrGrp 1 }
+
+sfsx622AESOutputsP1Table     OBJECT-TYPE
+  SYNTAX      SEQUENCE OF Sfsx622AESOutputsP1Entry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "A table containing product info for all SFSX622 cards at this node.
+    This table is the expansion of the table 'openGearCardTable' in the
+    OPEN-GEAR-CARD-MIB. For each SFSX622 card in the 'openGearCardTable',
+    there is a corresponding entry in this table, having the same indices -
+    'openGearFrameIndex' and 'openGearCardIndex'."
+  ::= { sfsx622AESOutputsP1ArrGrp 2 }
+
+sfsx622AESOutputsP1Entry     OBJECT-TYPE
+  SYNTAX      Sfsx622AESOutputsP1Entry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "A conceptual row within the 'sfsx622AESOutputsP1Table'."
+  INDEX    { openGearFrameIndex, openGearCardIndex,  sfsx622AESOutputsP1Index}
+  ::= { sfsx622AESOutputsP1Table 1 }
+
+Sfsx622AESOutputsP1Entry ::= SEQUENCE {
+  sfsx622AESOutputsP1Index        Unsigned32,
+  sfsx622AesCh1Source              INTEGER,
+  sfsx622AesCh2Source              INTEGER,
+  sfsx622AesCh1Delay               Integer32,
+  sfsx622AesCh2Delay               Integer32,
+  sfsx622AesDelayLock              INTEGER,
+  sfsx622AesCh1Gain                Integer32,
+  sfsx622AesCh2Gain                Integer32,
+  sfsx622AesGainLock               INTEGER,
+  sfsx622AesCh1Invert              INTEGER,
+  sfsx622AesCh2Invert              INTEGER,
+  sfsx622AesSum                    INTEGER,
+  sfsx622AesIOReset                INTEGER,
+  sfsx622AesInputChAStatus         INTEGER,
+  sfsx622AesInputChBStatus         INTEGER,
+  sfsx622AesInputWordLength        INTEGER,
+  sfsx622AesEmph                   INTEGER,
+  sfsx622AesInputSampleRate        INTEGER
+}
+
+sfsx622AESOutputsP1Index   OBJECT-TYPE
+  SYNTAX      Unsigned32
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "It represents the array group index."
+  ::= { sfsx622AESOutputsP1Entry 1 }
+
+sfsx622AesCh1Source    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    mute                   (0 ),
+    group1ch1              (1 ),
+    group1ch2              (2 ),
+    group1ch3              (3 ),
+    group1ch4              (4 ),
+    group2ch1              (5 ),
+    group2ch2              (6 ),
+    group2ch3              (7 ),
+    group2ch4              (8 ),
+    group3ch1              (9 ),
+    group3ch2              (10),
+    group3ch3              (11),
+    group3ch4              (12),
+    group4ch1              (13),
+    group4ch2              (14),
+    group4ch3              (15),
+    group4ch4              (16),
+    aes1a                  (17),
+    aes1b                  (18),
+    aes2a                  (19),
+    aes2b                  (20),
+    aes3a                  (21),
+    aes3b                  (22),
+    aes4a                  (23),
+    aes4b                  (24),
+    aes5a                  (25),    
+    aes5b                  (26),    
+    aes6a                  (27),    
+    aes6b                  (28),    
+    aes7a                  (29),    
+    aes7b                  (30),    
+    aes8a                  (31),    
+    aes8b                  (32),
+    500hztone              (33),
+    1khztone               (34),
+    2khztone               (35),
+    4khztone               (36),
+    analog1                (37),    
+    analog2                (38),    
+    analog3                (39),    
+    analog4                (40),    
+    analog5                (41),    
+    analog6                (42),    
+    analog7                (43),    
+    analog8                (44)    
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { 0 }
+  ::= { sfsx622AESOutputsP1Entry 2 }
+
+sfsx622AesCh2Source    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    mute                   (0 ),
+    group1ch1              (1 ),
+    group1ch2              (2 ),
+    group1ch3              (3 ),
+    group1ch4              (4 ),
+    group2ch1              (5 ),
+    group2ch2              (6 ),
+    group2ch3              (7 ),
+    group2ch4              (8 ),
+    group3ch1              (9 ),
+    group3ch2              (10),
+    group3ch3              (11),
+    group3ch4              (12),
+    group4ch1              (13),
+    group4ch2              (14),
+    group4ch3              (15),
+    group4ch4              (16),
+    aes1a                  (17),
+    aes1b                  (18),
+    aes2a                  (19),
+    aes2b                  (20),
+    aes3a                  (21),
+    aes3b                  (22),
+    aes4a                  (23),
+    aes4b                  (24),
+    aes5a                  (25),    
+    aes5b                  (26),    
+    aes6a                  (27),    
+    aes6b                  (28),    
+    aes7a                  (29),    
+    aes7b                  (30),    
+    aes8a                  (31),    
+    aes8b                  (32),
+    500hztone              (33),
+    1khztone               (34),
+    2khztone               (35),
+    4khztone               (36),
+    analog1                (37),    
+    analog2                (38),    
+    analog3                (39),    
+    analog4                (40),    
+    analog5                (41),    
+    analog6                (42),    
+    analog7                (43),    
+    analog8                (44)    
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { 0 }
+  ::= { sfsx622AESOutputsP1Entry 3 }
+
+sfsx622AesCh1Delay    OBJECT-TYPE
+  SYNTAX      Integer32 (0..1000)
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { 0 }
+  ::= { sfsx622AESOutputsP1Entry 4 }
+
+sfsx622AesCh2Delay    OBJECT-TYPE
+  SYNTAX      Integer32 (0..1000)
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { 0 }
+  ::= { sfsx622AESOutputsP1Entry 5 }
+
+sfsx622AesDelayLock    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    no                      (0),
+    yes                     (1)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { yes }
+  ::= { sfsx622AESOutputsP1Entry 6 }
+
+sfsx622AesCh1Gain    OBJECT-TYPE
+  SYNTAX      Integer32 (-20..20)
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { 0 }
+  ::= { sfsx622AESOutputsP1Entry 7 }
+
+sfsx622AesCh2Gain    OBJECT-TYPE
+  SYNTAX      Integer32 (-20..20)
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { 0 }
+  ::= { sfsx622AESOutputsP1Entry 8 }
+
+sfsx622AesGainLock    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    no                      (0),
+    yes                     (1)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { yes }
+  ::= { sfsx622AESOutputsP1Entry 9 }
+
+sfsx622AesCh1Invert    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    no                      (0),
+    yes                     (1)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { yes }
+  ::= { sfsx622AESOutputsP1Entry 10 }
+
+sfsx622AesCh2Invert    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    no                      (0),
+    yes                     (1)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { no }
+  ::= { sfsx622AESOutputsP1Entry 11 }
+
+sfsx622AesSum    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    no                      (0),
+    yes                     (1)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { no }
+  ::= { sfsx622AESOutputsP1Entry 12 }
+
+sfsx622AesIOReset    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    reset                   (1)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { 0 }
+  ::= { sfsx622AESOutputsP1Entry 13 }
+
+sfsx622AesInputChAStatus    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    pCM                     (0),
+    noInput                 (1),
+    notPresent              (2),
+    pCMSilent               (3),
+    nonPCM                  (4),
+    async                   (6),
+    mixed                   (7)
+  }
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "... "
+  ::= { sfsx622AESOutputsP1Entry 14 }
+
+sfsx622AesInputChBStatus    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    pCM                     (0),
+    noInput                 (1),
+    notPresent              (2),
+    pCMSilent               (3),
+    nonPCM                  (4),
+    async                   (6),
+    mixed                   (7)
+  }
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "... "
+  ::= { sfsx622AESOutputsP1Entry 15 }
+
+sfsx622AesInputWordLength    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    v16Bit                  (0),
+    v20Bit                  (4),
+    v24Bit                  (8),
+    unknown                 (10)
+  }
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "... "
+  ::= { sfsx622AESOutputsP1Entry 16 }
+
+sfsx622AesEmph    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    notPresent              (0),
+    present                 (1)
+  }
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "... "
+  ::= { sfsx622AESOutputsP1Entry 17 }
+
+sfsx622AesInputSampleRate    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    v16KHz                  (0),
+    v32KHz                  (1),
+    v44dot1KHz              (2),
+    v48KHz                  (3),
+    v88KHz                  (4),
+    v96KHz                  (5),
+    v176KHz                 (6),
+    v192KHz                 (7),
+    unknown                 (8)
+  }
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "... "
+  ::= { sfsx622AESOutputsP1Entry 18 }
+
+--
+--  Table of AESOutputsP2 parameters
+--
+sfsx622AESOutputsP2ArrGrp
+  OBJECT IDENTIFIER ::= { sfsx622CardObjects 8 }
+
+sfsx622NumberOfElementsInsfsx622AESOutputsP2ArrGrp OBJECT-TYPE
+  SYNTAX      Integer32
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "The total number of elements in sfsx622AESOutputsP2ArrGrp."
+  ::= { sfsx622AESOutputsP2ArrGrp 1 }
+
+sfsx622AESOutputsP2Table     OBJECT-TYPE
+  SYNTAX      SEQUENCE OF Sfsx622AESOutputsP2Entry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "A table containing product info for all SFSX622 cards at this node.
+    This table is the expansion of the table 'openGearCardTable' in the
+    OPEN-GEAR-CARD-MIB. For each SFSX622 card in the 'openGearCardTable',
+    there is a corresponding entry in this table, having the same indices -
+    'openGearFrameIndex' and 'openGearCardIndex'."
+  ::= { sfsx622AESOutputsP2ArrGrp 2 }
+
+sfsx622AESOutputsP2Entry     OBJECT-TYPE
+  SYNTAX      Sfsx622AESOutputsP2Entry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "A conceptual row within the 'sfsx622AESOutputsP2Table'."
+  INDEX    { openGearFrameIndex, openGearCardIndex,  sfsx622AESOutputsP2Index}
+  ::= { sfsx622AESOutputsP2Table 1 }
+
+Sfsx622AESOutputsP2Entry ::= SEQUENCE {
+  sfsx622AESOutputsP2Index        Unsigned32,
+  sfsx622AesCh1SourcePg2           INTEGER,
+  sfsx622AesCh2SourcePg2           INTEGER,
+  sfsx622AesCh1DelayPg2            Integer32,
+  sfsx622AesCh2DelayPg2            Integer32,
+  sfsx622AesDelayLockPg2           INTEGER,
+  sfsx622AesCh1GainPg2             Integer32,
+  sfsx622AesCh2GainPg2             Integer32,
+  sfsx622AesGainLockPg2            INTEGER,
+  sfsx622AesCh1InvertPg2           INTEGER,
+  sfsx622AesCh2InvertPg2           INTEGER,
+  sfsx622AesSumPg2                 INTEGER,
+  sfsx622AesIOResetPg2             INTEGER,
+  sfsx622AesInputChAStatusPage2    INTEGER,
+  sfsx622AesInputChBStatusPage2    INTEGER,
+  sfsx622AesInputWordLengthPage2   INTEGER,
+  sfsx622AesEmphPg2                INTEGER,
+  sfsx622AesInputSampleRatePage2   INTEGER
+}
+
+sfsx622AESOutputsP2Index   OBJECT-TYPE
+  SYNTAX      Unsigned32
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "It represents the array group index."
+  ::= { sfsx622AESOutputsP2Entry 1 }
+
+sfsx622AesCh1SourcePg2    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    mute                   (0 ),
+    group1ch1              (1 ),
+    group1ch2              (2 ),
+    group1ch3              (3 ),
+    group1ch4              (4 ),
+    group2ch1              (5 ),
+    group2ch2              (6 ),
+    group2ch3              (7 ),
+    group2ch4              (8 ),
+    group3ch1              (9 ),
+    group3ch2              (10),
+    group3ch3              (11),
+    group3ch4              (12),
+    group4ch1              (13),
+    group4ch2              (14),
+    group4ch3              (15),
+    group4ch4              (16),
+    aes1a                  (17),
+    aes1b                  (18),
+    aes2a                  (19),
+    aes2b                  (20),
+    aes3a                  (21),
+    aes3b                  (22),
+    aes4a                  (23),
+    aes4b                  (24),
+    aes5a                  (25),    
+    aes5b                  (26),    
+    aes6a                  (27),    
+    aes6b                  (28),    
+    aes7a                  (29),    
+    aes7b                  (30),    
+    aes8a                  (31),    
+    aes8b                  (32),
+    500hztone              (33),
+    1khztone               (34),
+    2khztone               (35),
+    4khztone               (36),
+    analog1                (37),    
+    analog2                (38),    
+    analog3                (39),    
+    analog4                (40),    
+    analog5                (41),    
+    analog6                (42),    
+    analog7                (43),    
+    analog8                (44)    
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { 0 }
+  ::= { sfsx622AESOutputsP2Entry 2 }
+
+sfsx622AesCh2SourcePg2    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    mute                   (0 ),
+    group1ch1              (1 ),
+    group1ch2              (2 ),
+    group1ch3              (3 ),
+    group1ch4              (4 ),
+    group2ch1              (5 ),
+    group2ch2              (6 ),
+    group2ch3              (7 ),
+    group2ch4              (8 ),
+    group3ch1              (9 ),
+    group3ch2              (10),
+    group3ch3              (11),
+    group3ch4              (12),
+    group4ch1              (13),
+    group4ch2              (14),
+    group4ch3              (15),
+    group4ch4              (16),
+    aes1a                  (17),
+    aes1b                  (18),
+    aes2a                  (19),
+    aes2b                  (20),
+    aes3a                  (21),
+    aes3b                  (22),
+    aes4a                  (23),
+    aes4b                  (24),
+    aes5a                  (25),    
+    aes5b                  (26),    
+    aes6a                  (27),    
+    aes6b                  (28),    
+    aes7a                  (29),    
+    aes7b                  (30),    
+    aes8a                  (31),    
+    aes8b                  (32),
+    500hztone              (33),
+    1khztone               (34),
+    2khztone               (35),
+    4khztone               (36),
+    analog1                (37),    
+    analog2                (38),    
+    analog3                (39),    
+    analog4                (40),    
+    analog5                (41),    
+    analog6                (42),    
+    analog7                (43),    
+    analog8                (44)    
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { 0 }
+  ::= { sfsx622AESOutputsP2Entry 3 }
+
+sfsx622AesCh1DelayPg2    OBJECT-TYPE
+  SYNTAX      Integer32 (0..1000)
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { 0 }
+  ::= { sfsx622AESOutputsP2Entry 4 }
+
+sfsx622AesCh2DelayPg2    OBJECT-TYPE
+  SYNTAX      Integer32 (0..1000)
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { 0 }
+  ::= { sfsx622AESOutputsP2Entry 5 }
+
+sfsx622AesDelayLockPg2    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    no                      (0),
+    yes                     (1)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { yes }
+  ::= { sfsx622AESOutputsP2Entry 6 }
+
+sfsx622AesCh1GainPg2    OBJECT-TYPE
+  SYNTAX      Integer32 (-20..20)
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { 0 }
+  ::= { sfsx622AESOutputsP2Entry 7 }
+
+sfsx622AesCh2GainPg2    OBJECT-TYPE
+  SYNTAX      Integer32 (-20..20)
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { 0 }
+  ::= { sfsx622AESOutputsP2Entry 8 }
+
+sfsx622AesGainLockPg2    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    no                      (0),
+    yes                     (1)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { no }
+  ::= { sfsx622AESOutputsP2Entry 9 }
+
+sfsx622AesCh1InvertPg2    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    no                      (0),
+    yes                     (1)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { no }
+  ::= { sfsx622AESOutputsP2Entry 10 }
+
+sfsx622AesCh2InvertPg2    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    no                      (0),
+    yes                     (1)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { no }
+  ::= { sfsx622AESOutputsP2Entry 11 }
+
+sfsx622AesSumPg2    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    no                      (0),
+    yes                     (1)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { no }
+  ::= { sfsx622AESOutputsP2Entry 12 }
+
+sfsx622AesIOResetPg2    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    reset                   (1)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { reset }
+  ::= { sfsx622AESOutputsP2Entry 13 }
+
+sfsx622AesInputChAStatusPage2    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    pCM                     (0),
+    noInput                 (1),
+    notPresent              (2),
+    pCMSilent               (3),
+    nonPCM                  (4),
+    async                   (6),
+    mixed                   (7)
+  }
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "... "
+  ::= { sfsx622AESOutputsP2Entry 14 }
+
+sfsx622AesInputChBStatusPage2    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    pCM                     (0),
+    noInput                 (1),
+    notPresent              (2),
+    pCMSilent               (3),
+    nonPCM                  (4),
+    async                   (6),
+    mixed                   (7)
+  }
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "... "
+  ::= { sfsx622AESOutputsP2Entry 15 }
+
+sfsx622AesInputWordLengthPage2    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    v16Bit                  (0),
+    v20Bit                  (4),
+    v24Bit                  (8),
+    unknown                 (10)
+  }
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "... "
+  ::= { sfsx622AESOutputsP2Entry 16 }
+
+sfsx622AesEmphPg2    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    notPresent              (0),
+    present                 (1)
+  }
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "... "
+  ::= { sfsx622AESOutputsP2Entry 17 }
+
+sfsx622AesInputSampleRatePage2    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    v16KHz                  (0),
+    v32KHz                  (1),
+    v44dot1KHz              (2),
+    v48KHz                  (3),
+    v88KHz                  (4),
+    v96KHz                  (5),
+    v176KHz                 (6),
+    v192KHz                 (7),
+    unknown                 (8)
+  }
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "... "
+  ::= { sfsx622AESOutputsP2Entry 18 }
+
+--
+--  Table of EmbeddedOutputsP1 parameters
+--
+sfsx622EmbeddedOutputsP1ArrGrp
+  OBJECT IDENTIFIER ::= { sfsx622CardObjects 9 }
+
+sfsx622NumberOfElementsInsfsx622EmbeddedOutputsP1ArrGrp OBJECT-TYPE
+  SYNTAX      Integer32
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "The total number of elements in sfsx622EmbeddedOutputsP1ArrGrp."
+  ::= { sfsx622EmbeddedOutputsP1ArrGrp 1 }
+
+sfsx622EmbeddedOutputsP1Table     OBJECT-TYPE
+  SYNTAX      SEQUENCE OF Sfsx622EmbeddedOutputsP1Entry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "A table containing product info for all SFSX622 cards at this node.
+    This table is the expansion of the table 'openGearCardTable' in the
+    OPEN-GEAR-CARD-MIB. For each SFSX622 card in the 'openGearCardTable',
+    there is a corresponding entry in this table, having the same indices -
+    'openGearFrameIndex' and 'openGearCardIndex'."
+  ::= { sfsx622EmbeddedOutputsP1ArrGrp 2 }
+
+sfsx622EmbeddedOutputsP1Entry     OBJECT-TYPE
+  SYNTAX      Sfsx622EmbeddedOutputsP1Entry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "A conceptual row within the 'sfsx622EmbeddedOutputsP1Table'."
+  INDEX    { openGearFrameIndex, openGearCardIndex,  sfsx622EmbeddedOutputsP1Index}
+  ::= { sfsx622EmbeddedOutputsP1Table 1 }
+
+Sfsx622EmbeddedOutputsP1Entry ::= SEQUENCE {
+  sfsx622EmbeddedOutputsP1Index        Unsigned32,
+  sfsx622EmbCh1Source              INTEGER,
+  sfsx622EmbCh2Source              INTEGER,
+  sfsx622EmbCh1Delay               Integer32,
+  sfsx622EmbCh2Delay               Integer32,
+  sfsx622EmbDelayLock              INTEGER,
+  sfsx622EmbCh1Gain                Integer32,
+  sfsx622EmbCh2Gain                Integer32,
+  sfsx622EmbGainLock               INTEGER,
+  sfsx622EmbCh1Invert              INTEGER,
+  sfsx622EmbCh2Invert              INTEGER,
+  sfsx622EmbSum                    INTEGER,
+  sfsx622EmbReset                  INTEGER,
+  sfsx622GroupEnable               INTEGER
+}
+
+sfsx622EmbeddedOutputsP1Index   OBJECT-TYPE
+  SYNTAX      Unsigned32
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "It represents the array group index."
+  ::= { sfsx622EmbeddedOutputsP1Entry 1 }
+
+sfsx622EmbCh1Source    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    mute                   (0 ),
+    group1ch1              (1 ),
+    group1ch2              (2 ),
+    group1ch3              (3 ),
+    group1ch4              (4 ),
+    group2ch1              (5 ),
+    group2ch2              (6 ),
+    group2ch3              (7 ),
+    group2ch4              (8 ),
+    group3ch1              (9 ),
+    group3ch2              (10),
+    group3ch3              (11),
+    group3ch4              (12),
+    group4ch1              (13),
+    group4ch2              (14),
+    group4ch3              (15),
+    group4ch4              (16),
+    aes1a                  (17),
+    aes1b                  (18),
+    aes2a                  (19),
+    aes2b                  (20),
+    aes3a                  (21),
+    aes3b                  (22),
+    aes4a                  (23),
+    aes4b                  (24),
+    aes5a                  (25),    
+    aes5b                  (26),    
+    aes6a                  (27),    
+    aes6b                  (28),    
+    aes7a                  (29),    
+    aes7b                  (30),    
+    aes8a                  (31),    
+    aes8b                  (32),
+    500hztone              (33),
+    1khztone               (34),
+    2khztone               (35),
+    4khztone               (36),
+    analog1                (37),    
+    analog2                (38),    
+    analog3                (39),    
+    analog4                (40),    
+    analog5                (41),    
+    analog6                (42),    
+    analog7                (43),    
+    analog8                (44)    
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { 0 }
+  ::= { sfsx622EmbeddedOutputsP1Entry 2 }
+
+sfsx622EmbCh2Source    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    mute                   (0 ),
+    group1ch1              (1 ),
+    group1ch2              (2 ),
+    group1ch3              (3 ),
+    group1ch4              (4 ),
+    group2ch1              (5 ),
+    group2ch2              (6 ),
+    group2ch3              (7 ),
+    group2ch4              (8 ),
+    group3ch1              (9 ),
+    group3ch2              (10),
+    group3ch3              (11),
+    group3ch4              (12),
+    group4ch1              (13),
+    group4ch2              (14),
+    group4ch3              (15),
+    group4ch4              (16),
+    aes1a                  (17),
+    aes1b                  (18),
+    aes2a                  (19),
+    aes2b                  (20),
+    aes3a                  (21),
+    aes3b                  (22),
+    aes4a                  (23),
+    aes4b                  (24),
+    aes5a                  (25),    
+    aes5b                  (26),    
+    aes6a                  (27),    
+    aes6b                  (28),    
+    aes7a                  (29),    
+    aes7b                  (30),    
+    aes8a                  (31),    
+    aes8b                  (32),
+    500hztone              (33),
+    1khztone               (34),
+    2khztone               (35),
+    4khztone               (36),
+    analog1                (37),    
+    analog2                (38),    
+    analog3                (39),    
+    analog4                (40),    
+    analog5                (41),    
+    analog6                (42),    
+    analog7                (43),    
+    analog8                (44)    
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { 0 }
+  ::= { sfsx622EmbeddedOutputsP1Entry 3 }
+
+sfsx622EmbCh1Delay    OBJECT-TYPE
+  SYNTAX      Integer32 (0..1000)
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { 0 }
+  ::= { sfsx622EmbeddedOutputsP1Entry 4 }
+
+sfsx622EmbCh2Delay    OBJECT-TYPE
+  SYNTAX      Integer32 (0..1000)
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { 0 }
+  ::= { sfsx622EmbeddedOutputsP1Entry 5 }
+
+sfsx622EmbDelayLock    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    no                      (0),
+    yes                     (1)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { yes }
+  ::= { sfsx622EmbeddedOutputsP1Entry 6 }
+
+sfsx622EmbCh1Gain    OBJECT-TYPE
+  SYNTAX      Integer32 (-20..20)
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { 0 }
+  ::= { sfsx622EmbeddedOutputsP1Entry 7 }
+
+sfsx622EmbCh2Gain    OBJECT-TYPE
+  SYNTAX      Integer32 (-20..20)
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { 0 }
+  ::= { sfsx622EmbeddedOutputsP1Entry 8 }
+
+sfsx622EmbGainLock    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    no                      (0),
+    yes                     (1)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { yes }
+  ::= { sfsx622EmbeddedOutputsP1Entry 9 }
+
+sfsx622EmbCh1Invert    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    no                      (0),
+    yes                     (1)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { yes }
+  ::= { sfsx622EmbeddedOutputsP1Entry 10 }
+
+sfsx622EmbCh2Invert    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    no                      (0),
+    yes                     (1)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { no }
+  ::= { sfsx622EmbeddedOutputsP1Entry 11 }
+
+sfsx622EmbSum    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    no                      (0),
+    yes                     (1)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { no }
+  ::= { sfsx622EmbeddedOutputsP1Entry 12 }
+
+sfsx622EmbReset    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    reset                   (1)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { 0 }
+  ::= { sfsx622EmbeddedOutputsP1Entry 13 }
+
+sfsx622GroupEnable    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    no                      (0),
+    yes                     (1)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { yes }
+  ::= { sfsx622EmbeddedOutputsP1Entry 14 }
+
+--
+--  Table of EmbeddedOutputsP2 parameters
+--
+sfsx622EmbeddedOutputsP2ArrGrp
+  OBJECT IDENTIFIER ::= { sfsx622CardObjects 10 }
+
+sfsx622NumberOfElementsInsfsx622EmbeddedOutputsP2ArrGrp OBJECT-TYPE
+  SYNTAX      Integer32
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "The total number of elements in sfsx622EmbeddedOutputsP2ArrGrp."
+  ::= { sfsx622EmbeddedOutputsP2ArrGrp 1 }
+
+sfsx622EmbeddedOutputsP2Table     OBJECT-TYPE
+  SYNTAX      SEQUENCE OF Sfsx622EmbeddedOutputsP2Entry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "A table containing product info for all SFSX622 cards at this node.
+    This table is the expansion of the table 'openGearCardTable' in the
+    OPEN-GEAR-CARD-MIB. For each SFSX622 card in the 'openGearCardTable',
+    there is a corresponding entry in this table, having the same indices -
+    'openGearFrameIndex' and 'openGearCardIndex'."
+  ::= { sfsx622EmbeddedOutputsP2ArrGrp 2 }
+
+sfsx622EmbeddedOutputsP2Entry     OBJECT-TYPE
+  SYNTAX      Sfsx622EmbeddedOutputsP2Entry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "A conceptual row within the 'sfsx622EmbeddedOutputsP2Table'."
+  INDEX    { openGearFrameIndex, openGearCardIndex,  sfsx622EmbeddedOutputsP2Index}
+  ::= { sfsx622EmbeddedOutputsP2Table 1 }
+
+Sfsx622EmbeddedOutputsP2Entry ::= SEQUENCE {
+  sfsx622EmbeddedOutputsP2Index        Unsigned32,
+  sfsx622EmbCh1SourcePg2           INTEGER,
+  sfsx622EmbCh2SourcePg2           INTEGER,
+  sfsx622EmbCh1DelayPg2            Integer32,
+  sfsx622EmbCh2DelayPg2            Integer32,
+  sfsx622EmbDelayLockPg2           INTEGER,
+  sfsx622EmbCh1GainPg2             Integer32,
+  sfsx622EmbCh2GainPg2             Integer32,
+  sfsx622EmbGainLockPg2            INTEGER,
+  sfsx622EmbCh1InvertPg2           INTEGER,
+  sfsx622EmbCh2InvertPg2           INTEGER,
+  sfsx622EmbSumPg2                 INTEGER,
+  sfsx622EmbResetPg2               INTEGER
+}
+
+sfsx622EmbeddedOutputsP2Index   OBJECT-TYPE
+  SYNTAX      Unsigned32
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "It represents the array group index."
+  ::= { sfsx622EmbeddedOutputsP2Entry 1 }
+
+sfsx622EmbCh1SourcePg2    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    mute                   (0 ),
+    group1ch1              (1 ),
+    group1ch2              (2 ),
+    group1ch3              (3 ),
+    group1ch4              (4 ),
+    group2ch1              (5 ),
+    group2ch2              (6 ),
+    group2ch3              (7 ),
+    group2ch4              (8 ),
+    group3ch1              (9 ),
+    group3ch2              (10),
+    group3ch3              (11),
+    group3ch4              (12),
+    group4ch1              (13),
+    group4ch2              (14),
+    group4ch3              (15),
+    group4ch4              (16),
+    aes1a                  (17),
+    aes1b                  (18),
+    aes2a                  (19),
+    aes2b                  (20),
+    aes3a                  (21),
+    aes3b                  (22),
+    aes4a                  (23),
+    aes4b                  (24),
+    aes5a                  (25),    
+    aes5b                  (26),    
+    aes6a                  (27),    
+    aes6b                  (28),    
+    aes7a                  (29),    
+    aes7b                  (30),    
+    aes8a                  (31),    
+    aes8b                  (32),
+    500hztone              (33),
+    1khztone               (34),
+    2khztone               (35),
+    4khztone               (36),
+    analog1                (37),    
+    analog2                (38),    
+    analog3                (39),    
+    analog4                (40),    
+    analog5                (41),    
+    analog6                (42),    
+    analog7                (43),    
+    analog8                (44)    
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { 0 }
+  ::= { sfsx622EmbeddedOutputsP2Entry 2 }
+
+sfsx622EmbCh2SourcePg2    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    mute                   (0 ),
+    group1ch1              (1 ),
+    group1ch2              (2 ),
+    group1ch3              (3 ),
+    group1ch4              (4 ),
+    group2ch1              (5 ),
+    group2ch2              (6 ),
+    group2ch3              (7 ),
+    group2ch4              (8 ),
+    group3ch1              (9 ),
+    group3ch2              (10),
+    group3ch3              (11),
+    group3ch4              (12),
+    group4ch1              (13),
+    group4ch2              (14),
+    group4ch3              (15),
+    group4ch4              (16),
+    aes1a                  (17),
+    aes1b                  (18),
+    aes2a                  (19),
+    aes2b                  (20),
+    aes3a                  (21),
+    aes3b                  (22),
+    aes4a                  (23),
+    aes4b                  (24),
+    aes5a                  (25),    
+    aes5b                  (26),    
+    aes6a                  (27),    
+    aes6b                  (28),    
+    aes7a                  (29),    
+    aes7b                  (30),    
+    aes8a                  (31),    
+    aes8b                  (32),
+    500hztone              (33),
+    1khztone               (34),
+    2khztone               (35),
+    4khztone               (36),
+    analog1                (37),    
+    analog2                (38),    
+    analog3                (39),    
+    analog4                (40),    
+    analog5                (41),    
+    analog6                (42),    
+    analog7                (43),    
+    analog8                (44)    
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { 0 }
+  ::= { sfsx622EmbeddedOutputsP2Entry 3 }
+
+sfsx622EmbCh1DelayPg2    OBJECT-TYPE
+  SYNTAX      Integer32 (0..1000)
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { 0 }
+  ::= { sfsx622EmbeddedOutputsP2Entry 4 }
+
+sfsx622EmbCh2DelayPg2    OBJECT-TYPE
+  SYNTAX      Integer32 (0..1000)
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { 0 }
+  ::= { sfsx622EmbeddedOutputsP2Entry 5 }
+
+sfsx622EmbDelayLockPg2    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    no                      (0),
+    yes                     (1)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { yes }
+  ::= { sfsx622EmbeddedOutputsP2Entry 6 }
+
+sfsx622EmbCh1GainPg2    OBJECT-TYPE
+  SYNTAX      Integer32 (-20..20)
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { 0 }
+  ::= { sfsx622EmbeddedOutputsP2Entry 7 }
+
+sfsx622EmbCh2GainPg2    OBJECT-TYPE
+  SYNTAX      Integer32 (-20..20)
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { 0 }
+  ::= { sfsx622EmbeddedOutputsP2Entry 8 }
+
+sfsx622EmbGainLockPg2    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    no                      (0),
+    yes                     (1)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { yes }
+  ::= { sfsx622EmbeddedOutputsP2Entry 9 }
+
+sfsx622EmbCh1InvertPg2    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    no                      (0),
+    yes                     (1)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { yes }
+  ::= { sfsx622EmbeddedOutputsP2Entry 10 }
+
+sfsx622EmbCh2InvertPg2    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    no                      (0),
+    yes                     (1)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { no }
+  ::= { sfsx622EmbeddedOutputsP2Entry 11 }
+
+sfsx622EmbSumPg2    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    no                      (0),
+    yes                     (1)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { no }
+  ::= { sfsx622EmbeddedOutputsP2Entry 12 }
+
+sfsx622EmbResetPg2    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    reset                   (1)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { 0 }
+  ::= { sfsx622EmbeddedOutputsP2Entry 13 }
+
+--
+--  Table of Alarms parameters
+--
+sfsx622AlarmsTable     OBJECT-TYPE
+  SYNTAX      SEQUENCE OF Sfsx622AlarmsEntry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "A table containing product info for all SFSX622 cards at this node.
+    This table is the expansion of the table 'openGearCardTable' in the
+    OPEN-GEAR-CARD-MIB. For each SFSX622 card in the 'openGearCardTable',
+    there is a corresponding entry in this table, having the same indices -
+    'openGearFrameIndex' and 'openGearCardIndex'."
+  ::= { sfsx622CardObjects 11 }
+
+sfsx622AlarmsEntry     OBJECT-TYPE
+  SYNTAX      Sfsx622AlarmsEntry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "A conceptual row within the 'sfsx622AlarmsTable'."
+  INDEX    { openGearFrameIndex, openGearCardIndex }
+  ::= { sfsx622AlarmsTable 1 }
+
+Sfsx622AlarmsEntry ::= SEQUENCE {
+  sfsx622NoInputAlarm              INTEGER,
+  sfsx622InvalidInputAlarm         INTEGER,
+  sfsx622IncompatInputAlarm        INTEGER,
+  sfsx622NonSyncInputAlarm         INTEGER,
+  sfsx622NoRefAlarm                INTEGER,
+  sfsx622OverrideRefAlarm          INTEGER,
+  sfsx622IncompatRearModuleAlarm   INTEGER,
+  sfsx622IncompatDaughterCardAlarm INTEGER,
+  sfsx622Sd24bitAlarm              INTEGER
+}
+
+sfsx622NoInputAlarm    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    no                      (0),
+    yes                     (1)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { no }
+  ::= { sfsx622AlarmsEntry 2 }
+
+sfsx622InvalidInputAlarm    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    no                      (0),
+    yes                     (1)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { no }
+  ::= { sfsx622AlarmsEntry 3 }
+
+sfsx622IncompatInputAlarm    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    no                      (0),
+    yes                     (1)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { no }
+  ::= { sfsx622AlarmsEntry 4 }
+
+sfsx622NonSyncInputAlarm    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    no                      (0),
+    yes                     (1)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { no }
+  ::= { sfsx622AlarmsEntry 5 }
+
+sfsx622NoRefAlarm    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    no                      (0),
+    yes                     (1)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { no }
+  ::= { sfsx622AlarmsEntry 6 }
+
+sfsx622OverrideRefAlarm    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    no                      (0),
+    yes                     (1)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { no }
+  ::= { sfsx622AlarmsEntry 7 }
+
+sfsx622IncompatRearModuleAlarm    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    no                      (0),
+    yes                     (1)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { no }
+  ::= { sfsx622AlarmsEntry 8 }
+
+sfsx622IncompatDaughterCardAlarm    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    no                      (0),
+    yes                     (1)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { no }
+  ::= { sfsx622AlarmsEntry 9 }
+
+sfsx622Sd24bitAlarm    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    no                      (0),
+    yes                     (1)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { yes }
+  ::= { sfsx622AlarmsEntry 13 }
+
+--
+--  Table of EmbeddedInputAudio parameters
+--
+sfsx622EmbeddedInputAudioArrGrp
+  OBJECT IDENTIFIER ::= { sfsx622CardObjects 12 }
+
+sfsx622NumberOfElementsInsfsx622EmbeddedInputAudioArrGrp OBJECT-TYPE
+  SYNTAX      Integer32
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "The total number of elements in sfsx622EmbeddedInputAudioArrGrp."
+  ::= { sfsx622EmbeddedInputAudioArrGrp 1 }
+
+sfsx622EmbeddedInputAudioTable     OBJECT-TYPE
+  SYNTAX      SEQUENCE OF Sfsx622EmbeddedInputAudioEntry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "A table containing product info for all SFSX622 cards at this node.
+    This table is the expansion of the table 'openGearCardTable' in the
+    OPEN-GEAR-CARD-MIB. For each SFSX622 card in the 'openGearCardTable',
+    there is a corresponding entry in this table, having the same indices -
+    'openGearFrameIndex' and 'openGearCardIndex'."
+  ::= { sfsx622EmbeddedInputAudioArrGrp 2 }
+
+sfsx622EmbeddedInputAudioEntry     OBJECT-TYPE
+  SYNTAX      Sfsx622EmbeddedInputAudioEntry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "A conceptual row within the 'sfsx622EmbeddedInputAudioTable'."
+  INDEX    { openGearFrameIndex, openGearCardIndex,  sfsx622EmbeddedInputAudioIndex}
+  ::= { sfsx622EmbeddedInputAudioTable 1 }
+
+Sfsx622EmbeddedInputAudioEntry ::= SEQUENCE {
+  sfsx622EmbeddedInputAudioIndex        Unsigned32,
+  sfsx622GroupAudioState           INTEGER,
+  sfsx622EmbeddedChan1State        INTEGER,
+  sfsx622EmbeddedChan2State        INTEGER,
+  sfsx622EmbeddedChan3State        INTEGER,
+  sfsx622EmbeddedChan4State        INTEGER,
+  sfsx622EmbeddedAudioWordLength   INTEGER
+}
+
+sfsx622EmbeddedInputAudioIndex   OBJECT-TYPE
+  SYNTAX      Unsigned32
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "It represents the array group index."
+  ::= { sfsx622EmbeddedInputAudioEntry 1 }
+
+sfsx622GroupAudioState    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    pCM                     (0),
+    noInput                 (1),
+    notPresent              (2),
+    pCMSilent               (3),
+    nonPCM                  (4),
+    async                   (6),
+    mixed                   (7)
+  }
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "... "
+  ::= { sfsx622EmbeddedInputAudioEntry 2 }
+
+sfsx622EmbeddedChan1State    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    pCM                     (0),
+    noInput                 (1),
+    notPresent              (2),
+    pCMSilent               (3),
+    nonPCM                  (4),
+    async                   (6),
+    mixed                   (7)
+  }
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "... "
+  ::= { sfsx622EmbeddedInputAudioEntry 3 }
+
+sfsx622EmbeddedChan2State    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    pCM                     (0),
+    noInput                 (1),
+    notPresent              (2),
+    pCMSilent               (3),
+    nonPCM                  (4),
+    async                   (6),
+    mixed                   (7)
+  }
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "... "
+  ::= { sfsx622EmbeddedInputAudioEntry 4 }
+
+sfsx622EmbeddedChan3State    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    pCM                     (0),
+    noInput                 (1),
+    notPresent              (2),
+    pCMSilent               (3),
+    nonPCM                  (4),
+    async                   (6),
+    mixed                   (7)
+  }
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "... "
+  ::= { sfsx622EmbeddedInputAudioEntry 5 }
+
+sfsx622EmbeddedChan4State    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    pCM                     (0),
+    noInput                 (1),
+    notPresent              (2),
+    pCMSilent               (3),
+    nonPCM                  (4),
+    async                   (6),
+    mixed                   (7)
+  }
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "... "
+  ::= { sfsx622EmbeddedInputAudioEntry 6 }
+
+sfsx622EmbeddedAudioWordLength    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    v16Bit                  (0),
+    v20Bit                  (4),
+    v24Bit                  (8),
+    unknown                 (10)
+  }
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "... "
+  ::= { sfsx622EmbeddedInputAudioEntry 7 }
+
+--
+--  Table of AnalogIO parameters
+--
+sfsx622AnalogIOArrGrp
+  OBJECT IDENTIFIER ::= { sfsx622CardObjects 13 }
+
+sfsx622NumberOfElementsInsfsx622AnalogIOArrGrp OBJECT-TYPE
+  SYNTAX      Integer32
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "The total number of elements in sfsx622AnalogIOArrGrp."
+  ::= { sfsx622AnalogIOArrGrp 1 }
+
+sfsx622AnalogIOTable     OBJECT-TYPE
+  SYNTAX      SEQUENCE OF Sfsx622AnalogIOEntry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "A table containing product info for all SFSX622 cards at this node.
+    This table is the expansion of the table 'openGearCardTable' in the
+    OPEN-GEAR-CARD-MIB. For each SFSX622 card in the 'openGearCardTable',
+    there is a corresponding entry in this table, having the same indices -
+    'openGearFrameIndex' and 'openGearCardIndex'."
+  ::= { sfsx622AnalogIOArrGrp 2 }
+
+sfsx622AnalogIOEntry     OBJECT-TYPE
+  SYNTAX      Sfsx622AnalogIOEntry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "A conceptual row within the 'sfsx622AnalogIOTable'."
+  INDEX    { openGearFrameIndex, openGearCardIndex,  sfsx622AnalogIOIndex}
+  ::= { sfsx622AnalogIOTable 1 }
+
+Sfsx622AnalogIOEntry ::= SEQUENCE {
+  sfsx622AnalogIOIndex        Unsigned32,
+  sfsx622AnalogSource              INTEGER,
+  sfsx622AnalogInputState          INTEGER,
+  sfsx622AnalogDelay               Integer32,
+  sfsx622AnalogGain                Integer32,
+  sfsx622AnalogInvert              INTEGER,
+  sfsx622AnalogReset               INTEGER,
+  sfsx622AnalogSourceRow2          INTEGER,
+  sfsx622AnalogInputStateRow2      INTEGER,
+  sfsx622AnalogDelayRow2           Integer32,
+  sfsx622AnalogGainRow2            Integer32,
+  sfsx622AnalogInvertRow2          INTEGER,
+  sfsx622AnalogResetRow2           INTEGER,
+  sfsx622AnalogOutputDeEmph        INTEGER
+}
+
+sfsx622AnalogIOIndex   OBJECT-TYPE
+  SYNTAX      Unsigned32
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "It represents the array group index."
+  ::= { sfsx622AnalogIOEntry 1 }
+
+sfsx622AnalogSource    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    mute                   (0 ),
+    group1ch1              (1 ),
+    group1ch2              (2 ),
+    group1ch3              (3 ),
+    group1ch4              (4 ),
+    group2ch1              (5 ),
+    group2ch2              (6 ),
+    group2ch3              (7 ),
+    group2ch4              (8 ),
+    group3ch1              (9 ),
+    group3ch2              (10),
+    group3ch3              (11),
+    group3ch4              (12),
+    group4ch1              (13),
+    group4ch2              (14),
+    group4ch3              (15),
+    group4ch4              (16),
+    aes1a                  (17),
+    aes1b                  (18),
+    aes2a                  (19),
+    aes2b                  (20),
+    aes3a                  (21),
+    aes3b                  (22),
+    aes4a                  (23),
+    aes4b                  (24),
+    aes5a                  (25),    
+    aes5b                  (26),    
+    aes6a                  (27),    
+    aes6b                  (28),    
+    aes7a                  (29),    
+    aes7b                  (30),    
+    aes8a                  (31),    
+    aes8b                  (32),
+    500hztone              (33),
+    1khztone               (34),
+    2khztone               (35),
+    4khztone               (36),
+    analog1                (37),    
+    analog2                (38),    
+    analog3                (39),    
+    analog4                (40),    
+    analog5                (41),    
+    analog6                (42),    
+    analog7                (43),    
+    analog8                (44)    
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { 0 }
+  ::= { sfsx622AnalogIOEntry 2 }
+
+sfsx622AnalogInputState    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    oK                      (0),
+    silent                  (3),
+    clipped                 (5)
+  }
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "... "
+  ::= { sfsx622AnalogIOEntry 3 }
+
+sfsx622AnalogDelay    OBJECT-TYPE
+  SYNTAX      Integer32 (0..1000)
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { 0 }
+  ::= { sfsx622AnalogIOEntry 4 }
+
+sfsx622AnalogGain    OBJECT-TYPE
+  SYNTAX      Integer32 (-20..20)
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { 0 }
+  ::= { sfsx622AnalogIOEntry 5 }
+
+sfsx622AnalogInvert    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    no                      (0),
+    yes                     (1)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { no }
+  ::= { sfsx622AnalogIOEntry 6 }
+
+sfsx622AnalogReset    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    reset                   (1)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { reset }
+  ::= { sfsx622AnalogIOEntry 7 }
+
+sfsx622AnalogSourceRow2    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    mute                   (0 ),
+    group1ch1              (1 ),
+    group1ch2              (2 ),
+    group1ch3              (3 ),
+    group1ch4              (4 ),
+    group2ch1              (5 ),
+    group2ch2              (6 ),
+    group2ch3              (7 ),
+    group2ch4              (8 ),
+    group3ch1              (9 ),
+    group3ch2              (10),
+    group3ch3              (11),
+    group3ch4              (12),
+    group4ch1              (13),
+    group4ch2              (14),
+    group4ch3              (15),
+    group4ch4              (16),
+    aes1a                  (17),
+    aes1b                  (18),
+    aes2a                  (19),
+    aes2b                  (20),
+    aes3a                  (21),
+    aes3b                  (22),
+    aes4a                  (23),
+    aes4b                  (24),
+    aes5a                  (25),    
+    aes5b                  (26),    
+    aes6a                  (27),    
+    aes6b                  (28),    
+    aes7a                  (29),    
+    aes7b                  (30),    
+    aes8a                  (31),    
+    aes8b                  (32),
+    500hztone              (33),
+    1khztone               (34),
+    2khztone               (35),
+    4khztone               (36),
+    analog1                (37),    
+    analog2                (38),    
+    analog3                (39),    
+    analog4                (40),    
+    analog5                (41),    
+    analog6                (42),    
+    analog7                (43),    
+    analog8                (44)    
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { 0 }
+  ::= { sfsx622AnalogIOEntry 8 }
+
+sfsx622AnalogInputStateRow2    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    oK                      (0),
+    silent                  (3),
+    clipped                 (5)
+  }
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "... "
+  ::= { sfsx622AnalogIOEntry 9 }
+
+sfsx622AnalogDelayRow2    OBJECT-TYPE
+  SYNTAX      Integer32 (0..1000)
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { 0 }
+  ::= { sfsx622AnalogIOEntry 10 }
+
+sfsx622AnalogGainRow2    OBJECT-TYPE
+  SYNTAX      Integer32 (-20..20)
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { 0 }
+  ::= { sfsx622AnalogIOEntry 11 }
+
+sfsx622AnalogInvertRow2    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    no                      (0),
+    yes                     (1)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { no }
+  ::= { sfsx622AnalogIOEntry 12 }
+
+sfsx622AnalogResetRow2    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    reset                   (1)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { reset }
+  ::= { sfsx622AnalogIOEntry 13 }
+
+sfsx622AnalogOutputDeEmph    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    off                     (0),
+    on                      (1),
+    auto                    (2)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { off }
+  ::= { sfsx622AnalogIOEntry 14 }
+
+--
+--  Table of AESInputs parameters
+--
+sfsx622AESInputsArrGrp
+  OBJECT IDENTIFIER ::= { sfsx622CardObjects 14 }
+
+sfsx622NumberOfElementsInsfsx622AESInputsArrGrp OBJECT-TYPE
+  SYNTAX      Integer32
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "The total number of elements in sfsx622AESInputsArrGrp."
+  ::= { sfsx622AESInputsArrGrp 1 }
+
+sfsx622AESInputsTable     OBJECT-TYPE
+  SYNTAX      SEQUENCE OF Sfsx622AESInputsEntry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "A table containing product info for all SFSX622 cards at this node.
+    This table is the expansion of the table 'openGearCardTable' in the
+    OPEN-GEAR-CARD-MIB. For each SFSX622 card in the 'openGearCardTable',
+    there is a corresponding entry in this table, having the same indices -
+    'openGearFrameIndex' and 'openGearCardIndex'."
+  ::= { sfsx622AESInputsArrGrp 2 }
+
+sfsx622AESInputsEntry     OBJECT-TYPE
+  SYNTAX      Sfsx622AESInputsEntry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "A conceptual row within the 'sfsx622AESInputsTable'."
+  INDEX    { openGearFrameIndex, openGearCardIndex,  sfsx622AESInputsIndex}
+  ::= { sfsx622AESInputsTable 1 }
+
+Sfsx622AESInputsEntry ::= SEQUENCE {
+  sfsx622AESInputsIndex        Unsigned32,
+  sfsx622AesSRConversion           INTEGER,
+  sfsx622AesSRConversionPg2        INTEGER
+}
+
+sfsx622AESInputsIndex   OBJECT-TYPE
+  SYNTAX      Unsigned32
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "It represents the array group index."
+  ::= { sfsx622AESInputsEntry 1 }
+
+sfsx622AesSRConversion    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    off                     (0),
+    on                      (1)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { on }
+  ::= { sfsx622AESInputsEntry 2 }
+
+sfsx622AesSRConversionPg2    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    off                     (0),
+    on                      (1)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { on }
+  ::= { sfsx622AESInputsEntry 3 }
+
+--
+--  Table of EmbeddedInputAudioAlarms parameters
+--
+sfsx622EmbeddedInputAudioAlarmsArrGrp
+  OBJECT IDENTIFIER ::= { sfsx622CardObjects 15 }
+
+sfsx622NumberOfElementsInsfsx622EmbeddedInputAudioAlarmsArrGrp OBJECT-TYPE
+  SYNTAX      Integer32
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "The total number of elements in sfsx622EmbeddedInputAudioAlarmsArrGrp."
+  ::= { sfsx622EmbeddedInputAudioAlarmsArrGrp 1 }
+
+sfsx622EmbeddedInputAudioAlarmsTable     OBJECT-TYPE
+  SYNTAX      SEQUENCE OF Sfsx622EmbeddedInputAudioAlarmsEntry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "A table containing product info for all SFSX622 cards at this node.
+    This table is the expansion of the table 'openGearCardTable' in the
+    OPEN-GEAR-CARD-MIB. For each SFSX622 card in the 'openGearCardTable',
+    there is a corresponding entry in this table, having the same indices -
+    'openGearFrameIndex' and 'openGearCardIndex'."
+  ::= { sfsx622EmbeddedInputAudioAlarmsArrGrp 2 }
+
+sfsx622EmbeddedInputAudioAlarmsEntry     OBJECT-TYPE
+  SYNTAX      Sfsx622EmbeddedInputAudioAlarmsEntry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "A conceptual row within the 'sfsx622EmbeddedInputAudioAlarmsTable'."
+  INDEX    { openGearFrameIndex, openGearCardIndex,  sfsx622EmbeddedInputAudioAlarmsIndex}
+  ::= { sfsx622EmbeddedInputAudioAlarmsTable 1 }
+
+Sfsx622EmbeddedInputAudioAlarmsEntry ::= SEQUENCE {
+  sfsx622EmbeddedInputAudioAlarmsIndex        Unsigned32,
+  sfsx622GroupNotPresentAlarm      INTEGER,
+  sfsx622GroupCh1SilentAlarm       INTEGER,
+  sfsx622GroupCh2SilentAlarm       INTEGER,
+  sfsx622GroupCh3SilentAlarm       INTEGER,
+  sfsx622GroupCh4SilentAlarm       INTEGER
+}
+
+sfsx622EmbeddedInputAudioAlarmsIndex   OBJECT-TYPE
+  SYNTAX      Unsigned32
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "It represents the array group index."
+  ::= { sfsx622EmbeddedInputAudioAlarmsEntry 1 }
+
+sfsx622GroupNotPresentAlarm    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    no                      (0),
+    yes                     (1)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { yes }
+  ::= { sfsx622EmbeddedInputAudioAlarmsEntry 2 }
+
+sfsx622GroupCh1SilentAlarm    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    no                      (0),
+    yes                     (1)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { yes }
+  ::= { sfsx622EmbeddedInputAudioAlarmsEntry 3 }
+
+sfsx622GroupCh2SilentAlarm    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    no                      (0),
+    yes                     (1)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { yes }
+  ::= { sfsx622EmbeddedInputAudioAlarmsEntry 4 }
+
+sfsx622GroupCh3SilentAlarm    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    no                      (0),
+    yes                     (1)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { yes }
+  ::= { sfsx622EmbeddedInputAudioAlarmsEntry 5 }
+
+sfsx622GroupCh4SilentAlarm    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    no                      (0),
+    yes                     (1)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { yes }
+  ::= { sfsx622EmbeddedInputAudioAlarmsEntry 6 }
+
+--
+--  Table of AESInputAlarms parameters
+--
+sfsx622AESInputAlarmsArrGrp
+  OBJECT IDENTIFIER ::= { sfsx622CardObjects 16 }
+
+sfsx622NumberOfElementsInsfsx622AESInputAlarmsArrGrp OBJECT-TYPE
+  SYNTAX      Integer32
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "The total number of elements in sfsx622AESInputAlarmsArrGrp."
+  ::= { sfsx622AESInputAlarmsArrGrp 1 }
+
+sfsx622AESInputAlarmsTable     OBJECT-TYPE
+  SYNTAX      SEQUENCE OF Sfsx622AESInputAlarmsEntry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "A table containing product info for all SFSX622 cards at this node.
+    This table is the expansion of the table 'openGearCardTable' in the
+    OPEN-GEAR-CARD-MIB. For each SFSX622 card in the 'openGearCardTable',
+    there is a corresponding entry in this table, having the same indices -
+    'openGearFrameIndex' and 'openGearCardIndex'."
+  ::= { sfsx622AESInputAlarmsArrGrp 2 }
+
+sfsx622AESInputAlarmsEntry     OBJECT-TYPE
+  SYNTAX      Sfsx622AESInputAlarmsEntry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "A conceptual row within the 'sfsx622AESInputAlarmsTable'."
+  INDEX    { openGearFrameIndex, openGearCardIndex,  sfsx622AESInputAlarmsIndex}
+  ::= { sfsx622AESInputAlarmsTable 1 }
+
+Sfsx622AESInputAlarmsEntry ::= SEQUENCE {
+  sfsx622AESInputAlarmsIndex        Unsigned32,
+  sfsx622AesInputNotPresentAlarm   INTEGER,
+  sfsx622AesInputChASilentAlarm    INTEGER,
+  sfsx622AesInputChBSilentAlarm    INTEGER,
+  sfsx622AesInputAsyncAlarm        INTEGER
+}
+
+sfsx622AESInputAlarmsIndex   OBJECT-TYPE
+  SYNTAX      Unsigned32
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "It represents the array group index."
+  ::= { sfsx622AESInputAlarmsEntry 1 }
+
+sfsx622AesInputNotPresentAlarm    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    no                      (0),
+    yes                     (1)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { yes }
+  ::= { sfsx622AESInputAlarmsEntry 2 }
+
+sfsx622AesInputChASilentAlarm    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    no                      (0),
+    yes                     (1)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { yes }
+  ::= { sfsx622AESInputAlarmsEntry 3 }
+
+sfsx622AesInputChBSilentAlarm    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    no                      (0),
+    yes                     (1)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { yes }
+  ::= { sfsx622AESInputAlarmsEntry 4 }
+
+sfsx622AesInputAsyncAlarm    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    no                      (0),
+    yes                     (1)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { yes }
+  ::= { sfsx622AESInputAlarmsEntry 5 }
+
+--
+--  Table of EmbeddedOutputAudioAlarms parameters
+--
+sfsx622EmbeddedOutputAudioAlarmsArrGrp
+  OBJECT IDENTIFIER ::= { sfsx622CardObjects 17 }
+
+sfsx622NumberOfElementsInsfsx622EmbeddedOutputAudioAlarmsArrGrp OBJECT-TYPE
+  SYNTAX      Integer32
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "The total number of elements in sfsx622EmbeddedOutputAudioAlarmsArrGrp."
+  ::= { sfsx622EmbeddedOutputAudioAlarmsArrGrp 1 }
+
+sfsx622EmbeddedOutputAudioAlarmsTable     OBJECT-TYPE
+  SYNTAX      SEQUENCE OF Sfsx622EmbeddedOutputAudioAlarmsEntry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "A table containing product info for all SFSX622 cards at this node.
+    This table is the expansion of the table 'openGearCardTable' in the
+    OPEN-GEAR-CARD-MIB. For each SFSX622 card in the 'openGearCardTable',
+    there is a corresponding entry in this table, having the same indices -
+    'openGearFrameIndex' and 'openGearCardIndex'."
+  ::= { sfsx622EmbeddedOutputAudioAlarmsArrGrp 2 }
+
+sfsx622EmbeddedOutputAudioAlarmsEntry     OBJECT-TYPE
+  SYNTAX      Sfsx622EmbeddedOutputAudioAlarmsEntry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "A conceptual row within the 'sfsx622EmbeddedOutputAudioAlarmsTable'."
+  INDEX    { openGearFrameIndex, openGearCardIndex,  sfsx622EmbeddedOutputAudioAlarmsIndex}
+  ::= { sfsx622EmbeddedOutputAudioAlarmsTable 1 }
+
+Sfsx622EmbeddedOutputAudioAlarmsEntry ::= SEQUENCE {
+  sfsx622EmbeddedOutputAudioAlarmsIndex        Unsigned32,
+  sfsx622GroupSrcMissingAlarm      INTEGER,
+  sfsx622GroupSrcAsyncAlarm        INTEGER
+}
+
+sfsx622EmbeddedOutputAudioAlarmsIndex   OBJECT-TYPE
+  SYNTAX      Unsigned32
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "It represents the array group index."
+  ::= { sfsx622EmbeddedOutputAudioAlarmsEntry 1 }
+
+sfsx622GroupSrcMissingAlarm    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    no                      (0),
+    yes                     (1)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { yes }
+  ::= { sfsx622EmbeddedOutputAudioAlarmsEntry 2 }
+
+sfsx622GroupSrcAsyncAlarm    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    no                      (0),
+    yes                     (1)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { yes }
+  ::= { sfsx622EmbeddedOutputAudioAlarmsEntry 3 }
+
+--
+--  Table of AnalogInputAlarms parameters
+--
+sfsx622AnalogInputAlarmsArrGrp
+  OBJECT IDENTIFIER ::= { sfsx622CardObjects 18 }
+
+sfsx622NumberOfElementsInsfsx622AnalogInputAlarmsArrGrp OBJECT-TYPE
+  SYNTAX      Integer32
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "The total number of elements in sfsx622AnalogInputAlarmsArrGrp."
+  ::= { sfsx622AnalogInputAlarmsArrGrp 1 }
+
+sfsx622AnalogInputAlarmsTable     OBJECT-TYPE
+  SYNTAX      SEQUENCE OF Sfsx622AnalogInputAlarmsEntry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "A table containing product info for all SFSX622 cards at this node.
+    This table is the expansion of the table 'openGearCardTable' in the
+    OPEN-GEAR-CARD-MIB. For each SFSX622 card in the 'openGearCardTable',
+    there is a corresponding entry in this table, having the same indices -
+    'openGearFrameIndex' and 'openGearCardIndex'."
+  ::= { sfsx622AnalogInputAlarmsArrGrp 2 }
+
+sfsx622AnalogInputAlarmsEntry     OBJECT-TYPE
+  SYNTAX      Sfsx622AnalogInputAlarmsEntry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "A conceptual row within the 'sfsx622AnalogInputAlarmsTable'."
+  INDEX    { openGearFrameIndex, openGearCardIndex,  sfsx622AnalogInputAlarmsIndex}
+  ::= { sfsx622AnalogInputAlarmsTable 1 }
+
+Sfsx622AnalogInputAlarmsEntry ::= SEQUENCE {
+  sfsx622AnalogInputAlarmsIndex        Unsigned32,
+  sfsx622AnalogInputSilentAlarm    INTEGER
+}
+
+sfsx622AnalogInputAlarmsIndex   OBJECT-TYPE
+  SYNTAX      Unsigned32
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "It represents the array group index."
+  ::= { sfsx622AnalogInputAlarmsEntry 1 }
+
+sfsx622AnalogInputSilentAlarm    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    no                      (0),
+    yes                     (1)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { yes }
+  ::= { sfsx622AnalogInputAlarmsEntry 2 }
+
+--
+--  Table of AESAudioInputs parameters
+--
+sfsx622AESAudioInputsArrGrp
+  OBJECT IDENTIFIER ::= { sfsx622CardObjects 19 }
+
+sfsx622NumberOfElementsInsfsx622AESAudioInputsArrGrp OBJECT-TYPE
+  SYNTAX      Integer32
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "The total number of elements in sfsx622AESAudioInputsArrGrp."
+  ::= { sfsx622AESAudioInputsArrGrp 1 }
+
+sfsx622AESAudioInputsTable     OBJECT-TYPE
+  SYNTAX      SEQUENCE OF Sfsx622AESAudioInputsEntry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "A table containing product info for all SFSX622 cards at this node.
+    This table is the expansion of the table 'openGearCardTable' in the
+    OPEN-GEAR-CARD-MIB. For each SFSX622 card in the 'openGearCardTable',
+    there is a corresponding entry in this table, having the same indices -
+    'openGearFrameIndex' and 'openGearCardIndex'."
+  ::= { sfsx622AESAudioInputsArrGrp 2 }
+
+sfsx622AESAudioInputsEntry     OBJECT-TYPE
+  SYNTAX      Sfsx622AESAudioInputsEntry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "A conceptual row within the 'sfsx622AESAudioInputsTable'."
+  INDEX    { openGearFrameIndex, openGearCardIndex,  sfsx622AESAudioInputsIndex}
+  ::= { sfsx622AESAudioInputsTable 1 }
+
+Sfsx622AESAudioInputsEntry ::= SEQUENCE {
+  sfsx622AESAudioInputsIndex        Unsigned32,
+  sfsx622AesInputState             INTEGER
+}
+
+sfsx622AESAudioInputsIndex   OBJECT-TYPE
+  SYNTAX      Unsigned32
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "It represents the array group index."
+  ::= { sfsx622AESAudioInputsEntry 1 }
+
+sfsx622AesInputState    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    pCM                     (0),
+    noInput                 (1),
+    notPresent              (2),
+    pCMSilent               (3),
+    nonPCM                  (4),
+    async                   (6),
+    mixed                   (7)
+  }
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "... "
+  ::= { sfsx622AESAudioInputsEntry 2 }
+
+--
+--  Table of ProcAmp parameters
+--
+sfsx622ProcAmpTable     OBJECT-TYPE
+  SYNTAX      SEQUENCE OF Sfsx622ProcAmpEntry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "A table containing product info for all SFSX622 cards at this node.
+    This table is the expansion of the table 'openGearCardTable' in the
+    OPEN-GEAR-CARD-MIB. For each SFSX622 card in the 'openGearCardTable',
+    there is a corresponding entry in this table, having the same indices -
+    'openGearFrameIndex' and 'openGearCardIndex'."
+  ::= { sfsx622CardObjects 20 }
+
+sfsx622ProcAmpEntry     OBJECT-TYPE
+  SYNTAX      Sfsx622ProcAmpEntry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "A conceptual row within the 'sfsx622ProcAmpTable'."
+  INDEX    { openGearFrameIndex, openGearCardIndex }
+  ::= { sfsx622ProcAmpTable 1 }
+
+Sfsx622ProcAmpEntry ::= SEQUENCE {
+  sfsx622ProcEnable                INTEGER,
+  sfsx622ProcVgain                 Integer32,
+  sfsx622ProcCgain                 Integer32,
+  sfsx622ProcCBgain                Integer32,
+  sfsx622ProcBLKoff                Integer32,
+  sfsx622ProcReset                 INTEGER
+}
+
+sfsx622ProcEnable    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    no                      (0),
+    yes                     (1)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { no }
+  ::= { sfsx622ProcAmpEntry 2 }
+
+sfsx622ProcVgain    OBJECT-TYPE
+  SYNTAX      Integer32 (0..2000)
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { 1000 }
+  ::= { sfsx622ProcAmpEntry 3 }
+
+sfsx622ProcCgain    OBJECT-TYPE
+  SYNTAX      Integer32 (0..2000)
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { 1000 }
+  ::= { sfsx622ProcAmpEntry 4 }
+
+sfsx622ProcCBgain    OBJECT-TYPE
+  SYNTAX      Integer32 (0..2000)
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { 1000 }
+  ::= { sfsx622ProcAmpEntry 5 }
+
+sfsx622ProcBLKoff    OBJECT-TYPE
+  SYNTAX      Integer32 (-70..876)
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { 0 }
+  ::= { sfsx622ProcAmpEntry 6 }
+
+sfsx622ProcReset    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    reset                   (1)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { reset }
+  ::= { sfsx622ProcAmpEntry 7 }
+
+--
+--  Table of AESAudioOutputsAlarms parameters
+--
+sfsx622AESAudioOutputsAlarmsArrGrp
+  OBJECT IDENTIFIER ::= { sfsx622CardObjects 21 }
+
+sfsx622NumberOfElementsInsfsx622AESAudioOutputsAlarmsArrGrp OBJECT-TYPE
+  SYNTAX      Integer32
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "The total number of elements in sfsx622AESAudioOutputsAlarmsArrGrp."
+  ::= { sfsx622AESAudioOutputsAlarmsArrGrp 1 }
+
+sfsx622AESAudioOutputsAlarmsTable     OBJECT-TYPE
+  SYNTAX      SEQUENCE OF Sfsx622AESAudioOutputsAlarmsEntry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "A table containing product info for all SFSX622 cards at this node.
+    This table is the expansion of the table 'openGearCardTable' in the
+    OPEN-GEAR-CARD-MIB. For each SFSX622 card in the 'openGearCardTable',
+    there is a corresponding entry in this table, having the same indices -
+    'openGearFrameIndex' and 'openGearCardIndex'."
+  ::= { sfsx622AESAudioOutputsAlarmsArrGrp 2 }
+
+sfsx622AESAudioOutputsAlarmsEntry     OBJECT-TYPE
+  SYNTAX      Sfsx622AESAudioOutputsAlarmsEntry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "A conceptual row within the 'sfsx622AESAudioOutputsAlarmsTable'."
+  INDEX    { openGearFrameIndex, openGearCardIndex,  sfsx622AESAudioOutputsAlarmsIndex}
+  ::= { sfsx622AESAudioOutputsAlarmsTable 1 }
+
+Sfsx622AESAudioOutputsAlarmsEntry ::= SEQUENCE {
+  sfsx622AESAudioOutputsAlarmsIndex        Unsigned32,
+  sfsx622AesOutSourceMissingAlarm  INTEGER,
+  sfsx622AesOutSourceAsyncAlarm    INTEGER,
+  sfsx622AesOutSourceMissingAlarmP2 INTEGER,
+  sfsx622AesOutSourceAsyncAlarmP2  INTEGER
+}
+
+sfsx622AESAudioOutputsAlarmsIndex   OBJECT-TYPE
+  SYNTAX      Unsigned32
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "It represents the array group index."
+  ::= { sfsx622AESAudioOutputsAlarmsEntry 1 }
+
+sfsx622AesOutSourceMissingAlarm    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    no                      (0),
+    yes                     (1)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { yes }
+  ::= { sfsx622AESAudioOutputsAlarmsEntry 2 }
+
+sfsx622AesOutSourceAsyncAlarm    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    no                      (0),
+    yes                     (1)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { yes }
+  ::= { sfsx622AESAudioOutputsAlarmsEntry 3 }
+
+sfsx622AesOutSourceMissingAlarmP2    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    no                      (0),
+    yes                     (1)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { yes }
+  ::= { sfsx622AESAudioOutputsAlarmsEntry 4 }
+
+sfsx622AesOutSourceAsyncAlarmP2    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    no                      (0),
+    yes                     (1)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { yes }
+  ::= { sfsx622AESAudioOutputsAlarmsEntry 5 }
+
+--
+--  Table of AnalogAudioOutputsAlarms parameters
+--
+sfsx622AnalogAudioOutputsAlarmsArrGrp
+  OBJECT IDENTIFIER ::= { sfsx622CardObjects 22 }
+
+sfsx622NumberOfElementsInsfsx622AnalogAudioOutputsAlarmsArrGrp OBJECT-TYPE
+  SYNTAX      Integer32
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "The total number of elements in sfsx622AnalogAudioOutputsAlarmsArrGrp."
+  ::= { sfsx622AnalogAudioOutputsAlarmsArrGrp 1 }
+
+sfsx622AnalogAudioOutputsAlarmsTable     OBJECT-TYPE
+  SYNTAX      SEQUENCE OF Sfsx622AnalogAudioOutputsAlarmsEntry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "A table containing product info for all SFSX622 cards at this node.
+    This table is the expansion of the table 'openGearCardTable' in the
+    OPEN-GEAR-CARD-MIB. For each SFSX622 card in the 'openGearCardTable',
+    there is a corresponding entry in this table, having the same indices -
+    'openGearFrameIndex' and 'openGearCardIndex'."
+  ::= { sfsx622AnalogAudioOutputsAlarmsArrGrp 2 }
+
+sfsx622AnalogAudioOutputsAlarmsEntry     OBJECT-TYPE
+  SYNTAX      Sfsx622AnalogAudioOutputsAlarmsEntry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "A conceptual row within the 'sfsx622AnalogAudioOutputsAlarmsTable'."
+  INDEX    { openGearFrameIndex, openGearCardIndex,  sfsx622AnalogAudioOutputsAlarmsIndex}
+  ::= { sfsx622AnalogAudioOutputsAlarmsTable 1 }
+
+Sfsx622AnalogAudioOutputsAlarmsEntry ::= SEQUENCE {
+  sfsx622AnalogAudioOutputsAlarmsIndex        Unsigned32,
+  sfsx622AnalogOutSourceMissingAlarm INTEGER,
+  sfsx622AnalogOutSourceAsyncAlarm INTEGER
+}
+
+sfsx622AnalogAudioOutputsAlarmsIndex   OBJECT-TYPE
+  SYNTAX      Unsigned32
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "It represents the array group index."
+  ::= { sfsx622AnalogAudioOutputsAlarmsEntry 1 }
+
+sfsx622AnalogOutSourceMissingAlarm    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    no                      (0),
+    yes                     (1)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { yes }
+  ::= { sfsx622AnalogAudioOutputsAlarmsEntry 2 }
+
+sfsx622AnalogOutSourceAsyncAlarm    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    no                      (0),
+    yes                     (1)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { yes }
+  ::= { sfsx622AnalogAudioOutputsAlarmsEntry 3 }
+
+--
+-- Conformance
+--
+sfsx622CardMibCompliances
+  OBJECT IDENTIFIER ::= { sfsx622CardConformance 1 }
+sfsx622CardMibGroups
+  OBJECT IDENTIFIER ::= { sfsx622CardConformance 2 }
+--
+-- Compliance Statement
+--
+sfsx622CardCompliances MODULE-COMPLIANCE
+  STATUS      current
+  DESCRIPTION
+    "The compliance statement for SFSX622 entities."
+  MODULE -- this module
+    MANDATORY-GROUPS { sfsx622CardInfoGroup,
+                       sfsx622CardNotifyGroup
+                     }
+
+  ::= { sfsx622CardMibCompliances 1 }
+
+sfsx622CardInfoGroup OBJECT-GROUP
+    OBJECTS { sfsx622NumberOfCards,
+              sfsx622MuxFeature,
+              sfsx622BoardRev,
+              sfsx622RearModule,
+              sfsx622SerialNumber,
+              sfsx622Firmware,
+              sfsx622DaughterCard,
+              sfsx622HwAlarm,
+              sfsx622CardVoltage,
+              sfsx622CardCurrent,
+              sfsx622Headroom,
+              sfsx622Ram,
+              sfsx622SignalAlarm,
+              sfsx622AudioAlarm,
+              sfsx622ReferenceAlarm,
+              sfsx622Input,
+              sfsx622Reference,
+              sfsx622Output,
+              sfsx622InputTiming,
+              sfsx622RefSource,
+              sfsx622LoiVideo,
+              sfsx622Pattern,
+              sfsx622SdAudioBitMode,
+              sfsx622SilenceThreshold,
+              sfsx622SilenceTimeout,
+              sfsx622Access,
+              sfsx622AudioResetAll,
+              sfsx622ResetAll,
+              sfsx622AesIOResetAll,
+              sfsx622AesIOResetAllPg2,
+              sfsx622AnalogResetAll,
+              sfsx622SdiInSelection,
+              sfsx622CustomColor,
+              sfsx622DmxSRCMode,
+              sfsx622HDelay,
+              sfsx622VDelay,
+              sfsx622FDelay,
+              sfsx622LoiFormat,
+              sfsx622CrcError,
+              sfsx622CrcErrReset,
+              sfsx622AesCh1Source,
+              sfsx622AesCh2Source,
+              sfsx622AesCh1Delay,
+              sfsx622AesCh2Delay,
+              sfsx622AesDelayLock,
+              sfsx622AesCh1Gain,
+              sfsx622AesCh2Gain,
+              sfsx622AesGainLock,
+              sfsx622AesCh1Invert,
+              sfsx622AesCh2Invert,
+              sfsx622AesSum,
+              sfsx622AesIOReset,
+              sfsx622AesInputChAStatus,
+              sfsx622AesInputChBStatus,
+              sfsx622AesInputWordLength,
+              sfsx622AesEmph,
+              sfsx622AesInputSampleRate,
+              sfsx622AesCh1SourcePg2,
+              sfsx622AesCh2SourcePg2,
+              sfsx622AesCh1DelayPg2,
+              sfsx622AesCh2DelayPg2,
+              sfsx622AesDelayLockPg2,
+              sfsx622AesCh1GainPg2,
+              sfsx622AesCh2GainPg2,
+              sfsx622AesGainLockPg2,
+              sfsx622AesCh1InvertPg2,
+              sfsx622AesCh2InvertPg2,
+              sfsx622AesSumPg2,
+              sfsx622AesIOResetPg2,
+              sfsx622AesInputChAStatusPage2,
+              sfsx622AesInputChBStatusPage2,
+              sfsx622AesInputWordLengthPage2,
+              sfsx622AesEmphPg2,
+              sfsx622AesInputSampleRatePage2,
+              sfsx622EmbCh1Source,
+              sfsx622EmbCh2Source,
+              sfsx622EmbCh1Delay,
+              sfsx622EmbCh2Delay,
+              sfsx622EmbDelayLock,
+              sfsx622EmbCh1Gain,
+              sfsx622EmbCh2Gain,
+              sfsx622EmbGainLock,
+              sfsx622EmbCh1Invert,
+              sfsx622EmbCh2Invert,
+              sfsx622EmbSum,
+              sfsx622EmbReset,
+              sfsx622GroupEnable,
+              sfsx622EmbCh1SourcePg2,
+              sfsx622EmbCh2SourcePg2,
+              sfsx622EmbCh1DelayPg2,
+              sfsx622EmbCh2DelayPg2,
+              sfsx622EmbDelayLockPg2,
+              sfsx622EmbCh1GainPg2,
+              sfsx622EmbCh2GainPg2,
+              sfsx622EmbGainLockPg2,
+              sfsx622EmbCh1InvertPg2,
+              sfsx622EmbCh2InvertPg2,
+              sfsx622EmbSumPg2,
+              sfsx622EmbResetPg2,
+              sfsx622NoInputAlarm,
+              sfsx622InvalidInputAlarm,
+              sfsx622IncompatInputAlarm,
+              sfsx622NonSyncInputAlarm,
+              sfsx622NoRefAlarm,
+              sfsx622OverrideRefAlarm,
+              sfsx622IncompatRearModuleAlarm,
+              sfsx622IncompatDaughterCardAlarm,
+              sfsx622Sd24bitAlarm,
+              sfsx622GroupAudioState,
+              sfsx622EmbeddedChan1State,
+              sfsx622EmbeddedChan2State,
+              sfsx622EmbeddedChan3State,
+              sfsx622EmbeddedChan4State,
+              sfsx622EmbeddedAudioWordLength,
+              sfsx622AnalogSource,
+              sfsx622AnalogInputState,
+              sfsx622AnalogDelay,
+              sfsx622AnalogGain,
+              sfsx622AnalogInvert,
+              sfsx622AnalogReset,
+              sfsx622AnalogSourceRow2,
+              sfsx622AnalogInputStateRow2,
+              sfsx622AnalogDelayRow2,
+              sfsx622AnalogGainRow2,
+              sfsx622AnalogInvertRow2,
+              sfsx622AnalogResetRow2,
+              sfsx622AnalogOutputDeEmph,
+              sfsx622AesSRConversion,
+              sfsx622AesSRConversionPg2,
+              sfsx622GroupNotPresentAlarm,
+              sfsx622GroupCh1SilentAlarm,
+              sfsx622GroupCh2SilentAlarm,
+              sfsx622GroupCh3SilentAlarm,
+              sfsx622GroupCh4SilentAlarm,
+              sfsx622AesInputNotPresentAlarm,
+              sfsx622AesInputChASilentAlarm,
+              sfsx622AesInputChBSilentAlarm,
+              sfsx622AesInputAsyncAlarm,
+              sfsx622GroupSrcMissingAlarm,
+              sfsx622GroupSrcAsyncAlarm,
+              sfsx622AnalogInputSilentAlarm,
+              sfsx622AesInputState,
+              sfsx622ProcEnable,
+              sfsx622ProcVgain,
+              sfsx622ProcCgain,
+              sfsx622ProcCBgain,
+              sfsx622ProcBLKoff,
+              sfsx622ProcReset,
+              sfsx622AesOutSourceMissingAlarm,
+              sfsx622AesOutSourceAsyncAlarm,
+              sfsx622AesOutSourceMissingAlarmP2,
+              sfsx622AesOutSourceAsyncAlarmP2,
+              sfsx622AnalogOutSourceMissingAlarm,
+              sfsx622AnalogOutSourceAsyncAlarm
+            }
+    STATUS  current
+    DESCRIPTION
+      "A collection of objects providing basic instrumentation
+        and control of an SFSX622 card."
+    ::= { sfsx622CardMibGroups 1 }
+
+sfsx622CardNotifyGroup NOTIFICATION-GROUP
+  NOTIFICATIONS { sfsx622SignalAlarmEvent,
+                  sfsx622AudioAlarmEvent,
+                  sfsx622ReferenceAlarmEvent,
+                  sfsx622HwAlarmEvent
+                }
+    STATUS  current
+    DESCRIPTION
+      "The notifications relating to the SFSX622 card."
+    ::= { sfsx622CardMibGroups 2 }
+
+END

@@ -1,0 +1,530 @@
+EA820x-CARD-MIB DEFINITIONS ::= BEGIN
+
+--
+-- Defines control and monitoring structures for the EA-820x card.
+--
+
+IMPORTS
+  openGearFrameIndex
+    FROM OPEN-GEAR-FRAME-MIB
+
+  openGearCardIndex
+    FROM OPEN-GEAR-CARD-MIB
+
+   openGearObjects
+    FROM OPEN-GEAR-MIB
+
+  OBJECT-TYPE, NOTIFICATION-TYPE, MODULE-IDENTITY, Integer32
+    FROM SNMPv2-SMI
+
+  OBJECT-GROUP, NOTIFICATION-GROUP, MODULE-COMPLIANCE
+    FROM SNMPv2-CONF
+
+  DisplayString
+    FROM SNMPv2-TC;
+
+ea820xCardMib MODULE-IDENTITY
+  LAST-UPDATED "200703070000Z"
+  ORGANIZATION "www.rossvideo.org"
+  CONTACT-INFO
+    "postal:   Ross Video
+               8 John St. P.O. Box 220
+               Iroquois ON K0E 1K0
+
+      email:   support@rossvideo.com"
+
+  DESCRIPTION
+    "Defines control and monitoring structures for the EA-820x card family.
+     This is a family of equalizing distribution amplifiers for multi-
+     definition broadcast video signals.  It includes the following:
+        SEA-8203  Single channel equalizing DA
+        DEA-8205  Dual-channel equalizing DA
+        TEA-8207  Triple-channel equalizing DA"
+
+  REVISION     "200703070000Z"
+  DESCRIPTION
+    "First revision."
+  ::= { openGearObjects 6 }
+
+--
+--  Top level components in the EA-820x MIB
+--
+ea820xCardNotifications
+  OBJECT IDENTIFIER ::= { ea820xCardMib 0 }
+
+ea820xCardObjects
+  OBJECT IDENTIFIER ::= { ea820xCardMib 1 }
+
+ea820xCardConformance
+  OBJECT IDENTIFIER ::= { ea820xCardMib 2 }
+
+--
+--  Notifications relating to the EA-820x card
+--
+ea820xInputAStatusEvent   NOTIFICATION-TYPE
+  OBJECTS { ea820xInputAStatus }
+  STATUS current
+  DESCRIPTION
+    "An indication that the status of input channel A has changed.
+     The current status is reported in ea820xInputAStatus."
+  ::= { ea820xCardNotifications 1 }
+
+ea820xInputBStatusEvent   NOTIFICATION-TYPE
+  OBJECTS { ea820xInputBStatus }
+  STATUS current
+  DESCRIPTION
+    "An indication that the status of input channel B has changed.
+     The current status is reported in ea820xInputBStatus."
+  ::= { ea820xCardNotifications 2 }
+
+ea820xInputCStatusEvent   NOTIFICATION-TYPE
+  OBJECTS { ea820xInputCStatus }
+  STATUS current
+  DESCRIPTION
+    "An indication that the status of input channel C has changed.
+     The current status is reported in ea820xInputCStatus."
+  ::= { ea820xCardNotifications 3 }
+
+--
+--  EA820x Card information
+--
+--
+--  All the EA-820x cards in the Open Gear frame
+--
+ea820xNumberOfCards    OBJECT-TYPE
+  SYNTAX      Integer32
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "The total number of EA-820x cards in the open gear frame."
+  ::= { ea820xCardObjects 1 }
+
+--
+--  Table of Product parameters
+--
+ea820xProductTable     OBJECT-TYPE
+  SYNTAX      SEQUENCE OF Ea820xProductEntry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "A table containing product info for all EA-820x cards at this node.
+     This table is the expansion of the table 'openGearCardTable' in the
+     OPEN-GEAR-CARD-MIB. For each EA-820x card in the 'openGearCardTable',
+     there is a corresponding entry in this table, having the same indices -
+     'openGearFrameIndex' and 'openGearCardIndex'."
+  ::= { ea820xCardObjects 2 }
+
+ea820xProductEntry     OBJECT-TYPE
+  SYNTAX      Ea820xProductEntry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "A conceptual row within the 'ea820xProductTable'."
+  INDEX    { openGearFrameIndex, openGearCardIndex }
+  ::= { ea820xProductTable 1 }
+
+Ea820xProductEntry ::= SEQUENCE {
+  ea820xBoardRev            DisplayString,
+  ea820xChannelCount        Integer32
+}
+
+ea820xBoardRev    OBJECT-TYPE
+  SYNTAX      DisplayString
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "The hardware (board) revision of this card."
+  ::= { ea820xProductEntry 4 }
+
+ea820xChannelCount    OBJECT-TYPE
+  SYNTAX      Integer32
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "The number of input channels supported by this card (1 to 3)."
+  ::= { ea820xProductEntry 5 }
+
+--
+--  Table of Hardware parameters
+--
+ea820xHardwareTable     OBJECT-TYPE
+  SYNTAX      SEQUENCE OF Ea820xHardwareEntry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "A table containing hardware status for all EA-820x cards at this node.
+     This table is the expansion of the table 'openGearCardTable' in the
+     OPEN-GEAR-CARD-MIB. For each EA-820x card in the 'openGearCardTable',
+     there is a corresponding entry in this table, having the same indices -
+     'openGearFrameIndex' and 'openGearCardIndex'."
+  ::= { ea820xCardObjects 3 }
+
+ea820xHardwareEntry     OBJECT-TYPE
+  SYNTAX      Ea820xHardwareEntry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "A conceptual row within the 'ea820xHardwareTable'."
+  INDEX    { openGearFrameIndex, openGearCardIndex }
+  ::= { ea820xHardwareTable 1 }
+
+Ea820xHardwareEntry ::= SEQUENCE {
+  ea820xRearModule          Integer32,
+  ea820xCardVoltage         Integer32,
+  ea820xCardCurrent         Integer32,
+  ea820xEEBank              Integer32
+}
+
+ea820xRearModule    OBJECT-TYPE
+  SYNTAX      Integer32
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "The type of rear I/O module present for this card."
+  ::= { ea820xHardwareEntry 2 }
+
+ea820xCardVoltage    OBJECT-TYPE
+  SYNTAX      Integer32
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "The supply voltage measured at this card, in milliVolts."
+  ::= { ea820xHardwareEntry 3 }
+
+ea820xCardCurrent    OBJECT-TYPE
+  SYNTAX      Integer32
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "The current consumption of this card in milliAmps."
+  ::= { ea820xHardwareEntry 4 }
+
+ea820xEEBank    OBJECT-TYPE
+  SYNTAX      Integer32
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "The index of the EEPROM storage bank used to store the persistent
+     configuration of this card.  This index will increment whenever
+     a new configuration is stored."
+  ::= { ea820xHardwareEntry 5 }
+
+--
+--  Table of Signal Status parameters
+--
+ea820xSignalTable     OBJECT-TYPE
+  SYNTAX      SEQUENCE OF Ea820xSignalEntry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "A table containing signal status for all EA-820x cards at this node.
+     This table is the expansion of the table 'openGearCardTable' in the
+     OPEN-GEAR-CARD-MIB. For each EA-820x card in the 'openGearCardTable',
+     there is a corresponding entry in this table, having the same indices -
+     'openGearFrameIndex' and 'openGearCardIndex'."
+  ::= { ea820xCardObjects 4 }
+
+ea820xSignalEntry     OBJECT-TYPE
+  SYNTAX      Ea820xSignalEntry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "A conceptual row within the 'ea820xSignalTable'."
+  INDEX    { openGearFrameIndex, openGearCardIndex }
+  ::= { ea820xSignalTable 1 }
+
+Ea820xSignalEntry ::= SEQUENCE {
+  ea820xInputAStatus        INTEGER,
+  ea820xInputBStatus        INTEGER,
+  ea820xInputCStatus        INTEGER
+}
+
+ea820xInputAStatus    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    noSignal      (0),
+    signalPresent (1)
+  }
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "The status of input channel A of this distribution card."
+  ::= { ea820xSignalEntry 1 }
+
+ea820xInputBStatus    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    noSignal      (0),
+    signalPresent (1)
+  }
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "The status of input channel B of this distribution card."
+  ::= { ea820xSignalEntry 2 }
+
+ea820xInputCStatus    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    noSignal      (0),
+    signalPresent (1)
+  }
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "The status of input channel C of this distribution card."
+  ::= { ea820xSignalEntry 3 }
+
+--
+--  Table of access control parameters
+--
+ea820xSetupTable     OBJECT-TYPE
+  SYNTAX      SEQUENCE OF Ea820xSetupEntry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "A table containing access settings for all EA-820x cards at this node.
+     This table is the expansion of the table 'openGearCardTable' in the
+     OPEN-GEAR-CARD-MIB. For each EA-820x card in the 'openGearCardTable',
+     there is a corresponding entry in this table, having the same indices -
+     'openGearFrameIndex' and 'openGearCardIndex'."
+  ::= { ea820xCardObjects 5 }
+
+ea820xSetupEntry     OBJECT-TYPE
+  SYNTAX      Ea820xSetupEntry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "A conceptual row within the 'ea820xSetupTable'."
+  INDEX    { openGearFrameIndex, openGearCardIndex }
+  ::= { ea820xSetupTable 1 }
+
+Ea820xSetupEntry ::= SEQUENCE {
+  ea820xEditPermission      INTEGER,
+  ea820xFactoryReset        INTEGER
+}
+
+ea820xEditPermission    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    unlocked   (0),
+    locked     (2)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "The edit permission for read-write parameters of this card."
+  DEFVAL  { unlocked }
+  ::= { ea820xSetupEntry 1 }
+
+ea820xFactoryReset    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    reset      (0)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "Setting this parameter to zero will set the configuration of this card
+     to the factory default settings."
+  ::= { ea820xSetupEntry 2 }
+
+--
+--  Table of input configuration parameters
+--
+ea820xInputTable     OBJECT-TYPE
+  SYNTAX      SEQUENCE OF Ea820xInputEntry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "A table containing input settings for all EA-820x cards at this node.
+     This table is the expansion of the table 'openGearCardTable' in the
+     OPEN-GEAR-CARD-MIB. For each EA-820x card in the 'openGearCardTable',
+     there is a corresponding entry in this table, having the same indices -
+     'openGearFrameIndex' and 'openGearCardIndex'."
+  ::= { ea820xCardObjects 6 }
+
+ea820xInputEntry     OBJECT-TYPE
+  SYNTAX      Ea820xInputEntry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "A conceptual row within the 'ea820xInputTable'."
+  INDEX    { openGearFrameIndex, openGearCardIndex }
+  ::= { ea820xInputTable 1 }
+
+Ea820xInputEntry ::= SEQUENCE {
+  ea820xChannelARate        INTEGER,
+  ea820xChannelBRate        INTEGER,
+  ea820xChannelCRate        INTEGER,
+  ea820xLossOfInputA        INTEGER,
+  ea820xLossOfInputB        INTEGER,
+  ea820xLossOfInputC        INTEGER
+}
+
+ea820xChannelARate    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    highDef  (0),
+    stdDef   (1)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "The data rate for input channel A of this distribution amplifier card.
+     This value is used to select an appropriate level-transition rate on
+     the output drivers for this channel."
+  DEFVAL  { highDef }
+  ::= { ea820xInputEntry 1 }
+
+ea820xChannelBRate    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    highDef  (0),
+    stdDef   (1)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "The data rate for input channel B of this distribution amplifier card.
+     This value is used to select an appropriate level-transition rate on
+     the output drivers for this channel."
+  DEFVAL  { highDef }
+  ::= { ea820xInputEntry 2 }
+
+ea820xChannelCRate    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    highDef  (0),
+    stdDef   (1)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "The data rate for input channel C of this distribution amplifier card.
+     This value is used to select an appropriate level-transition rate on
+     the output drivers for this channel."
+  DEFVAL  { highDef }
+  ::= { ea820xInputEntry 3 }
+
+ea820xLossOfInputA    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    ignore (0),
+    notify (1)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "The action to take on loss of input A for this card."
+  DEFVAL  { notify }
+  ::= { ea820xInputEntry 4 }
+
+ea820xLossOfInputB    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    ignore (0),
+    notify (1)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "The action to take on loss of input B for this card."
+  DEFVAL  { notify }
+  ::= { ea820xInputEntry 5 }
+
+ea820xLossOfInputC    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    ignore (0),
+    notify (1)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "The action to take on loss of input C for this card."
+  DEFVAL  { notify }
+  ::= { ea820xInputEntry 6 }
+
+--
+-- Conformance
+--
+ea820xCardMibCompliances
+  OBJECT IDENTIFIER ::= { ea820xCardConformance 1 }
+ea820xCardMibGroups
+  OBJECT IDENTIFIER ::= { ea820xCardConformance 2 }
+
+--
+-- Compliance Statement
+--
+ea820xCardCompliances MODULE-COMPLIANCE
+  STATUS      current
+  DESCRIPTION
+    "The compliance statement for EA-820x entities."
+
+  MODULE -- this module
+    MANDATORY-GROUPS { ea820xCardInfoGroup,
+                       ea820xCardNotifyGroup
+                     }
+
+  OBJECT       ea820xChannelBRate
+     MIN-ACCESS   not-accessible
+     DESCRIPTION
+        "This object is not supported for the single channel card."
+
+  OBJECT       ea820xChannelCRate
+     MIN-ACCESS   not-accessible
+     DESCRIPTION
+        "This object is not supported for the dual and single channel
+         card."
+
+  OBJECT       ea820xLossOfInputB
+     MIN-ACCESS   not-accessible
+     DESCRIPTION
+        "This object is not supported for the single channel card."
+
+  OBJECT       ea820xLossOfInputC
+     MIN-ACCESS   not-accessible
+     DESCRIPTION
+        "This object is not supported for the dual and single channel
+         card."
+
+  OBJECT       ea820xInputBStatus
+     MIN-ACCESS   not-accessible
+     DESCRIPTION
+        "This object is not supported for the single channel card."
+
+  OBJECT       ea820xInputCStatus
+     MIN-ACCESS   not-accessible
+     DESCRIPTION
+        "This object is not supported for the dual and single channel
+         card."
+
+  ::= { ea820xCardMibCompliances 1 }
+
+ea820xCardInfoGroup OBJECT-GROUP
+    OBJECTS { ea820xNumberOfCards,
+              ea820xBoardRev,
+              ea820xChannelCount,
+              ea820xRearModule,
+              ea820xCardVoltage,
+              ea820xCardCurrent,
+              ea820xEEBank,
+              ea820xEditPermission,
+              ea820xFactoryReset,
+              ea820xChannelARate,
+              ea820xChannelBRate,
+              ea820xChannelCRate,
+              ea820xLossOfInputA,
+              ea820xLossOfInputB,
+              ea820xLossOfInputC,
+              ea820xInputAStatus,
+              ea820xInputBStatus,
+              ea820xInputCStatus
+            }
+    STATUS  current
+    DESCRIPTION
+            "A collection of objects providing basic instrumentation
+            and control of an EA-820x card."
+    ::= { ea820xCardMibGroups 1 }
+
+ea820xCardNotifyGroup NOTIFICATION-GROUP
+  NOTIFICATIONS { ea820xInputAStatusEvent,
+                  ea820xInputBStatusEvent,
+                  ea820xInputCStatusEvent
+                }
+  STATUS current
+  DESCRIPTION
+    "The notifications relating to the EA-820x card"
+  ::= { ea820xCardMibGroups 2 }
+
+END

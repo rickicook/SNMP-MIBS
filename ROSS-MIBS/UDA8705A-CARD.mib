@@ -1,0 +1,353 @@
+UDA8705A-CARD-MIB DEFINITIONS ::= BEGIN
+
+--
+-- Defines control and monitoring structures for the UDA-8705A
+-- Utility Distribution Amplifier.
+--
+
+IMPORTS
+  openGearFrameIndex
+    FROM OPEN-GEAR-FRAME-MIB
+
+  openGearCardIndex
+    FROM OPEN-GEAR-CARD-MIB
+
+   openGearObjects
+    FROM OPEN-GEAR-MIB
+
+  OBJECT-TYPE, NOTIFICATION-TYPE, MODULE-IDENTITY, Integer32
+    FROM SNMPv2-SMI
+
+  OBJECT-GROUP, NOTIFICATION-GROUP, MODULE-COMPLIANCE
+    FROM SNMPv2-CONF
+
+  DisplayString
+    FROM SNMPv2-TC;
+
+uda8705ACardMib MODULE-IDENTITY
+  LAST-UPDATED "200805160000Z"
+  ORGANIZATION "www.rossvideo.org"
+  CONTACT-INFO
+    "postal:   Ross Video
+               8 John St. P.O. Box 220
+               Iroquois ON K0E 1K0
+
+      email:   support@rossvideo.com"
+
+  DESCRIPTION
+    "Defines control and monitoring structures for the UDA-8705A
+     Utility Distribution Amplifier."
+
+  REVISION     "200805160000Z"
+  DESCRIPTION
+    "First revision."
+  ::= { openGearObjects 13 }
+
+--
+--  Top level components in the UDA-8705A MIB
+--
+uda8705ACardNotifications
+  OBJECT IDENTIFIER ::= { uda8705ACardMib 0 }
+
+uda8705ACardObjects
+  OBJECT IDENTIFIER ::= { uda8705ACardMib 1 }
+
+uda8705ACardConformance
+  OBJECT IDENTIFIER ::= { uda8705ACardMib 2 }
+
+--
+--  Notifications relating to the UDA-8705A card
+--
+uda8705ASignalStatusEvent   NOTIFICATION-TYPE
+  OBJECTS { signalStatus }
+  STATUS current
+  DESCRIPTION
+    "An indication that the signal status of the card has changed.
+     The current status is reported in signalStatus."
+  ::= { uda8705ACardNotifications 1 }
+
+--
+--  UDA-8705A Card information
+--
+--
+--  All the UDA-8705A cards in the Open Gear frame
+--
+uda8705ANumberOfCards    OBJECT-TYPE
+  SYNTAX      Integer32
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "The total number of UDA-8705A cards in the frame."
+  ::= { uda8705ACardObjects 1 }
+
+--
+--  Table of Product parameters
+--
+uda8705AProductTable     OBJECT-TYPE
+  SYNTAX      SEQUENCE OF Uda8705AProductEntry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "A table containing product info for all UDA-8705A cards at this node.
+     This table is the expansion of the table 'openGearCardTable' in the
+     OPEN-GEAR-CARD-MIB. For each UDA-8705A card in the 'openGearCardTable',
+     there is a corresponding entry in this table, having the same indices -
+     'openGearFrameIndex' and 'openGearCardIndex'."
+  ::= { uda8705ACardObjects 2 }
+
+uda8705AProductEntry     OBJECT-TYPE
+  SYNTAX      Uda8705AProductEntry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "A conceptual row within the 'uda8705AProductTable'."
+  INDEX    { openGearFrameIndex, openGearCardIndex }
+  ::= { uda8705AProductTable 1 }
+
+Uda8705AProductEntry ::= SEQUENCE {
+  boardRev            DisplayString,
+  serialNumber        DisplayString
+}
+
+boardRev    OBJECT-TYPE
+  SYNTAX      DisplayString
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "The hardware (board) revision of this card."
+  ::= { uda8705AProductEntry 4 }
+
+serialNumber  OBJECT-TYPE
+  SYNTAX      DisplayString
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "The serial number of this card."
+  ::= { uda8705AProductEntry 5 }
+
+--
+--  Table of Hardware parameters
+--
+uda8705AHardwareTable     OBJECT-TYPE
+  SYNTAX      SEQUENCE OF Uda8705AHardwareEntry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "A table containing hardware status for all UDA-8705A cards at this node.
+     This table is the expansion of the table 'openGearCardTable' in the
+     OPEN-GEAR-CARD-MIB. For each UDA-8705A card in the 'openGearCardTable',
+     there is a corresponding entry in this table, having the same indices -
+     'openGearFrameIndex' and 'openGearCardIndex'."
+  ::= { uda8705ACardObjects 3 }
+
+uda8705AHardwareEntry     OBJECT-TYPE
+  SYNTAX      Uda8705AHardwareEntry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "A conceptual row within the 'uda8705AHardwareTable'."
+  INDEX    { openGearFrameIndex, openGearCardIndex }
+  ::= { uda8705AHardwareTable 1 }
+
+Uda8705AHardwareEntry ::= SEQUENCE {
+  rearModule          DisplayString,
+  cardVoltage         Integer32,
+  cardCurrent         Integer32,
+  eeBank              Integer32
+}
+
+rearModule    OBJECT-TYPE
+  SYNTAX      DisplayString
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "The type of rear I/O module present for this card."
+  ::= { uda8705AHardwareEntry 2 }
+
+cardVoltage    OBJECT-TYPE
+  SYNTAX      Integer32
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "The supply voltage measured at this card, in milliVolts."
+  ::= { uda8705AHardwareEntry 3 }
+
+cardCurrent    OBJECT-TYPE
+  SYNTAX      Integer32
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "The current consumption of this card in milliAmps."
+  ::= { uda8705AHardwareEntry 4 }
+
+eeBank    OBJECT-TYPE
+  SYNTAX      Integer32
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "The index of the EEPROM storage bank used to store the persistent
+     configuration of this card.  This index will increment whenever
+     a new configuration is stored."
+  ::= { uda8705AHardwareEntry 5 }
+
+--
+--  Table of Signal Status parameters
+--
+uda8705ASignalTable     OBJECT-TYPE
+  SYNTAX      SEQUENCE OF Uda8705ASignalEntry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "A table containing signal status for all UDA-8705A cards at this node.
+     This table is the expansion of the table 'openGearCardTable' in the
+     OPEN-GEAR-CARD-MIB. For each UDA-8705A card in the 'openGearCardTable',
+     there is a corresponding entry in this table, having the same indices -
+     'openGearFrameIndex' and 'openGearCardIndex'."
+  ::= { uda8705ACardObjects 4 }
+
+uda8705ASignalEntry     OBJECT-TYPE
+  SYNTAX      Uda8705ASignalEntry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "A conceptual row within the 'uda8705ASignalTable'."
+  INDEX    { openGearFrameIndex, openGearCardIndex }
+  ::= { uda8705ASignalTable 1 }
+
+Uda8705ASignalEntry ::= SEQUENCE {
+  signalStatus        INTEGER,
+  signalFormat        INTEGER
+}
+
+signalStatus    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    videoPresent  (1),
+    otherSignal   (2),
+    noSignal      (4),
+    noSignalAlarm (8)
+  }
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "The input to this utility distribution card:
+      videoPresent:  a valid video signal is present
+      otherSignal:  signal is present but not video (AES audio or other)
+      noSignal:  no signal is present but card is configured to ignore errors
+      noSignalAlarm: no signal is present, alarm condition."
+  ::= { uda8705ASignalEntry 1 }
+
+signalFormat    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    v480i5994  (0),
+    v720p5994  (1),
+    v1080i5994 (2),
+    v1080p2997 (3),
+    video5994  (4),
+    v576i50    (5),
+    v720p50    (6),
+    v1080i50   (7),
+    v1080p25   (8),
+    video50    (9),
+    otherVideo (10),
+    aesOther   (11),
+    noSignal   (12)
+  }
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "The format of the input signal to this utility distribution card.
+     Format is determined from the sync pulse timing and structure,
+     and is valid only for video input.  Non-video is reported as aesOther.
+     Unrecognized formats are reported as video5994, video50 or otherVideo."
+  ::= { uda8705ASignalEntry 2 }
+
+--
+--  Table of configuration parameters
+--
+uda8705AConfigTable     OBJECT-TYPE
+  SYNTAX      SEQUENCE OF Uda8705AConfigEntry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "A table containing configuration settings for all UDA-8705A cards
+     at this node. This table is the expansion of the 'openGearCardTable'
+     in the OPEN-GEAR-CARD-MIB. For each UDA-8705A in the 'openGearCardTable',
+     there is a corresponding entry in this table, having the same indices -
+     'openGearFrameIndex' and 'openGearCardIndex'."
+  ::= { uda8705ACardObjects 6 }
+
+uda8705AConfigEntry     OBJECT-TYPE
+  SYNTAX      Uda8705AConfigEntry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "A conceptual row within the 'uda8705AConfigTable'."
+  INDEX    { openGearFrameIndex, openGearCardIndex }
+  ::= { uda8705AConfigTable 1 }
+
+Uda8705AConfigEntry ::= SEQUENCE {
+  notifyOnLOI         INTEGER
+}
+
+notifyOnLOI    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    ignore (0),
+    notify (1)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "Specifies whether to notify DashBoard about a loss-of-input condition."
+  DEFVAL  { notify }
+  ::= { uda8705AConfigEntry 4 }
+
+--
+-- Conformance
+--
+uda8705ACardMibCompliances
+  OBJECT IDENTIFIER ::= { uda8705ACardConformance 1 }
+uda8705ACardMibGroups
+  OBJECT IDENTIFIER ::= { uda8705ACardConformance 2 }
+
+--
+-- Compliance Statement
+--
+uda8705ACardCompliances MODULE-COMPLIANCE
+  STATUS      current
+  DESCRIPTION
+    "The compliance statement for UDA-8705A entities."
+
+  MODULE -- this module
+    MANDATORY-GROUPS { uda8705ACardInfoGroup,
+                       uda8705ACardNotifyGroup
+                     }
+
+  ::= { uda8705ACardMibCompliances 1 }
+
+uda8705ACardInfoGroup OBJECT-GROUP
+    OBJECTS { uda8705ANumberOfCards,
+              boardRev,
+              serialNumber,
+              rearModule,
+              cardVoltage,
+              cardCurrent,
+              eeBank,
+              signalStatus,
+              signalFormat,
+              notifyOnLOI
+            }
+    STATUS  current
+    DESCRIPTION
+            "A collection of objects providing basic instrumentation
+            and control of an UDA-8705A card."
+    ::= { uda8705ACardMibGroups 1 }
+
+uda8705ACardNotifyGroup NOTIFICATION-GROUP
+  NOTIFICATIONS { uda8705ASignalStatusEvent
+                }
+  STATUS current
+  DESCRIPTION
+    "The notifications relating to the UDA-8705A card"
+  ::= { uda8705ACardMibGroups 2 }
+
+END

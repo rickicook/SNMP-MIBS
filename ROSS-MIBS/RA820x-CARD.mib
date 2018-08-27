@@ -1,0 +1,702 @@
+RA820x-CARD-MIB DEFINITIONS ::= BEGIN
+
+--
+-- Defines control and monitoring structures for the RA-820x card.
+--
+
+IMPORTS
+  openGearFrameIndex
+    FROM OPEN-GEAR-FRAME-MIB
+
+  openGearCardIndex
+    FROM OPEN-GEAR-CARD-MIB
+
+   openGearObjects
+    FROM OPEN-GEAR-MIB
+
+  OBJECT-TYPE, NOTIFICATION-TYPE, MODULE-IDENTITY, Integer32
+    FROM SNMPv2-SMI
+
+  OBJECT-GROUP, NOTIFICATION-GROUP, MODULE-COMPLIANCE
+    FROM SNMPv2-CONF
+
+  DisplayString
+    FROM SNMPv2-TC;
+
+ra820xCardMib MODULE-IDENTITY
+  LAST-UPDATED "200703070000Z"
+  ORGANIZATION "www.rossvideo.org"
+  CONTACT-INFO
+    "postal:   Ross Video
+               8 John St. P.O. Box 220
+               Iroquois ON K0E 1K0
+
+      email:   support@rossvideo.com"
+
+  DESCRIPTION
+    "Defines control and monitoring structures for the RA-820x card family.
+     This is a family of reclocking distribution amplifiers for multi-
+     definition broadcast video signals.  It includes the following:
+        SRA-8201  Single channel reclocking DA
+        DRA-8204  Dual-channel reclocking DA
+        TRA-8206  Triple-channel reclocking DA"
+
+  REVISION     "200703070000Z"
+  DESCRIPTION
+    "First revision."
+  ::= { openGearObjects 5 }
+
+--
+--  Top level components in the RA-820x MIB
+--
+ra820xCardNotifications
+  OBJECT IDENTIFIER ::= { ra820xCardMib 0 }
+
+ra820xCardObjects
+  OBJECT IDENTIFIER ::= { ra820xCardMib 1 }
+
+ra820xCardConformance
+  OBJECT IDENTIFIER ::= { ra820xCardMib 2 }
+
+--
+--  Notifications relating to the RA-820x card
+--
+ra820xInputAStatusEvent   NOTIFICATION-TYPE
+  OBJECTS { ra820xInputAStatus }
+  STATUS current
+  DESCRIPTION
+    "An indication that the status of input channel A has changed.
+     The current status is reported in ra820xInputAStatus."
+  ::= { ra820xCardNotifications 1 }
+
+ra820xInputBStatusEvent   NOTIFICATION-TYPE
+  OBJECTS { ra820xInputBStatus }
+  STATUS current
+  DESCRIPTION
+    "An indication that the status of input channel B has changed.
+     The current status is reported in ra820xInputBStatus."
+  ::= { ra820xCardNotifications 2 }
+
+ra820xInputCStatusEvent   NOTIFICATION-TYPE
+  OBJECTS { ra820xInputCStatus }
+  STATUS current
+  DESCRIPTION
+    "An indication that the status of input channel C has changed.
+     The current status is reported in ra820xInputCStatus."
+  ::= { ra820xCardNotifications 3 }
+
+--
+--  RA820x Card information
+--
+--
+--  All the RA-820x cards in the Open Gear frame
+--
+ra820xNumberOfCards    OBJECT-TYPE
+  SYNTAX      Integer32
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "The total number of RA-820x cards in the open gear frame."
+  ::= { ra820xCardObjects 1 }
+
+--
+--  Table of Product parameters
+--
+ra820xProductTable     OBJECT-TYPE
+  SYNTAX      SEQUENCE OF Ra820xProductEntry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "A table containing product info for all RA-820x cards at this node.
+     This table is the expansion of the table 'openGearCardTable' in the
+     OPEN-GEAR-CARD-MIB. For each RA-820x card in the 'openGearCardTable',
+     there is a corresponding entry in this table, having the same indices -
+     'openGearFrameIndex' and 'openGearCardIndex'."
+  ::= { ra820xCardObjects 2 }
+
+ra820xProductEntry     OBJECT-TYPE
+  SYNTAX      Ra820xProductEntry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "A conceptual row within the 'ra820xProductTable'."
+  INDEX    { openGearFrameIndex, openGearCardIndex }
+  ::= { ra820xProductTable 1 }
+
+Ra820xProductEntry ::= SEQUENCE {
+  ra820xBoardRev            DisplayString,
+  ra820xChannelCount        Integer32
+}
+
+ra820xBoardRev    OBJECT-TYPE
+  SYNTAX      DisplayString
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "The hardware (board) revision of this card."
+  ::= { ra820xProductEntry 4 }
+
+ra820xChannelCount    OBJECT-TYPE
+  SYNTAX      Integer32
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "The number of input channels supported by this card (1 to 3)."
+  ::= { ra820xProductEntry 5 }
+
+--
+--  Table of Hardware parameters
+--
+ra820xHardwareTable     OBJECT-TYPE
+  SYNTAX      SEQUENCE OF Ra820xHardwareEntry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "A table containing hardware status for all RA-820x cards at this node.
+     This table is the expansion of the table 'openGearCardTable' in the
+     OPEN-GEAR-CARD-MIB. For each RA-820x card in the 'openGearCardTable',
+     there is a corresponding entry in this table, having the same indices -
+     'openGearFrameIndex' and 'openGearCardIndex'."
+  ::= { ra820xCardObjects 3 }
+
+ra820xHardwareEntry     OBJECT-TYPE
+  SYNTAX      Ra820xHardwareEntry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "A conceptual row within the 'ra820xHardwareTable'."
+  INDEX    { openGearFrameIndex, openGearCardIndex }
+  ::= { ra820xHardwareTable 1 }
+
+Ra820xHardwareEntry ::= SEQUENCE {
+  ra820xRearModule          Integer32,
+  ra820xCardVoltage         Integer32,
+  ra820xCardCurrent         Integer32,
+  ra820xEEBank              Integer32
+}
+
+ra820xRearModule    OBJECT-TYPE
+  SYNTAX      Integer32
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "The type of rear I/O module present for this card."
+  ::= { ra820xHardwareEntry 2 }
+
+ra820xCardVoltage    OBJECT-TYPE
+  SYNTAX      Integer32
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "The supply voltage measured at this card, in milliVolts."
+  ::= { ra820xHardwareEntry 3 }
+
+ra820xCardCurrent    OBJECT-TYPE
+  SYNTAX      Integer32
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "The current consumption of this card in milliAmps."
+  ::= { ra820xHardwareEntry 4 }
+
+ra820xEEBank    OBJECT-TYPE
+  SYNTAX      Integer32
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "The index of the EEPROM storage bank used to store the persistent
+     configuration of this card.  This index will increment whenever
+     a new configuration is stored."
+  ::= { ra820xHardwareEntry 5 }
+
+--
+--  Table of Signal Status parameters
+--
+ra820xSignalTable     OBJECT-TYPE
+  SYNTAX      SEQUENCE OF Ra820xSignalEntry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "A table containing signal status for all RA-820x cards at this node.
+     This table is the expansion of the table 'openGearCardTable' in the
+     OPEN-GEAR-CARD-MIB. For each RA-820x card in the 'openGearCardTable',
+     there is a corresponding entry in this table, having the same indices -
+     'openGearFrameIndex' and 'openGearCardIndex'."
+  ::= { ra820xCardObjects 4 }
+
+ra820xSignalEntry     OBJECT-TYPE
+  SYNTAX      Ra820xSignalEntry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "A conceptual row within the 'ra820xSignalTable'."
+  INDEX    { openGearFrameIndex, openGearCardIndex }
+  ::= { ra820xSignalTable 1 }
+
+Ra820xSignalEntry ::= SEQUENCE {
+  ra820xInputAStatus        INTEGER,
+  ra820xInputBStatus        INTEGER,
+  ra820xInputCStatus        INTEGER
+}
+
+ra820xInputAStatus    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    locked143   (0),
+    locked177   (1),
+    locked270   (2),
+    locked360   (3),
+    locked540   (4),
+    locked1485  (5),
+    notRouted   (6),
+    bypass      (7),
+    noSignal    (8),
+    noSignalMuted (9),
+    unlocked      (10),
+    unlockedMuted (11)
+  }
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "The status of input channel A of this distribution card.
+     A status value of locked indicates that the reclocking module PLL
+     is locked and reclocking the signal at the specified data rate.
+     notRouted indicates that the input is not routed to any output BNC
+     (see routing parameters).  A value of 'bypass' indicates that the
+     channel has been configured to bypass the reclocking module.
+     A status values of noSignal (8) or higher should be considered an
+     error condition."
+  ::= { ra820xSignalEntry 1 }
+
+ra820xInputBStatus    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    locked143   (0),
+    locked177   (1),
+    locked270   (2),
+    locked360   (3),
+    locked540   (4),
+    locked1485  (5),
+    notRouted   (6),
+    bypass      (7),
+    noSignal    (8),
+    noSignalMuted (9),
+    unlocked      (10),
+    unlockedMuted (11)
+  }
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "The status of input channel B of this distribution card.
+     A status value of locked indicates that the reclocking module PLL
+     is locked and reclocking the signal at the specified data rate.
+     notRouted indicates that the input is not routed to any output BNC
+     (see routing parameters).  A value of 'bypass' indicates that the
+     channel has been configured to bypass the reclocking module.
+     A status values of noSignal (8) or higher should be considered an
+     error condition."
+  ::= { ra820xSignalEntry 2 }
+
+ra820xInputCStatus    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    locked143   (0),
+    locked177   (1),
+    locked270   (2),
+    locked360   (3),
+    locked540   (4),
+    locked1485  (5),
+    notRouted   (6),
+    bypass      (7),
+    noSignal    (8),
+    noSignalMuted (9),
+    unlocked      (10),
+    unlockedMuted (11)
+  }
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "The status of input channel C of this distribution card.
+     A status value of locked indicates that the reclocking module PLL
+     is locked and reclocking the signal at the specified data rate.
+     notRouted indicates that the input is not routed to any output BNC
+     (see routing parameters).  A value of 'bypass' indicates that the
+     channel has been configured to bypass the reclocking module.
+     A status values of noSignal (8) or higher should be considered an
+     error condition."
+  ::= { ra820xSignalEntry 3 }
+
+--
+--  Table of access control parameters
+--
+ra820xSetupTable     OBJECT-TYPE
+  SYNTAX      SEQUENCE OF Ra820xSetupEntry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "A table containing access settings for all RA-820x cards at this node.
+     This table is the expansion of the table 'openGearCardTable' in the
+     OPEN-GEAR-CARD-MIB. For each RA-820x card in the 'openGearCardTable',
+     there is a corresponding entry in this table, having the same indices -
+     'openGearFrameIndex' and 'openGearCardIndex'."
+  ::= { ra820xCardObjects 5 }
+
+ra820xSetupEntry     OBJECT-TYPE
+  SYNTAX      Ra820xSetupEntry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "A conceptual row within the 'ra820xSetupTable'."
+  INDEX    { openGearFrameIndex, openGearCardIndex }
+  ::= { ra820xSetupTable 1 }
+
+Ra820xSetupEntry ::= SEQUENCE {
+  ra820xEditPermission      INTEGER,
+  ra820xFactoryReset        INTEGER
+}
+
+ra820xEditPermission    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    unlocked   (0),
+    locked     (2),
+    localOnly  (3)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "The edit permission for read-write parameters of this card."
+  DEFVAL  { unlocked }
+  ::= { ra820xSetupEntry 1 }
+
+ra820xFactoryReset    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    reset      (0)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "Setting this parameter to zero will set the configuration of this card
+     to the factory default settings."
+  ::= { ra820xSetupEntry 2 }
+
+--
+--  Table of input configuration parameters
+--
+ra820xInputTable     OBJECT-TYPE
+  SYNTAX      SEQUENCE OF Ra820xInputEntry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "A table containing input settings for all RA-820x cards at this node.
+     This table is the expansion of the table 'openGearCardTable' in the
+     OPEN-GEAR-CARD-MIB. For each RA-820x card in the 'openGearCardTable',
+     there is a corresponding entry in this table, having the same indices -
+     'openGearFrameIndex' and 'openGearCardIndex'."
+  ::= { ra820xCardObjects 6 }
+
+ra820xInputEntry     OBJECT-TYPE
+  SYNTAX      Ra820xInputEntry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "A conceptual row within the 'ra820xInputTable'."
+  INDEX    { openGearFrameIndex, openGearCardIndex }
+  ::= { ra820xInputTable 1 }
+
+Ra820xInputEntry ::= SEQUENCE {
+  ra820xChannelARate        INTEGER,
+  ra820xChannelBRate        INTEGER,
+  ra820xChannelCRate        INTEGER,
+  ra820xLossOfInputA        INTEGER,
+  ra820xLossOfInputB        INTEGER,
+  ra820xLossOfInputC        INTEGER,
+  ra820xLowSignal           INTEGER
+}
+
+ra820xChannelARate    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    rate143  (0),
+    rate177  (1),
+    rate270  (2),
+    rate360  (3),
+    rate540  (4),
+    rate1485 (5),
+    auto     (6),
+    bypass   (7)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "The reclocking rate for input channel A of this distribution card.
+     Select auto (6) to enable automatic rate detection.  Select bypass
+     to bypass the reclocking module if the input data rate not one of
+     the supported reclocking rates.  Note that automatic rate detection
+     does not support 177 MHz."
+  DEFVAL  { auto }
+  ::= { ra820xInputEntry 1 }
+
+ra820xChannelBRate    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    rate143  (0),
+    rate177  (1),
+    rate270  (2),
+    rate360  (3),
+    rate540  (4),
+    rate1485 (5),
+    auto     (6),
+    bypass   (7)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "The reclocking rate for input channel B of this distribution card.
+     Select auto (6) to enable automatic rate detection.  Select bypass
+     to bypass the reclocking module if the input data rate not one of
+     the supported reclocking rates.  Note that automatic rate detection
+     does not support 177 MHz."
+  DEFVAL  { auto }
+  ::= { ra820xInputEntry 2 }
+
+ra820xChannelCRate    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    rate143  (0),
+    rate177  (1),
+    rate270  (2),
+    rate360  (3),
+    rate540  (4),
+    rate1485 (5),
+    auto     (6),
+    bypass   (7)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "The reclocking rate for input channel C of this distribution card.
+     Select auto (6) to enable automatic rate detection.  Select bypass
+     to bypass the reclocking module if the input data rate not one of
+     the supported reclocking rates.  Note that automatic rate detection
+     does not support 177 MHz."
+  DEFVAL  { auto }
+  ::= { ra820xInputEntry 3 }
+
+ra820xLossOfInputA    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    ignore (0),
+    notify (1)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "The action to take on loss of input A for this card."
+  DEFVAL  { notify }
+  ::= { ra820xInputEntry 4 }
+
+ra820xLossOfInputB    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    ignore (0),
+    notify (1)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "The action to take on loss of input B for this card."
+  DEFVAL  { notify }
+  ::= { ra820xInputEntry 5 }
+
+ra820xLossOfInputC    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    ignore (0),
+    notify (1)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "The action to take on loss of input C for this card."
+  DEFVAL  { notify }
+  ::= { ra820xInputEntry 6 }
+
+ra820xLowSignal    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    pass  (0),
+    mute  (1)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "The action to take if input signal strength is too low to lock reliably."
+  DEFVAL  { mute }
+  ::= { ra820xInputEntry 7 }
+
+--
+--  Table of Routing parameters
+--
+ra820xRoutingTable     OBJECT-TYPE
+  SYNTAX      SEQUENCE OF Ra820xRoutingEntry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "A table of signal routing settings for all RA-820x cards at this node.
+     This table is the expansion of the table 'openGearCardTable' in the
+     OPEN-GEAR-CARD-MIB. For each RA-820x card in the 'openGearCardTable',
+     there is a corresponding entry in this table, having the same indices -
+     'openGearFrameIndex' and 'openGearCardIndex'."
+  ::= { ra820xCardObjects 7 }
+
+ra820xRoutingEntry     OBJECT-TYPE
+  SYNTAX      Ra820xRoutingEntry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "A conceptual row within the 'ra820xRoutingTable'."
+  INDEX    { openGearFrameIndex, openGearCardIndex }
+  ::= { ra820xRoutingTable 1 }
+
+Ra820xRoutingEntry ::= SEQUENCE {
+  ra820xOutputBNC24         INTEGER,
+  ra820xOutputBNC35         INTEGER,
+  ra820xOutputBNC678        INTEGER
+}
+
+ra820xOutputBNC24    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    channelA (0),
+    channelB (1),
+    channelC (2)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "The input channel to be routed to output BNC 2 & 4 of this card."
+  DEFVAL  { channelA }
+  ::= { ra820xRoutingEntry 1 }
+
+ra820xOutputBNC35    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    channelA (0),
+    channelB (1),
+    channelC (2)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "The input channel to be routed to output BNC 3 & 5 of this card."
+  DEFVAL  { channelA }
+  ::= { ra820xRoutingEntry 2 }
+
+ra820xOutputBNC678    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    channelA (0),
+    channelB (1),
+    channelC (2)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "The input channel to be routed to output BNC 6, 7 & 8 of this card."
+  DEFVAL  { channelA }
+  ::= { ra820xRoutingEntry 3 }
+
+--
+-- Conformance
+--
+ra820xCardMibCompliances
+  OBJECT IDENTIFIER ::= { ra820xCardConformance 1 }
+ra820xCardMibGroups
+  OBJECT IDENTIFIER ::= { ra820xCardConformance 2 }
+
+--
+-- Compliance Statement
+--
+ra820xCardCompliances MODULE-COMPLIANCE
+  STATUS      current
+  DESCRIPTION
+    "The compliance statement for RA-820x entities."
+
+  MODULE -- this module
+    MANDATORY-GROUPS { ra820xCardInfoGroup,
+                       ra820xCardNotifyGroup
+                     }
+
+  OBJECT       ra820xChannelBRate
+     MIN-ACCESS   not-accessible
+     DESCRIPTION
+        "This object is not supported for the single channel card."
+
+  OBJECT       ra820xChannelCRate
+     MIN-ACCESS   not-accessible
+     DESCRIPTION
+        "This object is not supported for the dual and single channel
+         card."
+
+  OBJECT       ra820xLossOfInputB
+     MIN-ACCESS   not-accessible
+     DESCRIPTION
+        "This object is not supported for the single channel card."
+
+  OBJECT       ra820xLossOfInputC
+     MIN-ACCESS   not-accessible
+     DESCRIPTION
+        "This object is not supported for the dual and single channel
+         card."
+
+  OBJECT       ra820xOutputBNC35
+     MIN-ACCESS   not-accessible
+     DESCRIPTION
+        "This object is not supported for the single channel card."
+
+  OBJECT       ra820xOutputBNC678
+     MIN-ACCESS   not-accessible
+     DESCRIPTION
+        "This object is not supported for the single channel card."
+
+  OBJECT       ra820xInputBStatus
+     MIN-ACCESS   not-accessible
+     DESCRIPTION
+        "This object is not supported for the single channel card."
+
+  OBJECT       ra820xInputCStatus
+     MIN-ACCESS   not-accessible
+     DESCRIPTION
+        "This object is not supported for the dual and single channel
+         card."
+
+  ::= { ra820xCardMibCompliances 1 }
+
+ra820xCardInfoGroup OBJECT-GROUP
+    OBJECTS { ra820xNumberOfCards,
+              ra820xBoardRev,
+              ra820xChannelCount,
+              ra820xRearModule,
+              ra820xCardVoltage,
+              ra820xCardCurrent,
+              ra820xEEBank,
+              ra820xEditPermission,
+              ra820xFactoryReset,
+              ra820xLowSignal,
+              ra820xChannelARate,
+              ra820xChannelBRate,
+              ra820xChannelCRate,
+              ra820xLossOfInputA,
+              ra820xLossOfInputB,
+              ra820xLossOfInputC,
+              ra820xOutputBNC24,
+              ra820xOutputBNC35,
+              ra820xOutputBNC678,
+              ra820xInputAStatus,
+              ra820xInputBStatus,
+              ra820xInputCStatus
+            }
+    STATUS  current
+    DESCRIPTION
+            "A collection of objects providing basic instrumentation
+            and control of an RA-820x card."
+    ::= { ra820xCardMibGroups 1 }
+
+ra820xCardNotifyGroup NOTIFICATION-GROUP
+  NOTIFICATIONS { ra820xInputAStatusEvent,
+                  ra820xInputBStatusEvent,
+                  ra820xInputCStatusEvent
+                }
+  STATUS current
+  DESCRIPTION
+    "The notifications relating to the RA-820x card"
+  ::= { ra820xCardMibGroups 2 }
+
+END

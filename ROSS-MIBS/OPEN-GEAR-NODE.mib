@@ -1,0 +1,143 @@
+OPEN-GEAR-NODE-MIB DEFINITIONS ::= BEGIN
+
+--
+-- Defines control and monitoring structures for the Open Gear Node.
+--
+
+IMPORTS
+  openGearObjects
+    FROM OPEN-GEAR-MIB
+
+  IpAddress, OBJECT-TYPE, MODULE-IDENTITY
+    FROM SNMPv2-SMI
+
+  OBJECT-GROUP, MODULE-COMPLIANCE
+    FROM SNMPv2-CONF
+
+  DisplayString, TruthValue
+    FROM SNMPv2-TC;
+
+openGearNodeMib MODULE-IDENTITY
+  LAST-UPDATED "200703070000Z"
+  ORGANIZATION "www.rossvideo.org"
+  CONTACT-INFO
+    "postal:   Ross Video Limited
+               8 John St. P.O. Box 220
+               Iroquois ON K0E 1K0
+               Canada
+
+     email:    support@rossvideo.com"
+  DESCRIPTION
+    "Defines control and monitoring structures for the Open Gear Node."
+  REVISION     "200703070000Z"
+  DESCRIPTION
+    "First revision."
+  ::= { openGearObjects 1 }
+
+--
+--  Top level components in the OpenGear node MIB
+--
+openGearNodeObjects
+  OBJECT IDENTIFIER ::= { openGearNodeMib 1 }
+
+openGearNodeConformance
+  OBJECT IDENTIFIER ::= { openGearNodeMib 2 }
+
+--
+-- Open Gear Node objects
+--
+openGearNodeName    OBJECT-TYPE
+    SYNTAX      DisplayString
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION
+      "The name of the open gear node."
+    ::= { openGearNodeObjects 1 }
+
+openGearNodeSoftwareVersion    OBJECT-TYPE
+    SYNTAX      DisplayString
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION
+      "The software version of the open gear node."
+    ::= { openGearNodeObjects 2 }
+
+openGearNodeUseDHCP    OBJECT-TYPE
+    SYNTAX      TruthValue
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION
+      "If the open gear node uses the DHCP, true(1), false(2)."
+    ::= { openGearNodeObjects 3 }
+
+openGearNodeIPAddress    OBJECT-TYPE
+    SYNTAX      IpAddress
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION
+      "The IP address of the open gear node."
+    ::= { openGearNodeObjects 4 }
+
+openGearNodeNetMask    OBJECT-TYPE
+    SYNTAX      IpAddress
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION
+      "The netmask of the open gear node."
+    ::= { openGearNodeObjects 5 }
+
+openGearNodeGateway    OBJECT-TYPE
+    SYNTAX      IpAddress
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION
+      "The gateway router ip address of the open gear node."
+    ::= { openGearNodeObjects 6 }
+
+openGearNodeTimeServer    OBJECT-TYPE
+    SYNTAX      IpAddress
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION
+      "The IP address of the time server for the open gear node."
+    ::= { openGearNodeObjects 7 }
+
+--
+-- Conformance
+--
+openGearNodeMibCompliances
+  OBJECT IDENTIFIER ::= { openGearNodeConformance 1 }
+openGearNodeMibGroups
+  OBJECT IDENTIFIER ::= { openGearNodeConformance 2 }
+
+--
+-- Compliance Statements
+--
+openGearNodeCompliances MODULE-COMPLIANCE
+  STATUS      current
+  DESCRIPTION
+    "The compliance statement for Open Gear Node entities."
+
+  MODULE -- this module
+  MANDATORY-GROUPS { openGearNodeMonitorGroup }
+
+  ::= { openGearNodeMibCompliances 1 }
+
+--
+-- Open Gear Node MIB groups
+--
+openGearNodeMonitorGroup OBJECT-GROUP
+  OBJECTS { openGearNodeName,
+            openGearNodeSoftwareVersion,
+            openGearNodeUseDHCP,
+            openGearNodeIPAddress,
+            openGearNodeNetMask,
+            openGearNodeGateway,
+            openGearNodeTimeServer }
+  STATUS  current
+  DESCRIPTION
+    "A collection of objects providing basic instrumentation
+     and control of an Open Gear Node."
+  ::= { openGearNodeMibGroups 1 }
+
+END

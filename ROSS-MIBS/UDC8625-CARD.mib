@@ -1,0 +1,535 @@
+UDC8625-CARD-MIB DEFINITIONS ::= BEGIN
+
+--
+-- Defines control and monitoring structures for the UDC8625 card.
+--
+
+IMPORTS
+  openGearFrameIndex
+    FROM OPEN-GEAR-FRAME-MIB
+
+  openGearCardIndex
+    FROM OPEN-GEAR-CARD-MIB
+
+   openGearObjects
+    FROM OPEN-GEAR-MIB
+
+  OBJECT-TYPE, NOTIFICATION-TYPE, MODULE-IDENTITY, Integer32, Unsigned32
+    FROM SNMPv2-SMI
+
+  OBJECT-GROUP, NOTIFICATION-GROUP, MODULE-COMPLIANCE
+    FROM SNMPv2-CONF
+
+  DisplayString
+    FROM SNMPv2-TC;
+
+udc8625CardMib MODULE-IDENTITY
+  LAST-UPDATED "201503031856Z"
+  ORGANIZATION "www.rossvideo.org"
+  CONTACT-INFO
+    "postal:   Ross Video
+               8 John St. P.O. Box 220
+               Iroquois ON K0E 1K0
+
+      email:   support@rossvideo.com"
+
+  DESCRIPTION
+    "Defines control and monitoring structures for the UDC8625 card family.
+     This is a family of MultiDefinition Digital Keyers."
+
+  REVISION     "201503031856Z"
+  DESCRIPTION
+    "First revision."
+  ::= { openGearObjects 25 }
+
+--
+--  Top level components in the UDC8625 MIB
+--
+udc8625CardNotifications
+  OBJECT IDENTIFIER ::= { udc8625CardMib 0 }
+
+udc8625CardObjects
+  OBJECT IDENTIFIER ::= { udc8625CardMib 1 }
+
+udc8625CardConformance
+  OBJECT IDENTIFIER ::= { udc8625CardMib 2 }
+
+--
+-- Notifications relating to the UDC8625 card
+--
+udc8625HWStatusEvent   NOTIFICATION-TYPE
+  OBJECTS { udc8625HWStatus }
+  STATUS current
+  DESCRIPTION
+    "An indication that Status of Card has changed.
+    The current status is reported in udc8625HWStatus."
+  ::= { udc8625CardNotifications 7 }
+
+udc8625ReferenceStatusEvent   NOTIFICATION-TYPE
+  OBJECTS { udc8625ReferenceStatus }
+  STATUS current
+  DESCRIPTION
+    "An indication that Status of the Analog Reference has changed.
+    The current status is reported in udc8625ReferenceStatus."
+  ::= { udc8625CardNotifications 1 }
+
+udc8625Input1StatusEvent   NOTIFICATION-TYPE
+  OBJECTS { udc8625Input1Status }
+  STATUS current
+  DESCRIPTION
+    "An indication that Status of Input A signal has changed.
+    The current status is reported in udc8625Input1Status."
+  ::= { udc8625CardNotifications 2 }
+
+udc8625Input2StatusEvent   NOTIFICATION-TYPE
+  OBJECTS { udc8625Input2Status }
+  STATUS current
+  DESCRIPTION
+    "An indication that Status of Input B signal has changed.
+    The current status is reported in udc8625Input2Status."
+  ::= { udc8625CardNotifications 3 }
+
+udc8625Input3StatusEvent   NOTIFICATION-TYPE
+  OBJECTS { udc8625Input3Status }
+  STATUS current
+  DESCRIPTION
+    "An indication that Status of Input C signal has changed.
+    The current status is reported in udc8625Input3Status."
+  ::= { udc8625CardNotifications 4 }
+
+udc8625Input4StatusEvent   NOTIFICATION-TYPE
+  OBJECTS { udc8625Input4Status }
+  STATUS current
+  DESCRIPTION
+    "An indication that Status of Input D signal has changed.
+    The current status is reported in udc8625Input4Status."
+  ::= { udc8625CardNotifications 5 }
+
+--
+--  UDC8625 Card information
+--
+--
+--  All the UDC8625 cards in the Open Gear frame
+--
+udc8625NumberOfCards    OBJECT-TYPE
+  SYNTAX      Integer32
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "The total number of UDC8625 cards in the open gear frame."
+  ::= { udc8625CardObjects 1 }
+
+--
+--  Table of Product parameters
+--
+udc8625ProductTable     OBJECT-TYPE
+  SYNTAX      SEQUENCE OF Ra820xProductEntry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "A table containing product info for all UDC8625 cards at this node.
+     This table is the expansion of the table 'openGearCardTable' in the
+     OPEN-GEAR-CARD-MIB. For each UDC8625 card in the 'openGearCardTable',
+     there is a corresponding entry in this table, having the same indices -
+     'openGearFrameIndex' and 'openGearCardIndex'."
+  ::= { udc8625CardObjects 2 }
+
+udc8625ProductEntry     OBJECT-TYPE
+  SYNTAX      Ra820xProductEntry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "A conceptual row within the 'udc8625ProductTable'."
+  INDEX    { openGearFrameIndex, openGearCardIndex }
+  ::= { udc8625ProductTable 1 }
+
+Ra820xProductEntry ::= SEQUENCE {
+  udc8625SerialNumber         OCTET STRING (SIZE(0..32)),
+  udc8625BoardRev             OCTET STRING (SIZE(0..32)),
+  udc8625HWStatus             INTEGER,
+  udc8625VoltageV             OCTET STRING (SIZE(0..32)),
+  udc8625CurrentmA            INTEGER,
+  udc8625FPGATemp             OCTET STRING (SIZE(0..32)),
+  udc8625PowerW               OCTET STRING (SIZE(0..32)),
+  udc8625CPUUsage             OCTET STRING (SIZE(0..32)),
+  udc8625RAMAvailable         OCTET STRING (SIZE(0..32)),
+  udc8625ReferenceStatus      OCTET STRING (SIZE(0..64)),
+  udc8625Input1Status         OCTET STRING (SIZE(0..64)),
+  udc8625Input2Status         OCTET STRING (SIZE(0..64)),
+  udc8625Input3Status         OCTET STRING (SIZE(0..64)),
+  udc8625Input4Status         OCTET STRING (SIZE(0..64)),
+  udc8625OutputStatus         INTEGER,
+  udc8625ReferenceInput       INTEGER,
+  udc8625OutputFormat         INTEGER,
+  udc8625Output1              INTEGER,
+  udc8625Output2              INTEGER,
+  udc8625Output3              INTEGER,
+  udc8625Output4              INTEGER,
+  udc8625AudioFade            INTEGER,
+  udc8625SDAudio              INTEGER,
+  udc8625HANCPassThrough      INTEGER,
+  udc8625VANCPassThrough      INTEGER,
+  udc8625ReferenceError       INTEGER,
+  udc8625IncompatRearModule   INTEGER
+}
+
+udc8625SerialNumber   OBJECT-TYPE
+  SYNTAX      OCTET STRING (SIZE(0..32))
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "Serial number."
+  ::= { udc8625ProductEntry 16 }
+
+udc8625BoardRev   OBJECT-TYPE
+  SYNTAX      OCTET STRING (SIZE(0..32))
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "Board Revision."
+  ::= { udc8625ProductEntry 15 }
+
+udc8625HWStatus   OBJECT-TYPE
+  SYNTAX      INTEGER
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "Status of Card.
+    This status parameter is a bitfield where each bit
+    indicates a specific status. A value of zero means OK.
+    The status bits are defined as follows:
+      0x0001 - Alarm suppressed
+      0x0002 - Incomp I/O module
+    All other values are undefined."
+  ::= { udc8625ProductEntry 7 }
+
+udc8625VoltageV   OBJECT-TYPE
+  SYNTAX      OCTET STRING (SIZE(0..32))
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "Voltage(V) of the power supply."
+  ::= { udc8625ProductEntry 8 }
+
+udc8625CurrentmA   OBJECT-TYPE
+  SYNTAX      INTEGER
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "Current(mA) of the card."
+  ::= { udc8625ProductEntry 9 }
+
+udc8625FPGATemp   OBJECT-TYPE
+  SYNTAX      OCTET STRING (SIZE(0..32))
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "Temperature() of the FPGA."
+  ::= { udc8625ProductEntry 11 }
+
+udc8625PowerW   OBJECT-TYPE
+  SYNTAX      OCTET STRING (SIZE(0..32))
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "Power(w) of the card."
+  ::= { udc8625ProductEntry 10 }
+
+udc8625CPUUsage   OBJECT-TYPE
+  SYNTAX      OCTET STRING (SIZE(0..32))
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "CPU Usage."
+  ::= { udc8625ProductEntry 12 }
+
+udc8625RAMAvailable   OBJECT-TYPE
+  SYNTAX      OCTET STRING (SIZE(0..32))
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "RAM Available."
+  ::= { udc8625ProductEntry 14 }
+
+udc8625ReferenceStatus   OBJECT-TYPE
+  SYNTAX      OCTET STRING (SIZE(0..64))
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "Status of the Analog Reference."
+  ::= { udc8625ProductEntry 1 }
+
+udc8625Input1Status   OBJECT-TYPE
+  SYNTAX      OCTET STRING (SIZE(0..64))
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "Status of Input A signal."
+  ::= { udc8625ProductEntry 2 }
+
+udc8625Input2Status   OBJECT-TYPE
+  SYNTAX      OCTET STRING (SIZE(0..64))
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "Status of Input B signal."
+  ::= { udc8625ProductEntry 3 }
+
+udc8625Input3Status   OBJECT-TYPE
+  SYNTAX      OCTET STRING (SIZE(0..64))
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "Status of Input C signal."
+  ::= { udc8625ProductEntry 4 }
+
+udc8625Input4Status   OBJECT-TYPE
+  SYNTAX      OCTET STRING (SIZE(0..64))
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "Status of Input D signal."
+  ::= { udc8625ProductEntry 5 }
+
+udc8625OutputStatus   OBJECT-TYPE
+  SYNTAX      INTEGER
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "Status of Output signal.
+    This status parameter is a bitfield where each bit
+    indicates a specific status. A value of zero means OK.
+    The status bits are defined as follows:
+      0x0001 - Alarm suppressed
+      0x0002 - No input
+      0x0004 - Unsupported conversion
+      0x0008 - Program Audio Absent
+      0x0010 - Backup Audio Absent
+    All other values are undefined."
+  ::= { udc8625ProductEntry 6 }
+
+udc8625ReferenceInput   OBJECT-TYPE
+  SYNTAX      INTEGER {
+    frame1               (0),
+    frame2               (1),
+    local                (2)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "Reference input."
+  ::= { udc8625ProductEntry 17 }
+
+udc8625OutputFormat   OBJECT-TYPE
+  SYNTAX      INTEGER {
+    v480i5994            (0),
+    v720p5994            (1),
+    v1080i5994           (2),
+    v1080p5994LEVELA     (8),
+    v576i50              (3),
+    v720p50              (4),
+    v1080i50             (5),
+    v1080p50LEVELA       (9)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "Output format."
+  ::= { udc8625ProductEntry 18 }
+
+udc8625Output1   OBJECT-TYPE
+  SYNTAX      INTEGER {
+    processed            (0),
+    cleanFeed1           (1),
+    cleanFeed2           (2),
+    externalWings        (8),
+    testPattern          (7)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "Configuration of the Output 1."
+  ::= { udc8625ProductEntry 19 }
+
+udc8625Output2   OBJECT-TYPE
+  SYNTAX      INTEGER {
+    processed            (0),
+    cleanFeed1           (1),
+    cleanFeed2           (2),
+    externalWings        (8),
+    testPattern          (7)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "Configuration of the Output 2."
+  ::= { udc8625ProductEntry 20 }
+
+udc8625Output3   OBJECT-TYPE
+  SYNTAX      INTEGER {
+    processed            (0),
+    cleanFeed1           (1),
+    cleanFeed2           (2),
+    externalWings        (8),
+    testPattern          (7)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "Configuration of the Output 3."
+  ::= { udc8625ProductEntry 21 }
+
+udc8625Output4   OBJECT-TYPE
+  SYNTAX      INTEGER {
+    processed            (0),
+    cleanFeed1           (1),
+    cleanFeed2           (2),
+    externalWings        (8),
+    testPattern          (7)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "Configuration of the Output 4."
+  ::= { udc8625ProductEntry 22 }
+
+udc8625AudioFade   OBJECT-TYPE
+  SYNTAX      INTEGER {
+    enabled              (0),
+    disabled             (1)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "Enable/Disable the audio fade."
+  ::= { udc8625ProductEntry 32 }
+
+udc8625SDAudio   OBJECT-TYPE
+  SYNTAX      INTEGER {
+    v20Bit               (0),
+    v24Bit               (1)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "SD Audio bit settings."
+  ::= { udc8625ProductEntry 33 }
+
+udc8625HANCPassThrough   OBJECT-TYPE
+  SYNTAX      INTEGER {
+    disabled             (0),
+    enabled              (1)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "Enable/Disable the passing through of the HANC data."
+  ::= { udc8625ProductEntry 30 }
+
+udc8625VANCPassThrough   OBJECT-TYPE
+  SYNTAX      INTEGER {
+    disabled             (0),
+    enabled              (1)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "Enable/Disable the passing through of the VANC data."
+  ::= { udc8625ProductEntry 31 }
+
+udc8625ReferenceError   OBJECT-TYPE
+  SYNTAX      INTEGER {
+    off                  (0),
+    on                   (1)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "The alarm mask for the no reference, unlocked reference or invalid reference."
+  ::= { udc8625ProductEntry 34 }
+
+udc8625IncompatRearModule   OBJECT-TYPE
+  SYNTAX      INTEGER {
+    off                  (0),
+    on                   (1)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "The alarm mask for the unsupported rear modules."
+  ::= { udc8625ProductEntry 35 }
+
+--
+-- Conformance
+--
+udc8625CardMibCompliances
+  OBJECT IDENTIFIER ::= { udc8625CardConformance 1 }
+udc8625CardMibGroups
+  OBJECT IDENTIFIER ::= { udc8625CardConformance 2 }
+
+--
+-- Compliance Statement
+--
+udc8625CardCompliances MODULE-COMPLIANCE
+  STATUS      current
+  DESCRIPTION
+    "The compliance statement for UDC8625 entities."
+
+  MODULE -- this module
+    MANDATORY-GROUPS { udc8625CardInfoGroup,
+                       udc8625CardNotifyGroup
+                     }
+
+  ::= { udc8625CardMibCompliances 1 }
+
+udc8625CardInfoGroup OBJECT-GROUP
+    OBJECTS { udc8625NumberOfCards,
+              udc8625SerialNumber,
+              udc8625BoardRev,
+              udc8625HWStatus,
+              udc8625VoltageV,
+              udc8625CurrentmA,
+              udc8625FPGATemp,
+              udc8625PowerW,
+              udc8625CPUUsage,
+              udc8625RAMAvailable,
+              udc8625ReferenceStatus,
+              udc8625Input1Status,
+              udc8625Input2Status,
+              udc8625Input3Status,
+              udc8625Input4Status,
+              udc8625OutputStatus,
+              udc8625ReferenceInput,
+              udc8625OutputFormat,
+              udc8625Output1,
+              udc8625Output2,
+              udc8625Output3,
+              udc8625Output4,
+              udc8625AudioFade,
+              udc8625SDAudio,
+              udc8625HANCPassThrough,
+              udc8625VANCPassThrough,
+              udc8625ReferenceError,
+              udc8625IncompatRearModule
+            }
+    STATUS  current
+    DESCRIPTION
+            "A collection of objects providing basic instrumentation
+            and control of an UDC8625 card."
+    ::= { udc8625CardMibGroups 1 }
+
+udc8625CardNotifyGroup NOTIFICATION-GROUP
+  NOTIFICATIONS {
+               udc8625HWStatusEvent,
+               udc8625ReferenceStatusEvent,
+               udc8625Input1StatusEvent,
+               udc8625Input2StatusEvent,
+               udc8625Input3StatusEvent,
+               udc8625Input4StatusEvent
+                }
+  STATUS current
+  DESCRIPTION
+    "The notifications relating to the UDC8625 card"
+  ::= { udc8625CardMibGroups 2 }
+
+END

@@ -1,0 +1,1160 @@
+DMX8254-CARD-MIB DEFINITIONS ::= BEGIN
+
+--
+-- Defines control and monitoring structures for the DMX-8254 card.
+--
+
+IMPORTS
+  openGearFrameIndex
+    FROM OPEN-GEAR-FRAME-MIB
+
+  openGearCardIndex
+    FROM OPEN-GEAR-CARD-MIB
+
+  openGearObjects
+    FROM OPEN-GEAR-MIB
+
+  OBJECT-TYPE, NOTIFICATION-TYPE, MODULE-IDENTITY, Integer32, Unsigned32
+    FROM SNMPv2-SMI
+
+  OBJECT-GROUP, NOTIFICATION-GROUP, MODULE-COMPLIANCE
+    FROM SNMPv2-CONF
+
+  DisplayString, TEXTUAL-CONVENTION
+    FROM SNMPv2-TC;
+
+dmx8254CardMib MODULE-IDENTITY
+  LAST-UPDATED "200903171200Z"
+  ORGANIZATION "www.rossvideo.org"
+  CONTACT-INFO
+    "postal:   Ross Video
+               8 John St. P.O. Box 220
+               Iroquois ON K0E 1K0
+
+       email:    support@rossvideo.com"
+  DESCRIPTION
+    "Defines control and monitoring structures for the DMX-8254 card."
+  REVISION     "200903171200Z"
+  DESCRIPTION
+    "SNMP MIB for the DMX-8254 audio de-embedded with 4 AES outputs."
+  ::= { openGearObjects 9 }
+
+--
+--  Top level components in the DMX-8254 MIB
+--
+dmx8254CardNotifications
+  OBJECT IDENTIFIER ::= { dmx8254CardMib 0 }
+
+dmx8254CardObjects
+  OBJECT IDENTIFIER ::= { dmx8254CardMib 1 }
+
+dmx8254CardConformance
+  OBJECT IDENTIFIER ::= { dmx8254CardMib 2 }
+
+--
+--  Notifications relating to the DMX-8254 card
+--
+dmx8254HWStatusEvent   NOTIFICATION-TYPE
+  OBJECTS { dmx8254HWStatus }
+  STATUS current
+  DESCRIPTION
+    "A notification that the hardware status has changed.
+     The status value is in dmx8254HWStatus"
+  ::= { dmx8254CardNotifications 1 }
+
+dmx8254ReferenceStatusEvent   NOTIFICATION-TYPE
+  OBJECTS { dmx8254ReferenceStatus }
+  STATUS current
+  DESCRIPTION
+    "An indication that status of the timing reference has changed.
+     The status value is in dmx8254ReferenceStatus"
+  ::= { dmx8254CardNotifications 2 }
+
+dmx8254InputStatusEvent   NOTIFICATION-TYPE
+  OBJECTS { dmx8254InputStatus }
+  STATUS current
+  DESCRIPTION
+    "An indication that status of the video input has changed.
+     The status value is in dmx8254InputStatus"
+  ::= { dmx8254CardNotifications 3 }
+
+dmx8254AudioStatusEvent   NOTIFICATION-TYPE
+  OBJECTS { dmx8254AudioStatus }
+  STATUS current
+  DESCRIPTION
+    "An indication that status of the embedded audio on the video output has
+     changed. The status value is in dmx8254AudioStatus"
+  ::= { dmx8254CardNotifications 4 }
+
+--
+--  DMX8254 Card information
+--
+--
+--  All the DMX-8254 cards in the Open Gear frame
+--
+dmx8254NumberOfCards    OBJECT-TYPE
+  SYNTAX      Integer32
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "The total number of DMX-8254 cards in the open gear frame."
+  ::= { dmx8254CardObjects 1 }
+
+--
+--  Table of Product parameters
+--
+dmx8254ProductTable     OBJECT-TYPE
+  SYNTAX      SEQUENCE OF Dmx8254ProductEntry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "A table containing product info for all DMX-8254 cards at this node.
+     This table is the expansion of the table 'openGearCardTable' in the
+     OPEN-GEAR-CARD-MIB. For each DMX-8254 card in the 'openGearCardTable',
+     there is a corresponding entry in this table, having the same indices -
+     'openGearFrameIndex' and 'openGearCardIndex'."
+  ::= { dmx8254CardObjects 2 }
+
+dmx8254ProductEntry     OBJECT-TYPE
+  SYNTAX      Dmx8254ProductEntry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "A conceptual row within the 'dmx8254ProductTable'."
+  INDEX    { openGearFrameIndex, openGearCardIndex }
+  ::= { dmx8254ProductTable 1 }
+
+Dmx8254ProductEntry ::= SEQUENCE {
+  dmx8254FirmwareRev         DisplayString,
+  dmx8254BoardRev            DisplayString,
+  dmx8254SerialNumber        DisplayString
+}
+
+dmx8254FirmwareRev    OBJECT-TYPE
+  SYNTAX      DisplayString
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "The version number of the FPGA firmware on this card."
+  ::= { dmx8254ProductEntry 4 }
+
+dmx8254BoardRev    OBJECT-TYPE
+  SYNTAX      DisplayString
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "The hardware (board) revision of this card."
+  ::= { dmx8254ProductEntry 6 }
+
+dmx8254SerialNumber    OBJECT-TYPE
+  SYNTAX      DisplayString
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "The serial number of this card."
+  ::= { dmx8254ProductEntry 7 }
+
+--
+--  Table of Hardware parameters
+--
+dmx8254HardwareTable     OBJECT-TYPE
+  SYNTAX      SEQUENCE OF Dmx8254HardwareEntry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "A table containing hardware status for all DMX-8254 cards at this node.
+     This table is the expansion of the table 'openGearCardTable' in the
+     OPEN-GEAR-CARD-MIB. For each DMX-8254 card in the 'openGearCardTable',
+     there is a corresponding entry in this table, having the same indices -
+     'openGearFrameIndex' and 'openGearCardIndex'."
+  ::= { dmx8254CardObjects 3 }
+
+dmx8254HardwareEntry     OBJECT-TYPE
+  SYNTAX      Dmx8254HardwareEntry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "A conceptual row within the 'dmx8254HardwareTable'."
+  INDEX    { openGearFrameIndex, openGearCardIndex }
+  ::= { dmx8254HardwareTable 1 }
+
+Dmx8254HardwareEntry ::= SEQUENCE {
+  dmx8254HWStatus            Integer32,
+  dmx8254RearModule          DisplayString,
+  dmx8254CardVoltage         Integer32,
+  dmx8254CardCurrent         Integer32,
+  dmx8254EEBank              Integer32
+}
+
+dmx8254HWStatus    OBJECT-TYPE
+  SYNTAX      Integer32
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "The hardware status of this card.  The status parameter is a bitfield
+     where each bit indicates a specific error.  A value of zero means there
+     are no hardware faults.  Any non-zero value indicates an error.
+     The error bits are defined as follows:
+        0x0002 - FPGA load invalid
+        0x0008 - Incompatible rear I/O module
+        0x0010 - Current consumption is out of spec
+        0x0040 - Undiagnosed internal error
+     All other values are undefined."
+  ::= { dmx8254HardwareEntry 1 }
+
+dmx8254RearModule    OBJECT-TYPE
+  SYNTAX      DisplayString
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "The type of rear I/O module present for this card."
+  ::= { dmx8254HardwareEntry 2 }
+
+dmx8254CardVoltage    OBJECT-TYPE
+  SYNTAX      Integer32
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "The supply voltage measured at this card, in milliVolts."
+  ::= { dmx8254HardwareEntry 3 }
+
+dmx8254CardCurrent    OBJECT-TYPE
+  SYNTAX      Integer32
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "The current consumption of this card in milliAmps."
+  ::= { dmx8254HardwareEntry 4 }
+
+dmx8254EEBank    OBJECT-TYPE
+  SYNTAX      Integer32
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "The index of the EEPROM storage bank used to store the persistent
+     configuration of this card.  This index will increment whenever
+     a new configuration is stored."
+  ::= { dmx8254HardwareEntry 5 }
+
+--
+--  Table of Signal Status parameters
+--
+dmx8254SignalTable     OBJECT-TYPE
+  SYNTAX      SEQUENCE OF Dmx8254SignalEntry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "A table containing signal status for all DMX-8254 cards at this node.
+     This table is the expansion of the table 'openGearCardTable' in the
+     OPEN-GEAR-CARD-MIB. For each DMX-8254 card in the 'openGearCardTable',
+     there is a corresponding entry in this table, having the same indices -
+     'openGearFrameIndex' and 'openGearCardIndex'."
+  ::= { dmx8254CardObjects 4 }
+
+dmx8254SignalEntry     OBJECT-TYPE
+  SYNTAX      Dmx8254SignalEntry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "A conceptual row within the 'dmx8254SignalTable'."
+  INDEX    { openGearFrameIndex, openGearCardIndex }
+  ::= { dmx8254SignalTable 1 }
+
+Dmx8254SignalEntry ::= SEQUENCE {
+  dmx8254ReferenceStatus     INTEGER,
+  dmx8254ReferenceFormat     DisplayString,
+  dmx8254GenlockState        INTEGER,
+  dmx8254InputStatus         INTEGER,
+  dmx8254InputFormat         DisplayString,
+  dmx8254AudioStatus         DisplayString
+}
+
+dmx8254ReferenceStatus    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    noSignal  (0),
+    invalid   (1),
+    unlocked  (2),
+    locked    (3)
+  }
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "The status of the timing reference for this card.
+     Changes are reported as a trap - dmx8254ReferenceStatusEvent"
+  ::= { dmx8254SignalEntry 1 }
+
+dmx8254ReferenceFormat    OBJECT-TYPE
+  SYNTAX      DisplayString
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "The format of the video timing reference for this card."
+  ::= { dmx8254SignalEntry 2 }
+
+dmx8254GenlockState    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    noReference (0),
+    invalidRef  (1), -- wrong clock rate for selected output format
+    locking     (2),
+    locked      (3),
+    freeze      (4),  -- reference lost after fully locked
+    relocking   (5)
+  }
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "The genlock status of this card."
+  ::= { dmx8254SignalEntry 3 }
+
+dmx8254InputStatus    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    noSignal    (0),
+    unsupported (1),
+    mismatched  (2), -- does not match configuration
+    valid       (3)
+  }
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "The status of the video input for this card.
+     Changes are reported as a trap - dmx8254InputStatusEvent"
+  ::= { dmx8254SignalEntry 4 }
+
+dmx8254InputFormat    OBJECT-TYPE
+  SYNTAX      DisplayString
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "The format of the input video signal for this card."
+  ::= { dmx8254SignalEntry 5 }
+
+dmx8254AudioStatus    OBJECT-TYPE
+  SYNTAX      DisplayString
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "Status field showing the status of embedded audio on input to this card.
+     The symbols following each group number have the following meaning:
+     '-' this group is not present,
+     'S' synchronous audio present for this group,
+     'A' asynchronous audio present for this group."
+  ::= { dmx8254SignalEntry 6 }
+
+--
+--  Table of configuration control parameters
+--
+dmx8254SetupTable     OBJECT-TYPE
+  SYNTAX      SEQUENCE OF Dmx8254SetupEntry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "A table containing access settings for all DMX-8254 cards at this node.
+     This table is the expansion of the table 'openGearCardTable' in the
+     OPEN-GEAR-CARD-MIB. For each DMX-8254 card in the 'openGearCardTable',
+     there is a corresponding entry in this table, having the same indices -
+     'openGearFrameIndex' and 'openGearCardIndex'."
+  ::= { dmx8254CardObjects 6 }
+
+dmx8254SetupEntry     OBJECT-TYPE
+  SYNTAX      Dmx8254SetupEntry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "A conceptual row within the 'dmx8254SetupTable'."
+  INDEX    { openGearFrameIndex, openGearCardIndex }
+  ::= { dmx8254SetupTable 1 }
+
+Dmx8254SetupEntry ::= SEQUENCE {
+  dmx8254EditPermission      INTEGER,
+  dmx8254FactoryReset        INTEGER,
+  dmx8254ResetAudioOutputs    INTEGER,
+  dmx8254ResetAudioGroups    INTEGER
+}
+
+dmx8254EditPermission    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    unlocked   (0),
+    locked     (1)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "The edit permission for read-write parameters of this card."
+  DEFVAL  { unlocked }
+  ::= { dmx8254SetupEntry 1 }
+
+dmx8254FactoryReset    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    reset      (1)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "Setting this parameter to reset (1) will set the configuration of this
+     card to the factory default settings."
+  ::= { dmx8254SetupEntry 2 }
+
+dmx8254ResetAudioOutputs    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    reset      (1)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "Setting this parameter to reset (1) will reset all AES audio output parameters
+     to the factory default settings."
+  ::= { dmx8254SetupEntry 3 }
+
+dmx8254ResetAudioGroups    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    reset      (1)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "Setting this parameter to reset (1) will reset the configuration for all
+     embedded audio groups to the factory default settings."
+  ::= { dmx8254SetupEntry 4 }
+
+--
+--  Table of Output parameters
+--
+dmx8254OutputTable     OBJECT-TYPE
+  SYNTAX      SEQUENCE OF Dmx8254OutputEntry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "A table containing output settings for all DMX-8254 cards at this node.
+     This table is the expansion of the table 'openGearCardTable' in the
+     OPEN-GEAR-CARD-MIB. For each DMX-8254 card in the 'openGearCardTable',
+     there is a corresponding entry in this table, having the same indices -
+     'openGearFrameIndex' and 'openGearCardIndex'."
+  ::= { dmx8254CardObjects 7 }
+
+dmx8254OutputEntry     OBJECT-TYPE
+  SYNTAX      Dmx8254OutputEntry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "A conceptual row within the 'dmx8254OutputTable'."
+  INDEX    { openGearFrameIndex, openGearCardIndex }
+  ::= { dmx8254OutputTable 1 }
+
+Dmx8254OutputEntry ::= SEQUENCE {
+  dmx8254LossOfInput         INTEGER,
+  dmx8254TestPattern         INTEGER,
+  dmx8254MonitorFormat       INTEGER
+}
+
+dmx8254LossOfInput    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    black (0),
+    blue  (1)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "The flat frame color to be displayed on loss of input."
+  DEFVAL  { black }
+  ::= { dmx8254OutputEntry 3 }
+
+dmx8254TestPattern    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    smpteBars    (0),
+    p75Bars      (3),
+    disabled     (4)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "The test pattern to be output by this card."
+  DEFVAL  { disabled }
+  ::= { dmx8254OutputEntry 4 }
+
+dmx8254MonitorFormat    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    auto  (0),
+    ntsc  (1),
+    pal   (2),
+    video (3)
+  }
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "The format of the analog monitoring output for this card."
+  DEFVAL  { video }
+  ::= { dmx8254OutputEntry 5 }
+
+--
+--  Table of Timing parameters
+--
+dmx8254TimingTable     OBJECT-TYPE
+  SYNTAX      SEQUENCE OF Dmx8254TimingEntry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "A table containing timing settings for all DMX-8254 cards at this node.
+     This table is the expansion of the table 'openGearCardTable' in the
+     OPEN-GEAR-CARD-MIB. For each DMX-8254 card in the 'openGearCardTable',
+     there is a corresponding entry in this table, having the same indices -
+     'openGearFrameIndex' and 'openGearCardIndex'."
+  ::= { dmx8254CardObjects 8 }
+
+dmx8254TimingEntry     OBJECT-TYPE
+  SYNTAX      Dmx8254TimingEntry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "A conceptual row within the 'dmx8254TimingTable'."
+  INDEX    { openGearFrameIndex, openGearCardIndex }
+  ::= { dmx8254TimingTable 1 }
+
+Dmx8254TimingEntry ::= SEQUENCE {
+  dmx8254ReferenceSelect    INTEGER
+}
+
+dmx8254ReferenceSelect  OBJECT-TYPE
+  SYNTAX  INTEGER {
+    frame1  (0),
+    frame2  (1),
+    local   (2),
+    video   (3)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "The selected video timing reference for this card."
+  DEFVAL  { video }
+  ::= { dmx8254TimingEntry 1 }
+
+--
+--  Table of ProcAmp parameters
+--
+dmx8254ProcAmpTable     OBJECT-TYPE
+  SYNTAX      SEQUENCE OF Dmx8254ProcAmpEntry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "A table containing proc amp settings for all DMX-8254 cards at this node.
+     This table is the expansion of the table 'openGearCardTable' in the
+     OPEN-GEAR-CARD-MIB. For each DMX-8254 card in the 'openGearCardTable',
+     there is a corresponding entry in this table, having the same indices -
+     'openGearFrameIndex' and 'openGearCardIndex'."
+  ::= { dmx8254CardObjects 9 }
+
+dmx8254ProcAmpEntry     OBJECT-TYPE
+  SYNTAX      Dmx8254ProcAmpEntry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "A conceptual row within the 'dmx8254ProcAmpTable'."
+  INDEX    { openGearFrameIndex, openGearCardIndex }
+  ::= { dmx8254ProcAmpTable 1 }
+
+Dmx8254ProcAmpEntry ::= SEQUENCE {
+  dmx8254VideoGain           Integer32,
+  dmx8254ChromaGain          Integer32,
+  dmx8254CBGain              Integer32,
+  dmx8254BlackOffset         Integer32,
+  dmx8254ProcAmpReset        INTEGER,
+  dmx8254BlankActiveLines    Integer32
+}
+
+dmx8254VideoGain    OBJECT-TYPE
+  SYNTAX      Integer32 (0..200)
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "The video gain of the output proc amp, in percent."
+  DEFVAL  { 100 }
+  ::= { dmx8254ProcAmpEntry 1 }
+
+dmx8254ChromaGain    OBJECT-TYPE
+  SYNTAX      Integer32 (0..200)
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "The chroma gain of the output proc amp, in percent."
+  DEFVAL  { 100 }
+  ::= { dmx8254ProcAmpEntry 2 }
+
+dmx8254CBGain    OBJECT-TYPE
+  SYNTAX      Integer32 (0..200)
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "The Cb (chroma blue) gain of the output proc amp, in percent."
+  DEFVAL  { 100 }
+  ::= { dmx8254ProcAmpEntry 3 }
+
+dmx8254BlackOffset    OBJECT-TYPE
+  SYNTAX      Integer32 (-60..160)
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "The black offset of the output proc amp."
+  DEFVAL  { 0 }
+  ::= { dmx8254ProcAmpEntry 4 }
+
+dmx8254ProcAmpReset    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    reset      (0)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "Setting this parameter to reset (0) will set the proc amp settings
+     for this card to the factory default settings."
+  DEFVAL  { reset }
+  ::= { dmx8254ProcAmpEntry 5 }
+
+--
+--  Special proc amp features
+--
+dmx8254BlankActiveLines    OBJECT-TYPE
+  SYNTAX      Integer32 (0..3)
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "The number of lines to blank following the start of active video.
+     The purpose of this is to allow removal of closed captioning and
+     similar encoded information before format conversion."
+  DEFVAL  { 0 }
+  ::= { dmx8254ProcAmpEntry 7 }
+
+--
+-- AES output configuration
+--
+dmx8254AesConfig
+  OBJECT IDENTIFIER ::= { dmx8254CardObjects 10 }
+
+dmx8254AesOutputCount OBJECT-TYPE
+  SYNTAX Integer32
+  MAX-ACCESS read-only
+  STATUS current
+  DESCRIPTION
+    "The number of AES audio outputs on each card."
+  ::= { dmx8254AesConfig 1 }
+
+--
+-- Define a table to control AES output settings
+-- Indexed by frameIndex, cardIndex, aesIndex
+--
+dmx8254AesOutputTable OBJECT-TYPE
+  SYNTAX SEQUENCE OF Dmx8254AesOutputEntry
+  MAX-ACCESS not-accessible
+  STATUS current
+  DESCRIPTION
+    "A table containing general settings for the AES audio outputs."
+  ::= { dmx8254AesConfig 2 }
+
+dmx8254AesOutputEntry OBJECT-TYPE
+  SYNTAX Dmx8254AesOutputEntry
+  MAX-ACCESS not-accessible
+  STATUS current
+  DESCRIPTION
+    "A row within the dmx8254AesOutputTable."
+  INDEX { openGearFrameIndex, openGearCardIndex, dmx8254AesIndex }
+  ::= { dmx8254AesOutputTable 1 }
+
+Dmx8254AesOutputEntry ::= SEQUENCE {
+  dmx8254AesIndex      Unsigned32,
+  dmx8254AesSourceChA  INTEGER,
+  dmx8254AesSourceChB  INTEGER,
+  dmx8254AesInvertChA  INTEGER,
+  dmx8254AesInvertChB  INTEGER,
+  dmx8254AesNotify     INTEGER,
+  dmx8254AesReset      INTEGER
+}
+
+--
+-- Define the object containing the index
+--
+dmx8254AesIndex OBJECT-TYPE
+  SYNTAX Unsigned32
+  MAX-ACCESS not-accessible
+  STATUS current
+  DESCRIPTION
+    "AES audio output channel index."
+  ::= { dmx8254AesOutputEntry 1 }
+
+--
+-- Define the channel source type
+-- Representing the available audio sources."
+--
+AudioSource ::= TEXTUAL-CONVENTION
+  STATUS       current
+  DESCRIPTION
+     "Represents the available audio sources. Available sources:
+       grpMchN:  embedded audio from output video, group M, channel N
+       aesMA/B:  AES audio output M (channel A or B)
+       mute:   audio silence
+       toneN:  sine-wave tone at 500 to 4000 Hz."
+  SYNTAX    INTEGER  {
+    mute         (0),
+    grp1ch1      (1),
+    grp1ch2      (2),
+    grp1ch3      (3),
+    grp1ch4      (4),
+    grp2ch1      (5),
+    grp2ch2      (6),
+    grp2ch3      (7),
+    grp2ch4      (8),
+    grp3ch1      (9),
+    grp3ch2     (10),
+    grp3ch3     (11),
+    grp3ch4     (12),
+    grp4ch1     (13),
+    grp4ch2     (14),
+    grp4ch3     (15),
+    grp4ch4     (16),
+    aes1A       (17),
+    aes1B       (18),
+    aes2A       (19),
+    aes2B       (20),
+    aes3A       (21),
+    aes3B       (22),
+    aes4A       (23),
+    aes4B       (24),
+    tone500     (25),
+    tone1kHz    (26),
+    tone2kHz    (27),
+    tone4kHz    (28)
+  }
+
+dmx8254AesSourceChA OBJECT-TYPE
+  SYNTAX      AudioSource
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "The source of the Channel A for this output."
+  DEFVAL  { mute }
+  ::= { dmx8254AesOutputEntry 2 }
+
+dmx8254AesSourceChB OBJECT-TYPE
+  SYNTAX      AudioSource
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "The source of the Channel B for this output."
+  DEFVAL  { mute }
+  ::= { dmx8254AesOutputEntry 3 }
+
+dmx8254AesInvertChA OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    no     (0),
+    yes    (1)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "Indicates whether or not to invert Channel A for this output."
+  DEFVAL  { no }
+  ::= { dmx8254AesOutputEntry 4 }
+
+dmx8254AesInvertChB OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    no     (0),
+    yes    (1)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "Indicates whether or not to invert Channel B for this output."
+  DEFVAL  { no }
+  ::= { dmx8254AesOutputEntry 5 }
+
+dmx8254AesNotify OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    no     (0),
+    yes    (1)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "Indicates whether to raise an alarm in DashBoard when audio output
+     for this AES output is missing or asynchronous."
+  DEFVAL  { yes }
+  ::= { dmx8254AesOutputEntry 6 }
+
+dmx8254AesReset OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    reset      (1)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "Select reset(1) to reset the settings for this output."
+  ::= { dmx8254AesOutputEntry 7 }
+
+--
+-- Define a table to control AES output delays
+-- Indexed by frameIndex, cardIndex, aesIndex
+--
+dmx8254AesDelayTable OBJECT-TYPE
+  SYNTAX SEQUENCE OF Dmx8254AesDelayEntry
+  MAX-ACCESS not-accessible
+  STATUS current
+  DESCRIPTION
+    "A table containing delay settings for the AES audio outputs."
+  ::= { dmx8254AesConfig 3 }
+
+dmx8254AesDelayEntry OBJECT-TYPE
+  SYNTAX Dmx8254AesDelayEntry
+  MAX-ACCESS not-accessible
+  STATUS current
+  DESCRIPTION
+    "A row within the dmx8254AesDelayTable."
+  INDEX { openGearFrameIndex, openGearCardIndex, dmx8254AesIndex }
+  ::= { dmx8254AesDelayTable 1 }
+
+Dmx8254AesDelayEntry ::= SEQUENCE {
+  dmx8254AesChanADelay  Integer32,
+  dmx8254AesChanBDelay  Integer32,
+  dmx8254AesLockABDelay INTEGER
+}
+
+dmx8254AesChanADelay    OBJECT-TYPE
+  SYNTAX      Integer32 (0..1000)
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "Channel A delay in milliseconds for this output."
+  DEFVAL  { 0 }
+  ::= { dmx8254AesDelayEntry 1 }
+
+dmx8254AesChanBDelay    OBJECT-TYPE
+  SYNTAX      Integer32 (0..1000)
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "Channel B delay in milliseconds for this output."
+  DEFVAL  { 0 }
+  ::= { dmx8254AesDelayEntry 2 }
+
+dmx8254AesLockABDelay    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    no     (0),
+    yes    (1)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "Indicates whether or not to lock the Channel A & B delay settings
+     to each other."
+  DEFVAL  { no }
+  ::= { dmx8254AesDelayEntry 3 }
+
+--
+-- Define a table to control AES output gain
+-- Indexed by frameIndex, cardIndex, aesIndex
+--
+dmx8254AesGainTable OBJECT-TYPE
+  SYNTAX SEQUENCE OF Dmx8254AesGainEntry
+  MAX-ACCESS not-accessible
+  STATUS current
+  DESCRIPTION
+    "A table containing gain settings for the AES audio outputs."
+  ::= { dmx8254AesConfig 4 }
+
+dmx8254AesGainEntry OBJECT-TYPE
+  SYNTAX Dmx8254AesGainEntry
+  MAX-ACCESS not-accessible
+  STATUS current
+  DESCRIPTION
+    "A row within the dmx8254AesGainTable."
+  INDEX { openGearFrameIndex, openGearCardIndex, dmx8254AesIndex }
+  ::= { dmx8254AesGainTable 1 }
+
+Dmx8254AesGainEntry ::= SEQUENCE {
+  dmx8254AesChanAGain  Integer32,
+  dmx8254AesChanBGain  Integer32,
+  dmx8254AesLockABGain INTEGER
+}
+
+dmx8254AesChanAGain    OBJECT-TYPE
+  SYNTAX      Integer32 (-18..18)
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "Channel A gain in dB for this output."
+  DEFVAL  { 0 }
+  ::= { dmx8254AesGainEntry 1 }
+
+dmx8254AesChanBGain    OBJECT-TYPE
+  SYNTAX      Integer32 (-18..18)
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "Channel B gain in dB for this output."
+  DEFVAL  { 0 }
+  ::= { dmx8254AesGainEntry 2 }
+
+dmx8254AesLockABGain    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    no     (0),
+    yes    (1)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "Indicates whether or not to lock the Channel A & B gain settings
+     to each other."
+  DEFVAL  { no }
+  ::= { dmx8254AesGainEntry 3 }
+
+--
+-- Embedded Audio Configuration
+--
+dmx8254AudioGroupConfig
+  OBJECT IDENTIFIER ::= { dmx8254CardObjects 11 }
+
+dmx8254AudioGroupCount OBJECT-TYPE
+  SYNTAX Integer32
+  MAX-ACCESS read-only
+  STATUS current
+  DESCRIPTION
+    "The number of embedded audio groups on the video output of each card."
+  ::= { dmx8254AudioGroupConfig 1 }
+
+--
+-- Define a table to control embedded audio settings
+-- Indexed by frameIndex, cardIndex, audioGroupIndex
+--
+dmx8254AudioGroupTable OBJECT-TYPE
+  SYNTAX SEQUENCE OF Dmx8254AudioGroupEntry
+  MAX-ACCESS not-accessible
+  STATUS current
+  DESCRIPTION
+    "A table containing settings for each embedded audio group."
+  ::= { dmx8254AudioGroupConfig 2 }
+
+dmx8254AudioGroupEntry OBJECT-TYPE
+  SYNTAX Dmx8254AudioGroupEntry
+  MAX-ACCESS not-accessible
+  STATUS current
+  DESCRIPTION
+    "A row within the dmx8254AudioGroupTable."
+  INDEX { openGearFrameIndex, openGearCardIndex, dmx8254AudioGroupIndex }
+  ::= { dmx8254AudioGroupTable 1 }
+
+Dmx8254AudioGroupEntry ::= SEQUENCE {
+  dmx8254AudioGroupIndex    Unsigned32,
+  dmx8254AudioGroupEnable   INTEGER,
+  dmx8254AudioGroupNotify   INTEGER,
+  dmx8254AudioGroupReset    INTEGER
+}
+
+--
+-- Define the object containing the index
+--
+dmx8254AudioGroupIndex OBJECT-TYPE
+  SYNTAX Unsigned32
+  MAX-ACCESS not-accessible
+  STATUS current
+  DESCRIPTION
+    "Embedded audio group index."
+  ::= { dmx8254AudioGroupEntry 1 }
+
+dmx8254AudioGroupEnable OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    disable     (0),
+    enable      (1)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "Disable/enable this embedded audio group."
+  DEFVAL  { enable }
+  ::= { dmx8254AudioGroupEntry 2 }
+
+dmx8254AudioGroupNotify OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    no     (0),
+    yes    (1)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "Indicates whether to raise an alarm in DashBoard when audio output
+     for this group is missing or asynchronous."
+  DEFVAL  { yes }
+  ::= { dmx8254AudioGroupEntry 3 }
+
+dmx8254AudioGroupReset OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    reset      (1)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "Set this value to reset (1) to reset all settings for this group."
+  ::= { dmx8254AudioGroupEntry 4 }
+
+--
+-- Define a table to specify audio source for each embedded group
+-- Indexed by frameIndex, cardIndex, audioGroupIndex
+--
+dmx8254AudioSourceTable OBJECT-TYPE
+  SYNTAX SEQUENCE OF Dmx8254AudioSourceEntry
+  MAX-ACCESS not-accessible
+  STATUS current
+  DESCRIPTION
+    "A table specifying the audio source for each embedded audio group."
+  ::= { dmx8254AudioGroupConfig 3 }
+
+dmx8254AudioSourceEntry OBJECT-TYPE
+  SYNTAX Dmx8254AudioSourceEntry
+  MAX-ACCESS not-accessible
+  STATUS current
+  DESCRIPTION
+    "A row within the dmx8254AudioSourceTable."
+  INDEX { openGearFrameIndex, openGearCardIndex, dmx8254AudioGroupIndex }
+  ::= { dmx8254AudioSourceTable 1 }
+
+Dmx8254AudioSourceEntry ::= SEQUENCE {
+  dmx8254Channel1Source     INTEGER,
+  dmx8254Channel2Source     INTEGER,
+  dmx8254Channel3Source     INTEGER,
+  dmx8254Channel4Source     INTEGER
+}
+
+--
+-- Each channel has the same sources available.
+--
+dmx8254Channel1Source OBJECT-TYPE
+  SYNTAX      AudioSource
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "Audio source for channel 1 of this group.
+     For definition of audio sources, see AudioSource."
+  DEFVAL  { mute }
+  ::= { dmx8254AudioSourceEntry 1 }
+
+dmx8254Channel2Source OBJECT-TYPE
+  SYNTAX      AudioSource
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "Audio source for channel 2 of this group.
+     For definition of audio sources, see AudioSource."
+  DEFVAL  { mute }
+  ::= { dmx8254AudioSourceEntry 2 }
+
+dmx8254Channel3Source OBJECT-TYPE
+  SYNTAX      AudioSource
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "Audio source for channel 3 of this group.
+     For definition of audio sources, see AudioSource."
+  DEFVAL  { mute }
+  ::= { dmx8254AudioSourceEntry 3 }
+
+dmx8254Channel4Source OBJECT-TYPE
+  SYNTAX      AudioSource
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "Audio source for channel 4 of this group.
+     For definition of audio sources, see AudioSource."
+  DEFVAL  { mute }
+  ::= { dmx8254AudioSourceEntry 4 }
+
+--
+-- Conformance
+--
+dmx8254CardMibCompliances
+  OBJECT IDENTIFIER ::= { dmx8254CardConformance 1 }
+dmx8254CardMibGroups
+  OBJECT IDENTIFIER ::= { dmx8254CardConformance 2 }
+
+--
+-- Compliance Statement
+--
+dmx8254CardCompliances MODULE-COMPLIANCE
+  STATUS      current
+  DESCRIPTION
+    "The compliance statement for DMX-8254 entities."
+
+  MODULE -- this module
+    MANDATORY-GROUPS { dmx8254CardInfoGroup,
+                       dmx8254CardNotifyGroup
+                     }
+
+  ::= { dmx8254CardMibCompliances 1 }
+
+--
+-- DMX-8254 MIB groups
+--
+dmx8254CardInfoGroup OBJECT-GROUP
+    OBJECTS { dmx8254NumberOfCards,
+              dmx8254FirmwareRev,
+              dmx8254BoardRev,
+              dmx8254SerialNumber,
+              dmx8254RearModule,
+              dmx8254CardVoltage,
+              dmx8254CardCurrent,
+              dmx8254EEBank,
+              dmx8254HWStatus,
+              dmx8254ReferenceStatus,
+              dmx8254ReferenceFormat,
+              dmx8254GenlockState,
+              dmx8254InputStatus,
+              dmx8254InputFormat,
+              dmx8254AudioStatus,
+              dmx8254EditPermission,
+              dmx8254FactoryReset,
+              dmx8254ResetAudioOutputs,
+              dmx8254ResetAudioGroups,
+              dmx8254LossOfInput,
+              dmx8254TestPattern,
+              dmx8254MonitorFormat,
+              dmx8254ReferenceSelect,
+              dmx8254VideoGain,
+              dmx8254ChromaGain,
+              dmx8254CBGain,
+              dmx8254BlackOffset,
+              dmx8254ProcAmpReset,
+              dmx8254BlankActiveLines,
+              dmx8254AesOutputCount,
+              dmx8254AesSourceChA,
+              dmx8254AesSourceChB,
+              dmx8254AesInvertChA,
+              dmx8254AesInvertChB,
+              dmx8254AesNotify,
+              dmx8254AesReset,
+              dmx8254AesChanADelay,
+              dmx8254AesChanBDelay,
+              dmx8254AesLockABDelay,
+              dmx8254AesChanAGain,
+              dmx8254AesChanBGain,
+              dmx8254AesLockABGain,
+              dmx8254AudioGroupCount,
+              dmx8254AudioGroupEnable,
+              dmx8254AudioGroupNotify,
+              dmx8254AudioGroupReset,
+              dmx8254Channel1Source,
+              dmx8254Channel2Source,
+              dmx8254Channel3Source,
+              dmx8254Channel4Source
+            }
+    STATUS  current
+    DESCRIPTION
+            "A collection of objects providing basic instrumentation
+            and control of an DMX-8254 card."
+    ::= { dmx8254CardMibGroups 1 }
+
+dmx8254CardNotifyGroup NOTIFICATION-GROUP
+  NOTIFICATIONS { dmx8254HWStatusEvent,
+                  dmx8254ReferenceStatusEvent,
+                  dmx8254InputStatusEvent,
+                  dmx8254AudioStatusEvent
+                }
+  STATUS current
+  DESCRIPTION
+    "The notifications relating to the DMX-8254 card"
+  ::= { dmx8254CardMibGroups 2 }
+
+END

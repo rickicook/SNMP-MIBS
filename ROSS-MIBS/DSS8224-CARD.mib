@@ -1,0 +1,910 @@
+DSS8224-CARD-MIB DEFINITIONS ::= BEGIN
+
+--
+-- Defines control and monitoring structures for the DSS-8224 card.
+--
+
+IMPORTS
+  openGearFrameIndex
+    FROM OPEN-GEAR-FRAME-MIB
+
+  openGearCardIndex
+    FROM OPEN-GEAR-CARD-MIB
+
+   openGearObjects
+    FROM OPEN-GEAR-MIB
+
+  OBJECT-TYPE, NOTIFICATION-TYPE, MODULE-IDENTITY, Integer32
+    FROM SNMPv2-SMI
+
+  OBJECT-GROUP, NOTIFICATION-GROUP, MODULE-COMPLIANCE
+    FROM SNMPv2-CONF
+
+  DisplayString
+    FROM SNMPv2-TC;
+
+dss8224CardMib MODULE-IDENTITY
+  LAST-UPDATED "200707181200Z"
+  ORGANIZATION "www.rossvideo.org"
+  CONTACT-INFO
+    "postal:   Ross Video
+               8 John St. P.O. Box 220
+               Iroquois ON K0E 1K0
+
+      email:   support@rossvideo.com"
+
+  DESCRIPTION
+    "Defines control and monitoring structures for the DSS-8224 card.
+     This is a Dual 2x1 or 4x2 Serial Video Switcher suitable for both
+     standard definition and high definition broadcast video."
+
+  REVISION     "200707181200Z"
+  DESCRIPTION
+    "First revision."
+  ::= { openGearObjects 10 }
+
+--
+--  Top level components in the DSS-8224 MIB
+--
+dss8224CardNotifications
+  OBJECT IDENTIFIER ::= { dss8224CardMib 0 }
+
+dss8224CardObjects
+  OBJECT IDENTIFIER ::= { dss8224CardMib 1 }
+
+dss8224CardConformance
+  OBJECT IDENTIFIER ::= { dss8224CardMib 2 }
+
+--
+--  Notifications relating to the DSS-8224 card
+--
+dss8224Output1SignalEvent   NOTIFICATION-TYPE
+  OBJECTS { dss8224Output1Signal }
+  STATUS current
+  DESCRIPTION
+    "An indication that the signal status for output 1 has changed.
+     The current status is reported in dss8224Output1Signal."
+  ::= { dss8224CardNotifications 1 }
+
+dss8224Output2SignalEvent   NOTIFICATION-TYPE
+  OBJECTS { dss8224Output2Signal }
+  STATUS current
+  DESCRIPTION
+    "An indication that the signal status for output 2 has changed.
+     The current status is reported in dss8224Output2Signal."
+  ::= { dss8224CardNotifications 2 }
+
+dss8224RefStatusEvent   NOTIFICATION-TYPE
+  OBJECTS { dss8224RefStatus }
+  STATUS current
+  DESCRIPTION
+    "An indication that the video reference state has changed.
+     The current status is reported in dss8224RefStatus."
+  ::= { dss8224CardNotifications 3 }
+
+dss8224Input1Event   NOTIFICATION-TYPE
+  OBJECTS { dss8224Input1 }
+  STATUS current
+  DESCRIPTION
+    "An indication that the signal status for input 1 has changed.
+     The current status is reported in dss8224Input1."
+  ::= { dss8224CardNotifications 4 }
+
+dss8224Input2Event   NOTIFICATION-TYPE
+  OBJECTS { dss8224Input2 }
+  STATUS current
+  DESCRIPTION
+    "An indication that the signal status for input 2 has changed.
+     The current status is reported in dss8224Input2."
+  ::= { dss8224CardNotifications 5 }
+
+dss8224Input3Event   NOTIFICATION-TYPE
+  OBJECTS { dss8224Input3 }
+  STATUS current
+  DESCRIPTION
+    "An indication that the signal status for input 3 has changed.
+     The current status is reported in dss8224Input3."
+  ::= { dss8224CardNotifications 6 }
+
+dss8224Input4Event   NOTIFICATION-TYPE
+  OBJECTS { dss8224Input4 }
+  STATUS current
+  DESCRIPTION
+    "An indication that the signal status for input 4 has changed.
+     The current status is reported in dss8224Input4."
+  ::= { dss8224CardNotifications 7 }
+
+--
+--  DSS-8224 Card information
+--
+--
+--  All the DSS-8224 cards in the Open Gear frame
+--
+dss8224NumberOfCards    OBJECT-TYPE
+  SYNTAX      Integer32
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "The total number of DSS-8224 cards in the open gear frame."
+  ::= { dss8224CardObjects 1 }
+
+--
+--  Table of Product parameters
+--
+dss8224ProductTable     OBJECT-TYPE
+  SYNTAX      SEQUENCE OF Dss8224ProductEntry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "A table containing product info for all DSS-8224 cards at this node.
+     This table is the expansion of the table 'openGearCardTable' in the
+     OPEN-GEAR-CARD-MIB. For each DSS-8224 card in the 'openGearCardTable',
+     there is a corresponding entry in this table, having the same indices -
+     'openGearFrameIndex' and 'openGearCardIndex'."
+  ::= { dss8224CardObjects 2 }
+
+dss8224ProductEntry     OBJECT-TYPE
+  SYNTAX      Dss8224ProductEntry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "A conceptual row within the 'dss8224ProductTable'."
+  INDEX    { openGearFrameIndex, openGearCardIndex }
+  ::= { dss8224ProductTable 1 }
+
+Dss8224ProductEntry ::= SEQUENCE {
+  dss8224BoardRev            DisplayString,
+  dss8224SerialNumber        DisplayString
+}
+
+dss8224BoardRev    OBJECT-TYPE
+  SYNTAX      DisplayString
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "The hardware (board) revision of this card."
+  ::= { dss8224ProductEntry 4 }
+
+dss8224SerialNumber  OBJECT-TYPE
+  SYNTAX      DisplayString
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "The serial number of this card."
+  ::= { dss8224ProductEntry 5 }
+
+--
+--  Table of Hardware parameters
+--
+dss8224HardwareTable     OBJECT-TYPE
+  SYNTAX      SEQUENCE OF Dss8224HardwareEntry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "A table containing hardware status for all DSS-8224 cards at this node.
+     This table is the expansion of the table 'openGearCardTable' in the
+     OPEN-GEAR-CARD-MIB. For each DSS-8224 card in the 'openGearCardTable',
+     there is a corresponding entry in this table, having the same indices -
+     'openGearFrameIndex' and 'openGearCardIndex'."
+  ::= { dss8224CardObjects 3 }
+
+dss8224HardwareEntry     OBJECT-TYPE
+  SYNTAX      Dss8224HardwareEntry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "A conceptual row within the 'dss8224HardwareTable'."
+  INDEX    { openGearFrameIndex, openGearCardIndex }
+  ::= { dss8224HardwareTable 1 }
+
+Dss8224HardwareEntry ::= SEQUENCE {
+  dss8224RearModule          Integer32,
+  dss8224CardVoltage         Integer32,
+  dss8224CardCurrent         Integer32,
+  dss8224EEBank              Integer32
+}
+
+dss8224RearModule    OBJECT-TYPE
+  SYNTAX      Integer32
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "The type of rear I/O module present for this card."
+  ::= { dss8224HardwareEntry 2 }
+
+dss8224CardVoltage    OBJECT-TYPE
+  SYNTAX      Integer32
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "The supply voltage measured at this card, in milliVolts."
+  ::= { dss8224HardwareEntry 3 }
+
+dss8224CardCurrent    OBJECT-TYPE
+  SYNTAX      Integer32
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "The current consumption of this card in milliAmps."
+  ::= { dss8224HardwareEntry 4 }
+
+dss8224EEBank    OBJECT-TYPE
+  SYNTAX      Integer32
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "The index of the EEPROM storage bank used to store the persistent
+     configuration of this card.  This index will increment whenever
+     a new configuration is stored."
+  ::= { dss8224HardwareEntry 5 }
+
+--
+--  Table of Signal Status parameters
+--
+dss8224SignalTable     OBJECT-TYPE
+  SYNTAX      SEQUENCE OF Dss8224SignalEntry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "A table containing signal status for all DSS-8224 cards at this node.
+     This table is the expansion of the table 'openGearCardTable' in the
+     OPEN-GEAR-CARD-MIB. For each DSS-8224 card in the 'openGearCardTable',
+     there is a corresponding entry in this table, having the same indices -
+     'openGearFrameIndex' and 'openGearCardIndex'."
+  ::= { dss8224CardObjects 4 }
+
+dss8224SignalEntry     OBJECT-TYPE
+  SYNTAX      Dss8224SignalEntry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "A conceptual row within the 'dss8224SignalTable'."
+  INDEX    { openGearFrameIndex, openGearCardIndex }
+  ::= { dss8224SignalTable 1 }
+
+Dss8224SignalEntry ::= SEQUENCE {
+  dss8224Input1              INTEGER,
+  dss8224Input2              INTEGER,
+  dss8224Input3              INTEGER,
+  dss8224Input4              INTEGER,
+  dss8224RefStatus           INTEGER,
+  dss8224Output1Source       INTEGER,
+  dss8224Output2Source       INTEGER,
+  dss8224Output1Signal       INTEGER,
+  dss8224Output2Signal       INTEGER
+}
+
+dss8224Input1    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    noSignal    (0),
+    signalOk    (1)
+  }
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "Indicates if SDI video is present on input 1 (BNC 1)."
+  ::= { dss8224SignalEntry 1 }
+
+dss8224Input2    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    noSignal    (0),
+    signalOk    (1)
+  }
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "Indicates if SDI video is present on input 2 (BNC 9)."
+  ::= { dss8224SignalEntry 2 }
+
+dss8224Input3    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    noSignal    (0),
+    signalOk    (1)
+  }
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "Indicates if SDI video is present on input 3 (BNC 2)."
+  ::= { dss8224SignalEntry 3 }
+
+dss8224Input4    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    noSignal    (0),
+    signalOk    (1)
+  }
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "Indicates if SDI video is present on input 4 (BNC 10)."
+  ::= { dss8224SignalEntry 4 }
+
+dss8224RefStatus    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    noSignal    (0),
+    locked5994  (1),
+    locked50Hz  (2)
+  }
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "Indicates the status of the analog timing reference to this card."
+  ::= { dss8224SignalEntry 5 }
+
+dss8224Output1Source    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    input1Bnc1  (0),
+    input2Bnc9  (1),
+    input3Bnc2  (2),
+    input4Bnc10 (3)
+  }
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "Indicates the input selected for switch 1."
+  ::= { dss8224SignalEntry 6 }
+
+dss8224Output2Source    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    input1Bnc1  (0),
+    input2Bnc9  (1),
+    input3Bnc2  (2),
+    input4Bnc10 (3)
+  }
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "Indicates the input selected for switch 2."
+  ::= { dss8224SignalEntry 7 }
+
+dss8224Output1Signal    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    locked143   (0),
+    locked177   (1),
+    locked270   (2),
+    locked360   (3),
+    locked540   (4),
+    lockedHD    (5),
+    unlocked    (6),
+    noSignal    (7)
+  }
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "Indicates the signal status on switch 1.
+     A status value of unlocked or noSignal should be considered an
+     error condition."
+  ::= { dss8224SignalEntry 8 }
+
+dss8224Output2Signal    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    locked143   (0),
+    locked177   (1),
+    locked270   (2),
+    locked360   (3),
+    locked540   (4),
+    lockedHD    (5),
+    unlocked    (6),
+    noSignal    (7)
+  }
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "Indicates the signal status on switch 2.
+     A status value of unlocked or noSignal should be considered an
+     error condition."
+  ::= { dss8224SignalEntry 9 }
+
+--
+--  Table of access control parameters
+--
+dss8224SetupTable     OBJECT-TYPE
+  SYNTAX      SEQUENCE OF Dss8224SetupEntry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "A table containing access settings for all DSS-8224 cards at this node.
+     This table is the expansion of the table 'openGearCardTable' in the
+     OPEN-GEAR-CARD-MIB. For each DSS-8224 card in the 'openGearCardTable',
+     there is a corresponding entry in this table, having the same indices -
+     'openGearFrameIndex' and 'openGearCardIndex'."
+  ::= { dss8224CardObjects 5 }
+
+dss8224SetupEntry     OBJECT-TYPE
+  SYNTAX      Dss8224SetupEntry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "A conceptual row within the 'dss8224SetupTable'."
+  INDEX    { openGearFrameIndex, openGearCardIndex }
+  ::= { dss8224SetupTable 1 }
+
+Dss8224SetupEntry ::= SEQUENCE {
+  dss8224EditPermission      INTEGER,
+  dss8224FactoryReset        INTEGER
+}
+
+dss8224EditPermission    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    unlocked   (0),
+    locked     (1)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "The edit permission for read-write parameters of this card."
+  DEFVAL  { unlocked }
+  ::= { dss8224SetupEntry 1 }
+
+dss8224FactoryReset    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    reset      (0)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "Setting this parameter to zero will set the configuration of this card
+     to the factory default settings."
+  ::= { dss8224SetupEntry 2 }
+
+--
+--  Table of card configuration parameters
+--
+dss8224ConfigTable     OBJECT-TYPE
+  SYNTAX      SEQUENCE OF Dss8224ConfigEntry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "A table containing configuration settings for all DSS-8224 cards at this node.
+     This table is the expansion of the table 'openGearCardTable' in the
+     OPEN-GEAR-CARD-MIB. For each DSS-8224 card in the 'openGearCardTable',
+     there is a corresponding entry in this table, having the same indices -
+     'openGearFrameIndex' and 'openGearCardIndex'."
+  ::= { dss8224CardObjects 6 }
+
+dss8224ConfigEntry     OBJECT-TYPE
+  SYNTAX      Dss8224ConfigEntry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "A conceptual row within the 'dss8224ConfigTable'."
+  INDEX    { openGearFrameIndex, openGearCardIndex }
+  ::= { dss8224ConfigTable 1 }
+
+Dss8224ConfigEntry ::= SEQUENCE {
+  dss8224CardControl      INTEGER,
+  dss8224ControlMode      INTEGER,
+  dss8224PanelType        INTEGER,
+  dss8224XpointMode       INTEGER,
+  dss8224SW2Control       INTEGER,
+  dss8224SW2Inputs        INTEGER,
+  dss8224HDTiming         INTEGER,
+  dss8224RefSelect        INTEGER,
+  dss8224ReclockMode      INTEGER
+}
+
+dss8224CardControl    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    remote  (0),
+    local   (1)
+  }
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "Indicates the setting of the Card Control jumper."
+  ::= { dss8224ConfigEntry 1 }
+
+dss8224ControlMode    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    panelMaster (0),
+    panelSlave  (1),
+    gpiLevel    (2),
+    gpiEdge     (3)
+  }
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "Indicates the control mode of the card as determined from the
+    CONTROL, BOARD MODE and GPI TYPE jumpers."
+  ::= { dss8224ConfigEntry 2 }
+
+dss8224PanelType    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    panel2Button  (0),
+    panel4Button  (1)
+  }
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "Indicates if the card is to be controlled by a 4-button panel
+    or a 2-button panel.  This setting is only meaningful if the
+    control mode is panelMaster or panelSlave."
+  ::= { dss8224ConfigEntry 3 }
+
+dss8224XpointMode    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    mode2x1  (0),
+    mode4x1  (1)
+  }
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "Indicates if each switch is to operate as a 4x1 switch (4 inputs)
+    or as a 2x1 switch (2 inputs)."
+  ::= { dss8224ConfigEntry 4 }
+
+dss8224SW2Control    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    follow  (0),
+    normal  (1)
+  }
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "Indicates whether switch 2 (SW2) is controlled independently (normal)
+    or tracks switch 1 (follow)."
+  ::= { dss8224ConfigEntry 5 }
+
+dss8224SW2Inputs    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    input3and4  (0),
+    input1and2  (1)
+  }
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "Indicates which inputs are enabled for SW2 when the switch is in 2x1 mode."
+  ::= { dss8224ConfigEntry 6 }
+
+dss8224HDTiming    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    hd720       (0),
+    hd1080      (1)
+  }
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "Indicates whether HD signals should be treated as 720p or 1080i when
+     determining the switching time relative to the reference."
+  ::= { dss8224ConfigEntry 7 }
+
+dss8224RefSelect    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    frame2      (0),
+    frame1      (1)
+  }
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "Indicates which frame-wide reference is selected for switch timing."
+  ::= { dss8224ConfigEntry 8 }
+
+dss8224ReclockMode    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    reclock     (0),
+    equalize    (1)
+  }
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "Indicates whether signals passing through this switch should be reclocked."
+  ::= { dss8224ConfigEntry 9 }
+
+--
+--  Table of alarm control parameters
+--
+dss8224AlarmControlTable     OBJECT-TYPE
+  SYNTAX      SEQUENCE OF Dss8224AlarmControlEntry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "A table containing alarm settings for all DSS-8224 cards at this node.
+     This table is the expansion of the table 'openGearCardTable' in the
+     OPEN-GEAR-CARD-MIB. For each DSS-8224 card in the 'openGearCardTable',
+     there is a corresponding entry in this table, having the same indices -
+     'openGearFrameIndex' and 'openGearCardIndex'."
+  ::= { dss8224CardObjects 7 }
+
+dss8224AlarmControlEntry     OBJECT-TYPE
+  SYNTAX      Dss8224AlarmControlEntry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "A conceptual row within the 'dss8224AlarmControlTable'."
+  INDEX    { openGearFrameIndex, openGearCardIndex }
+  ::= { dss8224AlarmControlTable 1 }
+
+Dss8224AlarmControlEntry ::= SEQUENCE {
+  dss8224LossOfOutput1       INTEGER,
+  dss8224LossOfOutput2       INTEGER,
+  dss8224LossOfReference     INTEGER,
+  dss8224LossOfInput1        INTEGER,
+  dss8224LossOfInput2        INTEGER,
+  dss8224LossOfInput3        INTEGER,
+  dss8224LossOfInput4        INTEGER
+}
+
+dss8224LossOfOutput1    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    ignore (0),
+    notify (1)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "The action to take on loss of output 1."
+  DEFVAL  { notify }
+  ::= { dss8224AlarmControlEntry 1 }
+
+dss8224LossOfOutput2    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    ignore (0),
+    notify (1)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "The action to take on loss of output 2."
+  DEFVAL  { notify }
+  ::= { dss8224AlarmControlEntry 2 }
+
+dss8224LossOfReference    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    ignore (0),
+    notify (1)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "The action to take on loss of reference to this card."
+  DEFVAL  { notify }
+  ::= { dss8224AlarmControlEntry 3 }
+
+dss8224LossOfInput1    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    ignore (0),
+    notify (1)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "The action to take on loss of input 1."
+  DEFVAL  { notify }
+  ::= { dss8224AlarmControlEntry 4 }
+
+dss8224LossOfInput2    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    ignore (0),
+    notify (1)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "The action to take on loss of input 2."
+  DEFVAL  { notify }
+  ::= { dss8224AlarmControlEntry 5 }
+
+dss8224LossOfInput3    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    ignore (0),
+    notify (1)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "The action to take on loss of input 3."
+  DEFVAL  { notify }
+  ::= { dss8224AlarmControlEntry 6 }
+
+dss8224LossOfInput4    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    ignore (0),
+    notify (1)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "The action to take on loss of input 4."
+  DEFVAL  { notify }
+  ::= { dss8224AlarmControlEntry 7 }
+
+--
+--  Table of remote control parameters
+--
+dss8224RemoteControlTable     OBJECT-TYPE
+  SYNTAX      SEQUENCE OF Dss8224RemoteControlEntry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "A table containing remote control settings for all DSS-8224 cards at this node.
+     This table is the expansion of the table 'openGearCardTable' in the
+     OPEN-GEAR-CARD-MIB. For each DSS-8224 card in the 'openGearCardTable',
+     there is a corresponding entry in this table, having the same indices -
+     'openGearFrameIndex' and 'openGearCardIndex'."
+  ::= { dss8224CardObjects 8 }
+
+dss8224RemoteControlEntry     OBJECT-TYPE
+  SYNTAX      Dss8224RemoteControlEntry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "A conceptual row within the 'dss8224RemoteControlTable'."
+  INDEX    { openGearFrameIndex, openGearCardIndex }
+  ::= { dss8224RemoteControlTable 1 }
+
+Dss8224RemoteControlEntry ::= SEQUENCE {
+  dss8224OperatingMode       INTEGER,
+  dss8224Output1AcoMode      INTEGER,
+  dss8224Output2AcoMode      INTEGER,
+  dss8224Output1Control      INTEGER,
+  dss8224Output2Control      INTEGER,
+  dss8224AcoTrigger          INTEGER
+}
+
+dss8224OperatingMode    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    mode4X2      (0),
+    mode4X1      (1),
+    dual2X1      (2),
+    dual2X1track (3)
+  }
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "The mode of current operating."
+  DEFVAL  { mode4X2 }
+  ::= { dss8224RemoteControlEntry 1 }
+
+dss8224Output1AcoMode    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    disabled       (0),
+    primaryInput1 (1),
+    primaryInput2 (2)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "The action to take on output 1 Auto Change Over mode."
+  DEFVAL  { disabled }
+  ::= { dss8224RemoteControlEntry 2 }
+
+dss8224Output2AcoMode    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    disabled       (0),
+    primaryInput1 (1),
+    primaryInput2 (2),
+    primaryInput3 (3),
+    primaryInput4 (4)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "The action to take on output 2 Auto Change Over mode."
+  DEFVAL  { disabled }
+  ::= { dss8224RemoteControlEntry 3 }
+
+dss8224Output1Control    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    input1 (0),
+    input2 (1),
+    input3 (2),
+    input4 (3)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "The action to take on output 1 source."
+  DEFVAL  { input1 }
+  ::= { dss8224RemoteControlEntry 4 }
+
+dss8224Output2Control    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    input1 (0),
+    input2 (1),
+    input3 (2),
+    input4 (3)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "The action to take on output 2 source."
+  DEFVAL  { input1 }
+  ::= { dss8224RemoteControlEntry 5 }
+
+dss8224AcoTrigger    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    lossOfSignal  (0),
+    lossOfLock    (1)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "The action to take on Auto Change Over trigger."
+  DEFVAL  { lossOfSignal }
+  ::= { dss8224RemoteControlEntry 6 }
+
+--
+-- Conformance
+--
+dss8224CardMibCompliances
+  OBJECT IDENTIFIER ::= { dss8224CardConformance 1 }
+dss8224CardMibGroups
+  OBJECT IDENTIFIER ::= { dss8224CardConformance 2 }
+
+--
+-- Compliance Statement
+--
+dss8224CardCompliances MODULE-COMPLIANCE
+  STATUS      current
+  DESCRIPTION
+    "The compliance statement for DSS-8224 entities."
+
+  MODULE -- this module
+    MANDATORY-GROUPS { dss8224CardInfoGroup,
+                       dss8224CardNotifyGroup
+                     }
+
+  ::= { dss8224CardMibCompliances 1 }
+
+dss8224CardInfoGroup OBJECT-GROUP
+    OBJECTS { dss8224NumberOfCards,
+              dss8224BoardRev,
+              dss8224SerialNumber,
+              dss8224RearModule,
+              dss8224CardVoltage,
+              dss8224CardCurrent,
+              dss8224EEBank,
+              dss8224Input1,
+              dss8224Input2,
+              dss8224Input3,
+              dss8224Input4,
+              dss8224RefStatus,
+              dss8224Output1Source,
+              dss8224Output2Source,
+              dss8224Output1Signal,
+              dss8224Output2Signal,
+              dss8224EditPermission,
+              dss8224FactoryReset,
+              dss8224CardControl,
+              dss8224ControlMode,
+              dss8224PanelType,
+              dss8224XpointMode,
+              dss8224SW2Control,
+              dss8224SW2Inputs,
+              dss8224HDTiming,
+              dss8224RefSelect,
+              dss8224ReclockMode,
+              dss8224LossOfOutput1,
+              dss8224LossOfOutput2,
+              dss8224LossOfReference,
+              dss8224LossOfInput1,
+              dss8224LossOfInput2,
+              dss8224LossOfInput3,
+              dss8224LossOfInput4,
+              dss8224OperatingMode,
+              dss8224Output1AcoMode,
+              dss8224Output2AcoMode,
+              dss8224Output1Control,
+              dss8224Output2Control,
+              dss8224AcoTrigger
+            }
+    STATUS  current
+    DESCRIPTION
+            "A collection of objects providing basic instrumentation
+            and control of an DSS-8224 card."
+    ::= { dss8224CardMibGroups 1 }
+
+dss8224CardNotifyGroup NOTIFICATION-GROUP
+  NOTIFICATIONS { dss8224Output1SignalEvent,
+                  dss8224Output2SignalEvent,
+                  dss8224RefStatusEvent,
+                  dss8224Input1Event,
+                  dss8224Input2Event,
+                  dss8224Input3Event,
+                  dss8224Input4Event
+                }
+  STATUS current
+  DESCRIPTION
+    "The notifications relating to the DSS-8224 card"
+  ::= { dss8224CardMibGroups 2 }
+
+END

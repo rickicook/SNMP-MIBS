@@ -1,0 +1,27 @@
+ROSS-VIDEO-MIB DEFINITIONS ::= BEGIN
+
+--
+-- Top-level infrastructure of the Ross Video SNMP enterprise MIB tree
+--
+
+IMPORTS
+  MODULE-IDENTITY, enterprises FROM SNMPv2-SMI;
+
+rossVideo MODULE-IDENTITY
+  LAST-UPDATED "200703070000Z"
+  ORGANIZATION "www.rossvideo.com"
+  CONTACT-INFO
+    "postal:   Ross Video Limited
+               8 John St. P.O. Box 220
+               Iroquois ON K0E 1K0
+               Canada
+
+    email:    support@rossvideo.com"
+  DESCRIPTION
+    "Top-level infrastructure of the Ross Video SNMP enterprise MIB tree"
+  REVISION     "200703070000Z"
+  DESCRIPTION
+    "First draft"
+    ::= { enterprises 27399 }
+
+END

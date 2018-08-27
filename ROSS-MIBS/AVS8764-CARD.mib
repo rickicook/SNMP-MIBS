@@ -1,0 +1,779 @@
+AVS8764-CARD-MIB DEFINITIONS ::= BEGIN
+
+--
+-- Defines control and monitoring structures for the AVS-8764 card.
+--
+
+IMPORTS
+  openGearFrameIndex
+    FROM OPEN-GEAR-FRAME-MIB
+
+  openGearCardIndex
+    FROM OPEN-GEAR-CARD-MIB
+
+   openGearObjects
+    FROM OPEN-GEAR-MIB
+
+  OBJECT-TYPE, NOTIFICATION-TYPE, MODULE-IDENTITY, Integer32
+    FROM SNMPv2-SMI
+
+  OBJECT-GROUP, NOTIFICATION-GROUP, MODULE-COMPLIANCE
+    FROM SNMPv2-CONF
+
+  DisplayString
+    FROM SNMPv2-TC;
+
+avs8764CardMib MODULE-IDENTITY
+  LAST-UPDATED "200711221200Z"
+  ORGANIZATION "www.rossvideo.org"
+  CONTACT-INFO
+    "postal:   Ross Video
+               8 John St. P.O. Box 220
+               Iroquois ON K0E 1K0
+
+      email:   support@rossvideo.com"
+
+  DESCRIPTION
+    "Defines control and monitoring structures for the AVS-8764 card.
+     This is a Dual 2x1 or 4x2 Video/AES Switcher suitable for both
+     analog broadcast video or AES audio."
+
+  REVISION     "200711221200Z"
+  DESCRIPTION
+    "First revision."
+  ::= { openGearObjects 11 }
+
+--
+--  Top level components in the AVS-8764 MIB
+--
+avs8764CardNotifications
+  OBJECT IDENTIFIER ::= { avs8764CardMib 0 }
+
+avs8764CardObjects
+  OBJECT IDENTIFIER ::= { avs8764CardMib 1 }
+
+avs8764CardConformance
+  OBJECT IDENTIFIER ::= { avs8764CardMib 2 }
+
+--
+--  Notifications relating to the AVS-8764 card
+--
+avs8764Output1SignalEvent   NOTIFICATION-TYPE
+  OBJECTS { avs8764Output1Signal }
+  STATUS current
+  DESCRIPTION
+    "An indication that the signal status for output 1 has changed.
+     The current status is reported in avs8764Output1Signal."
+  ::= { avs8764CardNotifications 1 }
+
+avs8764Output2SignalEvent   NOTIFICATION-TYPE
+  OBJECTS { avs8764Output2Signal }
+  STATUS current
+  DESCRIPTION
+    "An indication that the signal status for output 2 has changed.
+     The current status is reported in avs8764Output2Signal."
+  ::= { avs8764CardNotifications 2 }
+
+avs8764RefStatusEvent   NOTIFICATION-TYPE
+  OBJECTS { avs8764RefStatus }
+  STATUS current
+  DESCRIPTION
+    "An indication that the video reference state has changed.
+     The current status is reported in avs8764RefStatus."
+  ::= { avs8764CardNotifications 3 }
+
+avs8764Input1Event   NOTIFICATION-TYPE
+  OBJECTS { avs8764Input1 }
+  STATUS current
+  DESCRIPTION
+    "An indication that the signal status for input 1 has changed.
+     The current status is reported in avs8764Input1."
+  ::= { avs8764CardNotifications 4 }
+
+avs8764Input2Event   NOTIFICATION-TYPE
+  OBJECTS { avs8764Input2 }
+  STATUS current
+  DESCRIPTION
+    "An indication that the signal status for input 2 has changed.
+     The current status is reported in avs8764Input2."
+  ::= { avs8764CardNotifications 5 }
+
+avs8764Input3Event   NOTIFICATION-TYPE
+  OBJECTS { avs8764Input3 }
+  STATUS current
+  DESCRIPTION
+    "An indication that the signal status for input 3 has changed.
+     The current status is reported in avs8764Input3."
+  ::= { avs8764CardNotifications 6 }
+
+avs8764Input4Event   NOTIFICATION-TYPE
+  OBJECTS { avs8764Input4 }
+  STATUS current
+  DESCRIPTION
+    "An indication that the signal status for input 4 has changed.
+     The current status is reported in avs8764Input4."
+  ::= { avs8764CardNotifications 7 }
+
+--
+--  AVS-8764 Card information
+--
+--
+--  All the AVS-8764 cards in the Open Gear frame
+--
+avs8764NumberOfCards    OBJECT-TYPE
+  SYNTAX      Integer32
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "The total number of AVS-8764 cards in the open gear frame."
+  ::= { avs8764CardObjects 1 }
+
+--
+--  Table of Product parameters
+--
+avs8764ProductTable     OBJECT-TYPE
+  SYNTAX      SEQUENCE OF Avs8764ProductEntry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "A table containing product info for all AVS-8764 cards at this node.
+     This table is the expansion of the table 'openGearCardTable' in the
+     OPEN-GEAR-CARD-MIB. For each AVS-8764 card in the 'openGearCardTable',
+     there is a corresponding entry in this table, having the same indices -
+     'openGearFrameIndex' and 'openGearCardIndex'."
+  ::= { avs8764CardObjects 2 }
+
+avs8764ProductEntry     OBJECT-TYPE
+  SYNTAX      Avs8764ProductEntry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "A conceptual row within the 'avs8764ProductTable'."
+  INDEX    { openGearFrameIndex, openGearCardIndex }
+  ::= { avs8764ProductTable 1 }
+
+Avs8764ProductEntry ::= SEQUENCE {
+  avs8764BoardRev            DisplayString,
+  avs8764SerialNumber        DisplayString
+}
+
+avs8764BoardRev    OBJECT-TYPE
+  SYNTAX      DisplayString
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "The hardware (board) revision of this card."
+  ::= { avs8764ProductEntry 4 }
+
+avs8764SerialNumber  OBJECT-TYPE
+  SYNTAX      DisplayString
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "The serial number of this card."
+  ::= { avs8764ProductEntry 5 }
+
+--
+--  Table of Hardware parameters
+--
+avs8764HardwareTable     OBJECT-TYPE
+  SYNTAX      SEQUENCE OF Avs8764HardwareEntry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "A table containing hardware status for all AVS-8764 cards at this node.
+     This table is the expansion of the table 'openGearCardTable' in the
+     OPEN-GEAR-CARD-MIB. For each AVS-8764 card in the 'openGearCardTable',
+     there is a corresponding entry in this table, having the same indices -
+     'openGearFrameIndex' and 'openGearCardIndex'."
+  ::= { avs8764CardObjects 3 }
+
+avs8764HardwareEntry     OBJECT-TYPE
+  SYNTAX      Avs8764HardwareEntry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "A conceptual row within the 'avs8764HardwareTable'."
+  INDEX    { openGearFrameIndex, openGearCardIndex }
+  ::= { avs8764HardwareTable 1 }
+
+Avs8764HardwareEntry ::= SEQUENCE {
+  avs8764RearModule          Integer32,
+  avs8764CardVoltage         Integer32,
+  avs8764CardCurrent         Integer32,
+  avs8764EEBank              Integer32
+}
+
+avs8764RearModule    OBJECT-TYPE
+  SYNTAX      Integer32
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "The type of rear I/O module present for this card."
+  ::= { avs8764HardwareEntry 2 }
+
+avs8764CardVoltage    OBJECT-TYPE
+  SYNTAX      Integer32
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "The supply voltage measured at this card, in milliVolts."
+  ::= { avs8764HardwareEntry 3 }
+
+avs8764CardCurrent    OBJECT-TYPE
+  SYNTAX      Integer32
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "The current consumption of this card in milliAmps."
+  ::= { avs8764HardwareEntry 4 }
+
+avs8764EEBank    OBJECT-TYPE
+  SYNTAX      Integer32
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "The index of the EEPROM storage bank used to store the persistent
+     configuration of this card.  This index will increment whenever
+     a new configuration is stored."
+  ::= { avs8764HardwareEntry 5 }
+
+--
+--  Table of Signal Status parameters
+--
+avs8764SignalTable     OBJECT-TYPE
+  SYNTAX      SEQUENCE OF Avs8764SignalEntry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "A table containing signal status for all AVS-8764 cards at this node.
+     This table is the expansion of the table 'openGearCardTable' in the
+     OPEN-GEAR-CARD-MIB. For each AVS-8764 card in the 'openGearCardTable',
+     there is a corresponding entry in this table, having the same indices -
+     'openGearFrameIndex' and 'openGearCardIndex'."
+  ::= { avs8764CardObjects 4 }
+
+avs8764SignalEntry     OBJECT-TYPE
+  SYNTAX      Avs8764SignalEntry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "A conceptual row within the 'avs8764SignalTable'."
+  INDEX    { openGearFrameIndex, openGearCardIndex }
+  ::= { avs8764SignalTable 1 }
+
+Avs8764SignalEntry ::= SEQUENCE {
+  avs8764Input1              INTEGER,
+  avs8764Input2              INTEGER,
+  avs8764Input3              INTEGER,
+  avs8764Input4              INTEGER,
+  avs8764RefStatus           INTEGER,
+  avs8764Output1Source       INTEGER,
+  avs8764Output2Source       INTEGER,
+  avs8764Output1Signal       INTEGER,
+  avs8764Output2Signal       INTEGER
+}
+
+avs8764Input1    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    noSignal    (0),
+    signalOk    (1)
+  }
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "Indicates if SDI video is present on input 1 (BNC 1)."
+  ::= { avs8764SignalEntry 1 }
+
+avs8764Input2    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    noSignal    (0),
+    signalOk    (1)
+  }
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "Indicates if SDI video is present on input 2 (BNC 9)."
+  ::= { avs8764SignalEntry 2 }
+
+avs8764Input3    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    noSignal    (0),
+    signalOk    (1)
+  }
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "Indicates if SDI video is present on input 3 (BNC 2)."
+  ::= { avs8764SignalEntry 3 }
+
+avs8764Input4    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    noSignal    (0),
+    signalOk    (1)
+  }
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "Indicates if SDI video is present on input 4 (BNC 10)."
+  ::= { avs8764SignalEntry 4 }
+
+avs8764RefStatus    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    noSignal    (0),
+    locked5994  (1),
+    locked50Hz  (2)
+  }
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "Indicates the status of the analog timing reference to this card."
+  ::= { avs8764SignalEntry 5 }
+
+avs8764Output1Source    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    input1Bnc3  (0),
+    input2Bnc5  (1),
+    input3Bnc4  (2),
+    input4Bnc6  (3)
+  }
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "Indicates the input selected for switch 1."
+  ::= { avs8764SignalEntry 6 }
+
+avs8764Output2Source    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    input1Bnc3  (0),
+    input2Bnc5  (1),
+    input3Bnc4  (2),
+    input4Bnc6  (3)
+  }
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "Indicates the input selected for switch 2."
+  ::= { avs8764SignalEntry 7 }
+
+avs8764Output1Signal    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    noSignal    (0),
+    signalOk    (1)
+  }
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "Indicates the signal status on switch 1.
+     A status value of noSignal should be considered an
+     error condition."
+  ::= { avs8764SignalEntry 8 }
+
+avs8764Output2Signal    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    noSignal    (0),
+    signalOk    (1)
+  }
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "Indicates the signal status on switch 2.
+     A status value of noSignal should be considered an
+     error condition."
+  ::= { avs8764SignalEntry 9 }
+
+--
+--  Table of access control parameters
+--
+avs8764SetupTable     OBJECT-TYPE
+  SYNTAX      SEQUENCE OF Avs8764SetupEntry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "A table containing access settings for all AVS-8764 cards at this node.
+     This table is the expansion of the table 'openGearCardTable' in the
+     OPEN-GEAR-CARD-MIB. For each AVS-8764 card in the 'openGearCardTable',
+     there is a corresponding entry in this table, having the same indices -
+     'openGearFrameIndex' and 'openGearCardIndex'."
+  ::= { avs8764CardObjects 5 }
+
+avs8764SetupEntry     OBJECT-TYPE
+  SYNTAX      Avs8764SetupEntry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "A conceptual row within the 'avs8764SetupTable'."
+  INDEX    { openGearFrameIndex, openGearCardIndex }
+  ::= { avs8764SetupTable 1 }
+
+Avs8764SetupEntry ::= SEQUENCE {
+  avs8764EditPermission      INTEGER,
+  avs8764FactoryReset        INTEGER
+}
+
+avs8764EditPermission    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    unlocked   (0),
+    locked     (1)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "The edit permission for read-write parameters of this card."
+  DEFVAL  { unlocked }
+  ::= { avs8764SetupEntry 1 }
+
+avs8764FactoryReset    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    reset      (0)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "Setting this parameter to zero will set the configuration of this card
+     to the factory default settings."
+  ::= { avs8764SetupEntry 2 }
+
+--
+--  Table of card configuration parameters
+--
+avs8764ConfigTable     OBJECT-TYPE
+  SYNTAX      SEQUENCE OF Avs8764ConfigEntry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "A table containing configuration settings for all AVS-8764 cards at this node.
+     This table is the expansion of the table 'openGearCardTable' in the
+     OPEN-GEAR-CARD-MIB. For each AVS-8764 card in the 'openGearCardTable',
+     there is a corresponding entry in this table, having the same indices -
+     'openGearFrameIndex' and 'openGearCardIndex'."
+  ::= { avs8764CardObjects 6 }
+
+avs8764ConfigEntry     OBJECT-TYPE
+  SYNTAX      Avs8764ConfigEntry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "A conceptual row within the 'avs8764ConfigTable'."
+  INDEX    { openGearFrameIndex, openGearCardIndex }
+  ::= { avs8764ConfigTable 1 }
+
+Avs8764ConfigEntry ::= SEQUENCE {
+  avs8764CardControl      INTEGER,
+  avs8764ControlMode      INTEGER,
+  avs8764PanelType        INTEGER,
+  avs8764XpointMode       INTEGER,
+  avs8764SW2Control       INTEGER,
+  avs8764SW2Inputs        INTEGER,
+  avs8764HDTiming         INTEGER,
+  avs8764RefSelect        INTEGER,
+  avs8764InputSigType     INTEGER
+}
+
+avs8764CardControl    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    remote  (0),
+    local   (1)
+  }
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "Indicates the setting of the Card Control jumper."
+  ::= { avs8764ConfigEntry 1 }
+
+avs8764ControlMode    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    panelMaster (0),
+    panelSlave  (1),
+    gpiLevel    (2),
+    gpiEdge     (3)
+  }
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "Indicates the control mode of the card as determined from the
+    CONTROL, BOARD MODE and GPI TYPE jumpers."
+  ::= { avs8764ConfigEntry 2 }
+
+avs8764PanelType    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    panel2  (0),
+    panel4  (1)
+  }
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "Indicates if the card is to be controlled by a 4-button panel
+    or a 2-button panel.  This setting is only meaningful if the
+    control mode is panelMaster or panelSlave."
+  ::= { avs8764ConfigEntry 3 }
+
+avs8764XpointMode    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    mode2x1  (0),
+    mode4x1  (1)
+  }
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "Indicates if each switch is to operate as a 4x1 switch (4 inputs)
+    or as a 2x1 switch (2 inputs)."
+  ::= { avs8764ConfigEntry 4 }
+
+avs8764SW2Control    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    follow  (0),
+    normal  (1)
+  }
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "Indicates whether switch 2 (SW2) is controlled independently (normal)
+    or tracks switch 1 (follow)."
+  ::= { avs8764ConfigEntry 5 }
+
+avs8764SW2Inputs    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    input3and4  (0),
+    input1and2  (1)
+  }
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "Indicates which inputs are enabled for SW2 when the switch is in 2x1 mode."
+  ::= { avs8764ConfigEntry 6 }
+
+avs8764HDTiming    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    hd720       (0),
+    hd1080      (1)
+  }
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "Indicates whether HD signals should be treated as 720p or 1080i when
+     determining the switching time relative to the reference."
+  ::= { avs8764ConfigEntry 7 }
+
+avs8764RefSelect    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    frame2      (0),
+    frame1      (1)
+  }
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "Indicates which frame-wide reference is selected for switch timing."
+  ::= { avs8764ConfigEntry 8 }
+
+avs8764InputSigType    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    aes100     (0),
+    rgb        (1),
+    aes75      (2),
+    video      (3)
+  }
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "Indicates the input signal type."
+  ::= { avs8764ConfigEntry 9 }
+
+--
+--  Table of alarm control parameters
+--
+avs8764AlarmControlTable     OBJECT-TYPE
+  SYNTAX      SEQUENCE OF Avs8764AlarmControlEntry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "A table containing alarm settings for all AVS-8764 cards at this node.
+     This table is the expansion of the table 'openGearCardTable' in the
+     OPEN-GEAR-CARD-MIB. For each AVS-8764 card in the 'openGearCardTable',
+     there is a corresponding entry in this table, having the same indices -
+     'openGearFrameIndex' and 'openGearCardIndex'."
+  ::= { avs8764CardObjects 7 }
+
+avs8764AlarmControlEntry     OBJECT-TYPE
+  SYNTAX      Avs8764AlarmControlEntry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "A conceptual row within the 'avs8764AlarmControlTable'."
+  INDEX    { openGearFrameIndex, openGearCardIndex }
+  ::= { avs8764AlarmControlTable 1 }
+
+Avs8764AlarmControlEntry ::= SEQUENCE {
+  avs8764LossOfOutput1       INTEGER,
+  avs8764LossOfOutput2       INTEGER,
+  avs8764LossOfReference     INTEGER,
+  avs8764LossOfInput1        INTEGER,
+  avs8764LossOfInput2        INTEGER,
+  avs8764LossOfInput3        INTEGER,
+  avs8764LossOfInput4        INTEGER
+}
+
+avs8764LossOfOutput1    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    ignore (0),
+    notify (1)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "The action to take on loss of output 1."
+  DEFVAL  { notify }
+  ::= { avs8764AlarmControlEntry 1 }
+
+avs8764LossOfOutput2    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    ignore (0),
+    notify (1)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "The action to take on loss of output 2."
+  DEFVAL  { notify }
+  ::= { avs8764AlarmControlEntry 2 }
+
+avs8764LossOfReference    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    ignore (0),
+    notify (1)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "The action to take on loss of reference to this card."
+  DEFVAL  { notify }
+  ::= { avs8764AlarmControlEntry 3 }
+
+avs8764LossOfInput1    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    ignore (0),
+    notify (1)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "The action to take on loss of input 1."
+  DEFVAL  { notify }
+  ::= { avs8764AlarmControlEntry 4 }
+
+avs8764LossOfInput2    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    ignore (0),
+    notify (1)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "The action to take on loss of input 2."
+  DEFVAL  { notify }
+  ::= { avs8764AlarmControlEntry 5 }
+
+avs8764LossOfInput3    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    ignore (0),
+    notify (1)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "The action to take on loss of input 3."
+  DEFVAL  { notify }
+  ::= { avs8764AlarmControlEntry 6 }
+
+avs8764LossOfInput4    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    ignore (0),
+    notify (1)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "The action to take on loss of input 4."
+  DEFVAL  { notify }
+  ::= { avs8764AlarmControlEntry 7 }
+
+--
+-- Conformance
+--
+avs8764CardMibCompliances
+  OBJECT IDENTIFIER ::= { avs8764CardConformance 1 }
+avs8764CardMibGroups
+  OBJECT IDENTIFIER ::= { avs8764CardConformance 2 }
+
+--
+-- Compliance Statement
+--
+avs8764CardCompliances MODULE-COMPLIANCE
+  STATUS      current
+  DESCRIPTION
+    "The compliance statement for AVS-8764 entities."
+
+  MODULE -- this module
+    MANDATORY-GROUPS { avs8764CardInfoGroup,
+                       avs8764CardNotifyGroup
+                     }
+
+  ::= { avs8764CardMibCompliances 1 }
+
+avs8764CardInfoGroup OBJECT-GROUP
+    OBJECTS { avs8764NumberOfCards,
+              avs8764BoardRev,
+              avs8764SerialNumber,
+              avs8764RearModule,
+              avs8764CardVoltage,
+              avs8764CardCurrent,
+              avs8764EEBank,
+              avs8764Input1,
+              avs8764Input2,
+              avs8764Input3,
+              avs8764Input4,
+              avs8764RefStatus,
+              avs8764Output1Source,
+              avs8764Output2Source,
+              avs8764Output1Signal,
+              avs8764Output2Signal,
+              avs8764EditPermission,
+              avs8764FactoryReset,
+              avs8764CardControl,
+              avs8764ControlMode,
+              avs8764PanelType,
+              avs8764XpointMode,
+              avs8764SW2Control,
+              avs8764SW2Inputs,
+              avs8764HDTiming,
+              avs8764RefSelect,
+              avs8764InputSigType,
+              avs8764LossOfOutput1,
+              avs8764LossOfOutput2,
+              avs8764LossOfReference,
+              avs8764LossOfInput1,
+              avs8764LossOfInput2,
+              avs8764LossOfInput3,
+              avs8764LossOfInput4
+            }
+    STATUS  current
+    DESCRIPTION
+            "A collection of objects providing basic instrumentation
+            and control of an AVS-8764 card."
+    ::= { avs8764CardMibGroups 1 }
+
+avs8764CardNotifyGroup NOTIFICATION-GROUP
+  NOTIFICATIONS { avs8764Output1SignalEvent,
+                  avs8764Output2SignalEvent,
+                  avs8764RefStatusEvent,
+                  avs8764Input1Event,
+                  avs8764Input2Event,
+                  avs8764Input3Event,
+                  avs8764Input4Event
+                }
+  STATUS current
+  DESCRIPTION
+    "The notifications relating to the AVS-8764 card"
+  ::= { avs8764CardMibGroups 2 }
+
+END

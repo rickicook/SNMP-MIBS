@@ -1,0 +1,284 @@
+MC1MK-CARD-MIB DEFINITIONS ::= BEGIN
+
+--
+-- Defines control and monitoring structures for the MC1MK card.
+--
+
+IMPORTS
+  openGearFrameIndex
+    FROM OPEN-GEAR-FRAME-MIB
+
+  openGearCardIndex
+    FROM OPEN-GEAR-CARD-MIB
+
+   openGearObjects
+    FROM OPEN-GEAR-MIB
+
+  OBJECT-TYPE, NOTIFICATION-TYPE, MODULE-IDENTITY, Integer32, Unsigned32
+    FROM SNMPv2-SMI
+
+  OBJECT-GROUP, NOTIFICATION-GROUP, MODULE-COMPLIANCE
+    FROM SNMPv2-CONF
+
+  DisplayString
+    FROM SNMPv2-TC;
+
+mc1mkCardMib MODULE-IDENTITY
+  LAST-UPDATED "201503031542Z"
+  ORGANIZATION "www.rossvideo.org"
+  CONTACT-INFO
+    "postal:   Ross Video
+               8 John St. P.O. Box 220
+               Iroquois ON K0E 1K0
+
+      email:   support@rossvideo.com"
+
+  DESCRIPTION
+    "Defines control and monitoring structures for the MC1MK card family.
+     This is a family of MultiDefinition Digital Keyers."
+
+  REVISION     "201503031542Z"
+  DESCRIPTION
+    "First revision."
+  ::= { openGearObjects 23 }
+
+--
+--  Top level components in the MC1MK MIB
+--
+mc1mkCardNotifications
+  OBJECT IDENTIFIER ::= { mc1mkCardMib 0 }
+
+mc1mkCardObjects
+  OBJECT IDENTIFIER ::= { mc1mkCardMib 1 }
+
+mc1mkCardConformance
+  OBJECT IDENTIFIER ::= { mc1mkCardMib 2 }
+
+--
+-- Notifications relating to the MC1MK card
+--
+mc1mkReferenceStatusEvent   NOTIFICATION-TYPE
+  OBJECTS { mc1mkReferenceStatus }
+  STATUS current
+  DESCRIPTION
+    "An indication that Status of the Analog Reference has changed.
+    The current status is reported in mc1mkReferenceStatus."
+  ::= { mc1mkCardNotifications 1 }
+
+mc1mkBkgdAStatusEvent   NOTIFICATION-TYPE
+  OBJECTS { mc1mkBkgdAStatus }
+  STATUS current
+  DESCRIPTION
+    "An indication that Status of Bkgd A signal has changed.
+    The current status is reported in mc1mkBkgdAStatus."
+  ::= { mc1mkCardNotifications 2 }
+
+mc1mkBkgdBStatusEvent   NOTIFICATION-TYPE
+  OBJECTS { mc1mkBkgdBStatus }
+  STATUS current
+  DESCRIPTION
+    "An indication that Status of Bkgd B signal has changed.
+    The current status is reported in mc1mkBkgdBStatus."
+  ::= { mc1mkCardNotifications 3 }
+
+mc1mkKeyVideoStatusEvent   NOTIFICATION-TYPE
+  OBJECTS { mc1mkKeyVideoStatus }
+  STATUS current
+  DESCRIPTION
+    "An indication that Status of Key Video signal has changed.
+    The current status is reported in mc1mkKeyVideoStatus."
+  ::= { mc1mkCardNotifications 4 }
+
+mc1mkKeyAlphaStatusEvent   NOTIFICATION-TYPE
+  OBJECTS { mc1mkKeyAlphaStatus }
+  STATUS current
+  DESCRIPTION
+    "An indication that Status of Key Alpha signal has changed.
+    The current status is reported in mc1mkKeyAlphaStatus."
+  ::= { mc1mkCardNotifications 5 }
+
+--
+--  MC1MK Card information
+--
+--
+--  All the MC1MK cards in the Open Gear frame
+--
+mc1mkNumberOfCards    OBJECT-TYPE
+  SYNTAX      Integer32
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "The total number of MC1MK cards in the open gear frame."
+  ::= { mc1mkCardObjects 1 }
+
+--
+--  Table of Product parameters
+--
+mc1mkProductTable     OBJECT-TYPE
+  SYNTAX      SEQUENCE OF Ra820xProductEntry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "A table containing product info for all MC1MK cards at this node.
+     This table is the expansion of the table 'openGearCardTable' in the
+     OPEN-GEAR-CARD-MIB. For each MC1MK card in the 'openGearCardTable',
+     there is a corresponding entry in this table, having the same indices -
+     'openGearFrameIndex' and 'openGearCardIndex'."
+  ::= { mc1mkCardObjects 2 }
+
+mc1mkProductEntry     OBJECT-TYPE
+  SYNTAX      Ra820xProductEntry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "A conceptual row within the 'mc1mkProductTable'."
+  INDEX    { openGearFrameIndex, openGearCardIndex }
+  ::= { mc1mkProductTable 1 }
+
+Ra820xProductEntry ::= SEQUENCE {
+  mc1mkReferenceStatus      INTEGER,
+  mc1mkBkgdAStatus          INTEGER,
+  mc1mkBkgdBStatus          INTEGER,
+  mc1mkKeyVideoStatus       INTEGER,
+  mc1mkKeyAlphaStatus       INTEGER
+}
+
+mc1mkReferenceStatus   OBJECT-TYPE
+  SYNTAX      INTEGER
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "Status of the Analog Reference.
+    This status parameter is a bitfield where each bit
+    indicates a specific status. A value of zero means OK.
+    The status bits are defined as follows:
+      0x0001 - No Reference
+      0x0002 - Reference Unlocked
+      0x0004 - Invalid Reference
+      0x0008 - Alarm suppressed
+    All other values are undefined."
+  ::= { mc1mkProductEntry 1 }
+
+mc1mkBkgdAStatus   OBJECT-TYPE
+  SYNTAX      INTEGER
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "Status of Bkgd A signal.
+    This status parameter is a bitfield where each bit
+    indicates a specific status. A value of zero means OK.
+    The status bits are defined as follows:
+      0x0001 - Alarm suppressed
+      0x0002 - No signal
+      0x0004 - Incompatible format
+      0x0008 - Audio absent
+      0x0010 - Unsupported format
+      0x0020 - Audio silent
+    All other values are undefined."
+  ::= { mc1mkProductEntry 2 }
+
+mc1mkBkgdBStatus   OBJECT-TYPE
+  SYNTAX      INTEGER
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "Status of Bkgd B signal.
+    This status parameter is a bitfield where each bit
+    indicates a specific status. A value of zero means OK.
+    The status bits are defined as follows:
+      0x0001 - Alarm suppressed
+      0x0002 - No signal
+      0x0004 - Incompatible format
+      0x0008 - Audio absent
+      0x0010 - Unsupported format
+      0x0020 - Audio silent
+    All other values are undefined."
+  ::= { mc1mkProductEntry 3 }
+
+mc1mkKeyVideoStatus   OBJECT-TYPE
+  SYNTAX      INTEGER
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "Status of Key Video signal.
+    This status parameter is a bitfield where each bit
+    indicates a specific status. A value of zero means OK.
+    The status bits are defined as follows:
+      0x0001 - Alarm suppressed
+      0x0002 - No signal
+      0x0004 - Incompatible format
+      0x0008 - Audio absent
+      0x0010 - Unsupported format
+      0x0020 - Audio silent
+    All other values are undefined."
+  ::= { mc1mkProductEntry 4 }
+
+mc1mkKeyAlphaStatus   OBJECT-TYPE
+  SYNTAX      INTEGER
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "Status of Key Alpha signal.
+    This status parameter is a bitfield where each bit
+    indicates a specific status. A value of zero means OK.
+    The status bits are defined as follows:
+      0x0001 - Alarm suppressed
+      0x0002 - No signal
+      0x0004 - Incompatible format
+      0x0008 - Audio absent
+      0x0010 - Unsupported format
+      0x0020 - Audio silent
+    All other values are undefined."
+  ::= { mc1mkProductEntry 5 }
+
+--
+-- Conformance
+--
+mc1mkCardMibCompliances
+  OBJECT IDENTIFIER ::= { mc1mkCardConformance 1 }
+mc1mkCardMibGroups
+  OBJECT IDENTIFIER ::= { mc1mkCardConformance 2 }
+
+--
+-- Compliance Statement
+--
+mc1mkCardCompliances MODULE-COMPLIANCE
+  STATUS      current
+  DESCRIPTION
+    "The compliance statement for MC1MK entities."
+
+  MODULE -- this module
+    MANDATORY-GROUPS { mc1mkCardInfoGroup,
+                       mc1mkCardNotifyGroup
+                     }
+
+  ::= { mc1mkCardMibCompliances 1 }
+
+mc1mkCardInfoGroup OBJECT-GROUP
+    OBJECTS { mc1mkNumberOfCards,
+              mc1mkReferenceStatus,
+              mc1mkBkgdAStatus,
+              mc1mkBkgdBStatus,
+              mc1mkKeyVideoStatus,
+              mc1mkKeyAlphaStatus
+            }
+    STATUS  current
+    DESCRIPTION
+            "A collection of objects providing basic instrumentation
+            and control of an MC1MK card."
+    ::= { mc1mkCardMibGroups 1 }
+
+mc1mkCardNotifyGroup NOTIFICATION-GROUP
+  NOTIFICATIONS {
+               mc1mkReferenceStatusEvent,
+               mc1mkBkgdAStatusEvent,
+               mc1mkBkgdBStatusEvent,
+               mc1mkKeyVideoStatusEvent,
+               mc1mkKeyAlphaStatusEvent
+                }
+  STATUS current
+  DESCRIPTION
+    "The notifications relating to the MC1MK card"
+  ::= { mc1mkCardMibGroups 2 }
+
+END

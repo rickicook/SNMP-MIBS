@@ -1,0 +1,857 @@
+QDA860X-CARD-MIB DEFINITIONS ::= BEGIN
+
+--
+-- Defines control and monitoring structures for the QDA860X card.
+--
+
+IMPORTS
+  openGearFrameIndex
+    FROM OPEN-GEAR-FRAME-MIB
+
+  openGearCardIndex
+    FROM OPEN-GEAR-CARD-MIB
+
+  openGearObjects
+    FROM OPEN-GEAR-MIB
+
+  OBJECT-TYPE, NOTIFICATION-TYPE, MODULE-IDENTITY, Integer32
+    FROM SNMPv2-SMI
+
+  OBJECT-GROUP, NOTIFICATION-GROUP, MODULE-COMPLIANCE
+    FROM SNMPv2-CONF
+
+  DisplayString
+    FROM SNMPv2-TC;
+
+qda860xCardMib MODULE-IDENTITY
+  LAST-UPDATED "201306241200Z"
+  ORGANIZATION "www.rossvideo.org"
+  CONTACT-INFO
+    "postal:   Ross Video
+               8 John St. P.O. Box 220
+               Iroquois ON K0E 1K0
+
+      email:   support@rossvideo.com"
+
+  DESCRIPTION
+    "Defines control and monitoring structures for the QDA860X card."
+
+  REVISION     "201306241200Z"
+  DESCRIPTION
+    "... "
+  ::= { openGearObjects 29 }
+
+--
+--  Top level components in the QDA860X MIB
+--
+qda860xCardNotifications
+  OBJECT IDENTIFIER ::= { qda860xCardMib 0 }
+
+qda860xCardObjects
+  OBJECT IDENTIFIER ::= { qda860xCardMib 1 }
+
+qda860xCardConformance
+  OBJECT IDENTIFIER ::= { qda860xCardMib 2 }
+
+--
+--  Notifications relating to the QDA860X card
+--
+qda860xCh0StatusAlarmEvent   NOTIFICATION-TYPE
+  OBJECTS { qda860xCh0StatusAlarm }
+  STATUS current
+  DESCRIPTION
+    "... "
+  ::= { qda860xCardNotifications 1 }
+
+qda860xCh0SdiInputEvent   NOTIFICATION-TYPE
+  OBJECTS { qda860xCh0SdiInput }
+  STATUS current
+  DESCRIPTION
+    "... "
+  ::= { qda860xCardNotifications 2 }
+
+qda860xCh0SdiOutputEvent   NOTIFICATION-TYPE
+  OBJECTS { qda860xCh0SdiOutput }
+  STATUS current
+  DESCRIPTION
+    "... "
+  ::= { qda860xCardNotifications 3 }
+
+qda860xCh1StatusAlarmEvent   NOTIFICATION-TYPE
+  OBJECTS { qda860xCh1StatusAlarm }
+  STATUS current
+  DESCRIPTION
+    "... "
+  ::= { qda860xCardNotifications 4 }
+
+qda860xCh1SdiInputEvent   NOTIFICATION-TYPE
+  OBJECTS { qda860xCh1SdiInput }
+  STATUS current
+  DESCRIPTION
+    "... "
+  ::= { qda860xCardNotifications 5 }
+
+qda860xCh1SdiOutputEvent   NOTIFICATION-TYPE
+  OBJECTS { qda860xCh1SdiOutput }
+  STATUS current
+  DESCRIPTION
+    "... "
+  ::= { qda860xCardNotifications 6 }
+
+qda860xCh2StatusAlarmEvent   NOTIFICATION-TYPE
+  OBJECTS { qda860xCh2StatusAlarm }
+  STATUS current
+  DESCRIPTION
+    "... "
+  ::= { qda860xCardNotifications 7 }
+
+qda860xCh2SdiInputEvent   NOTIFICATION-TYPE
+  OBJECTS { qda860xCh2SdiInput }
+  STATUS current
+  DESCRIPTION
+    "... "
+  ::= { qda860xCardNotifications 8 }
+
+qda860xCh2SdiOutputEvent   NOTIFICATION-TYPE
+  OBJECTS { qda860xCh2SdiOutput }
+  STATUS current
+  DESCRIPTION
+    "... "
+  ::= { qda860xCardNotifications 9 }
+
+qda860xCh3StatusAlarmEvent   NOTIFICATION-TYPE
+  OBJECTS { qda860xCh3StatusAlarm }
+  STATUS current
+  DESCRIPTION
+    "... "
+  ::= { qda860xCardNotifications 10 }
+
+qda860xCh3SdiInputEvent   NOTIFICATION-TYPE
+  OBJECTS { qda860xCh3SdiInput }
+  STATUS current
+  DESCRIPTION
+    "... "
+  ::= { qda860xCardNotifications 11 }
+
+qda860xCh3SdiOutputEvent   NOTIFICATION-TYPE
+  OBJECTS { qda860xCh3SdiOutput }
+  STATUS current
+  DESCRIPTION
+    "... "
+  ::= { qda860xCardNotifications 12 }
+
+qda860xHardwareStatusEvent   NOTIFICATION-TYPE
+  OBJECTS { qda860xHardwareStatus }
+  STATUS current
+  DESCRIPTION
+    "... "
+  ::= { qda860xCardNotifications 13 }
+
+--
+--  QDA860X Card information
+--
+--
+--  All the QDA860X cards in the Open Gear frame
+--
+qda860xNumberOfCards    OBJECT-TYPE
+  SYNTAX      Integer32
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "The total number of QDA860X cards in the open gear frame.
+"  ::= { qda860xCardObjects 1 }
+
+--
+--  Table of Product parameters
+--
+qda860xProductTable     OBJECT-TYPE
+  SYNTAX      SEQUENCE OF Qda860xProductEntry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "A table containing product info for all QDA860X cards at this node.
+    This table is the expansion of the table 'openGearCardTable' in the
+    OPEN-GEAR-CARD-MIB. For each QDA860X card in the 'openGearCardTable',
+    there is a corresponding entry in this table, having the same indices -
+    'openGearFrameIndex' and 'openGearCardIndex'."
+  ::= { qda860xCardObjects 2 }
+
+qda860xProductEntry     OBJECT-TYPE
+  SYNTAX      Qda860xProductEntry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "A conceptual row within the 'qda860xProductTable'."
+  INDEX    { openGearFrameIndex, openGearCardIndex }
+  ::= { qda860xProductTable 1 }
+
+Qda860xProductEntry ::= SEQUENCE {
+  qda860xBoardRev                  DisplayString,
+  qda860xSerialNumber              DisplayString,
+  qda860xRearModule                DisplayString
+}
+
+qda860xBoardRev    OBJECT-TYPE
+  SYNTAX      DisplayString
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "... "
+  ::= { qda860xProductEntry 4 }
+
+qda860xSerialNumber    OBJECT-TYPE
+  SYNTAX      DisplayString
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "... "
+  ::= { qda860xProductEntry 5 }
+
+qda860xRearModule    OBJECT-TYPE
+  SYNTAX      DisplayString
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "... "
+  ::= { qda860xProductEntry 6 }
+
+--
+--  Table of Hardware parameters
+--
+qda860xHardwareTable     OBJECT-TYPE
+  SYNTAX      SEQUENCE OF Qda860xHardwareEntry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "A table containing product info for all QDA860X cards at this node.
+    This table is the expansion of the table 'openGearCardTable' in the
+    OPEN-GEAR-CARD-MIB. For each QDA860X card in the 'openGearCardTable',
+    there is a corresponding entry in this table, having the same indices -
+    'openGearFrameIndex' and 'openGearCardIndex'."
+  ::= { qda860xCardObjects 3 }
+
+qda860xHardwareEntry     OBJECT-TYPE
+  SYNTAX      Qda860xHardwareEntry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "A conceptual row within the 'qda860xHardwareTable'."
+  INDEX    { openGearFrameIndex, openGearCardIndex }
+  ::= { qda860xHardwareTable 1 }
+
+Qda860xHardwareEntry ::= SEQUENCE {
+  qda860xHardwareStatus            Integer32,
+  qda860xCardVoltage               Integer32,
+  qda860xCardCurrent               Integer32,
+  qda860xConfigBank                Integer32
+}
+
+qda860xHardwareStatus    OBJECT-TYPE
+  SYNTAX      Integer32
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "The status parameter is a bitfield where each bit indicates a
+    specific status. A value of zero means OK.
+    The status bits are defined as follows:
+      0x0001 - Wrong Board Type
+      0x0002 - Incomp Rear Module
+    All other values are undefined."
+  ::= { qda860xHardwareEntry 1 }
+
+qda860xCardVoltage    OBJECT-TYPE
+  SYNTAX      Integer32
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "... "
+  ::= { qda860xHardwareEntry 2 }
+
+qda860xCardCurrent    OBJECT-TYPE
+  SYNTAX      Integer32
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "... "
+  ::= { qda860xHardwareEntry 3 }
+
+qda860xConfigBank    OBJECT-TYPE
+  SYNTAX      Integer32
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "... "
+  ::= { qda860xHardwareEntry 4 }
+
+--
+--  Table of Signal parameters
+--
+qda860xSignalTable     OBJECT-TYPE
+  SYNTAX      SEQUENCE OF Qda860xSignalEntry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "A table containing product info for all QDA860X cards at this node.
+    This table is the expansion of the table 'openGearCardTable' in the
+    OPEN-GEAR-CARD-MIB. For each QDA860X card in the 'openGearCardTable',
+    there is a corresponding entry in this table, having the same indices -
+    'openGearFrameIndex' and 'openGearCardIndex'."
+  ::= { qda860xCardObjects 4 }
+
+qda860xSignalEntry     OBJECT-TYPE
+  SYNTAX      Qda860xSignalEntry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "A conceptual row within the 'qda860xSignalTable'."
+  INDEX    { openGearFrameIndex, openGearCardIndex }
+  ::= { qda860xSignalTable 1 }
+
+Qda860xSignalEntry ::= SEQUENCE {
+  qda860xCh0StatusAlarm            Integer32,
+  qda860xCh0SdiInput               INTEGER,
+  qda860xCh0SdiOutput              INTEGER,
+  qda860xCh0InputCableLength       DisplayString,
+  qda860xCh1StatusAlarm            Integer32,
+  qda860xCh1SdiInput               INTEGER,
+  qda860xCh1SdiOutput              INTEGER,
+  qda860xCh1InputCableLength       DisplayString,
+  qda860xCh2StatusAlarm            Integer32,
+  qda860xCh2SdiInput               INTEGER,
+  qda860xCh2SdiOutput              INTEGER,
+  qda860xCh2InputCableLength       DisplayString,
+  qda860xCh3StatusAlarm            Integer32,
+  qda860xCh3SdiInput               INTEGER,
+  qda860xCh3SdiOutput              INTEGER,
+  qda860xCh3InputCableLength       DisplayString
+}
+
+qda860xCh0StatusAlarm    OBJECT-TYPE
+  SYNTAX      Integer32
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "The status parameter is a bitfield where each bit indicates a
+    specific status. A value of zero means OK.
+    The status bits are defined as follows:
+      0x0001 - OK
+      0x0004 - No input
+      0x0002 - Unlocked
+      0x0010 - No input
+      0x0008 - Unlocked
+    All other values are undefined."
+  ::= { qda860xSignalEntry 1 }
+
+qda860xCh0SdiInput    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    noSignal                (0),
+    sDSignal                (1),
+    hD3GSignal              (2),
+    equalizerBypassed       (3),
+    sDSignalBackup          (4),
+    hD3GSignalBackup        (5),
+    equalizerBypassedBackup  (6)
+  }
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "... "
+  ::= { qda860xSignalEntry 2 }
+
+qda860xCh0SdiOutput    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    unlocked                (0),
+    locked125M              (1),
+    locked270M              (2),
+    locked1dot5G            (3),
+    locked3dot0G            (4),
+    signalPresent           (5),
+    reclockerBypassed       (6),
+    noSignal                (7),
+    noSignalMuted           (8),
+    unlockedMuted           (9)
+  }
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "... "
+  ::= { qda860xSignalEntry 3 }
+
+qda860xCh0InputCableLength    OBJECT-TYPE
+  SYNTAX      DisplayString
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "... "
+  ::= { qda860xSignalEntry 4 }
+
+qda860xCh1StatusAlarm    OBJECT-TYPE
+  SYNTAX      Integer32
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "The status parameter is a bitfield where each bit indicates a
+    specific status. A value of zero means OK.
+    The status bits are defined as follows:
+      0x0001 - OK
+      0x0004 - No input
+      0x0002 - Unlocked
+      0x0010 - No input
+      0x0008 - Unlocked
+    All other values are undefined."
+  ::= { qda860xSignalEntry 6 }
+
+qda860xCh1SdiInput    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    noSignal                (0),
+    sDSignal                (1),
+    hD3GSignal              (2),
+    equalizerBypassed       (3),
+    sDSignalBackup          (4),
+    hD3GSignalBackup        (5),
+    equalizerBypassedBackup  (6)
+  }
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "... "
+  ::= { qda860xSignalEntry 7 }
+
+qda860xCh1SdiOutput    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    unlocked                (0),
+    locked125M              (1),
+    locked270M              (2),
+    locked1dot5G            (3),
+    locked3dot0G            (4),
+    signalPresent           (5),
+    reclockerBypassed       (6),
+    noSignal                (7),
+    noSignalMuted           (8),
+    unlockedMuted           (9)
+  }
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "... "
+  ::= { qda860xSignalEntry 8 }
+
+qda860xCh1InputCableLength    OBJECT-TYPE
+  SYNTAX      DisplayString
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "... "
+  ::= { qda860xSignalEntry 9 }
+
+qda860xCh2StatusAlarm    OBJECT-TYPE
+  SYNTAX      Integer32
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "The status parameter is a bitfield where each bit indicates a
+    specific status. A value of zero means OK.
+    The status bits are defined as follows:
+      0x0001 - OK
+      0x0004 - No input
+      0x0002 - Unlocked
+      0x0010 - No input
+      0x0008 - Unlocked
+    All other values are undefined."
+  ::= { qda860xSignalEntry 11 }
+
+qda860xCh2SdiInput    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    noSignal                (0),
+    sDSignal                (1),
+    hD3GSignal              (2),
+    equalizerBypassed       (3),
+    sDSignalBackup          (4),
+    hD3GSignalBackup        (5),
+    equalizerBypassedBackup  (6)
+  }
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "... "
+  ::= { qda860xSignalEntry 12 }
+
+qda860xCh2SdiOutput    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    unlocked                (0),
+    locked125M              (1),
+    locked270M              (2),
+    locked1dot5G            (3),
+    locked3dot0G            (4),
+    signalPresent           (5),
+    reclockerBypassed       (6),
+    noSignal                (7),
+    noSignalMuted           (8),
+    unlockedMuted           (9)
+  }
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "... "
+  ::= { qda860xSignalEntry 13 }
+
+qda860xCh2InputCableLength    OBJECT-TYPE
+  SYNTAX      DisplayString
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "... "
+  ::= { qda860xSignalEntry 14 }
+
+qda860xCh3StatusAlarm    OBJECT-TYPE
+  SYNTAX      Integer32
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "The status parameter is a bitfield where each bit indicates a
+    specific status. A value of zero means OK.
+    The status bits are defined as follows:
+      0x0001 - OK
+      0x0004 - No input
+      0x0002 - Unlocked
+      0x0010 - No input
+      0x0008 - Unlocked
+    All other values are undefined."
+  ::= { qda860xSignalEntry 16 }
+
+qda860xCh3SdiInput    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    noSignal                (0),
+    sDSignal                (1),
+    hD3GSignal              (2),
+    equalizerBypassed       (3),
+    sDSignalBackup          (4),
+    hD3GSignalBackup        (5),
+    equalizerBypassedBackup  (6)
+  }
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "... "
+  ::= { qda860xSignalEntry 17 }
+
+qda860xCh3SdiOutput    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    unlocked                (0),
+    locked125M              (1),
+    locked270M              (2),
+    locked1dot5G            (3),
+    locked3dot0G            (4),
+    signalPresent           (5),
+    reclockerBypassed       (6),
+    noSignal                (7),
+    noSignalMuted           (8),
+    unlockedMuted           (9)
+  }
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "... "
+  ::= { qda860xSignalEntry 18 }
+
+qda860xCh3InputCableLength    OBJECT-TYPE
+  SYNTAX      DisplayString
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "... "
+  ::= { qda860xSignalEntry 19 }
+
+--
+--  Table of CfgControl parameters
+--
+qda860xCfgControlTable     OBJECT-TYPE
+  SYNTAX      SEQUENCE OF Qda860xCfgControlEntry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "A table containing product info for all QDA860X cards at this node.
+    This table is the expansion of the table 'openGearCardTable' in the
+    OPEN-GEAR-CARD-MIB. For each QDA860X card in the 'openGearCardTable',
+    there is a corresponding entry in this table, having the same indices -
+    'openGearFrameIndex' and 'openGearCardIndex'."
+  ::= { qda860xCardObjects 5 }
+
+qda860xCfgControlEntry     OBJECT-TYPE
+  SYNTAX      Qda860xCfgControlEntry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "A conceptual row within the 'qda860xCfgControlTable'."
+  INDEX    { openGearFrameIndex, openGearCardIndex }
+  ::= { qda860xCfgControlTable 1 }
+
+Qda860xCfgControlEntry ::= SEQUENCE {
+  qda860xEditPermission            INTEGER,
+  qda860xFactoryReset              INTEGER
+}
+
+qda860xEditPermission    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    unlocked                (0),
+    locked                  (1)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { unlocked }
+  ::= { qda860xCfgControlEntry 1 }
+
+qda860xFactoryReset    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    reset                   (0)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { reset }
+  ::= { qda860xCfgControlEntry 2 }
+
+--
+--  Table of Setup parameters
+--
+qda860xSetupArrGrp
+  OBJECT IDENTIFIER ::= { qda860xCardObjects 6 }
+
+qda860xNumberOfElementsInqda860xSetupArrGrp OBJECT-TYPE
+  SYNTAX      Integer32
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "The total number of elements in qda860xSetupArrGrp."
+  ::= { qda860xSetupArrGrp 1 }
+
+qda860xSetupTable     OBJECT-TYPE
+  SYNTAX      SEQUENCE OF Qda860xSetupEntry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "A table containing product info for all QDA860X cards at this node.
+    This table is the expansion of the table 'openGearCardTable' in the
+    OPEN-GEAR-CARD-MIB. For each QDA860X card in the 'openGearCardTable',
+    there is a corresponding entry in this table, having the same indices -
+    'openGearFrameIndex' and 'openGearCardIndex'."
+  ::= { qda860xSetupArrGrp 2 }
+
+qda860xSetupEntry     OBJECT-TYPE
+  SYNTAX      Qda860xSetupEntry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "A conceptual row within the 'qda860xSetupTable'."
+  INDEX    { openGearFrameIndex, openGearCardIndex,  qda860xSetupIndex}
+  ::= { qda860xSetupTable 1 }
+
+Qda860xSetupEntry ::= SEQUENCE {
+  qda860xSetupIndex        Unsigned32,
+  qda860xEnableEqArray             INTEGER,
+  qda860xEnableRckArray            INTEGER,
+  qda860xRckRateArray              INTEGER,
+  qda860xFailoverArray             INTEGER
+}
+
+qda860xSetupIndex   OBJECT-TYPE
+  SYNTAX      Unsigned32
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "It represents the array group index."
+  ::= { qda860xSetupEntry 1 }
+
+qda860xEnableEqArray    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    disabled                (0),
+    enabled                 (1)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { enabled }
+  ::= { qda860xSetupEntry 2 }
+
+qda860xEnableRckArray    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    disabled                (0),
+    enabled                 (1)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { enabled }
+  ::= { qda860xSetupEntry 3 }
+
+qda860xRckRateArray    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    auto                    (0),
+    v270Mbps                (1),
+    v1dot53dot0Gbps         (2)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { auto }
+  ::= { qda860xSetupEntry 4 }
+
+qda860xFailoverArray    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    disabled                (0),
+    enabled                 (1)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { disabled }
+  ::= { qda860xSetupEntry 5 }
+
+--
+--  Table of Alarms parameters
+--
+qda860xAlarmsArrGrp
+  OBJECT IDENTIFIER ::= { qda860xCardObjects 7 }
+
+qda860xNumberOfElementsInqda860xAlarmsArrGrp OBJECT-TYPE
+  SYNTAX      Integer32
+  MAX-ACCESS  read-only
+  STATUS      current
+  DESCRIPTION
+    "The total number of elements in qda860xAlarmsArrGrp."
+  ::= { qda860xAlarmsArrGrp 1 }
+
+qda860xAlarmsTable     OBJECT-TYPE
+  SYNTAX      SEQUENCE OF Qda860xAlarmsEntry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "A table containing product info for all QDA860X cards at this node.
+    This table is the expansion of the table 'openGearCardTable' in the
+    OPEN-GEAR-CARD-MIB. For each QDA860X card in the 'openGearCardTable',
+    there is a corresponding entry in this table, having the same indices -
+    'openGearFrameIndex' and 'openGearCardIndex'."
+  ::= { qda860xAlarmsArrGrp 2 }
+
+qda860xAlarmsEntry     OBJECT-TYPE
+  SYNTAX      Qda860xAlarmsEntry
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "A conceptual row within the 'qda860xAlarmsTable'."
+  INDEX    { openGearFrameIndex, openGearCardIndex,  qda860xAlarmsIndex}
+  ::= { qda860xAlarmsTable 1 }
+
+Qda860xAlarmsEntry ::= SEQUENCE {
+  qda860xAlarmsIndex        Unsigned32,
+  qda860xAlarmLoiArray             INTEGER
+}
+
+qda860xAlarmsIndex   OBJECT-TYPE
+  SYNTAX      Unsigned32
+  MAX-ACCESS  not-accessible
+  STATUS      current
+  DESCRIPTION
+    "It represents the array group index."
+  ::= { qda860xAlarmsEntry 1 }
+
+qda860xAlarmLoiArray    OBJECT-TYPE
+  SYNTAX      INTEGER  {
+    ignore                  (0),
+    notify                  (1)
+  }
+  MAX-ACCESS  read-write
+  STATUS      current
+  DESCRIPTION
+    "... "
+  DEFVAL  { notify }
+  ::= { qda860xAlarmsEntry 2 }
+
+--
+-- Conformance
+--
+qda860xCardMibCompliances
+  OBJECT IDENTIFIER ::= { qda860xCardConformance 1 }
+qda860xCardMibGroups
+  OBJECT IDENTIFIER ::= { qda860xCardConformance 2 }
+--
+-- Compliance Statement
+--
+qda860xCardCompliances MODULE-COMPLIANCE
+  STATUS      current
+  DESCRIPTION
+    "The compliance statement for QDA860X entities."
+  MODULE -- this module
+    MANDATORY-GROUPS { qda860xCardInfoGroup,
+                       qda860xCardNotifyGroup
+                     }
+
+  ::= { qda860xCardMibCompliances 1 }
+
+qda860xCardInfoGroup OBJECT-GROUP
+    OBJECTS { qda860xNumberOfCards,
+              qda860xBoardRev,
+              qda860xSerialNumber,
+              qda860xRearModule,
+              qda860xHardwareStatus,
+              qda860xCardVoltage,
+              qda860xCardCurrent,
+              qda860xConfigBank,
+              qda860xCh0StatusAlarm,
+              qda860xCh0SdiInput,
+              qda860xCh0SdiOutput,
+              qda860xCh0InputCableLength,
+              qda860xCh1StatusAlarm,
+              qda860xCh1SdiInput,
+              qda860xCh1SdiOutput,
+              qda860xCh1InputCableLength,
+              qda860xCh2StatusAlarm,
+              qda860xCh2SdiInput,
+              qda860xCh2SdiOutput,
+              qda860xCh2InputCableLength,
+              qda860xCh3StatusAlarm,
+              qda860xCh3SdiInput,
+              qda860xCh3SdiOutput,
+              qda860xCh3InputCableLength,
+              qda860xEditPermission,
+              qda860xFactoryReset,
+              qda860xEnableEqArray,
+              qda860xEnableRckArray,
+              qda860xRckRateArray,
+              qda860xFailoverArray,
+              qda860xAlarmLoiArray
+            }
+    STATUS  current
+    DESCRIPTION
+      "A collection of objects providing basic instrumentation
+        and control of an QDA860X card."
+    ::= { qda860xCardMibGroups 1 }
+
+qda860xCardNotifyGroup NOTIFICATION-GROUP
+  NOTIFICATIONS { qda860xCh0StatusAlarmEvent,
+                  qda860xCh0SdiInputEvent,
+                  qda860xCh0SdiOutputEvent,
+                  qda860xCh1StatusAlarmEvent,
+                  qda860xCh1SdiInputEvent,
+                  qda860xCh1SdiOutputEvent,
+                  qda860xCh2StatusAlarmEvent,
+                  qda860xCh2SdiInputEvent,
+                  qda860xCh2SdiOutputEvent,
+                  qda860xCh3StatusAlarmEvent,
+                  qda860xCh3SdiInputEvent,
+                  qda860xCh3SdiOutputEvent,
+                  qda860xHardwareStatusEvent
+                }
+    STATUS  current
+    DESCRIPTION
+      "The notifications relating to the QDA860X card."
+    ::= { qda860xCardMibGroups 2 }
+
+END
