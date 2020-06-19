@@ -12,13 +12,13 @@ IMPORTS
         FROM Q-BRIDGE-MIB
     SnmpAdminString
         FROM SNMP-FRAMEWORK-MIB
-    rcIp, rcIgmp, rcStat, PortSet, EnableValue
+    rcIp, rcIgmp, rcStat, PortSet, LPortSet, EnableValue
         FROM RAPID-CITY;
 
 
 rcIgmpMib MODULE-IDENTITY
 
-       LAST-UPDATED     "201001270000Z"
+       LAST-UPDATED     "201703140000Z"
 
        ORGANIZATION     "Bay Networks, Rapid-City Group"
        CONTACT-INFO     "
@@ -33,9 +33,74 @@ rcIgmpMib MODULE-IDENTITY
                         "
        DESCRIPTION      "Enterprise MIB for the Accelar product family."
 
+
+       REVISION "201703140000Z" -- 14 March 2017
+       DESCRIPTION "Version 44: Added rcIgmpLocalSrcRoaming."
+
+       REVISION "201701170000Z" -- 17 Jan 2017
+       DESCRIPTION "Version 43: Added rcIgmpSendersTable.
+	   			Requested by Bogan Pescarus, submit 32332 (prempa)"
+
+       REVISION "201606020000Z" -- 2 June 2016
+       DESCRIPTION "Version 42: Added rcIgmpCacheExtnL2Isid to rcIgmpCacheExtnTable.
+	                        Added rcIgmpNewGroupL2Isid to rcIgmpNewGroupTable.
+				Added rcIgmpInterfaceExtnL2Isid to 
+				      rcIgmpInterfaceExtnTable.
+				Added rcIgmpInterfaceExtnTable to rcIgmpSenderTable."
+
+       REVISION "201603150000Z" -- 15 March 2016
+       DESCRIPTION "Version 41: Added mvr and mvrSnoop for rcIgmpInterfaceExtnMcastMode."
+
+       REVISION "201601070000Z" -- 07 January 2016
+       DESCRIPTION "Version 40: Change the name for rcIgmpInterfaceExtnMcastMode.4 from lmfSpb to routedSpb."
+
+       REVISION "201510200000Z" -- 20 October 2015
+       DESCRIPTION "Version 39: Added pimgwSpb for rcIgmpInterfaceExtnMcastMode."
+
+       REVISION "201508030000Z" -- 03 August 2015
+       DESCRIPTION "Version 38: Added rcIgmpStreamEntry."
+	   
+       REVISION "201503040000Z" -- 04 March 2015
+       DESCRIPTION "Version 37: Added rcIgmpNewGroupActualInPort to
+	   			rcIgmpNewGroupTable to support Mcast over SPBM"
+			    
+       REVISION "201208020000Z" -- 02 August 2012
+       DESCRIPTION "Version 36: Changed rcIgmpSnoopPortType to 
+	                        rcIgmpSnoopType. It was requested as 
+				rcIgmpSnoopPortType, but in the code they
+				used it as rcIgmpSnoopType"
+
+       REVISION "201203130000Z" -- 13 Mar 2012
+       DESCRIPTION "Version 35: Added rcIgmpInterfaceExtnSnoopMRouterLPorts,
+                                rcIgmpInterfaceExtnSnoopActiveMRouterLPorts
+                                to rcIgmpInterfaceExtnTable."
+
+       REVISION "201102130000Z" -- 13 Feb 2012
+       DESCRIPTION "Version 34: Added rcIgmpSnoopOutLPort"
+
+       REVISION "201110110000Z" -- 10 October 2011
+       DESCRIPTION "Version 33: Added rcIgmpNewSsmTable."
+
+       REVISION "201109150000Z" -- 15 Sept. 2011
+       DESCRIPTION "Version 32: Added rcIgmpInterfaceExtnMcastMode,
+                                      rcIgmpSnoopPortType."
+
+       REVISION "201108300000Z" -- 30 August 2011
+       DESCRIPTION "Version 31: Added rcIgmpv3CacheTable,
+                                      rcIgmpRouterSrcListTable."
+
+       REVISION "201105050000Z" -- 05 May 2011
+       DESCRIPTION "Version 30: Added rcIgmpInterfaceExtnExplicitHostTrackingEnable."
+
+       REVISION "201010250000Z" -- 25 October 2010
+       DESCRIPTION "Version 29: Added rcIgmpMulticastFilterMode."
+
        REVISION "201001270000Z" -- 27 January 2010
-       DESCRIPTION "Version 27: Converted rcIgmpSsmLearningMode to
+       DESCRIPTION "Version 28: Converted rcIgmpSsmLearningMode to
                                 read-create."
+
+       REVISION "200910220000Z" -- 22 October 2009
+       DESCRIPTION "Version 27: Modified rcIgmpChannelLimitMaxStreams."
 
        REVISION "200909100000Z" -- 10 September 2009
        DESCRIPTION "Version 26: Added rcIgmpGroupExtTable."
@@ -481,7 +546,12 @@ RcIgmpInterfaceExtnEntry ::=
                 rcIgmpInterfaceExtnMvrProxyEnable        TruthValue,
                 rcIgmpInterfaceExtnDynamicDowngradeEnable TruthValue,
                 rcIgmpInterfaceExtnCompatibilityModeEnable TruthValue,
-                rcIgmpInterfaceExtnOperVersion            INTEGER
+                rcIgmpInterfaceExtnOperVersion            INTEGER,
+                rcIgmpInterfaceExtnExplicitHostTrackingEnable TruthValue,
+                rcIgmpInterfaceExtnMcastMode             INTEGER,
+                rcIgmpInterfaceExtnSnoopMRouterLPorts    LPortSet,
+                rcIgmpInterfaceExtnSnoopActiveMRouterLPorts LPortSet,
+		rcIgmpInterfaceExtnL2Isid                Integer32
         }
 
 rcIgmpInterfaceExtnIfIndex OBJECT-TYPE
@@ -737,6 +807,53 @@ rcIgmpInterfaceExtnOperVersion OBJECT-TYPE
         DESCRIPTION   "The operational version of IGMP which is running on this interface."
         ::= { rcIgmpInterfaceExtnEntry 32 }
 
+rcIgmpInterfaceExtnExplicitHostTrackingEnable OBJECT-TYPE
+        SYNTAX        TruthValue
+        MAX-ACCESS    read-write
+        STATUS        current
+        DESCRIPTION   "Enable the IGMP protocol running in version 3 to track hosts per channels/groups."
+        DEFVAL        { false }
+        ::= { rcIgmpInterfaceExtnEntry 33 }
+    
+rcIgmpInterfaceExtnMcastMode OBJECT-TYPE
+    SYNTAX     INTEGER { snoop(1),
+                         pim(2),
+			 snoopSpb(3),
+			 routedSpb(4),
+			 dvmrp(5),
+			 none(6),
+                         pimgwSpb(7),
+                         mvr(8),
+                         mvrSnoop(9)
+		       }
+    MAX-ACCESS read-only
+    STATUS     current
+    DESCRIPTION "IGMP interface mode"
+    DEFVAL    { none }
+    ::= { rcIgmpInterfaceExtnEntry 34 }
+
+rcIgmpInterfaceExtnSnoopMRouterLPorts OBJECT-TYPE
+        SYNTAX        LPortSet
+        MAX-ACCESS    read-only
+        STATUS        current
+        DESCRIPTION   "The set of logical ports in this interface that provide
+                      connectivity to an IP Multicast router."
+        ::= { rcIgmpInterfaceExtnEntry 35 }
+
+rcIgmpInterfaceExtnSnoopActiveMRouterLPorts OBJECT-TYPE
+        SYNTAX        LPortSet
+        MAX-ACCESS    read-only
+        STATUS        current
+        DESCRIPTION   "Active logical ports."
+        ::= { rcIgmpInterfaceExtnEntry 36 }
+
+rcIgmpInterfaceExtnL2Isid OBJECT-TYPE
+        SYNTAX        Integer32 (0..16777215)
+        MAX-ACCESS    read-only
+        STATUS        current
+        DESCRIPTION   "L2 ISID of the cvlan."
+        ::= { rcIgmpInterfaceExtnEntry 37 }
+	
 -- IGMP Static
 
 rcIgmpStaticTable OBJECT-TYPE
@@ -908,7 +1025,8 @@ RcIgmpSenderEntry ::=
                 rcIgmpSenderMemberAddr  IpAddress,
                 rcIgmpSenderAction      INTEGER,
                 rcIgmpSenderTPort       Integer32,
-                rcIgmpSenderState       INTEGER
+                rcIgmpSenderState       INTEGER,
+                rcIgmpSenderL2Isid      Integer32
         }
 
 rcIgmpSenderGrpAddr OBJECT-TYPE
@@ -960,6 +1078,13 @@ rcIgmpSenderState OBJECT-TYPE
         DESCRIPTION   "Indicates if a sender exists because of an
                        IGMP access filter or not."
         ::= { rcIgmpSenderEntry 6 }
+
+rcIgmpSenderL2Isid OBJECT-TYPE
+        SYNTAX        Integer32 (0..16777215)
+        MAX-ACCESS    read-only
+        STATUS        current
+        DESCRIPTION   "L2 ISID of the cvlan"
+        ::= { rcIgmpSenderEntry 7 }
 
 -- IGMP SSM
 
@@ -1223,7 +1348,7 @@ rcIgmpChannelLimitPort OBJECT-TYPE
         ::= { rcIgmpChannelLimitEntry 2 }
 
 rcIgmpChannelLimitMaxStreams OBJECT-TYPE
-        SYNTAX        Integer32
+        SYNTAX        Integer32 (0..65535)
         MAX-ACCESS    read-create
         STATUS        current
         DESCRIPTION   "Maximum number of stream."
@@ -1381,6 +1506,22 @@ rcIgmpMvr OBJECT-TYPE
         DEFVAL        { disable }
         ::= { rcIgmpGlobalParams 4 }
 
+rcIgmpMulticastFilterMode OBJECT-TYPE
+    SYNTAX           EnableValue
+    MAX-ACCESS     read-write
+    STATUS           current
+    DESCRIPTION    "Enabling the IGMP to filter on unknown multicast streams."
+    DEFVAL        { disable }
+    ::= { rcIgmpGlobalParams 5 }
+
+rcIgmpLocalSrcRoaming OBJECT-TYPE
+    SYNTAX           EnableValue
+    MAX-ACCESS       read-write
+    STATUS           current
+    DESCRIPTION    "Enable/disable IGMP local source roaming."
+    DEFVAL        { disable }
+    ::= { rcIgmpGlobalParams 6 }
+
 -- IGMP Cache Extern Table
 
 rcIgmpCacheExtnTable OBJECT-TYPE
@@ -1401,7 +1542,8 @@ rcIgmpCacheExtnEntry OBJECT-TYPE
 RcIgmpCacheExtnEntry ::=
         SEQUENCE {
                 rcIgmpCacheExtnType               INTEGER,
-                rcIgmpCacheExtnStaticPorts        PortSet
+                rcIgmpCacheExtnStaticPorts        PortSet,
+		rcIgmpCacheExtnL2Isid             Integer32
         }
 
 rcIgmpCacheExtnType OBJECT-TYPE
@@ -1423,6 +1565,13 @@ rcIgmpCacheExtnStaticPorts OBJECT-TYPE
         DESCRIPTION   "It displays the static ports for the static joins,
                        this would be null for the dynamic entry."
         ::= { rcIgmpCacheExtnEntry 2 }
+
+rcIgmpCacheExtnL2Isid OBJECT-TYPE
+        SYNTAX        Integer32 (0..16777215)
+        MAX-ACCESS    read-only
+        STATUS        current
+        DESCRIPTION   "L2 ISID of the cvlan."
+        ::= { rcIgmpCacheExtnEntry 3 }
 
  -- rcIgmpSnoopTrace
 
@@ -1451,7 +1600,9 @@ rcIgmpCacheExtnStaticPorts OBJECT-TYPE
                  rcIgmpSnoopOutVlan         VlanId,
                  rcIgmpSnoopInPort          InterfaceIndex,
                  rcIgmpSnoopInVlan          VlanId,
-                 rcIgmpSnoopOutPort         PortSet
+                 rcIgmpSnoopOutPort         PortSet,
+		 rcIgmpSnoopType            INTEGER,
+		 rcIgmpSnoopOutLPort        LPortSet
          }
 
  rcIgmpSnoopGrpAddr  OBJECT-TYPE
@@ -1496,6 +1647,23 @@ rcIgmpCacheExtnStaticPorts OBJECT-TYPE
          DESCRIPTION   "Egress port of the mcast grp"
          ::= { rcIgmpSnoopTraceEntry 6 }
 
+ rcIgmpSnoopType OBJECT-TYPE
+        SYNTAX        INTEGER{
+	                       network(1),
+			       access(2)
+			     }
+        MAX-ACCESS    read-only
+        STATUS        current
+        DESCRIPTION   "The port type on which the snoop entry is learnt"
+        ::= { rcIgmpSnoopTraceEntry 7}
+
+rcIgmpSnoopOutLPort OBJECT-TYPE
+        SYNTAX        LPortSet
+        MAX-ACCESS    read-only
+        STATUS        current
+        DESCRIPTION   "Egress logical port list of the mcast grp"
+        ::= { rcIgmpSnoopTraceEntry 8 }
+    
 rcIgmpNewGroupTable OBJECT-TYPE
         SYNTAX         SEQUENCE OF RcIgmpNewGroupEntry
         MAX-ACCESS    not-accessible
@@ -1516,14 +1684,16 @@ rcIgmpNewGroupEntry OBJECT-TYPE
 
 RcIgmpNewGroupEntry ::=
 SEQUENCE {
-        rcIgmpNewGroupIpAddress   IpAddress,
-        rcIgmpNewGroupMembers     IpAddress,
-        rcIgmpNewGroupInPort      Integer32,
-        rcIgmpNewGroupExpiration  Integer32,
-        rcIgmpNewGroupIfIndex     InterfaceIndex,
-        rcIgmpNewGroupUserId      DisplayString,
-        rcIgmpNewGroupMemberState INTEGER,
-        rcIgmpNewGroupSessionTime Integer32
+        rcIgmpNewGroupIpAddress    IpAddress,
+        rcIgmpNewGroupMembers      IpAddress,
+        rcIgmpNewGroupInPort       Integer32,
+        rcIgmpNewGroupExpiration   Integer32,
+        rcIgmpNewGroupIfIndex      InterfaceIndex,
+        rcIgmpNewGroupUserId       DisplayString,
+        rcIgmpNewGroupMemberState  INTEGER,
+        rcIgmpNewGroupSessionTime  Integer32,
+	rcIgmpNewGroupActualInPort InterfaceIndex,
+	rcIgmpNewGroupL2Isid       Integer32
 }
 
 rcIgmpNewGroupIpAddress OBJECT-TYPE
@@ -1603,6 +1773,27 @@ rcIgmpNewGroupSessionTime OBJECT-TYPE
                       values correspondes to the accounting duration of
                       IGAP user session."
          ::= { rcIgmpNewGroupEntry 8 }
+     
+rcIgmpNewGroupActualInPort OBJECT-TYPE
+        SYNTAX          InterfaceIndex
+        MAX-ACCESS      read-only
+        STATUS          current
+        DESCRIPTION    "An unique value to identify a physical
+                        interface or a logical interface (VLAN),
+                        which has received Group reports from various
+                        sources.  The value of object is same as
+			rcIgmpNewGroupInPort except when rcIgmpNewGroupInPort
+			is the value of TX-NNI, rcIgmpNewGroupActualInPort will be
+			first active port on MLT.  It should used for display to
+			sync up output with CLI (Introduced by VOSS 4.2.0.0)"   
+        ::= { rcIgmpNewGroupEntry 9 }
+	
+rcIgmpNewGroupL2Isid  OBJECT-TYPE
+        SYNTAX        Integer32 (0..16777215)
+        MAX-ACCESS    read-only
+        STATUS        current
+        DESCRIPTION   "L2 ISID of the cvlan."
+        ::= { rcIgmpNewGroupEntry 10 }
 
 --
 --  The IGMP Interface Table
@@ -2358,5 +2549,511 @@ rcIgmpGroupExtMode OBJECT-TYPE
         "Address mode."
     ::= { rcIgmpGroupExtEntry 10 }
 
+
+--The IGMPv3 Router Cache Table
+
+ rcIgmpv3CacheTable OBJECT-TYPE
+         SYNTAX      SEQUENCE OF RcIgmpv3CacheEntry
+         MAX-ACCESS  not-accessible
+         STATUS      current
+         DESCRIPTION "The (conceptual) table listing the Igmpv3 specific data
+                     corresponding to each interface, port and
+                      multicast group pair on a Router."
+         ::= { rcIgmp 24 }
+
+rcIgmpv3CacheEntry OBJECT-TYPE
+         SYNTAX      RcIgmpv3CacheEntry
+         MAX-ACCESS  not-accessible
+         STATUS      current
+         DESCRIPTION "An entry (conceptual row) representing an Igmpv3 Group."
+         INDEX       { rcIgmpv3CacheEntryGroupAddress,
+                       rcIgmpv3CacheEntryIfIndex,
+                       rcIgmpv3CacheEntryInPort
+                     }
+         ::= { rcIgmpv3CacheTable 1 }
+
+RcIgmpv3CacheEntry ::= SEQUENCE {
+         rcIgmpv3CacheEntryGroupAddress              IpAddress,
+         rcIgmpv3CacheEntryIfIndex                   InterfaceIndex,
+         rcIgmpv3CacheEntryInPort                    INTEGER,
+         rcIgmpv3CacheEntryModeExpiryTimer           Integer32,
+         rcIgmpv3CacheEntryVersion1HostTimer         Integer32,
+         rcIgmpv3CacheEntryVersion2HostTimer         Integer32,
+         rcIgmpv3CacheEntrySourceFilterMode          INTEGER
+}
+
+rcIgmpv3CacheEntryGroupAddress OBJECT-TYPE
+         SYNTAX      IpAddress
+         MAX-ACCESS  not-accessible
+         STATUS      current
+         DESCRIPTION "Multicast group Address (Class D) that others
+                      want to join. A group address can be the same
+                      for many incoming ports."
+         ::= { rcIgmpv3CacheEntry 1 }
+
+rcIgmpv3CacheEntryIfIndex OBJECT-TYPE
+         SYNTAX      InterfaceIndex
+         MAX-ACCESS  not-accessible
+         STATUS      current
+         DESCRIPTION "An unique value to identify a physical
+                      interface or a logical interface (VLAN),
+                      which has received Group reports from various
+                      sources."
+         ::= { rcIgmpv3CacheEntry 2 }
+
+rcIgmpv3CacheEntryInPort OBJECT-TYPE
+         SYNTAX      INTEGER (0..65535)
+         MAX-ACCESS  not-accessible
+         STATUS      current
+         DESCRIPTION "An unique value to identify a physical
+                      interface or a logical interface (VLAN),
+                      which has received Group reports from various
+                      sources."
+        ::= { rcIgmpv3CacheEntry 3 }
+
+rcIgmpv3CacheEntryModeExpiryTimer OBJECT-TYPE
+         SYNTAX      Integer32
+         MAX-ACCESS  read-only
+         STATUS      current
+         DESCRIPTION "This value is applicable only to IGMPv3-compatible nodes
+                      and represents the time remaining before the interface
+                      EXCLUDE state expires and the interface state transitions
+                      to INCLUDE mode.  This value can never be greater than
+                      rcIgmpNewGroupExpiration."
+         ::= { rcIgmpv3CacheEntry 4 }
+
+rcIgmpv3CacheEntryVersion1HostTimer OBJECT-TYPE
+         SYNTAX      Integer32
+         MAX-ACCESS  read-only
+         STATUS      current
+         DESCRIPTION "The time remaining until the local router will assume that                      there are no longer any IGMP version 1 members on the IP
+                      subnet attached to this interface.  This entry only
+                      applies to IGMPv1 hosts. Upon hearing any IGMPv1 Report,
+                      this value is reset to the group membership timer.
+                      While this time remaining is non-zero, the local
+                      router ignores any IGMPv2 Leave messages for this
+                      group that it  receives on this interface."
+         ::= { rcIgmpv3CacheEntry 5 }
+
+rcIgmpv3CacheEntryVersion2HostTimer OBJECT-TYPE
+         SYNTAX      Integer32
+         MAX-ACCESS  read-only
+         STATUS      current
+         DESCRIPTION "The time remaining until the local router will assume that                      there are no longer any IGMP version 2 members on the IP
+                      subnet attached to this interface. Upon hearing
+                      any IGMPv2 Membership Report, this value is reset to
+                      the group membership timer.  Assuming no IGMPv1 hosts
+                      have been detected, the local router does not ignore
+                      any IGMPv2 Leave messages for this group that it
+                      receives on this interface."
+         ::= { rcIgmpv3CacheEntry 6 }
+
+rcIgmpv3CacheEntrySourceFilterMode OBJECT-TYPE
+         SYNTAX      INTEGER {
+                              include (1),
+                              exclude (2)
+                     }
+         MAX-ACCESS  read-only
+         STATUS      current
+         DESCRIPTION "The current group state, applicable to IGMPv3-compatible
+                      nodes. The value indicates whether the state is
+                      INCLUDE or EXCLUDE."
+         ::= { rcIgmpv3CacheEntry 7 }
+
+--The IGMPv3 Router Source list Table
+
+--
+-- This information helps to interpret the content of the rcIgmpRouterSrcListTable.
+-- 1. rcIgmpRouterSrcListHostAddress is not zero; rcIgmpRouterSrcListMemberAddress is zero.
+--    This is the case when we have a source in the include list and no receiver asked it
+--    explicitly (conflict source).
+--    Ex: Two receivers present; one receiver is in EXLCUDE{S1} and the other one is in
+--    EXLCUDE{S2}. The group state is EXCLUDE("S2","NULL").
+-- 2. rcIgmpRouterSrcListHostAddress is not zero, rcIgmpRouterSrcListMemberAddress is not zero.
+--    This is the case when a receiver asked to receive traffic for a specific source.
+--    Ex: One receiver present in INCLUDE{S1}
+-- 3. rcIgmpRouterSrcListHostAddress is not zero, rcIgmpRouterSrcListMemberAddress is zero.
+--    This represent a source that needs to be blocked.
+-- 4. rcIgmpRouterSrcListHostAddres is zero  rcIgmpRouterSrcListMemberAddress is not zero.
+--    The source zero is used to track the members that are in exclude mode
+--    Ex: One receiver R1 in EXCLUDE(S1). Two entries are present in this table.
+--    4.1. rcIgmpRouterSrcListHostAddres = S1, rcIgmpRouterSrcListMemberAddress = 0 - blocked source.
+--    4.2. rcIgmpRouterSrcListHostAddres = 0, rcIgmpRouterSrcListMemberAddress = R1 - tracked member in exlcude mode.
+--
+-- If the explicit host tracking is not enabled the only the last reporter for a specific source or group
+-- will be present in this table.
+--
+
+rcIgmpRouterSrcListTable OBJECT-TYPE
+         SYNTAX      SEQUENCE OF RcIgmpRouterSrcListEntry
+         MAX-ACCESS  not-accessible
+         STATUS      current
+         DESCRIPTION "The (conceptual) table listing the Source List entries
+                      corresponding to each interface and multicast
+                      group pair on a Router."
+         ::= { rcIgmp 25 }
+
+
+rcIgmpRouterSrcListEntry OBJECT-TYPE
+         SYNTAX      RcIgmpRouterSrcListEntry
+         MAX-ACCESS  not-accessible
+         STATUS      current
+         DESCRIPTION "An entry (conceptual row) representing an
+                      Igmp Source."
+         INDEX       { rcIgmpRouterSrcListGroupAddress,
+                       rcIgmpRouterSrcListIfIndex,
+                       rcIgmpRouterSrcListInPort,
+                       rcIgmpRouterSrcListHostAddress,
+                       rcIgmpRouterSrcListMemberAddress
+                     }
+         ::= { rcIgmpRouterSrcListTable 1 }
+
+RcIgmpRouterSrcListEntry ::= SEQUENCE {
+         rcIgmpRouterSrcListGroupAddress   IpAddress,
+         rcIgmpRouterSrcListIfIndex        InterfaceIndex,
+         rcIgmpRouterSrcListInPort         INTEGER,
+         rcIgmpRouterSrcListHostAddress    IpAddress,
+         rcIgmpRouterSrcListMemberAddress  IpAddress,
+         rcIgmpRouterSrcListExpire         Integer32,
+         rcIgmpRouterSrcListMode           INTEGER,
+         rcIgmpRouterSrcListMemberExpire   Integer32
+}
+
+rcIgmpRouterSrcListGroupAddress OBJECT-TYPE
+         SYNTAX      IpAddress
+         MAX-ACCESS  not-accessible
+         STATUS      current
+         DESCRIPTION "The IP multicast group address for which this entry
+                      contains information."
+         ::= { rcIgmpRouterSrcListEntry 1 }
+
+rcIgmpRouterSrcListIfIndex OBJECT-TYPE
+         SYNTAX      InterfaceIndex
+         MAX-ACCESS  not-accessible
+         STATUS      current
+         DESCRIPTION "The interface for which this entry contains information
+                      for an IP multicast group address."
+         ::= { rcIgmpRouterSrcListEntry 2 }
+
+rcIgmpRouterSrcListInPort OBJECT-TYPE
+         SYNTAX      INTEGER (0..65535)
+         MAX-ACCESS  not-accessible
+         STATUS      current
+         DESCRIPTION "An unique value to identify a physical
+                     interface or a logical interface (VLAN),
+                     which has received Group reports for this
+                     source."
+         ::= { rcIgmpRouterSrcListEntry 3 }
+
+rcIgmpRouterSrcListHostAddress OBJECT-TYPE
+         SYNTAX      IpAddress
+         MAX-ACCESS  not-accessible
+         STATUS      current
+         DESCRIPTION "The host address to which this entry corresponds."
+         ::= { rcIgmpRouterSrcListEntry 4 }
+
+rcIgmpRouterSrcListMemberAddress OBJECT-TYPE
+         SYNTAX      IpAddress
+         MAX-ACCESS  not-accessible
+         STATUS      current
+         DESCRIPTION "IP Address of a member that has sent source specific
+                      report wishing to join this source."
+         ::= { rcIgmpRouterSrcListEntry 5 }
+
+rcIgmpRouterSrcListExpire OBJECT-TYPE
+         SYNTAX      Integer32
+         MAX-ACCESS  read-only
+         STATUS      current
+         DESCRIPTION "This value indicates the relevance of the SrcList entry,
+                      whereby a non-zero value indicates this is an
+                      INCLUDE state value, and a zero value indicates
+                      this to be an EXCLUDE state value."
+         ::= { rcIgmpRouterSrcListEntry 6 }
+
+rcIgmpRouterSrcListMode OBJECT-TYPE
+         SYNTAX      INTEGER {
+                              include (1),
+                              exclude (2)
+                     }
+         MAX-ACCESS  read-only
+         STATUS      current
+         DESCRIPTION "The current member state, applicable to IGMPv3-compatible
+                      nodes. The value indicates whether the state is INCLUDE or                      EXCLUDE."
+         ::= { rcIgmpRouterSrcListEntry 7 }
+
+rcIgmpRouterSrcListMemberExpire OBJECT-TYPE
+         SYNTAX      Integer32
+         MAX-ACCESS  read-only
+         STATUS      current
+         DESCRIPTION "This value indicates the time until the member for
+                      this source will expire"
+         ::= { rcIgmpRouterSrcListEntry 8 }
+
+
+rcIgmpNewSsmTable OBJECT-TYPE
+        SYNTAX        SEQUENCE OF RcIgmpNewSsmEntry
+        MAX-ACCESS    not-accessible
+        STATUS        current
+        DESCRIPTION   ""
+        ::= { rcIgmp 26 }
+
+rcIgmpNewSsmEntry OBJECT-TYPE
+        SYNTAX        RcIgmpNewSsmEntry
+        MAX-ACCESS    not-accessible
+        STATUS        current
+        DESCRIPTION   ""
+        INDEX         { rcIgmpNewSsmIpMulticastGrp,
+                        rcIgmpNewSsmIpSource }
+        ::= { rcIgmpNewSsmTable 1 }
+
+RcIgmpNewSsmEntry ::=
+        SEQUENCE {
+                rcIgmpNewSsmIpMulticastGrp  IpAddress,
+                rcIgmpNewSsmIpSource        IpAddress,
+                rcIgmpNewSsmLearningMode    INTEGER,
+                rcIgmpNewSsmActivity        TruthValue,
+                rcIgmpNewSsmAdminState      EnableValue,
+                rcIgmpNewSsmRowStatus       RowStatus
+        }
+
+rcIgmpNewSsmIpMulticastGrp OBJECT-TYPE
+        SYNTAX        IpAddress
+        MAX-ACCESS    not-accessible
+        STATUS        current
+        DESCRIPTION   "This is the IP multicast group address 
+                       that has default range of 232/8. 
+                       This parameter should be configured by the user."
+       ::= { rcIgmpNewSsmEntry 1 }
+
+rcIgmpNewSsmIpSource OBJECT-TYPE
+        SYNTAX        IpAddress
+        MAX-ACCESS    not-accessible
+        STATUS        current
+        DESCRIPTION   "This is the Source's IP address that will 
+                       be sending traffic to the group source. 
+                       This parameter should be configured by the user."
+       ::= { rcIgmpNewSsmEntry 2 }
+
+rcIgmpNewSsmLearningMode OBJECT-TYPE
+        SYNTAX        INTEGER {
+                         dynamic(1),    
+                         static(2)     
+                      }
+        MAX-ACCESS    read-only
+        STATUS        current
+        DESCRIPTION   "This is a read only field that provides 
+                       information if the entry is statically 
+                       configured entry (Static) or a dynamically 
+                       learned entry from IGMPv3 (Dynamic). Note 
+                       that Dynamic may not be used in the first 
+                       step of the implementation."
+        ::= { rcIgmpNewSsmEntry 3 }
+
+rcIgmpNewSsmActivity OBJECT-TYPE
+        SYNTAX        TruthValue
+        MAX-ACCESS    read-only
+        STATUS        current
+        DESCRIPTION   "This is a read only field.  It provides 
+                       the activity on the corresponding (S,G). If 
+                       the source is active and traffic is flowing 
+                       to the switch, this field value should be 
+                       Active, otherwise it should say non-active. 
+                       This information is useful in knowing if the 
+                       group has an active source or not when the group
+                      is joined by a member on the switch."
+        ::= { rcIgmpNewSsmEntry 4 }
+
+rcIgmpNewSsmAdminState OBJECT-TYPE
+        SYNTAX        EnableValue
+        MAX-ACCESS    read-create
+        STATUS        current
+        DESCRIPTION   "The admin state provides information on 
+                       whether the entry is to be used or not. If the 
+                       value of this field is Enabled (default), then 
+                       the entry can be used. If the state is Disabled,
+                       then the entry will not be used, but will be 
+                       saved for future use."
+        ::= { rcIgmpNewSsmEntry 5 }
+
+rcIgmpNewSsmRowStatus OBJECT-TYPE
+        SYNTAX        RowStatus
+        MAX-ACCESS    read-create
+        STATUS        current
+        DESCRIPTION   "Used to create/delete entries."
+        ::= { rcIgmpNewSsmEntry 6 }
+
+-- IGMP Stream
+
+rcIgmpStreamTable OBJECT-TYPE
+        SYNTAX        SEQUENCE OF RcIgmpStreamEntry
+        MAX-ACCESS    not-accessible
+        STATUS        current
+        DESCRIPTION   "This table contains information related to multicast streams
+                      received by the switch."
+        ::= { rcIgmp 27 }
+
+rcIgmpStreamEntry OBJECT-TYPE
+        SYNTAX        RcIgmpStreamEntry
+        MAX-ACCESS    not-accessible
+        STATUS        current
+        DESCRIPTION   ""
+        INDEX         { rcIgmpStreamIfIndex, rcIgmpStreamGrpAddr,
+                        rcIgmpStreamSourceAddr }
+        ::= { rcIgmpStreamTable 1 }
+
+RcIgmpStreamEntry ::=
+        SEQUENCE {
+                rcIgmpStreamIfIndex     InterfaceIndex,
+                rcIgmpStreamGrpAddr     IpAddress,
+                rcIgmpStreamSourceAddr  IpAddress,
+                rcIgmpStreamExpiryTime  Integer32,
+                rcIgmpStreamPort        Integer32,
+                rcIgmpStreamState       INTEGER
+        }
+
+rcIgmpStreamIfIndex OBJECT-TYPE
+        SYNTAX        InterfaceIndex
+        MAX-ACCESS    read-only
+        STATUS        current
+        DESCRIPTION   "Interface index where the multicast trafic is received."
+        ::= { rcIgmpStreamEntry 1 }
+
+rcIgmpStreamGrpAddr OBJECT-TYPE
+        SYNTAX        IpAddress
+        MAX-ACCESS    read-only
+        STATUS        current
+        DESCRIPTION   "Destination IP address of the multicast stream."
+        ::= { rcIgmpStreamEntry 2 }
+
+rcIgmpStreamSourceAddr OBJECT-TYPE
+        SYNTAX        IpAddress
+        MAX-ACCESS    read-only
+        STATUS        current
+        DESCRIPTION   "Source IP address of the multicast stream."
+        ::= { rcIgmpStreamEntry 3 }
+
+rcIgmpStreamExpiryTime OBJECT-TYPE
+        SYNTAX        Integer32
+        UNITS         "seconds"
+        MAX-ACCESS    read-only
+        STATUS        current
+        DESCRIPTION   "Time interval left until the multicast stream expires."
+        ::= { rcIgmpStreamEntry 4 }
+
+rcIgmpStreamPort OBJECT-TYPE
+        SYNTAX        Integer32
+        MAX-ACCESS    read-only
+        STATUS        current
+        DESCRIPTION   "Port where the multicast stream was received."
+        ::= { rcIgmpStreamEntry 5 }
+
+rcIgmpStreamState OBJECT-TYPE
+        SYNTAX        INTEGER {
+                          dropped(1),
+                          learned(2),
+                          learnedRemoteSpb(3),
+                          learnedLocalAndRemoteSpb(4),
+                          routed(5),
+                          learnedAndRouted(6)
+                      }
+        MAX-ACCESS    read-only
+        STATUS        current
+        DESCRIPTION   "Indicates the state of the multicast stream
+                       dropped - Received stream is dropped. No request for this traffic was received.
+                       learned - Received stream is learned and forwarded locally (same network). A join has been received in the same Vlan.
+                       learnedRemoteSpb - Received stream is learned and forwarded through the NNI (cloud). 
+                       learnedLocalAndRemoteSpb - Received stream is learned and forwarded through the NNI (cloud) but also locally.
+                       routed - The stream will be routed to another Vlan according to PIM protocol.
+                       learnedAndRouted - The stream will be learned and routed to another Vlan according to PIM protocol."
+        ::= { rcIgmpStreamEntry 6 }
+
+-- IGMP Correct Sender
+
+rcIgmpSendersTable OBJECT-TYPE
+        SYNTAX        SEQUENCE OF RcIgmpSendersEntry
+        MAX-ACCESS    not-accessible
+        STATUS        current
+        DESCRIPTION   "This table obsoletes rcIgmpSenderTable"
+        ::= { rcIgmp 28 }
+
+rcIgmpSendersEntry OBJECT-TYPE
+        SYNTAX        RcIgmpSendersEntry
+        MAX-ACCESS    not-accessible
+        STATUS        current
+        DESCRIPTION   ""
+        INDEX         { rcIgmpSendersIfIndex, rcIgmpSendersGrpAddr,
+                        rcIgmpSendersMemberAddr }
+        ::= { rcIgmpSendersTable 1 }
+
+RcIgmpSendersEntry ::=
+        SEQUENCE {
+                rcIgmpSendersIfIndex     InterfaceIndex,
+                rcIgmpSendersGrpAddr     IpAddress,
+                rcIgmpSendersMemberAddr  IpAddress,
+                rcIgmpSendersAction      INTEGER,
+                rcIgmpSendersTPort       Integer32,
+                rcIgmpSendersState       INTEGER,
+                rcIgmpSendersL2Isid      Integer32
+        }
+
+rcIgmpSendersIfIndex OBJECT-TYPE
+        SYNTAX        InterfaceIndex
+        MAX-ACCESS    not-accessible
+        STATUS        current
+        DESCRIPTION   "ifindex - Uniquely identifies entries in the table"
+        ::= { rcIgmpSendersEntry 1 }
+
+rcIgmpSendersGrpAddr OBJECT-TYPE
+        SYNTAX        IpAddress
+        MAX-ACCESS    not-accessible
+        STATUS        current
+        DESCRIPTION   "Ip multicast address of a group"
+        ::= { rcIgmpSendersEntry 2 }
+
+rcIgmpSendersMemberAddr OBJECT-TYPE
+        SYNTAX        IpAddress
+        MAX-ACCESS    not-accessible
+        STATUS        current
+        DESCRIPTION   "ip address of a host."
+        ::= { rcIgmpSendersEntry 3 }
+
+rcIgmpSendersAction OBJECT-TYPE
+        SYNTAX        INTEGER {
+                          none(1),
+                          flushEntry(2),
+                          flushGrp(3)
+                      }
+        MAX-ACCESS    read-write
+        STATUS        current
+        DESCRIPTION   "none(1), flushEntry(2), flushGrp(3). 
+                        It describes the IGMP Sender action."
+        ::= { rcIgmpSendersEntry 4 }
+
+rcIgmpSendersTPort OBJECT-TYPE
+        SYNTAX        Integer32
+        MAX-ACCESS    read-only
+        STATUS        current
+        DESCRIPTION   "Igmp Sender Tport."
+        ::= { rcIgmpSendersEntry 5 }
+
+rcIgmpSendersState OBJECT-TYPE
+        SYNTAX        INTEGER {
+                          filtered(1),
+                          notfiltered(2)
+                      }
+        MAX-ACCESS    read-only
+        STATUS        current
+        DESCRIPTION   "Indicates if a sender exists because of an
+                       IGMP access filter or not."
+        ::= { rcIgmpSendersEntry 6 }
+
+rcIgmpSendersL2Isid OBJECT-TYPE
+        SYNTAX        Integer32 (0..16777215)
+        MAX-ACCESS    read-only
+        STATUS        current
+        DESCRIPTION   "L2 ISID of the cvlan"
+        ::= { rcIgmpSendersEntry 7 }
+
 END
+
 

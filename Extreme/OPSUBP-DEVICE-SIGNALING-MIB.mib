@@ -32,7 +32,7 @@ nnOPSQoSRootOID OBJECT-IDENTITY
 	::= { nnOPSMIBS 1 }  
 
 nnOpsUbpDeviceSignalingMIB MODULE-IDENTITY
-	LAST-UPDATED	"200306190000Z"
+	LAST-UPDATED	"201304120000Z"
 	ORGANIZATION	"Nortel Networks OPS group"
 	CONTACT-INFO
 	"Support ERC# 245
@@ -44,7 +44,10 @@ nnOpsUbpDeviceSignalingMIB MODULE-IDENTITY
                    China: (800) 810-5000
 	"
 	DESCRIPTION
-		"The MIB module."
+		"UBP notifications MIB"
+
+       REVISION "201304120000Z" -- 12 Apr 2013
+       DESCRIPTION "Version 02: Corrected module compliance"
 
 	::= { nnOPSQoSRootOID 3 }
 
@@ -257,7 +260,7 @@ nnOpsUbpDeviceSignalingMIBCompliance MODULE-COMPLIANCE
 	MODULE  -- this module
 	MANDATORY-GROUPS {
 		ubpNotifyObjectsGroup,
-		ubpNotificationsGroup
+		serverNotificationsGroup
 		}
 	::= { nnOpsUbpDeviceSignalingMIBCompliances 1 }
 

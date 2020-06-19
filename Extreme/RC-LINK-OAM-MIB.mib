@@ -11,7 +11,7 @@ IMPORTS
           FROM RAPID-CITY;
 
 rcLinkOamMib MODULE-IDENTITY
-       LAST-UPDATED 	"200902260000Z"
+       LAST-UPDATED 	"201310110000Z"
        ORGANIZATION 	"Nortel Networks"
        CONTACT-INFO 	"
 				 	Marty Lok
@@ -24,6 +24,9 @@ rcLinkOamMib MODULE-IDENTITY
                 	 E-mail:	malok@nortel.com 
 			"
        DESCRIPTION 	"Enterprise MIB for the Accelar product family."
+
+       REVISION "201310110000Z" -- 11 October 2013
+       DESCRIPTION  "Version 2: Corrected syntax definitions."
  
        REVISION "200902260000Z" -- 26 Feb 2009
        DESCRIPTION  "Version 1: Added rcLinkOam (1),
@@ -514,7 +517,7 @@ RcLinkOamLoopbackEntry ::=
 	  rcLinkOamLoopbackFrameCnt        Integer32,
 	  rcLinkOamLoopbackFrameSize       Integer32,
 	  rcLinkOamLoopbackResultOk        TruthValue,
-	  rcLinkOamLoopbackResult          DisplayString,
+	  rcLinkOamLoopbackResult          OCTET STRING,
 	  rcLinkOamLoopbackState           INTEGER,
 	  rcLinkOamLoopbackStatsRx      Counter32,
 	  rcLinkOamLoopbackStatsTx	   Counter32
@@ -643,7 +646,7 @@ rcLinkOamLoopbackResultOk OBJECT-TYPE
 	::= { rcLinkOamLoopbackEntry 6}
 
 rcLinkOamLoopbackResult OBJECT-TYPE
-	SYNTAX 		DisplayString(SIZE (1..511))
+	SYNTAX 		OCTET STRING(SIZE (1..511))
 	MAX-ACCESS	read-only
 	STATUS	        current 	
 	DESCRIPTION	"Display the Loopback result."

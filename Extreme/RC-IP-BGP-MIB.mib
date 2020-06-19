@@ -15,7 +15,7 @@ IMPORTS
 
 
 rcIpBgpMib MODULE-IDENTITY
-       LAST-UPDATED     "200808280000Z"
+       LAST-UPDATED     "201705220000Z"
        ORGANIZATION     "Bay Networks, Rapid-City Group"
        CONTACT-INFO     "Yu-Ten Lee
                          Postal:        Nortel Networks, Inc.
@@ -26,6 +26,51 @@ rcIpBgpMib MODULE-IDENTITY
                          Fax:           408-495-6680
                          E-mail:        ylee@baynetworks.com"
        DESCRIPTION      "Enterprise MIB for the Accelar product family."
+
+       REVISION "201705220000Z" -- 22 May. 2017
+       DESCRIPTION "Version 25: Added rcIpBgpPeerGroupAlwaysSendWithdraw"
+	   
+       REVISION "201601120000Z" -- 12 Jan. 2016
+       DESCRIPTION "Version 24: rcIpBgpGeneralGroupIdentifier
+	                        request by Naveen"
+			    
+       REVISION "201510230000Z" -- 23 Oct. 2015
+       DESCRIPTION "Version 23: Changed rcIpBgpPeerGroupMaxPrefixIPv6
+	                        to rcIpBgpPeerGroupIpv6MaxPrefix
+	                        request by Naveen"
+	   	   
+       REVISION "201510120000Z" -- 12 Oct. 2015
+       DESCRIPTION "Version 22: added rcIpBgpPeerGroupMaxPrefixIPv6
+	                        request by Naveen"
+	   
+       REVISION "201501160000Z" -- 16 January 2015
+       DESCRIPTION "Version 21: added  rcIpBgpConfederationASIdentifier.
+	   			Requested by Amit Choudhary, and submit went
+				into VSP 4.2 Avalance Release. (Prem)"
+
+       REVISION "201405150000Z" -- 14 May 2011
+       DESCRIPTION "Version 20: added  rcIpBgpPeerGroupDebugMask"
+
+       REVISION "201106080000Z" -- 08 June 2011
+       DESCRIPTION "Version 19: Changed SYNTAX of rcIpBgpPeerGroupBfdEnable
+                                 to TruthValue."
+
+       REVISION "201106020000Z" -- 02 June 2011
+       DESCRIPTION "Version 18: Added rcIpBgpPeerGroupBfdEnable."
+
+       REVISION "201101060000Z" -- 06 January 2011
+       DESCRIPTION "Version 17: Added rcIpBgpGeneralGroupNewLocalAs, 
+	            rcIpBgpGeneralGroup4ByteAs and rcIpBgpGeneralGroupAsDot."
+
+       REVISION "200909150000Z" -- 15 September 2009
+       DESCRIPTION "Version 16: Updated rcIpBgpGeneralGroupLocalAs,rcIpBgpGeneralGroupDefaultMetric,rcIpBgpGeneralGroupDefaultLocalPreference
+				rcIpBgpGeneralGroupMaxEqualcostRoutes, rcIpBgpGeneralGroupDebugMask
+				rcIpBgpAggregateTableSize
+				rcIpBgpAggregateTable
+				rcIpBgpNetworkTableSize
+				rcIpBgpNetworkTable
+				rcIpBgpPeerTableSize
+				rcIpBgpPeerTable "
 
        REVISION "200808280000Z" -- 28 Aug 2008
        DESCRIPTION "Version 15: Added MIB objects for BGP+."
@@ -44,7 +89,7 @@ rcIpBgpMib MODULE-IDENTITY
        DESCRIPTION "Version 11: Updated rcIpBgpPeerRouteRefresh."
 
        REVISION "200704300000Z" -- 30 Apr 2007
-       DESCRIPTION "Version 10: Updated rcIpBgpGeneralGroupRouteRefresh, rcIpBgpGeneralGroupRoutePolicyIn, 		rcIpBgpGeneralGroupRoutePolicyOut, rcIpBgpPeerIpvpnLiteCap, rcIpBgpPeerSooAsNumber, 
+       DESCRIPTION "Version 10: Updated rcIpBgpGeneralGroupRouteRefresh, rcIpBgpGeneralGroupRoutePolicyIn,rcIpBgpGeneralGroupRoutePolicyOut, rcIpBgpPeerIpvpnLiteCap, rcIpBgpPeerSooAsNumber, 
 		rcIpBgpPeerSooAssignedNum, rcIpBgpPeerVpnv4Address, rcIpBgpPeerGroupIpvpnLiteCap, 
 		rcIpBgpPeerGroupSooAsNumber, rcIpBgpPeerGroupSooAssignedNum, rcIpBgpPeerGroupRouteRefresh.
 		Added rcIpBgpPeerAsOverride, rcIpBgpPeerAllowAsIn, rcIpBgpPeerGroupAsOverride, 
@@ -82,7 +127,7 @@ rcIpBgpMib MODULE-IDENTITY
 rcIpBgpGeneralGroup OBJECT IDENTIFIER ::= { rcIpBgp 1 }
 
 rcIpBgpGeneralGroupLocalAs OBJECT-TYPE
-        SYNTAX        INTEGER (0..65535)
+        SYNTAX        Integer32 (0..65535)
         MAX-ACCESS    read-write
         STATUS        current
         DESCRIPTION   "Local Autonomous system number"
@@ -97,7 +142,7 @@ rcIpBgpGeneralGroupAdminStatus OBJECT-TYPE
         ::= { rcIpBgpGeneralGroup 2 }
 
 rcIpBgpGeneralGroupDefaultMetric OBJECT-TYPE
-        SYNTAX        INTEGER (-1..2147483647)
+        SYNTAX        Integer32 (-1..2147483647)
         MAX-ACCESS    read-write
         STATUS        current
         DESCRIPTION   "The default-metric is used in conjunction with
@@ -107,7 +152,7 @@ rcIpBgpGeneralGroupDefaultMetric OBJECT-TYPE
         ::= { rcIpBgpGeneralGroup 3 }
 
 rcIpBgpGeneralGroupDefaultLocalPreference OBJECT-TYPE
-        SYNTAX        INTEGER (0..2147483647)
+        SYNTAX        Integer32 (0..2147483647)
         MAX-ACCESS    read-write
         STATUS        current
         DESCRIPTION   " Default local preference attribute value to be used "
@@ -193,7 +238,7 @@ rcIpBgpGeneralGroupSynchronization OBJECT-TYPE
         ::= { rcIpBgpGeneralGroup 12 }
 
 rcIpBgpGeneralGroupMaxEqualcostRoutes OBJECT-TYPE
-        SYNTAX        INTEGER (1..8)
+        SYNTAX        Integer32 (1..8)
         MAX-ACCESS    read-write
         STATUS        current
         DESCRIPTION   "Sets the number of maximum number of equal-cost routes
@@ -227,7 +272,7 @@ rcIpBgpGeneralGroupFlapDampEnable OBJECT-TYPE
         ::= { rcIpBgpGeneralGroup 16 }
 
 rcIpBgpGeneralGroupDebugMask OBJECT-TYPE
-        SYNTAX          INTEGER (0..511) 
+        SYNTAX          Integer32 (0..511) 
         MAX-ACCESS     read-write
         STATUS         current
         DESCRIPTION    " value is one of multiple (logiacally by 'OR' of
@@ -320,17 +365,45 @@ rcIpBgpGeneralGroupDefaultInformationOriginateIpv6 OBJECT-TYPE
         DEFVAL {false}
         ::= { rcIpBgpGeneralGroup 24 }
 
+rcIpBgpGeneralGroupNewLocalAs OBJECT-TYPE
+        SYNTAX        OCTET STRING(SIZE (0..4))
+        MAX-ACCESS    read-write
+        STATUS        current
+        DESCRIPTION   "Local Autonomous system number"
+        ::= { rcIpBgpGeneralGroup 25 }
+
+rcIpBgpGeneralGroup4ByteAs OBJECT-TYPE
+        SYNTAX        EnableValue
+        MAX-ACCESS    read-write
+        STATUS        current
+        DESCRIPTION   "4 Byte As number enable"
+        ::= { rcIpBgpGeneralGroup 26 }
+
+rcIpBgpGeneralGroupAsDot  OBJECT-TYPE
+        SYNTAX        EnableValue
+        MAX-ACCESS    read-write
+        STATUS        current
+        DESCRIPTION   "As number in Dot format"
+        ::= { rcIpBgpGeneralGroup 27 }
+
+rcIpBgpGeneralGroupIdentifier OBJECT-TYPE
+        SYNTAX         IpAddress
+        MAX-ACCESS     read-write
+        STATUS         current
+        DESCRIPTION    "The BGP Identifier of local system."
+        ::= { rcIpBgpGeneralGroup 28 }
+     
 rcIpBgpAggregateTableSize OBJECT-TYPE
         SYNTAX          Integer32
         MAX-ACCESS      read-only
-        STATUS          current
+        STATUS          deprecated   
         DESCRIPTION     "Size of Aggregate Table"
         ::= { rcIpBgp 2 }
 
 rcIpBgpAggregateTable OBJECT-TYPE
         SYNTAX          SEQUENCE OF RcIpBgpAggregateEntry
         MAX-ACCESS      not-accessible
-        STATUS          current
+        STATUS          deprecated
         DESCRIPTION     "To specify the list of aggregate prefixes to be
                          created  by the BGP routing process and the options
                          to be used while aggregating."
@@ -446,6 +519,15 @@ rcIpBgpConfederationPeers OBJECT-TYPE
                           second-byte-of-pair = ASNumber & 255;"
         ::= { rcIpBgpConfederationGroup 2 }
 
+rcIpBgpConfederationASIdentifier OBJECT-TYPE
+        SYNTAX        Unsigned32  (0..4294967295)
+        MAX-ACCESS    read-write
+        STATUS        current
+        DESCRIPTION   "Confederation AS identifier.
+	    	       This mib object is used to replace 
+		       rcIpBgpConfederationIdentifier."
+        ::= { rcIpBgpConfederationGroup 3 }
+
 
 rcIpBgpRouteReflectorGroup OBJECT IDENTIFIER ::= { rcIpBgp 5 }
 
@@ -484,14 +566,14 @@ rcIpBgpRouteReflectionOperState OBJECT-TYPE
 rcIpBgpNetworkTableSize OBJECT-TYPE
         SYNTAX        Integer32
         MAX-ACCESS    read-only
-        STATUS        current
+        STATUS        deprecated
         DESCRIPTION   "Network Prefix table size"
         ::= { rcIpBgp 6 }
 
 rcIpBgpNetworkTable OBJECT-TYPE
         SYNTAX          SEQUENCE OF RcIpBgpNetworkEntry
         MAX-ACCESS      not-accessible
-        STATUS          current
+        STATUS          deprecated
         DESCRIPTION     "The networks in this table are either static/directly
                          connected or learned routes. Bgp advertises these
                          network provided they are reachable and are in the IP
@@ -553,14 +635,14 @@ rcIpBgpNetworkMetric OBJECT-TYPE
 rcIpBgpPeerTableSize OBJECT-TYPE
         SYNTAX        Integer32
         MAX-ACCESS    read-only
-        STATUS        current
+        STATUS        deprecated
         DESCRIPTION   "BGP peer table size"
         ::= { rcIpBgp 8 }
 
 rcIpBgpPeerTable OBJECT-TYPE
         SYNTAX          SEQUENCE OF RcIpBgpPeerEntry
         MAX-ACCESS      not-accessible
-        STATUS          current
+        STATUS          deprecated
         DESCRIPTION     "IP BGP Peer table"
         ::= { rcIpBgp 9 }
 
@@ -963,7 +1045,7 @@ rcIpBgpPeerBfdEnable  OBJECT-TYPE
         SYNTAX	    EnableValue
         MAX-ACCESS  read-write
         STATUS	    current
-        DESCRIPTION "BFD Admin state flag"
+        DESCRIPTION "BFD Admin state flag."
         DEFVAL	    { disable }
         ::= { rcIpBgpPeerEntry 36 }
 	
@@ -1034,7 +1116,11 @@ RcIpBgpPeerGroupEntry ::=
                 rcIpBgpPeerGroupAfUpdateSourceInterface InetAddress,
                 rcIpBgpPeerGroupIpv6Cap                 EnableValue,
                 rcIpBgpPeerGroupIpv6RoutePolicyIn       DisplayString,
-                rcIpBgpPeerGroupIpv6RoutePolicyOut      DisplayString
+                rcIpBgpPeerGroupIpv6RoutePolicyOut      DisplayString,
+                rcIpBgpPeerGroupBfdEnable               TruthValue,
+		rcIpBgpPeerGroupDebugMask               INTEGER,
+	        rcIpBgpPeerGroupIpv6MaxPrefix           Integer32,
+		rcIpBgpPeerGroupAlwaysSendWithdraw     TruthValue
         }
 
 rcIpBgpPeerGroupEnable OBJECT-TYPE
@@ -1380,6 +1466,72 @@ rcIpBgpPeerGroupIpv6RoutePolicyOut OBJECT-TYPE
                        outgoing updates to this group of peers"
         ::= { rcIpBgpPeerGroupEntry 38 }
 
+rcIpBgpPeerGroupBfdEnable    OBJECT-TYPE
+        SYNTAX        TruthValue
+        MAX-ACCESS    read-create
+        STATUS        current
+        DESCRIPTION   "Bfd can be enabled or disabled for bgp peer group."
+        DEFVAL        { false }
+        ::= { rcIpBgpPeerGroupEntry  39}
+    
+rcIpBgpPeerGroupDebugMask OBJECT-TYPE
+        SYNTAX         INTEGER (0..511)
+        MAX-ACCESS     read-write
+        STATUS         current
+        DESCRIPTION    " value is one of multiple (logically by 'OR' of
+                         following value:
+                                 none (0),
+                                 error(1),
+                                 packet(2),
+                                 event(4),
+                                 trace(8),
+                                 warning(16),
+                                 state(32),
+                                 init(64),
+                                 filter(128),
+                                 update(256),
+                                 all(511)
+                        all(511): Enables all debugging messages.
+                        none(0): Disables all debugging messages.
+                        error(1): Enables disolay of debug error messages.
+                        packet(2): Enables display of debug packet messages.
+                        event(4): Enables display of debug event messages.
+                        trace(8): Enables display debug trace messages.
+                        warning(16): Enables display debug warning messages.
+                        state(32): Enables display of debug state transtion
+                               messages.
+                        init(64): Enables display of debug initialization
+                               messages.
+                        filter(128): Enables display of debug messages related
+                               to filtering.
+                        update(256): Enables display of debug messages related
+                               to sending and receiving updates."
+        DEFVAL          { 0 }
+        ::=  { rcIpBgpPeerGroupEntry 40 }
+    
+rcIpBgpPeerGroupIpv6MaxPrefix OBJECT-TYPE
+        SYNTAX        Integer32 (0..2147483647)
+        MAX-ACCESS    read-create
+        STATUS        current
+        DESCRIPTION   "Sets a limit on the number of IPv6 routes that will be
+                       accepted from this group of neighbors. A value of zero
+                       indicates no limit"
+        DEFVAL          {8000}
+        ::= { rcIpBgpPeerGroupEntry 41 }
+
+rcIpBgpPeerGroupAlwaysSendWithdraw    OBJECT-TYPE
+           SYNTAX        TruthValue
+           MAX-ACCESS    read-create
+           STATUS        current
+           DESCRIPTION   "Used to contol of sending withdraw messages to BGP
+                          peers. If it is set to disabled, withdraw messages
+                          won't be sent to the BGP peer if the route is not
+                          advertised already. This option is defaulted to
+                          enabled"
+           DEFVAL        { true }
+           ::= { rcIpBgpPeerGroupEntry  42}
+       
+    
 rcIpBgpRcvdDampenedPathAttrTableSize OBJECT-TYPE
         SYNTAX        Integer32
         MAX-ACCESS    read-only

@@ -14,7 +14,7 @@ IMPORTS
         FROM SYNOPTICS-ROOT-MIB;
 
 nnMultipleSpanningTreeMib MODULE-IDENTITY
-    LAST-UPDATED    "200604100000Z"
+    LAST-UPDATED    "201603240000Z"
     ORGANIZATION    "Nortel Networks"
     CONTACT-INFO    "Nortel Networks"
     DESCRIPTION
@@ -31,6 +31,24 @@ nnMultipleSpanningTreeMib MODULE-IDENTITY
          This Specification is supplied 'AS IS,' and Nortel Networks
          makes no warranty, either express or implied, as to the use,
          operation, condition, or performance of the Specification."
+     
+    REVISION "201603240000Z" -- 24 March 2016
+    DESCRIPTION "v007:  added nnMstCistPortRxTcBpduCount"
+	
+    REVISION "201509240000Z" -- 24 September 2015
+    DESCRIPTION "v006: Added nnMstBridgeMappedVlans,
+                             nnMstBridgeMappedVlansAction."
+
+    REVISION "201406240000Z" -- 25 June 2014
+    DESCRIPTION "v005: instanceUp, instanceDown notifications added to 
+                                      nnMstGenNotificationType object."
+
+    REVISION "200903250000Z" -- 25 March 2009
+    DESCRIPTION "v004: nnMstBridgeVlanMap access changed to read-write
+                                              for ERS8600 product ."
+
+    REVISION "200811050000Z" -- 05 Nov 2008
+    DESCRIPTION "v003: Added nnMstBridgeVlanMapTable "
 
     REVISION "200604100000Z" -- 10 Apr 2006
     DESCRIPTION "v002:  Expanded the range for nnMstMaxHopCount"
@@ -400,7 +418,9 @@ NnMstBridgeEntry ::=
       nnMstBridgeInstanceDownCount       Counter32,
       nnMstBridgeOldDesignatedRoot       BridgeId,
       nnMstBridgeEnabled                 TruthValue,
-      nnMstBridgeRowStatus               RowStatus
+      nnMstBridgeRowStatus               RowStatus,
+      nnMstBridgeMappedVlans             OCTET STRING,
+      nnMstBridgeMappedVlansAction       INTEGER
    }
 
 nnMstBridgeInstance OBJECT-TYPE
@@ -540,6 +560,32 @@ nnMstBridgeRowStatus OBJECT-TYPE
         "This object is used to control row creation/deletion."
    ::= { nnMstBridgeEntry 14 }
 
+nnMstBridgeMappedVlans OBJECT-TYPE
+    SYNTAX      OCTET STRING (SIZE (512))
+    MAX-ACCESS  read-write
+    STATUS      current
+    DESCRIPTION
+        "A list of VLANs that are mapped to the Spanning Tree Instance.
+         512*8 bits used to represent 4096 vlans. The 0th bit represents vlan 1,
+         1st bit represents vlan 2 and so forth. If vlan n is mapped to a particular
+         instance then the n-1 indexed bit is set."
+    DEFVAL      { ''H }
+    ::= { nnMstBridgeEntry 15 }
+
+nnMstBridgeMappedVlansAction OBJECT-TYPE
+    SYNTAX      INTEGER {
+                    add(1),
+                    remove(2),
+                    none(3)
+                }
+    MAX-ACCESS  read-write
+    STATUS      current
+    DESCRIPTION
+        "This object is used for adding or removing mapped VLANs associated with the Spanning Tree Instance.
+         nnMstBridgeMappedVlans objects specifies the VLAN map.
+         At retrieval, the value is always none(3)."
+    ::= { nnMstBridgeEntry 16 }
+
 -- -----------------------------------------------------------------
 --
 -- nnMstCistPortTable, contains per-port information that is common to
@@ -609,7 +655,8 @@ NnMstCistPortEntry ::=
        nnMstCistPortTopologyChangeSemState   INTEGER,
        nnMstCistPortHelloTime                Timeout,
        nnMstCistPortOperVersion              INTEGER,
-       nnMstCistPortEffectivePortState       TruthValue
+       nnMstCistPortEffectivePortState       TruthValue,
+       nnMstCistPortRxTcBpduCount            Counter32
 }
 
 nnMstCistPort OBJECT-TYPE
@@ -1079,6 +1126,13 @@ nnMstCistPortEffectivePortState OBJECT-TYPE
           other times."
       ::= { nnMstCistPortEntry 42 }
 
+nnMstCistPortRxTcBpduCount OBJECT-TYPE
+      SYNTAX      Counter32
+      MAX-ACCESS  read-only
+      STATUS      current
+      DESCRIPTION
+          "Number of TC BPDUs received on this port."
+      ::= { nnMstCistPortEntry 43 }
 
 -- -----------------------------------------------------------------
 --
@@ -1401,7 +1455,9 @@ nnMstGenNotificationType OBJECT-TYPE
        SYNTAX   INTEGER   {
                     none (0),
                     up (1),
-                    down (2)
+                    down (2),
+                    instanceUp(3),
+                    instanceDown(4)
                     }
        MAX-ACCESS  read-only
        STATUS  current
@@ -1409,7 +1465,9 @@ nnMstGenNotificationType OBJECT-TYPE
            "The general events like
            none - none of the below values
            up - protocol UP,
-           down - protocol DOWN"
+           down - protocol DOWN
+           instanceUp - MSTP instance enabled
+           instanceDown - MSTP instance disabled"
    ::= { nnMstNotificationControlScalars 2 }
 
 
@@ -1572,5 +1630,52 @@ nnMstRegionConfigChange NOTIFICATION-TYPE
           identifier changes."
    ::= { nnMstNotifications 6 }
 
+nnMstBridgeVlanMapTable OBJECT-TYPE
+   SYNTAX      SEQUENCE OF NnMstBridgeVlanMapEntry
+   MAX-ACCESS  not-accessible
+   STATUS      current
+   DESCRIPTION
+      "Table containing Mapped VlanList specific to Spanning
+       Tree Instance."
+   ::= { nnMstObjects 6 }
+
+nnMstBridgeVlanMapEntry OBJECT-TYPE
+   SYNTAX      NnMstBridgeVlanMapEntry
+   MAX-ACCESS  not-accessible
+   STATUS      current
+   DESCRIPTION
+      "Entry indicating the Bridge VlanMap Information."
+   INDEX { nnMstBridgeInstId }
+   ::= { nnMstBridgeVlanMapTable 1 }
+
+NnMstBridgeVlanMapEntry ::=
+   SEQUENCE {
+     nnMstBridgeInstId                Integer32,
+     nnMstBridgeVlanMap               OCTET STRING
+   }
+
+nnMstBridgeInstId OBJECT-TYPE
+   SYNTAX      Integer32 (1..63)
+   MAX-ACCESS  not-accessible
+   STATUS      current
+   DESCRIPTION
+      "Spanning Tree Instance to which the information belongs."
+   ::= { nnMstBridgeVlanMapEntry 1 }
+
+nnMstBridgeVlanMap OBJECT-TYPE
+   SYNTAX  OCTET STRING(SIZE(512))
+   MAX-ACCESS      read-write
+   STATUS          current
+   DESCRIPTION
+        "This gives the bitwise representation for the Vlans
+         Mapped for a particular instance. 512*8 bits used to
+         represent 4096 vlans. The 0th bit represents vlan 1,
+         1st bit represents vlan 2 and so forth. If vlan n is
+         mapped to a particular instance then the n-1 indexed
+         bit is set"
+   ::= { nnMstBridgeVlanMapEntry 2 }
+
+
 END
+
 

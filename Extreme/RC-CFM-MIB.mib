@@ -12,10 +12,12 @@ IMPORTS
     VlanIdOrNone
         FROM Q-BRIDGE-MIB
     rcCfm, EnableValue, CfmNameString
-        FROM RAPID-CITY;
+        FROM RAPID-CITY
+    InetAddressType, InetAddress
+        FROM INET-ADDRESS-MIB;
 
 rcCfmMib MODULE-IDENTITY
-       LAST-UPDATED     "200904100000Z"
+       LAST-UPDATED     "201312030000Z"
        ORGANIZATION     "Nortel Networks"
        CONTACT-INFO     "
                                         Mike Nguyen
@@ -24,6 +26,73 @@ rcCfmMib MODULE-IDENTITY
                                         Billerica, MA 01821 
                          E-mail:        minguyen@nortel.com"
        DESCRIPTION       "OE MIB for Connectivity Fault Management"
+
+       REVISION "201312030000Z" -- 03 Dec 2013
+       DESCRIPTION "Version 27: Added rcCfmGlobalsBmac and
+	                        rcCfmGlobalsCmac By VSP4K 3.1 stream"
+
+       REVISION "201310100000Z" -- 10 October 2013
+       DESCRIPTION "Version 26: Corrected syntax definitions.
+                    Added InetAddressType and InetAddress to IMPORTS."
+
+       REVISION "201206250000Z" -- 25 June 2012
+       DESCRIPTION "Version 25: Added rcCfmL2McastTraceReplyBMac and
+	   			rcCfmL2McastTraceReplyIsid to rcCfmL2McastTraceReplyTable."
+
+       REVISION "201205020000Z" -- 02 May 2012
+       DESCRIPTION "Version 24: Changed the description of 
+	   			rcCfmTransmitL2McastTraceVrfName 
+	   			and added rcCfmL2McastTraceReplyVrfName
+				to rcCfmL2McastTraceReplyTable in the 
+				middle of the table (this mib table has
+				not been part of any customer released 
+				stream, hence made this change) and adjusted
+				the OIDs of the objects that are defined 
+				after this mib object."
+
+       REVISION "201203210000Z" -- 21 Mar. 2012
+       DESCRIPTION "Version 23: Changed the enum value of 
+	   			rcCfmTransmitL2McastTraceServiceType
+				from cvlan to vlan and updated its 
+				description and rcCfmTransmitL2McastTraceServiceId.
+                                Changed the enum value of 
+	   			rcCfmL2McastTraceReplyServiceType
+				from cvlan to vlan and updated its 
+				description and rcCfmL2McastTraceReplyServiceId." 
+
+       REVISION "201109230000Z" -- 23 Sept. 2011
+       DESCRIPTION "Version 22: Added rcCfmTransmitL2McastTraceTable,
+                                rcCfmL2McastTraceReplyTable" 
+
+       REVISION "201105130000Z" -- 13 May 2011
+       DESCRIPTION "Version 21: Added rcCfmGlobalsSpbmAdminState,
+                                rcCfmGlobalsSpbmLevel,
+                                rcCfmGlobalsSpbmMepId,
+                                rcCfmGlobalsCmacAdminState,
+                                rcCfmGlobalsCmacLevel,
+                                rcCfmGlobalsCmacMepId,
+                                Changed description for
+                                   rcCfmTransmitLbmFrameSize,
+                                Updated rcCfmTransmitLbmSourceMode,
+                                   rcCfmTransmitLtmSourceMode,
+                                   rcCfmTransmitL2PingSourceMode,
+                                   rcCfmTransmitL2TraceSourceMode"
+
+       REVISION "201101140000Z" -- 14 January 2011
+       DESCRIPTION "Version 20: Added rcCfmTransmitLbmSourceMode,
+	                        rcCfmTransmitLtmSourceMode,
+				rcCfmLtrReplyTable,
+				rcCfmTransmitL2PingTable,
+				rcCfmTransmitL2TraceTable,
+				rcCfmL2TraceReplyTable,
+				rcCfmTransmitL2IpPingTable,
+				rcCfmL2IpPingReplyTable,
+				rcCfmTransmitL2IpTraceTable,
+				rcCfmL2IpTraceReplyTable.
+                                Modified the enumeration definition
+				for rcCfmTransmitLbmTestPattern.
+				Added ltmLeafNode(12) under the enum
+				definition for rcCfmTransmitLtmFlag"
 
        REVISION "200904100000Z" -- 10 Apr 2009
        DESCRIPTION "Version 19: Added rcCfmMaintenanceEndPointLabel,
@@ -1742,6 +1811,71 @@ rcCfmGlobalsPmLogEnable OBJECT-TYPE
         DEFVAL {disable}
         ::= { rcCfmGlobals 7 }
 
+rcCfmGlobalsSpbmAdminState OBJECT-TYPE
+        SYNTAX        EnableValue
+        MAX-ACCESS    read-write
+        STATUS        current
+        DESCRIPTION   "Enable/Disable global cfm support for SPBM VLANs"
+        DEFVAL        { disable }
+        ::= { rcCfmGlobals 8 }
+
+rcCfmGlobalsSpbmLevel OBJECT-TYPE
+        SYNTAX        Integer32 (0..7)
+        MAX-ACCESS    read-write
+        STATUS        current
+        DESCRIPTION   "Used to set the global cfm maintenance level for SPBM VLANs"
+        DEFVAL        { 4 }
+        ::= { rcCfmGlobals 9 }
+
+rcCfmGlobalsSpbmMepId OBJECT-TYPE
+        SYNTAX        Integer32 (1..8191)
+        MAX-ACCESS    read-write
+        STATUS        current
+        DESCRIPTION   "Set the global cfm Maintenance End Point ID value for SPBM VLANs"
+        DEFVAL        { 1 }
+        ::= { rcCfmGlobals 10 }
+
+rcCfmGlobalsCmacAdminState OBJECT-TYPE
+        SYNTAX        EnableValue
+        MAX-ACCESS    read-write
+        STATUS        current
+        DESCRIPTION   "Enable/Disable global cfm support for C-VLANs"
+        DEFVAL        { disable }
+        ::= { rcCfmGlobals 11 }
+
+ 
+rcCfmGlobalsCmacLevel OBJECT-TYPE
+        SYNTAX        Integer32 (0..7)
+        MAX-ACCESS    read-write
+        STATUS        current
+        DESCRIPTION   "Used to set the global cfm maintenance level for C-VLANs"
+        DEFVAL        { 4 }
+        ::= { rcCfmGlobals 12 }
+
+ 
+rcCfmGlobalsCmacMepId OBJECT-TYPE
+        SYNTAX        Integer32 (1..8191)
+        MAX-ACCESS    read-write
+        STATUS        current
+        DESCRIPTION   "Set the global cfm Maintenance End Point ID value for C-VLANs"
+        DEFVAL        { 1 }
+        ::= { rcCfmGlobals 13 }
+    
+rcCfmGlobalsBmac     OBJECT-TYPE
+        SYNTAX          MacAddress
+        MAX-ACCESS      read-only
+        STATUS          current
+        DESCRIPTION     "The Bmac address of the node"
+        ::= { rcCfmGlobals 14 }
+        
+rcCfmGlobalsCmac     OBJECT-TYPE
+        SYNTAX          MacAddress
+        MAX-ACCESS      read-only
+        STATUS          current
+        DESCRIPTION     "The Cmac address of the node "
+        ::= { rcCfmGlobals 15 }
+
+    
 -- Remote Maintenance EndPoint Table
 
 rcCfmRemoteMepConfigTable OBJECT-TYPE
@@ -2339,19 +2473,19 @@ RcCfmTransmitLbmEntry ::=
 		rcCfmTransmitLbmDestMepId		Integer32,
 		rcCfmTransmitLbmDestIsMepId		TruthValue,
 		rcCfmTransmitLbmMessages		Integer32,
-
 		rcCfmTransmitLbmVlanPriority		Integer32,
 		rcCfmTransmitLbmVlanDropEnable		TruthValue,
 		rcCfmTransmitLbmSeqNumber		Integer32,
 		rcCfmTransmitLbmResultOk		TruthValue,
 		rcCfmTransmitLbmStatus			INTEGER,
-		rcCfmTransmitLbmResult                  DisplayString,
+		rcCfmTransmitLbmResult                  OCTET STRING,
                 rcCfmTransmitLbmMode                    INTEGER,
                 rcCfmTransmitLbmTimeoutInt              Integer32,
                 rcCfmTransmitLbmInterFrameInt           Integer32,
                 rcCfmTransmitLbmTestPattern             INTEGER,
 		rcCfmTransmitLbmDataSize	        Integer32,
-                                        rcCfmTransmitLbmFrameSize           Integer32
+		rcCfmTransmitLbmFrameSize           	Integer32,
+	        rcCfmTransmitLbmSourceMode              INTEGER
 	}
 
 rcCfmTransmitLbmDomainIndex OBJECT-TYPE
@@ -2426,14 +2560,6 @@ rcCfmTransmitLbmMessages  OBJECT-TYPE
 	DEFVAL {1}
 	::= { rcCfmTransmitLbmEntry 9}
 
-
-
-
-
-
-
-
-
 rcCfmTransmitLbmVlanPriority OBJECT-TYPE
 	SYNTAX  	Integer32(0..7)
 	MAX-ACCESS	read-write
@@ -2495,7 +2621,7 @@ rcCfmTransmitLbmStatus 	OBJECT-TYPE
 	::= { rcCfmTransmitLbmEntry 15}
 
 rcCfmTransmitLbmResult  OBJECT-TYPE
-	SYNTAX 		DisplayString(SIZE (1..799))
+	SYNTAX 		OCTET STRING (SIZE (1..799))
 	MAX-ACCESS	read-only
 	STATUS		current
 	DESCRIPTION	"Display the LBM result."
@@ -2543,10 +2669,10 @@ rcCfmTransmitLbmInterFrameInt  OBJECT-TYPE
 
 rcCfmTransmitLbmTestPattern OBJECT-TYPE
         SYNTAX          INTEGER {
-                               allZero(0),
-                               allZeroCrc(1),
-                               pseudoRandomBitSequence(2),
-                               pseudoRandomBitSequenceCrc(3)
+                               allZero(1),
+                               allZeroCrc(2),
+                               pseudoRandomBitSequence(3),
+                               pseudoRandomBitSequenceCrc(4)
                         }
         MAX-ACCESS      read-write
         STATUS          current
@@ -2576,11 +2702,23 @@ rcCfmTransmitLbmFrameSize  OBJECT-TYPE
 	SYNTAX  	Integer32(0..9600)
 	MAX-ACCESS	read-write
 	STATUS		current
-	DESCRIPTION	"If the frame size (64-500 for R-Mod and 64-9600 for RC-Mod)is specified 
-                                                              then the data size shall be internally calculated and the calculated data size
-                                                              shall be included in the data TLV."
+	DESCRIPTION	"If the frame size is specified then the data size
+                         shall be internally calculated and the calculated
+                         data size shall be included in the data TLV."
 	DEFVAL {0}
 	::= { rcCfmTransmitLbmEntry 22}
+
+rcCfmTransmitLbmSourceMode  OBJECT-TYPE
+        SYNTAX        INTEGER {
+			      nodal(1),
+			      smltVirtual(2),
+                              noVlanMac(3)             
+                      }
+        MAX-ACCESS      read-write
+        STATUS          current
+        DESCRIPTION     "Source modes of the transmit loopback service. "
+        DEFVAL {nodal}
+        ::= { rcCfmTransmitLbmEntry 23}
 
 -- The Transmit Linktrace Table
 
@@ -2614,8 +2752,9 @@ RcCfmTransmitLtmEntry ::=
 		rcCfmTransmitLtmSeqNumber		Integer32,
 		rcCfmTransmitLtmResultOk		TruthValue,
 		rcCfmTransmitLtmStatus			INTEGER,
-		rcCfmTransmitLtmResult                  DisplayString,
-		rcCfmTransmitLtmFlag                    INTEGER
+		rcCfmTransmitLtmResult                  OCTET STRING,
+		rcCfmTransmitLtmFlag                    INTEGER,
+		rcCfmTransmitLtmSourceMode              INTEGER
 	}
 
 rcCfmTransmitLtmDomainIndex OBJECT-TYPE
@@ -2751,7 +2890,7 @@ rcCfmTransmitLtmStatus 	OBJECT-TYPE
 	::= { rcCfmTransmitLtmEntry 13}
 
 rcCfmTransmitLtmResult  OBJECT-TYPE
-	SYNTAX 		DisplayString(SIZE (1..1023))
+	SYNTAX 		OCTET STRING(SIZE (1..1023))
 	MAX-ACCESS	read-only
 	STATUS		obsolete
 	DESCRIPTION	"Display the LTM result."
@@ -2769,7 +2908,8 @@ rcCfmTransmitLtmFlag    OBJECT-TYPE
                                 ltmToOwnMepMac(8),
                                 epDisabled(9),
                                 trunkDisabled(10),
-                                ltmComplete(11)  
+                                ltmComplete(11),
+				ltmLeafNode(12) 
 			}
 	MAX-ACCESS	read-only
 	STATUS	        current 	
@@ -2785,8 +2925,21 @@ rcCfmTransmitLtmFlag    OBJECT-TYPE
                          8 - Linktrace to own Mep MAC is not sent
                          9 - Endpoint must be enabled in order to perform LTM
                          10 - Pbt-trunk must be enabled in order to perform LTM
-                         11 - LTM completed"
+                         11 - LTM completed
+			 12 - LTM leaf node"
 	::= { rcCfmTransmitLtmEntry 15}
+
+rcCfmTransmitLtmSourceMode  OBJECT-TYPE
+        SYNTAX        INTEGER {
+			      nodal(1),
+			      smltVirtual(2),
+                              noVlanMac(3)             
+                      }
+        MAX-ACCESS      read-write
+        STATUS          current
+        DESCRIPTION     "Source modes of the transmit linktrace service. "
+        DEFVAL {nodal}
+        ::= {rcCfmTransmitLtmEntry 16 }
 
  rcCfmPbtTrunkStatsTable OBJECT-TYPE
 	SYNTAX        SEQUENCE OF RcCfmPbtTrunkStatsEntry
@@ -5504,6 +5657,1844 @@ rcCfmLtrEgressPortId OBJECT-TYPE
                 rcCfmLtrEgress object contains the value egrNoTlv(5), then 
                 the contents of this object are meaningless."
         ::= { rcCfmLtrEntry 22}
+
+rcCfmLtrReplyTable OBJECT-TYPE
+        SYNTAX          SEQUENCE OF RcCfmLtrReplyEntry
+        MAX-ACCESS      not-accessible
+        STATUS          current 
+        DESCRIPTION     
+                "This table contains a list of Linktrace replies received 
+                by a specific MEP in response to a linktrace message."
+        ::= { rcCfm 33}
+
+rcCfmLtrReplyEntry OBJECT-TYPE
+        SYNTAX          RcCfmLtrReplyEntry
+        MAX-ACCESS      not-accessible
+        STATUS          current
+        DESCRIPTION     "The Linktrace Reply table entry."
+        INDEX           {rcCfmLtrReplyDomainIndex, 
+                         rcCfmLtrReplyAssociationIndex,
+                         rcCfmLtrReplyMepId, 
+                         rcCfmLtrReplySeqNumber, 
+                         rcCfmLtrReplyHop,
+                         rcCfmLtrReplyReceiveOrder}
+        ::= { rcCfmLtrReplyTable 1}
+    
+RcCfmLtrReplyEntry ::=
+        SEQUENCE {
+                rcCfmLtrReplyDomainIndex          Integer32,
+                rcCfmLtrReplyAssociationIndex     Integer32,
+                rcCfmLtrReplyMepId                Integer32,
+                rcCfmLtrReplySeqNumber            Integer32,
+                rcCfmLtrReplyHop                  Integer32,
+                rcCfmLtrReplyReceiveOrder         Integer32,
+                rcCfmLtrReplyTtl                  Integer32,
+                rcCfmLtrReplyDomainName           DisplayString,
+                rcCfmLtrReplyAssociationName      DisplayString,
+                rcCfmLtrReplyForwarded            TruthValue,
+                rcCfmLtrReplyTerminalMep          TruthValue,
+                rcCfmLtrReplyLastEgressIdentifier OCTET STRING,
+                rcCfmLtrReplyNextEgressIdentifier OCTET STRING,
+                rcCfmLtrReplyRelayAction          CfmRelayActionFieldValue,
+                rcCfmLtrReplySrcMac               MacAddress,
+                rcCfmLtrReplyIngressAction        CfmIngressActionFieldValue,
+                rcCfmLtrReplyIngressMac           MacAddress,
+                rcCfmLtrReplyIngressPortIdSubtype LldpPortIdSubtype,
+                rcCfmLtrReplyIngressPortId        LldpPortId,
+                rcCfmLtrReplyEgressAction         CfmEgressActionFieldValue,
+                rcCfmLtrReplyEgressMac            MacAddress, 
+                rcCfmLtrReplyEgressPortIdSubtype  LldpPortIdSubtype,
+                rcCfmLtrReplyEgressPortId         LldpPortId
+             }
+rcCfmLtrReplyDomainIndex OBJECT-TYPE
+        SYNTAX          Integer32 (1..2147483647)
+        MAX-ACCESS      not-accessible
+        STATUS          current
+        DESCRIPTION     "Maintenance Domain Index"
+        ::= { rcCfmLtrReplyEntry 1}
+
+rcCfmLtrReplyAssociationIndex OBJECT-TYPE
+        SYNTAX          Integer32 (1..2147483647) 
+        MAX-ACCESS      not-accessible
+        STATUS          current
+        DESCRIPTION     "Maintenance Association Index"
+        ::= { rcCfmLtrReplyEntry 2}
+    
+rcCfmLtrReplyMepId OBJECT-TYPE
+        SYNTAX          Integer32 (1..8191)
+        MAX-ACCESS      not-accessible
+        STATUS          current
+        DESCRIPTION     "Maintenance EndPoint ID"
+        ::= { rcCfmLtrReplyEntry 3}
+
+rcCfmLtrReplySeqNumber OBJECT-TYPE
+        SYNTAX          Integer32 (0..2147483647)  
+        MAX-ACCESS      not-accessible
+        STATUS          current
+        DESCRIPTION     
+                "The transaction identifier/sequence number returned by a 
+                previous transmit linktrace message command, indicating which 
+                LTM's response is going to be returned."
+        DEFVAL {0}
+        ::= { rcCfmLtrReplyEntry 4}
+
+rcCfmLtrReplyHop     OBJECT-TYPE
+        SYNTAX          Integer32 (0..255)
+        MAX-ACCESS      not-accessible
+        STATUS          current
+        DESCRIPTION     "The number of hops away from LTM initiator"
+        ::= { rcCfmLtrReplyEntry 5}
+
+rcCfmLtrReplyReceiveOrder OBJECT-TYPE
+        SYNTAX          Integer32 (1..2147483647)
+        MAX-ACCESS      not-accessible
+        STATUS          current
+        DESCRIPTION     
+                "An index to distinguish among multiple LTRs with the same 
+                LTR Transaction Identifier field  value. This value is 
+                assigned sequentially from 1, in the order that the Linktrace 
+                Initiator received the LTRs."
+        ::= { rcCfmLtrReplyEntry 6}
+
+rcCfmLtrReplyTtl     OBJECT-TYPE
+        SYNTAX          Integer32 (0..255)
+        MAX-ACCESS      read-only
+        STATUS          current
+        DESCRIPTION     "Ttl field value for a returned LTR."
+        ::= { rcCfmLtrReplyEntry 7}
+
+rcCfmLtrReplyDomainName OBJECT-TYPE
+        SYNTAX          DisplayString(SIZE(1..22))
+        MAX-ACCESS      read-only
+        STATUS          current
+        DESCRIPTION     "Maintenance Domain Name"
+        ::= { rcCfmLtrReplyEntry 8}
+
+rcCfmLtrReplyAssociationName OBJECT-TYPE
+        SYNTAX          DisplayString(SIZE(1..22))
+        MAX-ACCESS      read-only
+        STATUS          current
+        DESCRIPTION     "Maintenance Association Name"
+        ::= { rcCfmLtrReplyEntry 9}
+
+rcCfmLtrReplyForwarded OBJECT-TYPE
+        SYNTAX          TruthValue
+        MAX-ACCESS      read-only
+        STATUS          current
+        DESCRIPTION     
+                "Indicates if a LTM was forwarded by the responding MP, as 
+                returned in the 'FwdYes' flag of the flags field."
+        ::= { rcCfmLtrReplyEntry 10}
+
+rcCfmLtrReplyTerminalMep OBJECT-TYPE
+        SYNTAX          TruthValue
+        MAX-ACCESS      read-only
+        STATUS          current
+        DESCRIPTION     
+                "A boolean value stating whether the forwarded LTM reached 
+                a MEP enclosing its MA, as returned in the Terminal MEP flag 
+                of the Flags field."
+        ::= { rcCfmLtrReplyEntry 11}
+
+rcCfmLtrReplyLastEgressIdentifier OBJECT-TYPE
+        SYNTAX          OCTET STRING (SIZE(8))
+        MAX-ACCESS      read-only 
+        STATUS          current
+        DESCRIPTION     
+                "An octet field holding the Last Egress Identifier returned 
+                in the LTR Egress   Identifier TLV of the LTR. The Last Egress 
+                Identifier identifies the MEP Linktrace Indicator that 
+                originated, or the Linktrace Responder that forwarded, the LTM 
+                to which this LTR is the response. This is the same value as 
+                the Egress Identifier TLV of that LTM."
+        ::= { rcCfmLtrReplyEntry 12}
+
+
+rcCfmLtrReplyNextEgressIdentifier OBJECT-TYPE
+        SYNTAX          OCTET STRING (SIZE(8))
+        MAX-ACCESS      read-only 
+        STATUS          current
+        DESCRIPTION     
+                "An octet field holding the Next Egress Identifier returned in 
+                the LTR Egress Identifier TLV of the LTR. The Next Egress 
+                Identifier Identifies the Linktrace Responder that transmitted 
+                this LTR, and can forward the LTM to the next hop. This is the 
+                same value as the Egress Identifier TLV of the forwarded LTM, 
+                if any. If the FwdYes bit of the Flags field is false, the 
+                contents of this field are undefined, and the field is ignored 
+                by the receiver."
+        ::= { rcCfmLtrReplyEntry 13}
+
+rcCfmLtrReplyRelayAction OBJECT-TYPE
+        SYNTAX          CfmRelayActionFieldValue
+        MAX-ACCESS      read-only 
+        STATUS           current
+        DESCRIPTION     "Value returned in the Relay Action field."
+        DEFVAL          { unknown } 
+        ::= { rcCfmLtrReplyEntry 14}
+
+
+rcCfmLtrReplySrcMac OBJECT-TYPE
+        SYNTAX          MacAddress
+        MAX-ACCESS      read-only
+        STATUS          current
+        DESCRIPTION     
+                "Mac address of the MP that respond to the LTM request for 
+                this LTR"  
+        ::= { rcCfmLtrReplyEntry 15}
+
+rcCfmLtrReplyIngressAction OBJECT-TYPE 
+        SYNTAX          CfmIngressActionFieldValue
+        MAX-ACCESS      read-only
+        STATUS          current
+        DESCRIPTION     
+                "The value returned in the Ingress Action Field of the LTM. 
+                The value ingNoTlv(5) indicates that no Reply Ingress TLV 
+                was returned in the LTM."
+        ::= { rcCfmLtrReplyEntry 16} 
+
+rcCfmLtrReplyIngressMac OBJECT-TYPE
+        SYNTAX          MacAddress
+        MAX-ACCESS      read-only
+        STATUS          current
+        DESCRIPTION     
+                "Mac address returned in the ingress MAC address field. If the 
+                rcCfmLtrReplyIngress object contains the value ingNoTlv(5), then 
+                the contents of this object are meaningless."
+        ::= { rcCfmLtrReplyEntry 17}
+
+rcCfmLtrReplyIngressPortIdSubtype OBJECT-TYPE
+        SYNTAX          LldpPortIdSubtype
+        MAX-ACCESS      read-only
+        STATUS          current
+        DESCRIPTION     
+                "Format of the Ingress Port ID. If the rcCfmLtrReplyIngress 
+                object contains the value ingNoTlv(5), then the contents of 
+                this object are meaningless."
+        ::= { rcCfmLtrReplyEntry 18}
+
+rcCfmLtrReplyIngressPortId OBJECT-TYPE
+        SYNTAX          LldpPortId
+        MAX-ACCESS      read-only
+        STATUS          current
+        DESCRIPTION     
+                "Ingress Port ID. The format of this object is determined by 
+                the value of the rcCfmLtrReplyIngressPortIdSubtype object. 
+                If the rcCfmLtrReplyIngress object contains the value 
+                ingNoTlv(5), then 
+                the contents of this object are meaningless."
+        ::= { rcCfmLtrReplyEntry 19}
+
+rcCfmLtrReplyEgressAction OBJECT-TYPE
+        SYNTAX          CfmEgressActionFieldValue
+        MAX-ACCESS      read-only
+        STATUS          current
+        DESCRIPTION     
+                "The value returned in the Egress Action Field of the LTM. The 
+                value egrNoTlv(5) indicates that no Reply Egress TLV was 
+                returned in the LTM."
+        ::= { rcCfmLtrReplyEntry 20}
+
+rcCfmLtrReplyEgressMac OBJECT-TYPE
+        SYNTAX          MacAddress
+        MAX-ACCESS      read-only
+        STATUS          current
+        DESCRIPTION     
+                "Mac address returned in the egress MAC address field. If the 
+                rcCfmLtrReplyEgress object contains the value egrNoTlv(5), 
+                then the contents of this object are meaningless."
+        ::= { rcCfmLtrReplyEntry 21}
+
+rcCfmLtrReplyEgressPortIdSubtype OBJECT-TYPE
+        SYNTAX          LldpPortIdSubtype
+        MAX-ACCESS      read-only
+        STATUS          current
+        DESCRIPTION     
+                "Format of the Egress Port ID. If the rcCfmLtrReplyEgress 
+                 object contains the value egrNoTlv(5), then the contents 
+                 of this object are meaningless."
+        ::= { rcCfmLtrReplyEntry 22}
+
+rcCfmLtrReplyEgressPortId OBJECT-TYPE
+        SYNTAX          LldpPortId
+        MAX-ACCESS      read-only
+        STATUS          current
+        DESCRIPTION     
+                "Egress Port ID. The format of this object is determined by 
+                the value of the rcCfmLtrReplyEgressPortIdSubtype object. 
+                If the rcCfmLtrReplyEgress object contains the value 
+                egrNoTlv(5), then the contents of this object are meaningless."
+        ::= { rcCfmLtrReplyEntry 23}
+
+-- The Transmit L2Ping Table
+
+rcCfmTransmitL2PingTable OBJECT-TYPE
+	SYNTAX		SEQUENCE OF RcCfmTransmitL2PingEntry
+	MAX-ACCESS	not-accessible
+	STATUS		current
+	DESCRIPTION	"Connectivity Fault Management transmit L2Ping table"
+	::= { rcCfm 34}
+
+rcCfmTransmitL2PingEntry OBJECT-TYPE
+	SYNTAX		RcCfmTransmitL2PingEntry
+	MAX-ACCESS	not-accessible
+	STATUS		current
+	DESCRIPTION	"Connectivity Fault Management Maintenance EndPoint L2Ping entry."
+	INDEX		{rcCfmTransmitL2PingVlanId }
+	::= { rcCfmTransmitL2PingTable 1}
+
+RcCfmTransmitL2PingEntry ::=
+	SEQUENCE {
+		rcCfmTransmitL2PingVlanId	        Integer32,
+		rcCfmTransmitL2PingDestMacAddress       MacAddress,
+		rcCfmTransmitL2PingHostName             OCTET STRING,	
+		rcCfmTransmitL2PingDestIsHostName       TruthValue,
+		rcCfmTransmitL2PingMessages		Integer32,
+		rcCfmTransmitL2PingPriority		Integer32,
+	        rcCfmTransmitL2PingTimeoutInt           Integer32,
+	        rcCfmTransmitL2PingTestPattern          INTEGER,
+	        rcCfmTransmitL2PingDataSize	        Integer32,
+	        rcCfmTransmitL2PingFrameSize	        Integer32,
+	        rcCfmTransmitL2PingSourceMode           INTEGER,
+		rcCfmTransmitL2PingSeqNumber		Integer32,
+		rcCfmTransmitL2PingResultOk		TruthValue,
+		rcCfmTransmitL2PingStatus		INTEGER,
+		rcCfmTransmitL2PingResult       OCTET STRING
+ 	}
+
+rcCfmTransmitL2PingVlanId OBJECT-TYPE
+	SYNTAX		Integer32 (1..4094)
+	MAX-ACCESS	not-accessible
+	STATUS		current
+	DESCRIPTION	"A value that uniquely identifies the Customer Vlan"
+	::= { rcCfmTransmitL2PingEntry 1}
+
+rcCfmTransmitL2PingDestMacAddress OBJECT-TYPE
+	SYNTAX		MacAddress
+	MAX-ACCESS	read-write
+	STATUS		current
+	DESCRIPTION	"An indication of the target MAC Address field to be transmitted"
+	::= { rcCfmTransmitL2PingEntry 2}
+
+rcCfmTransmitL2PingHostName OBJECT-TYPE
+	SYNTAX		OCTET STRING (SIZE (0..255))
+	MAX-ACCESS	read-write
+	STATUS		current
+	DESCRIPTION	"The target host name"
+	::= { rcCfmTransmitL2PingEntry 3}
+
+rcCfmTransmitL2PingDestIsHostName OBJECT-TYPE
+	SYNTAX 		TruthValue
+	MAX-ACCESS	read-write
+	STATUS		current
+	DESCRIPTION	"True indicates that the host name is used for L2Ping transmission"
+	::= { rcCfmTransmitL2PingEntry 4}
+
+rcCfmTransmitL2PingMessages  OBJECT-TYPE
+	SYNTAX  	Integer32(1..200)
+	MAX-ACCESS	read-write
+	STATUS		current
+	DESCRIPTION	"The number of L2Ping messages to be transmitted."
+               
+	DEFVAL {1}
+	::= { rcCfmTransmitL2PingEntry 5}
+
+rcCfmTransmitL2PingPriority OBJECT-TYPE
+	SYNTAX  	Integer32(0..7)
+	MAX-ACCESS	read-write
+	STATUS		current
+	DESCRIPTION	"Priority. 3 bit value to be used in the VLAN hdr,  
+			if present in the transmitted frame."
+	DEFVAL {7}
+	::= { rcCfmTransmitL2PingEntry 6}
+
+rcCfmTransmitL2PingTimeoutInt  OBJECT-TYPE
+        SYNTAX          Integer32(1..10)
+        MAX-ACCESS      read-write
+        STATUS          current
+        DESCRIPTION    "The interval to wait for an L2Ping time-out with a 
+                       range of (1..10)  seconds with a default value of 3 
+                       seconds."
+        DEFVAL {3}
+        ::= { rcCfmTransmitL2PingEntry 7}
+
+rcCfmTransmitL2PingTestPattern OBJECT-TYPE
+        SYNTAX          INTEGER {
+                               allZero(1),
+                               allZeroCrc(2),
+                               pseudoRandomBitSequence(3),
+                               pseudoRandomBitSequenceCrc(4)
+                        }
+        MAX-ACCESS      read-write
+        STATUS          current
+        DESCRIPTION     "The test pattern to use in the L2Ping PDU with range of 
+                        values namely allZero, allZeroCrc, 
+                        pseudoRandomBitSequence and pseudoRandomBitSequenceCrc 
+                        and with a default value of allZero.
+                        value                  meaning
+                        --------               -------
+                        allZero(0)             Null signal without CRC-32
+                        allZeroCrc(1)          Null signal with CRC-32    
+                        pseudoRandomBitSequence(2) PRBS 1/2^31-1 without CRC-32
+                        pseudoRandomBitSequenceCrc(3) PBRS 1/2^31-1 with CRC-32"
+        DEFVAL {allZero}
+        ::= { rcCfmTransmitL2PingEntry 8}
+
+rcCfmTransmitL2PingDataSize  OBJECT-TYPE
+	SYNTAX  	Integer32(0..400)
+	MAX-ACCESS	read-write
+	STATUS		current
+	DESCRIPTION	"An arbitrary amount of data to be included in the data TLV, if the
+			Data Size is selected to be sent."
+	DEFVAL {0}
+	::= { rcCfmTransmitL2PingEntry 9}
+
+rcCfmTransmitL2PingFrameSize  OBJECT-TYPE
+	SYNTAX  	Integer32(0..9600)
+	MAX-ACCESS	read-write
+	STATUS		current
+	DESCRIPTION	"If the frame size is specified then the data size 
+                        shall be internally calculated and the calculated data
+                        size shall be included in the data TLV."
+	DEFVAL {0}
+	::= { rcCfmTransmitL2PingEntry 10}
+
+rcCfmTransmitL2PingSourceMode  OBJECT-TYPE
+        SYNTAX        INTEGER {
+			      nodal(1),
+			      smltVirtual(2),
+                              noVlanMac(3)             
+                      }
+        MAX-ACCESS      read-write
+        STATUS          current
+        DESCRIPTION     "Source modes of the transmit loopback service. "
+        DEFVAL {nodal}
+        ::= { rcCfmTransmitL2PingEntry 11}
+
+
+rcCfmTransmitL2PingSeqNumber OBJECT-TYPE
+	SYNTAX 		Integer32
+	MAX-ACCESS	read-only
+	STATUS		current
+	DESCRIPTION	"The transaction identifier/sequence number of the first loopback 
+			message (to be) sent."
+	DEFVAL {0}
+	::= { rcCfmTransmitL2PingEntry 12}		
+
+rcCfmTransmitL2PingResultOk OBJECT-TYPE
+	SYNTAX 		TruthValue
+	MAX-ACCESS	read-only
+	STATUS		current
+	DESCRIPTION	"Indicates the result of the operation:
+			-true.    The L2Ping Message(s) will be (or have been) sent.
+			-false.   The L2Ping Message(s) will not be sent."
+	DEFVAL {true}
+	::= { rcCfmTransmitL2PingEntry 13}
+	 
+rcCfmTransmitL2PingStatus 	OBJECT-TYPE
+	SYNTAX 		INTEGER {
+				ready(1),
+				transmit(2),
+                                abort(3)
+			}
+	MAX-ACCESS	read-write
+	STATUS		current
+	DESCRIPTION	"Status of the transmit loopback service:
+			-ready.      The service is available.
+			-transmit.   The service is transmitting, or about to 
+                                     transmit, the L2Ping messages.
+                        -abort       The service is aborted or about to abort 
+                                     the L2Ping messages.
+
+			This column will also be used to avoid concurrency or 
+                        race condition problems that could occur if two or 
+                        more management entities try to 
+			use the service at the same time. "
+	REFERENCE       "Delete notReady status due to CR Q01482201"
+	DEFVAL {ready}
+	::= { rcCfmTransmitL2PingEntry 14}
+
+rcCfmTransmitL2PingResult  OBJECT-TYPE
+	SYNTAX 		OCTET STRING (SIZE (1..799))
+	MAX-ACCESS	read-only
+	STATUS		current
+	DESCRIPTION	"Display the L2Ping result."
+	::= { rcCfmTransmitL2PingEntry 15}
+	 
+
+-- The Transmit L2Trace Table
+
+rcCfmTransmitL2TraceTable OBJECT-TYPE
+	SYNTAX		SEQUENCE OF RcCfmTransmitL2TraceEntry
+	MAX-ACCESS	not-accessible
+	STATUS		current
+	DESCRIPTION	"Connectivity Fault Management transmit L2Trace table"
+	::= { rcCfm 35}
+
+rcCfmTransmitL2TraceEntry OBJECT-TYPE
+	SYNTAX		RcCfmTransmitL2TraceEntry
+	MAX-ACCESS	not-accessible
+	STATUS		current
+	DESCRIPTION	"Connectivity Fault Management Maintenance EndPoint L2Trace entry."
+	INDEX		{rcCfmTransmitL2TraceVlanId }
+	::= { rcCfmTransmitL2TraceTable 1}
+
+RcCfmTransmitL2TraceEntry ::=
+	SEQUENCE {
+		rcCfmTransmitL2TraceVlanId	        	Integer32,
+	        rcCfmTransmitL2TracePriority			Integer32,
+		rcCfmTransmitL2TraceDestMacAddress      	MacAddress,
+		rcCfmTransmitL2TraceHostName            	OCTET STRING,
+	        rcCfmTransmitL2TraceIsid                        Integer32,
+	        rcCfmTransmitL2TraceNickName                    DisplayString,	
+		rcCfmTransmitL2TraceDestIsHostName      	TruthValue,
+		rcCfmTransmitL2TraceIsidTree			TruthValue,
+		rcCfmTransmitL2TraceTtl 			Integer32,
+	        rcCfmTransmitL2TraceSourceMode            	INTEGER,
+		rcCfmTransmitL2TraceSeqNumber			Integer32,
+		rcCfmTransmitL2TraceResultOk			TruthValue,
+		rcCfmTransmitL2TraceStatus		        INTEGER,
+       		rcCfmTransmitL2TraceFlag		        INTEGER
+	}
+
+rcCfmTransmitL2TraceVlanId OBJECT-TYPE
+	SYNTAX		Integer32 (1..4094)
+	MAX-ACCESS	not-accessible
+	STATUS		current
+	DESCRIPTION	"A value that uniquely identifies the Customer Vlan"
+	::= { rcCfmTransmitL2TraceEntry 1}
+
+rcCfmTransmitL2TracePriority OBJECT-TYPE
+	SYNTAX  	Integer32(0..7)
+	MAX-ACCESS	read-write
+	STATUS		current
+	DESCRIPTION	"Priority. 3 bit value to be used in the VLAN hdr, 
+                        if present in the transmitted frame."
+	DEFVAL {7}
+	::= { rcCfmTransmitL2TraceEntry 2}
+
+rcCfmTransmitL2TraceDestMacAddress OBJECT-TYPE
+	SYNTAX		MacAddress
+	MAX-ACCESS	read-write
+	STATUS		current
+	DESCRIPTION	"An indication of the target MAC Address field to be transmitted"
+	::= { rcCfmTransmitL2TraceEntry 3}
+
+rcCfmTransmitL2TraceHostName OBJECT-TYPE
+	SYNTAX		OCTET STRING (SIZE (0..255))
+	MAX-ACCESS	read-write
+	STATUS		current
+	DESCRIPTION	"The target host name"
+	::= { rcCfmTransmitL2TraceEntry 4}
+
+rcCfmTransmitL2TraceIsid  OBJECT-TYPE
+	SYNTAX        Integer32 (1..16777215)
+        MAX-ACCESS    read-write
+        STATUS        current
+        DESCRIPTION   "Isid Id"
+	::= { rcCfmTransmitL2TraceEntry 5}
+
+rcCfmTransmitL2TraceNickName OBJECT-TYPE
+	SYNTAX        DisplayString (SIZE (7))
+ 	MAX-ACCESS    read-only
+	STATUS        current
+        DESCRIPTION   "Local Node nick name"
+	::= { rcCfmTransmitL2TraceEntry 6}
+
+rcCfmTransmitL2TraceDestIsHostName OBJECT-TYPE
+	SYNTAX 		TruthValue
+	MAX-ACCESS	read-write
+	STATUS		current
+	DESCRIPTION	"True indicates that the host name is used for L2Trace transmission"
+	::= { rcCfmTransmitL2TraceEntry 7}
+
+rcCfmTransmitL2TraceIsidTree  OBJECT-TYPE
+	SYNTAX 		TruthValue
+	MAX-ACCESS	read-write
+	STATUS		current
+	DESCRIPTION	"True indicates that the multicast tree will be traced.
+		         False indicates that the unicast path will be traced"
+	::= { rcCfmTransmitL2TraceEntry 8}
+
+rcCfmTransmitL2TraceTtl     OBJECT-TYPE
+	SYNTAX  	Integer32(0..255)
+	MAX-ACCESS	read-write
+	STATUS		current
+	DESCRIPTION	"The number of hops remaining to this L2Trace. 
+			 Decremented by 1 by each Bridge that handles the L2Trace. 
+			 The decremented value is returned in the L2Trace. If 0 
+                         on output, the L2Trace is not transmitted to the next 
+                         hop. The value of the TTL Field in the L2Trace
+                         transmitted by the originating MEP is controlled by a 
+                         Managed Object; The default value if none is 
+                         specified is 64."
+	DEFVAL {64}
+	::= { rcCfmTransmitL2TraceEntry 9}
+
+
+rcCfmTransmitL2TraceSourceMode  OBJECT-TYPE
+        SYNTAX        INTEGER {
+			      nodal(1),
+			      smltVirtual(2),
+                              noVlanMac(3)             
+                      }
+        MAX-ACCESS      read-write
+        STATUS          current
+        DESCRIPTION     "Source modes of the transmit loopback service. "
+        DEFVAL {nodal}
+        ::= { rcCfmTransmitL2TraceEntry 10}
+
+rcCfmTransmitL2TraceSeqNumber OBJECT-TYPE
+	SYNTAX 		Integer32
+	MAX-ACCESS	read-only
+	STATUS		current
+	DESCRIPTION	"The transaction identifier/sequence number of the first loopback 
+			message (to be) sent."
+	DEFVAL {0}
+	::= { rcCfmTransmitL2TraceEntry 11}		
+
+rcCfmTransmitL2TraceResultOk OBJECT-TYPE
+	SYNTAX 		TruthValue
+	MAX-ACCESS	read-only
+	STATUS		current
+	DESCRIPTION	"Indicates the result of the operation:
+			-true.    The L2Trace Message(s) will be (or have been) sent.
+			-false.   The L2Trace Message(s) will not be sent."
+	DEFVAL {true}
+	::= { rcCfmTransmitL2TraceEntry 12}
+	 
+rcCfmTransmitL2TraceStatus 	OBJECT-TYPE
+	SYNTAX 		INTEGER {
+				ready(1),
+				transmit(2),
+                                abort(3)
+			}
+	MAX-ACCESS	read-write
+	STATUS		current
+	DESCRIPTION	"Status of the transmit loopback service:
+			-ready.      The service is available.
+			-transmit.   The service is transmitting, or about to 
+                                     transmit, the L2Trace messages.
+                        -abort       The service is aborted or about to abort 
+                                     the L2Trace messages.
+
+			This column will also be used to avoid concurrency or 
+                        race condition problems that could occur if two or 
+                        more management entities try to 
+			use the service at the same time. "
+	REFERENCE       "Delete notReady status due to CR Q01482201"
+	DEFVAL {ready}
+	::= { rcCfmTransmitL2TraceEntry 13}
+
+rcCfmTransmitL2TraceFlag    OBJECT-TYPE
+	SYNTAX 		INTEGER {
+				none(1),
+				internalError(2),
+                                invalidMac(3),
+                                mepDisabled(4), 
+                                noL2TraceResponse(5),
+                                l2TraceToOwnMepMac(6),
+                                l2TraceComplete(7),
+			        l2TraceLookupFailure(8),
+				l2TraceLeafNode(9),
+				l2TraceNotInTree(10),
+				l2TraceSmltNotPrimary(11)
+			}
+	MAX-ACCESS	read-only
+	STATUS	        current 	
+	DESCRIPTION	"L2Trace result flag indicating L2Trace status or error code. 
+                         Each enum value represents a status or error case.  
+                         1 - No error  
+                         2 - L2Trace Internal Error
+                         3 - Invalid Mac Address
+                         4 - Mep must be enabled in order to perform L2Trace
+                         5 - No L2Trace response received
+                         6 - L2Trace to own Mep MAC is not sent
+                         7 - L2Trace completed
+			 8 - Lookup failure for L2Trace
+			 9 - On a leaf node in the i-sid tree
+			10 - Not in the i-sid tree
+			11 - Requested SMLT Source from Non-Primary Node"
+	
+		 
+	::= { rcCfmTransmitL2TraceEntry 14}	 
+
+-- L2Trace Reply Table
+
+rcCfmL2TraceReplyTable OBJECT-TYPE
+        SYNTAX          SEQUENCE OF RcCfmL2TraceReplyEntry
+        MAX-ACCESS      not-accessible
+        STATUS          current 
+        DESCRIPTION     
+                "This table contains a list of l2trace replies received 
+                by a specific MEP in response to a linktrace message."
+        ::= { rcCfm 36}
+
+rcCfmL2TraceReplyEntry OBJECT-TYPE
+        SYNTAX          RcCfmL2TraceReplyEntry
+        MAX-ACCESS      not-accessible
+        STATUS          current
+        DESCRIPTION     "The Linktrace Reply table entry."
+        INDEX           {rcCfmL2TraceReplyVlanId,rcCfmL2TraceReplySeqNumber,
+                         rcCfmL2TraceReplyHop,rcCfmL2TraceReplyReceiveOrder}
+        ::= { rcCfmL2TraceReplyTable 1}
+    
+RcCfmL2TraceReplyEntry ::=
+        SEQUENCE {
+		rcCfmL2TraceReplyVlanId	              Integer32,
+		rcCfmL2TraceReplySeqNumber	      Integer32,
+		rcCfmL2TraceReplyHop                  Integer32,	
+                rcCfmL2TraceReplyReceiveOrder         Integer32,
+		rcCfmL2TraceReplyTtl                  Integer32,	
+                rcCfmL2TraceReplySrcMac               MacAddress,
+		rcCfmL2TraceReplyHostName             OCTET STRING,
+		rcCfmL2TraceReplyLastSrcMac            MacAddress,
+		rcCfmL2TraceReplyLastHostName          OCTET STRING
+             }
+
+rcCfmL2TraceReplyVlanId OBJECT-TYPE
+	SYNTAX		Integer32 (1..4094)
+	MAX-ACCESS	not-accessible
+	STATUS		current
+	DESCRIPTION	"A value that uniquely identifies the Customer Vlan"
+	::= {rcCfmL2TraceReplyEntry 1}
+
+rcCfmL2TraceReplySeqNumber OBJECT-TYPE
+        SYNTAX          Integer32 (0..2147483647)  
+        MAX-ACCESS      not-accessible
+        STATUS          current
+        DESCRIPTION     
+                "The transaction identifier/sequence number returned by a 
+                previous transmit linktrace message command, indicating which 
+                L2Trace's response is going to be returned."
+        DEFVAL {0}
+        ::= { rcCfmL2TraceReplyEntry 2}
+
+rcCfmL2TraceReplyHop     OBJECT-TYPE
+        SYNTAX          Integer32 (0..255)
+        MAX-ACCESS      not-accessible
+        STATUS          current
+        DESCRIPTION     "The number of hops away from L2Trace initiator."
+        ::= { rcCfmL2TraceReplyEntry 3}
+
+rcCfmL2TraceReplyReceiveOrder OBJECT-TYPE
+        SYNTAX          Integer32 (1..2147483647)
+        MAX-ACCESS      not-accessible
+        STATUS          current
+        DESCRIPTION     
+                "An index to distinguish among multiple L2Trace responses 
+                with the same Transaction Identifier field  value. This value 
+                is assigned sequentially from 1, in the order that the 
+                Linktrace Initiator received the responses."
+        ::= { rcCfmL2TraceReplyEntry 4}
+
+rcCfmL2TraceReplyTtl     OBJECT-TYPE
+        SYNTAX          Integer32 (0..255)
+        MAX-ACCESS      read-only
+        STATUS          current
+        DESCRIPTION     "Ttl field value for a returned L2Trace response."
+        ::= { rcCfmL2TraceReplyEntry 5}
+
+rcCfmL2TraceReplySrcMac OBJECT-TYPE
+        SYNTAX          MacAddress
+        MAX-ACCESS      read-only
+        STATUS          current
+        DESCRIPTION     
+                "Mac address of the MP that respond to the L2Trace request for 
+                this L2traceReply"  
+        ::= { rcCfmL2TraceReplyEntry 6}
+
+rcCfmL2TraceReplyHostName OBJECT-TYPE
+	SYNTAX    OCTET STRING (SIZE (0..255))
+	MAX-ACCESS      read-only
+        STATUS          current
+        DESCRIPTION     
+                "The host name of the replying node"
+	::= { rcCfmL2TraceReplyEntry 7}
+
+rcCfmL2TraceReplyLastSrcMac OBJECT-TYPE
+	SYNTAX          MacAddress
+        MAX-ACCESS      read-only
+        STATUS          current
+        DESCRIPTION     
+                "The MAC address of the node that forwarded the L2Trace to the responding node"
+	::= { rcCfmL2TraceReplyEntry 8}
+	
+rcCfmL2TraceReplyLastHostName OBJECT-TYPE
+	SYNTAX    OCTET STRING (SIZE (0..255))
+	MAX-ACCESS      read-only
+        STATUS          current
+        DESCRIPTION     
+                "The host name of the node that forwarded the L2Trace to the responding node"
+	::= { rcCfmL2TraceReplyEntry 9}
+
+-- The Transmit L2 Ip Ping Table
+
+rcCfmTransmitL2IpPingTable OBJECT-TYPE
+	SYNTAX		SEQUENCE OF RcCfmTransmitL2IpPingEntry
+	MAX-ACCESS	not-accessible
+	STATUS		current
+	DESCRIPTION	"Connectivity Fault Management transmit L2IpPing table"
+	::= { rcCfm 37}
+
+rcCfmTransmitL2IpPingEntry OBJECT-TYPE
+	SYNTAX		RcCfmTransmitL2IpPingEntry
+	MAX-ACCESS	not-accessible
+	STATUS		current
+	DESCRIPTION	"L2IpPing entry."
+	INDEX		{rcCfmTransmitL2IpPingIpAddrType,
+                         rcCfmTransmitL2IpPingIpAddr}
+	::= { rcCfmTransmitL2IpPingTable 1}
+
+RcCfmTransmitL2IpPingEntry ::=
+	SEQUENCE {
+                rcCfmTransmitL2IpPingIpAddrType         InetAddressType,
+                rcCfmTransmitL2IpPingIpAddr             InetAddress,
+                rcCfmTransmitL2IpPingVrfId              Integer32,
+                rcCfmTransmitL2IpPingVrfName            DisplayString,  
+		rcCfmTransmitL2IpPingMessages		Integer32,
+	        rcCfmTransmitL2IpPingTimeoutInt         Integer32,
+	        rcCfmTransmitL2IpPingTestPattern        INTEGER,
+	        rcCfmTransmitL2IpPingDataSize	        Integer32,
+		rcCfmTransmitL2IpPingStatus		INTEGER,
+		rcCfmTransmitL2IpPingResultOk		TruthValue,
+                rcCfmTransmitL2IpPingPathsFound         Integer32,
+                rcCfmTransmitL2IpPingRowStatus          RowStatus
+ 	}
+
+rcCfmTransmitL2IpPingIpAddrType OBJECT-TYPE
+        SYNTAX        InetAddressType
+        MAX-ACCESS    not-accessible
+        STATUS        current
+        DESCRIPTION   "The address type of destination IP Address "
+        ::= { rcCfmTransmitL2IpPingEntry 1 }
+
+rcCfmTransmitL2IpPingIpAddr OBJECT-TYPE
+        SYNTAX        InetAddress
+        MAX-ACCESS    not-accessible
+        STATUS        current
+        DESCRIPTION   "Destination IP Address. Support ipv4 at this time"
+        ::= { rcCfmTransmitL2IpPingEntry 2 }
+
+rcCfmTransmitL2IpPingVrfId OBJECT-TYPE
+        SYNTAX        Integer32
+        MAX-ACCESS    read-only
+        STATUS        current
+        DESCRIPTION   "VRF ID "
+        ::= { rcCfmTransmitL2IpPingEntry 3 }
+
+rcCfmTransmitL2IpPingVrfName   OBJECT-TYPE
+     SYNTAX         DisplayString (SIZE (0..64))
+     MAX-ACCESS     read-only
+     STATUS         current
+     DESCRIPTION    "The Name of the Virtual Router"
+        ::= {rcCfmTransmitL2IpPingEntry 4 }
+
+rcCfmTransmitL2IpPingMessages  OBJECT-TYPE
+	SYNTAX  	Integer32(1..200)
+	MAX-ACCESS	read-create
+	STATUS		current
+	DESCRIPTION	"The number of L2IpPing messages to be transmitted 
+                         per mac/vlan pair."               
+	DEFVAL {1}
+	::= { rcCfmTransmitL2IpPingEntry 5}
+
+rcCfmTransmitL2IpPingTimeoutInt  OBJECT-TYPE
+        SYNTAX          Integer32(1..10)
+        MAX-ACCESS      read-create
+        STATUS          current
+        DESCRIPTION    "The interval to wait for an L2IpPing time-out with a 
+                       range of (1..10)  seconds with a default value of 3 
+                       seconds."
+        DEFVAL {3}
+        ::= { rcCfmTransmitL2IpPingEntry 6}
+
+rcCfmTransmitL2IpPingTestPattern OBJECT-TYPE
+        SYNTAX          INTEGER {
+                               allZero(1),
+                               allZeroCrc(2),
+                               pseudoRandomBitSequence(3),
+                               pseudoRandomBitSequenceCrc(4)
+                        }
+        MAX-ACCESS      read-create
+        STATUS          current
+        DESCRIPTION     "The test pattern to use in the L2IpPing PDUs 
+                        with range of values namely allZero, allZeroCrc, 
+                        pseudoRandomBitSequence and pseudoRandomBitSequenceCrc 
+                        and with a default value of allZero.
+                        value                  meaning
+                        --------               -------
+                        allZero(0)             Null signal without CRC-32
+                        allZeroCrc(1)          Null signal with CRC-32    
+                        pseudoRandomBitSequence(2) PRBS 1/2^31-1 without CRC-32
+                        pseudoRandomBitSequenceCrc(3) PBRS 1/2^31-1 with CRC-32"
+        DEFVAL {allZero}
+        ::= { rcCfmTransmitL2IpPingEntry 7}
+
+rcCfmTransmitL2IpPingDataSize  OBJECT-TYPE
+	SYNTAX  	Integer32(0..400)
+	MAX-ACCESS	read-create
+	STATUS		current
+	DESCRIPTION	"An arbitrary amount of data to be included in the 
+                        data TLV, if the Data Size is selected to be sent."
+	DEFVAL {0}
+	::= { rcCfmTransmitL2IpPingEntry 8}
+
+rcCfmTransmitL2IpPingStatus 	OBJECT-TYPE
+	SYNTAX 		INTEGER {
+				ready(1),
+				transmit(2),
+                                abort(3)
+			}
+	MAX-ACCESS	read-create
+	STATUS		current
+	DESCRIPTION	"Status of the transmit loopback service:
+			-ready.      The service is available.
+			-transmit.   The service is transmitting, or about to 
+                                     transmit, the L2IpPing messages.
+                        -abort       The service is aborted or about to abort 
+                                     the L2IpPing messages.
+
+			This column will also be used to avoid concurrency or 
+                        race condition problems that could occur if two or 
+                        more management entities try to 
+			use the service at the same time. "
+	REFERENCE       "Delete notReady status due to CR Q01482201"
+	DEFVAL {ready}
+	::= { rcCfmTransmitL2IpPingEntry 9}
+
+rcCfmTransmitL2IpPingResultOk OBJECT-TYPE
+	SYNTAX 		TruthValue
+	MAX-ACCESS	read-only
+	STATUS		current
+	DESCRIPTION	"Indicates the result of the operation:
+			-true.    L2IpPing Message(s) will be/have been sent.
+			-false.   L2IpPing Message(s) will not be sent."
+	DEFVAL {true}
+	::= { rcCfmTransmitL2IpPingEntry 10}
+	 
+rcCfmTransmitL2IpPingPathsFound   OBJECT-TYPE
+	SYNTAX  	Integer32
+	MAX-ACCESS	read-only
+	STATUS	        current 	
+	DESCRIPTION	"The number of paths found to execute l2ping command"
+        DEFVAL          { 0 }
+	::= { rcCfmTransmitL2IpPingEntry 11}	
+
+rcCfmTransmitL2IpPingRowStatus OBJECT-TYPE
+        SYNTAX        RowStatus
+        MAX-ACCESS    read-create
+        STATUS        current
+        DESCRIPTION   "Used to create/delete entries in the 
+                       rcCfmTransmitL2IpPingTable. Deletion of an entry
+                       in this table results in corresponding
+                       rcCfmL2IpPingReplyTable entries being deleted."
+        ::= { rcCfmTransmitL2IpPingEntry 12 }
+
+-- L2 Ip Ping Reply Table
+
+rcCfmL2IpPingReplyTable OBJECT-TYPE
+        SYNTAX          SEQUENCE OF RcCfmL2IpPingReplyEntry
+        MAX-ACCESS      not-accessible
+        STATUS          current 
+        DESCRIPTION     
+                "This table contains a list of l2 ip ping replies received "
+        ::= { rcCfm 38}
+
+rcCfmL2IpPingReplyEntry OBJECT-TYPE
+        SYNTAX          RcCfmL2IpPingReplyEntry
+        MAX-ACCESS      not-accessible
+        STATUS          current
+        DESCRIPTION     "The L2 Ip Ping Reply table entry."
+        INDEX           {rcCfmL2IpPingReplyIpAddrType,
+                         rcCfmL2IpPingReplyIpAddr,
+                         rcCfmL2IpPingReplySendOrder}
+        ::= { rcCfmL2IpPingReplyTable 1}
+    
+RcCfmL2IpPingReplyEntry ::=
+        SEQUENCE {
+                rcCfmL2IpPingReplyIpAddrType            InetAddressType,
+                rcCfmL2IpPingReplyIpAddr                InetAddress,
+                rcCfmL2IpPingReplySendOrder             Integer32,
+                rcCfmL2IpPingReplyVrfId                 Integer32,
+		rcCfmL2IpPingReplyVlanId                Integer32,
+                rcCfmL2IpPingReplyDestMacAddress        MacAddress,
+                rcCfmL2IpPingReplyPortNum               InterfaceIndex,
+		rcCfmL2IpPingReplyDestHostName          OCTET STRING,
+		rcCfmL2IpPingReplySize                  Integer32,
+		rcCfmL2IpPingReplyPktsTx                Integer32,
+		rcCfmL2IpPingReplyPktsRx                Integer32,
+		rcCfmL2IpPingReplyPercentLossWhole      Integer32,	
+		rcCfmL2IpPingReplyPercentLossFract      Integer32,	
+                rcCfmL2IpPingReplyMinRoundTrip          Integer32,
+                rcCfmL2IpPingReplyMaxRoundTrip          Integer32,
+                rcCfmL2IpPingReplyRttAvgWhole           Integer32,
+                rcCfmL2IpPingReplyRttAvgFract           Integer32,
+                rcCfmL2IpPingReplyFlag                  INTEGER
+             }
+
+rcCfmL2IpPingReplyIpAddrType OBJECT-TYPE
+        SYNTAX        InetAddressType
+        MAX-ACCESS    not-accessible
+        STATUS        current
+        DESCRIPTION   "The address type of destination IP Address "
+        ::= { rcCfmL2IpPingReplyEntry 1 }
+
+rcCfmL2IpPingReplyIpAddr OBJECT-TYPE
+        SYNTAX        InetAddress
+        MAX-ACCESS    not-accessible
+        STATUS        current
+        DESCRIPTION   "Destination IP Address. Support ipv4 at this time"
+        ::= { rcCfmL2IpPingReplyEntry 2 }
+
+rcCfmL2IpPingReplySendOrder OBJECT-TYPE
+        SYNTAX          Integer32 (0..2147483647)
+        MAX-ACCESS      not-accessible
+        STATUS          current
+        DESCRIPTION     
+                "An index to distinguish among multiple L2Ping sessions 
+                This value is assigned sequentially from 1. It denotes
+                order that sessions were sent. It correlates to the number
+                of paths found and stored in the rcCfmTransmitL2IpPingEntry."
+        ::= { rcCfmL2IpPingReplyEntry 3}
+
+rcCfmL2IpPingReplyVrfId OBJECT-TYPE
+        SYNTAX        Integer32
+        MAX-ACCESS    read-only
+        STATUS        current
+        DESCRIPTION   "VRF ID "
+        ::= { rcCfmL2IpPingReplyEntry 4 }
+
+rcCfmL2IpPingReplyVlanId OBJECT-TYPE
+	SYNTAX		Integer32 (1..4094)
+	MAX-ACCESS	read-only
+	STATUS		current
+	DESCRIPTION	"Vlan found from L3 lookup and used for transmission"
+	::= {rcCfmL2IpPingReplyEntry 5}
+
+rcCfmL2IpPingReplyDestMacAddress OBJECT-TYPE
+	SYNTAX		MacAddress
+	MAX-ACCESS	read-only
+	STATUS		current
+	DESCRIPTION	"An indication of the target MAC Address transmitted"
+	::= { rcCfmL2IpPingReplyEntry 6}
+
+rcCfmL2IpPingReplyPortNum OBJECT-TYPE
+        SYNTAX          InterfaceIndex
+        MAX-ACCESS      read-only
+        STATUS          current
+        DESCRIPTION     "Either the value '0', or the port number of the
+                        port used for the l2ping.  "
+        ::= { rcCfmL2IpPingReplyEntry 7 }
+
+rcCfmL2IpPingReplyDestHostName OBJECT-TYPE
+	SYNTAX    OCTET STRING (SIZE (0..255))
+	MAX-ACCESS      read-only
+        STATUS          current
+        DESCRIPTION     
+                "The host name of the responding node"
+	::= { rcCfmL2IpPingReplyEntry 8}
+
+rcCfmL2IpPingReplySize OBJECT-TYPE
+        SYNTAX          Integer32 (0..9600)  
+        MAX-ACCESS      read-only
+        STATUS          current
+        DESCRIPTION     
+                "The number of bytes of data sent"
+        DEFVAL {0}
+        ::= { rcCfmL2IpPingReplyEntry 9}
+
+rcCfmL2IpPingReplyPktsTx     OBJECT-TYPE
+        SYNTAX          Integer32 
+        MAX-ACCESS      read-only
+        STATUS          current
+        DESCRIPTION     "Number of Packets transmitted for this vlan/mac"
+        ::= { rcCfmL2IpPingReplyEntry 10}
+
+rcCfmL2IpPingReplyPktsRx     OBJECT-TYPE
+        SYNTAX          Integer32 
+        MAX-ACCESS      read-only
+        STATUS          current
+        DESCRIPTION     "Number of Packets received for this vlan/mac"
+        ::= { rcCfmL2IpPingReplyEntry 11}
+
+rcCfmL2IpPingReplyPercentLossWhole     OBJECT-TYPE
+        SYNTAX          Integer32 (0..100) 
+        MAX-ACCESS      read-only
+        STATUS          current
+        DESCRIPTION     "Percentage of packet loss for this vlan/mac"
+        ::= { rcCfmL2IpPingReplyEntry 12}
+
+rcCfmL2IpPingReplyPercentLossFract     OBJECT-TYPE
+        SYNTAX          Integer32 (0..100) 
+        MAX-ACCESS      read-only
+        STATUS          current
+        DESCRIPTION     "Percentage of packet loss for this vlan/mac"
+        ::= { rcCfmL2IpPingReplyEntry 13}
+
+rcCfmL2IpPingReplyMinRoundTrip    OBJECT-TYPE
+        SYNTAX          Integer32  
+        MAX-ACCESS      read-only
+        STATUS          current
+        DESCRIPTION     "Min time for round-trip for this vlan/mac in us"
+        ::= { rcCfmL2IpPingReplyEntry 14}
+
+rcCfmL2IpPingReplyMaxRoundTrip    OBJECT-TYPE
+        SYNTAX          Integer32  
+        MAX-ACCESS      read-only
+        STATUS          current
+        DESCRIPTION     "Max time for round-trip for this vlan/mac in us"
+        ::= { rcCfmL2IpPingReplyEntry 15}
+
+rcCfmL2IpPingReplyRttAvgWhole    OBJECT-TYPE
+        SYNTAX          Integer32  
+        MAX-ACCESS      read-only
+        STATUS          current
+        DESCRIPTION     "Average time for round-trip for this vlan/mac in us"
+        ::= { rcCfmL2IpPingReplyEntry 16}
+
+rcCfmL2IpPingReplyRttAvgFract    OBJECT-TYPE
+        SYNTAX          Integer32  
+        MAX-ACCESS      read-only
+        STATUS          current
+        DESCRIPTION     "Fractional portion of Average time for round-trip"
+        ::= { rcCfmL2IpPingReplyEntry 17}
+
+rcCfmL2IpPingReplyFlag     OBJECT-TYPE
+	SYNTAX 		INTEGER {
+				none(1),
+				internalError(2),
+                                invalidMac(3),
+                                mepDisabled(4), 
+                                invalidMD(5),
+                                invalidMA(6),
+			        noMepFound(7),
+                                unknownServiceInstance(8),
+                                l2PingToOwnMepMac(9),
+                                l2PingComplete(10)
+			}
+	MAX-ACCESS	read-only
+	STATUS	        current 	
+	DESCRIPTION	"Result flag indicating status or error code. 
+                         Each enum value represents a status or error case.  
+                         1 - No error  
+                         2 - Internal Error
+                         3 - Invalid Ip
+                         4 - L2Trace completed
+			 5 - Lookup failure for IP (no vlan/mac entries)"
+        ::= { rcCfmL2IpPingReplyEntry 18}
+
+-- The Transmit L2 Ip Trace Table
+rcCfmTransmitL2IpTraceTable OBJECT-TYPE
+	SYNTAX		SEQUENCE OF RcCfmTransmitL2IpTraceEntry
+	MAX-ACCESS	not-accessible
+	STATUS		current
+	DESCRIPTION	"Connectivity Fault Management transmit L2IpTrace table"
+	::= { rcCfm 39}
+
+rcCfmTransmitL2IpTraceEntry OBJECT-TYPE
+	SYNTAX		RcCfmTransmitL2IpTraceEntry
+	MAX-ACCESS	not-accessible
+	STATUS		current
+	DESCRIPTION	"L2IpTrace entry."
+	INDEX		{rcCfmTransmitL2IpTraceIpAddrType,
+                         rcCfmTransmitL2IpTraceIpAddr }
+	::= { rcCfmTransmitL2IpTraceTable 1}
+
+RcCfmTransmitL2IpTraceEntry ::=
+	SEQUENCE {
+                rcCfmTransmitL2IpTraceIpAddrType        InetAddressType,
+                rcCfmTransmitL2IpTraceIpAddr            InetAddress,
+                rcCfmTransmitL2IpTraceVrfId             Integer32,
+                rcCfmTransmitL2IpTraceVrfName           DisplayString,  
+		rcCfmTransmitL2IpTraceTtl 	        Integer32,
+		rcCfmTransmitL2IpTraceStatus		INTEGER,
+		rcCfmTransmitL2IpTraceResultOk		TruthValue,
+                rcCfmTransmitL2IpTracePathsFound        Integer32,
+                rcCfmTransmitL2IpTraceRowStatus         RowStatus
+	}
+
+rcCfmTransmitL2IpTraceIpAddrType OBJECT-TYPE
+        SYNTAX        InetAddressType
+        MAX-ACCESS    not-accessible
+        STATUS        current
+        DESCRIPTION   "The address type of destination IP Address "
+        ::= { rcCfmTransmitL2IpTraceEntry 1 }
+
+rcCfmTransmitL2IpTraceIpAddr OBJECT-TYPE
+        SYNTAX        InetAddress 
+        MAX-ACCESS    not-accessible
+        STATUS        current
+        DESCRIPTION   "Destination IP Address. Support ipv4 at this time"
+        ::= { rcCfmTransmitL2IpTraceEntry 2 }
+
+rcCfmTransmitL2IpTraceVrfId OBJECT-TYPE
+        SYNTAX        Integer32
+        MAX-ACCESS    read-only
+        STATUS        current
+        DESCRIPTION   "VRF ID "
+        ::= { rcCfmTransmitL2IpTraceEntry 3 }
+
+rcCfmTransmitL2IpTraceVrfName   OBJECT-TYPE
+     SYNTAX         DisplayString (SIZE (0..64))
+     MAX-ACCESS     read-only
+     STATUS         current
+     DESCRIPTION    "The Name of the Virtual Router"
+        ::= {rcCfmTransmitL2IpTraceEntry 4 }
+
+rcCfmTransmitL2IpTraceTtl     OBJECT-TYPE
+	SYNTAX  	Integer32(0..255)
+	MAX-ACCESS	read-create
+	STATUS		current
+	DESCRIPTION	"The number of hops remaining to this L2Trace. 
+			 Decremented by 1 by each Bridge that handles the L2Trace. 
+			 The decremented value is returned in the L2Trace. If 0 
+                         on output, the L2Trace is not transmitted to the next 
+                         hop. The value of the TTL Field in the L2Trace
+                         transmitted by the originating MEP is controlled by a 
+                         Managed Object; The default value if none is 
+                         specified is 64."
+	DEFVAL {64}
+	::= { rcCfmTransmitL2IpTraceEntry 5}
+
+rcCfmTransmitL2IpTraceStatus 	OBJECT-TYPE
+	SYNTAX 		INTEGER {
+				ready(1),
+				transmit(2),
+                                abort(3)
+			}
+	MAX-ACCESS	read-create
+	STATUS		current
+	DESCRIPTION	"Status of the transmit loopback service:
+			-ready.      The service is available.
+			-transmit.   The service is transmitting, or about to 
+                                     transmit, the L2Trace messages.
+                        -abort       The service is aborted or about to abort 
+                                     the L2Trace messages.
+
+			This column will also be used to avoid concurrency or 
+                        race condition problems that could occur if two or 
+                        more management entities try to 
+			use the service at the same time. "
+	REFERENCE       "Delete notReady status due to CR Q01482201"
+	DEFVAL {ready}
+	::= { rcCfmTransmitL2IpTraceEntry 6}
+
+rcCfmTransmitL2IpTraceResultOk OBJECT-TYPE
+	SYNTAX 		TruthValue
+	MAX-ACCESS	read-only
+	STATUS		current
+	DESCRIPTION	"Indicates the result of the operation:
+			-true.    The Trace Message(s) will be/have been sent.
+			-false.   The Trace Message(s) will not be sent."
+	DEFVAL {true}
+	::= { rcCfmTransmitL2IpTraceEntry 7}
+	
+rcCfmTransmitL2IpTracePathsFound   OBJECT-TYPE
+	SYNTAX  	Integer32
+	MAX-ACCESS	read-only
+	STATUS	        current 	
+	DESCRIPTION	"The number of paths found to execute l2trace command"
+        DEFVAL          { 0 }
+	::= { rcCfmTransmitL2IpTraceEntry 8}	
+
+rcCfmTransmitL2IpTraceRowStatus OBJECT-TYPE
+        SYNTAX        RowStatus
+        MAX-ACCESS    read-create
+        STATUS        current
+        DESCRIPTION   "Used to create/delete entries in the 
+                       rcCfmTransmitL2IpTraceTable. Deletion of an entry
+                       in this table results in corresponding
+                       rcCfmL2IpTraceReplyTable entries being deleted."
+        ::= { rcCfmTransmitL2IpTraceEntry 9 }
+
+ 
+-- L2IpTrace Reply Table
+
+rcCfmL2IpTraceReplyTable OBJECT-TYPE
+        SYNTAX          SEQUENCE OF RcCfmL2IpTraceReplyEntry
+        MAX-ACCESS      not-accessible
+        STATUS          current 
+        DESCRIPTION     
+                "This table contains a list of l2 ip trace replies received 
+                by a specific MEP in response to a linktrace message."
+        ::= { rcCfm 40}
+
+rcCfmL2IpTraceReplyEntry OBJECT-TYPE
+        SYNTAX          RcCfmL2IpTraceReplyEntry
+        MAX-ACCESS      not-accessible
+        STATUS          current
+        DESCRIPTION     "The L2 Ip Trace Reply table entry."
+        INDEX           {rcCfmL2IpTraceReplyIpAddrType,
+                         rcCfmL2IpTraceReplyIpAddr,
+                         rcCfmL2IpTraceReplySendOrder,
+                         rcCfmL2IpTraceReplyHop,
+                         rcCfmL2IpTraceReplyReceiveOrder}
+        ::= { rcCfmL2IpTraceReplyTable 1}
+    
+RcCfmL2IpTraceReplyEntry ::=
+        SEQUENCE {
+                rcCfmL2IpTraceReplyIpAddrType          InetAddressType,
+                rcCfmL2IpTraceReplyIpAddr              InetAddress,
+                rcCfmL2IpTraceReplySendOrder           Integer32,
+		rcCfmL2IpTraceReplyHop                 Integer32,	
+                rcCfmL2IpTraceReplyReceiveOrder        Integer32,
+		rcCfmL2IpTraceReplyTtl                 Integer32,	
+                rcCfmL2IpTraceReplyVrfId               Integer32,
+		rcCfmL2IpTraceReplyVlanId	       Integer32,
+                rcCfmL2IpTraceReplyDestMacAddress      MacAddress,
+                rcCfmL2IpTraceReplyPortNum             InterfaceIndex,
+		rcCfmL2IpTraceReplySeqNumber	       Integer32,
+                rcCfmL2IpTraceReplySrcMac              MacAddress,
+		rcCfmL2IpTraceReplyHostName            OCTET STRING,
+		rcCfmL2IpTraceReplyLastSrcMac          MacAddress,
+		rcCfmL2IpTraceReplyLastHostName        OCTET STRING,
+                rcCfmL2IpTraceReplyFlag                INTEGER
+             }
+
+rcCfmL2IpTraceReplyIpAddrType OBJECT-TYPE
+        SYNTAX        InetAddressType
+        MAX-ACCESS    not-accessible
+        STATUS        current
+        DESCRIPTION   "The address type of destination IP Address "
+        ::= { rcCfmL2IpTraceReplyEntry 1 }
+
+rcCfmL2IpTraceReplyIpAddr OBJECT-TYPE
+        SYNTAX        InetAddress 
+        MAX-ACCESS    not-accessible
+        STATUS        current
+        DESCRIPTION   "Destination IP Address. Support ipv4 at this time"
+        ::= { rcCfmL2IpTraceReplyEntry 2 }
+
+rcCfmL2IpTraceReplySendOrder OBJECT-TYPE
+        SYNTAX          Integer32 (0..2147483647)
+        MAX-ACCESS      not-accessible
+        STATUS          current
+        DESCRIPTION     
+                "An index to distinguish among multiple L2Trace sessions 
+                This value is assigned sequentially from 1. It denotes
+                order that sessions were sent. It correlates to the number
+                of paths found and stored in the rcCfmTransmitL2IpTraceEntry."
+        ::= { rcCfmL2IpTraceReplyEntry 3}
+
+rcCfmL2IpTraceReplyHop     OBJECT-TYPE
+        SYNTAX          Integer32 (0..255)
+        MAX-ACCESS      not-accessible
+        STATUS          current
+        DESCRIPTION     "The number of L2 hops away from L2Trace initiator."
+        ::= { rcCfmL2IpTraceReplyEntry 4}
+
+rcCfmL2IpTraceReplyReceiveOrder OBJECT-TYPE
+        SYNTAX          Integer32 (0..2147483647)
+        MAX-ACCESS      not-accessible
+        STATUS          current
+        DESCRIPTION     
+                "An index to distinguish among multiple L2Trace responses 
+                with the same Send Transaction Identifier field  value. 
+                This value is assigned sequentially from 1, in the order 
+                that the Linktrace Initiator received the responses. A
+                zero value may be seen in error conditions"
+        ::= { rcCfmL2IpTraceReplyEntry 5}
+
+rcCfmL2IpTraceReplyTtl     OBJECT-TYPE
+        SYNTAX          Integer32 (0..255)
+        MAX-ACCESS      read-only
+        STATUS          current
+        DESCRIPTION     "Ttl field value for a returned L2Trace response."
+        ::= { rcCfmL2IpTraceReplyEntry 6}
+
+rcCfmL2IpTraceReplyVrfId OBJECT-TYPE
+        SYNTAX        Integer32
+        MAX-ACCESS    read-only
+        STATUS        current
+        DESCRIPTION   "VRF ID "
+        ::= { rcCfmL2IpTraceReplyEntry 7}
+
+rcCfmL2IpTraceReplyVlanId OBJECT-TYPE
+	SYNTAX		Integer32 (1..4094)
+	MAX-ACCESS	read-only
+	STATUS		current
+	DESCRIPTION	"Vlan found from L3 lookup and used for transmission"
+	::= {rcCfmL2IpTraceReplyEntry 8}
+
+rcCfmL2IpTraceReplyDestMacAddress OBJECT-TYPE
+	SYNTAX		MacAddress
+	MAX-ACCESS	read-only
+	STATUS		current
+	DESCRIPTION	"An indication of the target MAC Address transmitted"
+	::= { rcCfmL2IpTraceReplyEntry 9}
+
+rcCfmL2IpTraceReplySeqNumber OBJECT-TYPE
+        SYNTAX          Integer32 (0..2147483647)  
+        MAX-ACCESS      read-only
+        STATUS          current
+        DESCRIPTION     
+                "The transaction identifier/sequence number used in  
+                linktrace message packet"
+        DEFVAL {0}
+        ::= { rcCfmL2IpTraceReplyEntry 10}
+
+rcCfmL2IpTraceReplyPortNum OBJECT-TYPE
+        SYNTAX          InterfaceIndex
+        MAX-ACCESS      read-only
+        STATUS          current
+        DESCRIPTION     "Either the value '0', or the port number of the
+                        port used for the l2trace.  "
+        ::= { rcCfmL2IpTraceReplyEntry 11 }
+
+rcCfmL2IpTraceReplySrcMac OBJECT-TYPE
+        SYNTAX          MacAddress
+        MAX-ACCESS      read-only
+        STATUS          current
+        DESCRIPTION     
+                "Mac address of the MP that responded to L2Trace request for 
+                this L2traceReply"  
+        ::= { rcCfmL2IpTraceReplyEntry 12}
+
+rcCfmL2IpTraceReplyHostName OBJECT-TYPE
+	SYNTAX    OCTET STRING (SIZE (0..255))
+	MAX-ACCESS      read-only
+        STATUS          current
+        DESCRIPTION     
+                "The host name of the replying node"
+	::= { rcCfmL2IpTraceReplyEntry 13}
+
+rcCfmL2IpTraceReplyLastSrcMac OBJECT-TYPE
+	SYNTAX          MacAddress
+        MAX-ACCESS      read-only
+        STATUS          current
+        DESCRIPTION     
+                "The MAC address of the node that forwarded the 
+                L2Trace to the responding node"
+	::= { rcCfmL2IpTraceReplyEntry 14}
+	
+rcCfmL2IpTraceReplyLastHostName OBJECT-TYPE
+	SYNTAX    OCTET STRING (SIZE (0..255))
+	MAX-ACCESS      read-only
+        STATUS          current
+        DESCRIPTION     
+                "The host name of the node that forwarded the L2Trace 
+                to the responding node"
+	::= { rcCfmL2IpTraceReplyEntry 15}
+
+rcCfmL2IpTraceReplyFlag    OBJECT-TYPE
+	SYNTAX 		INTEGER {
+				none(1),
+				internalError(2),
+                                invalidMac(3),
+                                mepDisabled(4), 
+                                noL2TraceResponse(5),
+                                l2TraceToOwnMepMac(6),
+                                l2TraceComplete(7),
+			        l2TraceLookupFailure(8)
+			}
+	MAX-ACCESS	read-only
+	STATUS	        current 	
+	DESCRIPTION	"L2Trace result flag indicating status or error code. 
+                         Each enum value represents a status or error case.  
+                         1 - No error  
+                         2 - L2Trace Internal Error
+                         3 - Invalid Mac Address
+                         4 - Mep must be enabled in order to perform L2Trace
+                         5 - No L2Trace response received
+                         6 - L2Trace to own Mep MAC is not sent
+                         7 - L2Trace completed
+			 8 - Lookup failure for L2Trace"
+
+	::= { rcCfmL2IpTraceReplyEntry 16}
+
+-- The Transmit L2 Multicast Trace Table
+
+rcCfmTransmitL2McastTraceTable OBJECT-TYPE
+        SYNTAX          SEQUENCE OF RcCfmTransmitL2McastTraceEntry
+        MAX-ACCESS      not-accessible
+        STATUS          current 
+        DESCRIPTION     
+                "This table contains a list of l2 multicast route trace
+                requests."
+        ::= { rcCfm 41}
+
+rcCfmTransmitL2McastTraceEntry OBJECT-TYPE
+        SYNTAX          RcCfmTransmitL2McastTraceEntry
+        MAX-ACCESS      not-accessible
+        STATUS          current 
+        DESCRIPTION     "CFM Transmit L2 Multicast Trace Entry."
+        INDEX           { rcCfmTransmitL2McastTraceSrcIpAddrType,
+                          rcCfmTransmitL2McastTraceSrcIpAddr,
+                          rcCfmTransmitL2McastTraceGroupIpAddrType,
+                          rcCfmTransmitL2McastTraceGroupIpAddr,
+                          rcCfmTransmitL2McastTraceServiceType,
+                          rcCfmTransmitL2McastTraceServiceId
+                        }
+        ::= { rcCfmTransmitL2McastTraceTable 1 }
+
+
+RcCfmTransmitL2McastTraceEntry ::= SEQUENCE {
+
+        rcCfmTransmitL2McastTraceSrcIpAddrType          InetAddressType,
+        rcCfmTransmitL2McastTraceSrcIpAddr              InetAddress,
+        rcCfmTransmitL2McastTraceGroupIpAddrType        InetAddressType,
+        rcCfmTransmitL2McastTraceGroupIpAddr            InetAddress,
+        rcCfmTransmitL2McastTraceServiceType            INTEGER,
+        rcCfmTransmitL2McastTraceServiceId              Integer32,
+        rcCfmTransmitL2McastTraceVrfName                DisplayString,
+        rcCfmTransmitL2McastTraceRowStatus              RowStatus,
+        rcCfmTransmitL2McastTracePriority               Integer32,
+        rcCfmTransmitL2McastTraceTtl                    Integer32,
+        rcCfmTransmitL2McastTraceSeqNumber              Integer32,
+        rcCfmTransmitL2McastTraceStatus                 INTEGER,
+        rcCfmTransmitL2McastTraceResultOk               TruthValue,
+        rcCfmTransmitL2McastTraceFlag                   INTEGER
+        }
+
+rcCfmTransmitL2McastTraceSrcIpAddrType OBJECT-TYPE
+	SYNTAX          InetAddressType
+	MAX-ACCESS      not-accessible
+        STATUS          current
+        DESCRIPTION     
+                "The address type of Source IP Address"
+	::= { rcCfmTransmitL2McastTraceEntry 1 }
+
+rcCfmTransmitL2McastTraceSrcIpAddr OBJECT-TYPE
+	SYNTAX          InetAddress
+	MAX-ACCESS      not-accessible
+        STATUS          current
+        DESCRIPTION     
+                "Source IP Address. Support ipv4 at this time"
+	::= { rcCfmTransmitL2McastTraceEntry 2 }
+
+rcCfmTransmitL2McastTraceGroupIpAddrType OBJECT-TYPE
+	SYNTAX          InetAddressType
+	MAX-ACCESS      not-accessible
+        STATUS          current
+        DESCRIPTION     
+                "The address type of Multicast Group IP Address"
+	::= { rcCfmTransmitL2McastTraceEntry 3 }
+
+rcCfmTransmitL2McastTraceGroupIpAddr OBJECT-TYPE
+	SYNTAX          InetAddress
+	MAX-ACCESS      not-accessible
+        STATUS          current
+        DESCRIPTION     
+                "Multicast Group IP Address. Support ipv4 at this time"
+	::= { rcCfmTransmitL2McastTraceEntry 4 }
+
+rcCfmTransmitL2McastTraceServiceType OBJECT-TYPE
+	SYNTAX          INTEGER {
+                        vlan(1),
+                        vrfid(2)
+                        }
+	MAX-ACCESS      not-accessible
+        STATUS          current
+        DESCRIPTION     
+                "Service type indicates what value of service id means.
+                 vlan - indicates value maps to VLAN
+                 vrfid - indicates value maps to a VRF Id"
+	::= { rcCfmTransmitL2McastTraceEntry 5 }
+
+rcCfmTransmitL2McastTraceServiceId OBJECT-TYPE
+	SYNTAX          Integer32
+	MAX-ACCESS      not-accessible
+        STATUS          current
+        DESCRIPTION     
+                "Value of VLAN or VRF-Id.  Meaning controlled by
+                rcCfmTransmitL2McastTraceServiceType.  Value must be
+                valid for type (e.g. VLAN range 1..4094)"
+	::= { rcCfmTransmitL2McastTraceEntry 6 }
+
+rcCfmTransmitL2McastTraceVrfName OBJECT-TYPE
+	SYNTAX          DisplayString (SIZE (0..64))
+	MAX-ACCESS      read-only
+        STATUS          current
+        DESCRIPTION     "The name of the Virtual Router of the originator"
+	::= { rcCfmTransmitL2McastTraceEntry 7 }
+
+rcCfmTransmitL2McastTraceRowStatus OBJECT-TYPE
+	SYNTAX          RowStatus
+	MAX-ACCESS      read-create
+        STATUS          current
+        DESCRIPTION     "Used to create/delete entries in the 
+                        rcCfmTransmitL2McastTraceTable.  Deletion
+                        of an entry in this table results in a corresponding
+                        rcCfmL2McastTraceReplyTable entries being deleted"
+	::= { rcCfmTransmitL2McastTraceEntry 8 }
+
+rcCfmTransmitL2McastTracePriority OBJECT-TYPE
+	SYNTAX          Integer32(0..7)
+	MAX-ACCESS      read-create
+        STATUS          current
+        DESCRIPTION     "Priority. 3 bit value to be used in the VLAN hdr, 
+                        if present in the transmitted frame."
+	DEFVAL {7}
+	::= { rcCfmTransmitL2McastTraceEntry 9 }
+
+rcCfmTransmitL2McastTraceTtl OBJECT-TYPE
+	SYNTAX          Integer32(0..255)
+	MAX-ACCESS      read-create
+        STATUS          current
+        DESCRIPTION     "The number of hops remaining to this trace.
+                        Decremented by 1 by each Bridge that handles trace.
+                        If 0 on output, the trace is not transmitted to
+                        the next hop.  The value of the TTL Field in the 
+                        trace trasnmitted by originating MEP is controlled
+                        by a Managed Object; the default value if none is 
+                        specified is 64."
+	DEFVAL {64}
+	::= { rcCfmTransmitL2McastTraceEntry 10 }
+
+rcCfmTransmitL2McastTraceSeqNumber OBJECT-TYPE
+	SYNTAX 		Integer32
+	MAX-ACCESS	read-only
+	STATUS		current
+	DESCRIPTION	"The transaction identifier/sequence number of the 
+                        first message (to be) sent."
+	::= { rcCfmTransmitL2McastTraceEntry 11}	
+	
+rcCfmTransmitL2McastTraceStatus OBJECT-TYPE
+	SYNTAX 		INTEGER {
+				ready(1),
+				transmit(2),
+                                abort(3)
+			}
+	MAX-ACCESS	read-create
+	STATUS		current
+	DESCRIPTION	"Status of the transmit loopback service:
+			-ready.      The service is available.
+			-transmit.   The service is transmitting, or about to 
+                                     transmit the trace messages.
+                        -abort       The service is aborted or about to abort
+                                     the trace messages.
+
+			This column will also be used to avoid concurrency or 
+                        race condition problems that could occur if two or 
+                        more management entities try to 
+			use the service at the same time. "
+	DEFVAL {ready}
+	::= { rcCfmTransmitL2McastTraceEntry 12}	
+
+rcCfmTransmitL2McastTraceResultOk OBJECT-TYPE
+	SYNTAX 		TruthValue
+	MAX-ACCESS	read-only
+	STATUS		current
+	DESCRIPTION	"Indicates the result of the operation:
+			-true.    The Trace Message(s) will/have been sent.
+			-false.   The Trace Message(s) will not be sent."
+	DEFVAL {true}
+	::= { rcCfmTransmitL2McastTraceEntry 13 }
+
+rcCfmTransmitL2McastTraceFlag    OBJECT-TYPE
+	SYNTAX 		INTEGER {
+				none(1),
+				internalError(2),
+                                mepDisabled(3), 
+                                noResponse(4),
+                                traceComplete(5),
+				leafNode(6),
+				noDataIsidFound(7)
+			}
+	MAX-ACCESS	read-only
+	STATUS	        current 	
+	DESCRIPTION	"Result flag indicating L2Trace status or error code. 
+                         Each enum value represents a status or error case.  
+                         1 - No error  
+                         2 - Internal Error
+                         3 - Mep must be enabled in order to perform trace
+                         4 - No response received
+                         5 - Trace completed
+			 6 - On a leaf node in the i-sid tree
+			 7 - No Data Isid was found for S,G"
+	::= {  rcCfmTransmitL2McastTraceEntry 14}
+
+
+-- The L2 Multicast Trace Reply Table
+
+rcCfmL2McastTraceReplyTable OBJECT-TYPE
+        SYNTAX          SEQUENCE OF RcCfmL2McastTraceReplyEntry
+        MAX-ACCESS      not-accessible
+        STATUS          current 
+        DESCRIPTION     
+                "This table contains a list of multicast route trace
+                replies received by a specific MEP in response to a
+                trace message."
+        ::= { rcCfm 42}
+
+rcCfmL2McastTraceReplyEntry OBJECT-TYPE
+        SYNTAX          RcCfmL2McastTraceReplyEntry
+        MAX-ACCESS      not-accessible
+        STATUS          current 
+        DESCRIPTION     "The L2 Multicast Trace Reply Table Entry"
+        INDEX           { rcCfmL2McastTraceReplySrcIpAddrType,
+                          rcCfmL2McastTraceReplySrcIpAddr,
+                          rcCfmL2McastTraceReplyGroupIpAddrType,
+                          rcCfmL2McastTraceReplyGroupIpAddr,
+                          rcCfmL2McastTraceReplyServiceType,
+                          rcCfmL2McastTraceReplyServiceId,
+                          rcCfmL2McastTraceReplyHop,
+                          rcCfmL2McastTraceReplyReceiveOrder
+                        }
+        ::= { rcCfmL2McastTraceReplyTable 1 }
+
+
+RcCfmL2McastTraceReplyEntry ::= SEQUENCE {
+
+        rcCfmL2McastTraceReplySrcIpAddrType          InetAddressType,
+        rcCfmL2McastTraceReplySrcIpAddr              InetAddress,
+        rcCfmL2McastTraceReplyGroupIpAddrType        InetAddressType,
+        rcCfmL2McastTraceReplyGroupIpAddr            InetAddress,
+        rcCfmL2McastTraceReplyServiceType            INTEGER,
+        rcCfmL2McastTraceReplyServiceId              Integer32,
+        rcCfmL2McastTraceReplyHop                    Integer32,
+        rcCfmL2McastTraceReplyReceiveOrder           Integer32,
+        rcCfmL2McastTraceReplyTtl                    Integer32,
+        rcCfmL2McastTraceReplyVrfName                DisplayString,
+        rcCfmL2McastTraceReplySrcMac                 MacAddress,
+        rcCfmL2McastTraceReplyHostName               OCTET STRING,
+        rcCfmL2McastTraceReplyLastSrcMac             MacAddress,
+        rcCfmL2McastTraceReplyLastHostName           OCTET STRING,
+        rcCfmL2McastTraceReplySpbmVlanId             Integer32,
+	rcCfmL2McastTraceReplyBMac		     MacAddress,
+	rcCfmL2McastTraceReplyIsid		     Integer32
+        }
+
+rcCfmL2McastTraceReplySrcIpAddrType OBJECT-TYPE
+	SYNTAX          InetAddressType
+	MAX-ACCESS      not-accessible
+        STATUS          current
+        DESCRIPTION     
+                "The address type of Source IP Address"
+	::= { rcCfmL2McastTraceReplyEntry 1 }
+
+rcCfmL2McastTraceReplySrcIpAddr OBJECT-TYPE
+	SYNTAX          InetAddress
+	MAX-ACCESS      not-accessible
+        STATUS          current
+        DESCRIPTION     
+                "Source IP Address. Support ipv4 at this time"
+	::= { rcCfmL2McastTraceReplyEntry 2 }
+
+rcCfmL2McastTraceReplyGroupIpAddrType OBJECT-TYPE
+	SYNTAX          InetAddressType
+	MAX-ACCESS      not-accessible
+        STATUS          current
+        DESCRIPTION     
+                "The address type of Multicast Group IP Address"
+	::= { rcCfmL2McastTraceReplyEntry 3 }
+
+rcCfmL2McastTraceReplyGroupIpAddr OBJECT-TYPE
+	SYNTAX          InetAddress
+	MAX-ACCESS      not-accessible
+        STATUS          current
+        DESCRIPTION     
+                "Multicast Group IP Address. Support ipv4 at this time"
+	::= { rcCfmL2McastTraceReplyEntry 4 }
+
+rcCfmL2McastTraceReplyServiceType OBJECT-TYPE
+	SYNTAX          INTEGER {
+                        vlan(1),
+                        vrfid(2)
+                        }
+	MAX-ACCESS      not-accessible
+        STATUS          current
+        DESCRIPTION     
+                "Service type indicates what value of service id means.
+                 vlan - indicates value maps to VLAN
+                 vrfid - indicates value maps to a VRF Id"
+	::= { rcCfmL2McastTraceReplyEntry 5 }
+
+rcCfmL2McastTraceReplyServiceId OBJECT-TYPE
+	SYNTAX          Integer32
+	MAX-ACCESS      not-accessible
+        STATUS          current
+        DESCRIPTION     
+                "Value of VLAN or VRF-Id.  Meaning controlled by
+                rcCfmL2McastTraceReplyServiceType.  Value must be
+                valid for type (e.g. VLAN range 1..4094)"
+	::= { rcCfmL2McastTraceReplyEntry 6 }
+
+rcCfmL2McastTraceReplyHop OBJECT-TYPE
+	SYNTAX          Integer32 (0..255)
+	MAX-ACCESS      not-accessible
+        STATUS          current
+        DESCRIPTION     "The number of hops away from trace initiator"
+	::= { rcCfmL2McastTraceReplyEntry 7 }
+
+rcCfmL2McastTraceReplyReceiveOrder OBJECT-TYPE
+	SYNTAX          Integer32 (1..2147483647)
+	MAX-ACCESS      not-accessible
+        STATUS          current
+        DESCRIPTION     
+                "An index to distinguish among multiple responses
+                 with the same Transaction Identifier field  value. This value
+                 is assigned sequentially from 1, in the order that the 
+                Linktrace Initiator received the responses."
+        ::= { rcCfmL2McastTraceReplyEntry 8 }
+
+rcCfmL2McastTraceReplyTtl OBJECT-TYPE
+	SYNTAX          Integer32(0..255)
+	MAX-ACCESS      read-only
+        STATUS          current
+        DESCRIPTION     "Ttl field value for a returned trace response."
+	::= { rcCfmL2McastTraceReplyEntry 9 }
+
+rcCfmL2McastTraceReplyVrfName OBJECT-TYPE
+	SYNTAX          DisplayString (SIZE (0..64))
+	MAX-ACCESS      read-only
+        STATUS          current
+        DESCRIPTION     "The name of the Virtual Router of the originator"
+        ::= { rcCfmL2McastTraceReplyEntry 10}
+
+rcCfmL2McastTraceReplySrcMac OBJECT-TYPE
+	SYNTAX          MacAddress
+	MAX-ACCESS      read-only
+        STATUS          current
+        DESCRIPTION     "Mac address of the MP that respond to the trace
+                        request"
+	::= { rcCfmL2McastTraceReplyEntry 11 }
+
+rcCfmL2McastTraceReplyHostName OBJECT-TYPE
+	SYNTAX          OCTET STRING (SIZE (0..255))
+	MAX-ACCESS      read-only
+        STATUS          current
+        DESCRIPTION     "The host name of the replying node"
+	::= { rcCfmL2McastTraceReplyEntry 12 }
+
+rcCfmL2McastTraceReplyLastSrcMac OBJECT-TYPE
+	SYNTAX          MacAddress
+	MAX-ACCESS      read-only
+        STATUS          current
+        DESCRIPTION     "The MAC address of the node that forwarded the trace
+                        to the responding node"
+	::= { rcCfmL2McastTraceReplyEntry 13 }
+
+rcCfmL2McastTraceReplyLastHostName OBJECT-TYPE
+	SYNTAX          OCTET STRING (SIZE (0..255))
+	MAX-ACCESS      read-only
+        STATUS          current
+        DESCRIPTION     "The host name of the node that forwarded the trace
+                        to the responding node"
+	::= { rcCfmL2McastTraceReplyEntry 14 }
+
+rcCfmL2McastTraceReplySpbmVlanId OBJECT-TYPE
+	SYNTAX          Integer32
+	MAX-ACCESS      read-only
+        STATUS          current
+        DESCRIPTION     "The SPBM VLAN id used for the trace"
+	::= { rcCfmL2McastTraceReplyEntry 15 }
+
+
+rcCfmL2McastTraceReplyBMac OBJECT-TYPE
+	SYNTAX          MacAddress
+	MAX-ACCESS      read-only
+        STATUS          current
+        DESCRIPTION     "The multicast MAC address for the group"
+	::= { rcCfmL2McastTraceReplyEntry 16 }
+
+rcCfmL2McastTraceReplyIsid OBJECT-TYPE
+        SYNTAX        Integer32 (1..16777215)
+        MAX-ACCESS    read-only
+        STATUS        current
+        DESCRIPTION   "Isid id for the group"
+	::= { rcCfmL2McastTraceReplyEntry 17 }
 
 
 END

@@ -13,11 +13,13 @@ IMPORTS
     EnableValue, IdList, RcLongDisplayString
         FROM RAPID-CITY
     VrfIdentifier
-        FROM RC-VRF-MIB;
+        FROM RC-VRF-MIB
+    Ipv6Address
+        FROM IPV6-TC;
 
 
 rcIpPolicyMib MODULE-IDENTITY
-       LAST-UPDATED     "200902190000Z"
+       LAST-UPDATED     "201809260000Z"
        ORGANIZATION     "Bay Networks, Rapid-City Group"
        CONTACT-INFO     "Yu-Ten Lee
                          Postal:        Nortel Networks, Inc.
@@ -29,6 +31,99 @@ rcIpPolicyMib MODULE-IDENTITY
                          E-mail:     ylee@nortelnetworks.com"
 
        DESCRIPTION      "Enterprise MIB for the Accelar product family."
+
+       REVISION "201809260000Z" -- 26 Sept 2018
+       DESCRIPTION "Verion 54: Remove the default value from objects:
+	   		       rcIpRedistributeInterVrfMetricType,
+	   		       rcIpRedistributeInterVrfSubnets"
+			       
+       REVISION "201809190000Z" -- 19 Sept 2018
+       DESCRIPTION "Verion 53: added none option to the objects:
+	   		       rcIpRedistributeInterVrfMetricType,
+	   		       rcIpRedistributeInterVrfMatchRouteType,
+	   		       rcIpRedistributeInterVrfSubnets"
+			       
+
+       REVISION "201808280000Z" -- 28 August 2018
+       DESCRIPTION "Version 52: updated the description for rcIpRedistributeInterVrfMetricType"
+
+       REVISION "201808100000Z" -- 10 August 2018
+       DESCRIPTION "Version 51: Added Range to rcIpRoutePolicyMatchLocalPref"
+
+       REVISION "201701090000Z" -- 09 Jan 2017
+       DESCRIPTION "Version 50:	Delete none(3) and liveMetric(4) and added live(3)
+	                        to rcIpRedistributeInterVrfMetricType.
+				Requested by Osamu"
+
+       REVISION "201701060000Z" -- 06 Jan 2017
+       DESCRIPTION "Version 49: Added rcIpRoutePolicySetMetricTypeBgp to
+                                RcIpRoutePolicyEntry and added none(3),liveMetric(4) to
+                                rcIpRedistributeInterVrfMetricType.
+				Requested by Osamu"
+	   
+       REVISION "201603180000Z" -- 18 Mar 2016
+       DESCRIPTION "Version 48: Added dvr value under rcIpRedistributeInterVrfProtocol
+	   and rcIpRedistributeInterVrfRouteSource "
+			    
+       REVISION "201507130000Z" -- 13 July 2015
+       DESCRIPTION "Version 47: Added ripng value under rcIpRedistributeProtocol and
+                                rcIpRedistributeRouteSource"
+	   
+       REVISION "201505130000Z" -- 13 May 2015
+       DESCRIPTION "Version 46: Added rcIpRoutePolicyMatchMetricTypeIsis
+	                        and rcIpRoutePolicySetMetricTypeIsis.
+				Requested by Gautam (Prem)"
+	   
+       REVISION "201504220000Z" -- 22 April 2015
+       DESCRIPTION "Version 45: Added rcIpNewRoutePrefTableSize
+	                              rcipNewRoutePrefTable"
+	   
+       REVISION "201503120000Z" -- 12 March 2015
+       DESCRIPTION "Version 44: Added ripng value under 
+	   			rcIpRedistributeInterVrfProtocol and 
+				rcIpRedistributeInterVrfRouteSource.
+				Requested by Hemadri/Amruta for IPv6 RIPng Rel1 (Prem)"
+
+       REVISION "201408060000Z" -- 06 August 2014
+       DESCRIPTION "Version 43: Added bgpv6 and isisv6 values under rcIpRedistributeInterVrfProtocol.
+                                Added v6isis and v6bgp values under rcIpRedistributeInterVrfRouteSource"
+
+       REVISION "201408060000Z" -- 06 August 2014
+       DESCRIPTION "Version 42: Added spbmv6Level1 value under rcIpRoutePrefProtocol."
+
+       REVISION "201310100000Z" -- 10 October 2013
+       DESCRIPTION "Version 41: Added Ipv6Address to IMPORTS."
+
+       REVISION "201205030000Z" -- 03 May 2012
+       DESCRIPTION "Version 40: Removed enumeration value isis(7) from 
+	   			rcIpRedistributeInterVrfRouteSource because
+				there is another value for isis (13) defined
+				for that object. Two values cannot have the 
+				same name, so removing the value 7 since
+				the code is using the value of 13."
+
+       REVISION "201202290000Z" -- 29 February 2012
+       DESCRIPTION "Version 39: Added rcIpRoutePolicyNameTable."
+
+       REVISION "201110190000Z" -- 19 October 2011
+       DESCRIPTION "Version 38: Added rcIpPrefixListNameTableSize and 
+	            rcIpPrefixListNameTable."
+
+       REVISION "201102180000Z" -- 18 February 2011
+       DESCRIPTION "Version 37: Removed rcIpRoutePolicySetLevel mib object.
+	            This mib object was first added in 7.1, but before 7.1 
+		    was released, the mib object was removed. So removing
+		    it from MRT as well."
+
+       REVISION "201101060000Z" -- 06 January 2011
+       DESCRIPTION "Version 36: Added enum values level1 and level2 for 
+	            rcIpRoutePolicyMatchRouteType, internal and external 
+		    for rcIpRoutePolicySetMetricType, spbmLevel1 for 
+		    rcIpRoutePrefProtocol, isis for rcIpRedistributeInterVrfRouteSource.
+		    Added rcIpRoutePolicySetLevel mib object."
+
+       REVISION "201009140000Z" -- 14 September 2010
+       DESCRIPTION "Version 35: Updated rcIpRoutePolicyMatchVrf size"
 
        REVISION "200902190000Z" -- 19 Feb 2009
        DESCRIPTION "Version 34: Added isis(7) in rcIpRedistributeInterVrfRouteSource"
@@ -1904,7 +1999,10 @@ RcIpRoutePolicyEntry ::=
                 rcIpRoutePolicyMatchLocalPref              Integer32,
                 rcIpRoutePolicyMatchIpRouteDest            RcLongDisplayString,
                 rcIpRoutePolicyMatchExtendedPref           OCTET STRING,
-                rcIpRoutePolicyIpv6SetNextHop              Ipv6Address
+                rcIpRoutePolicyIpv6SetNextHop              Ipv6Address,
+                rcIpRoutePolicyMatchMetricTypeIsis         INTEGER,
+                rcIpRoutePolicySetMetricTypeIsis           INTEGER,
+		rcIpRoutePolicySetMetricTypeBgp            INTEGER
         }
 
 rcIpRoutePolicyId OBJECT-TYPE
@@ -2054,7 +2152,9 @@ rcIpRoutePolicyMatchRouteType OBJECT-TYPE
                           internal(2),
                           external(3),
                           externaltype1(4),
-                          externaltype2(5)
+                          externaltype2(5),
+                          level1(6),
+			  level2(7)
                       }
         MAX-ACCESS    read-create
         STATUS        current
@@ -2176,7 +2276,9 @@ rcIpRoutePolicySetMetric OBJECT-TYPE
 rcIpRoutePolicySetMetricType OBJECT-TYPE
         SYNTAX        INTEGER {
                           type1(1),
-                          type2(2)
+                          type2(2),
+			  internal(3),
+			  external(4)
                       }
         MAX-ACCESS    read-create
         STATUS        current
@@ -2294,7 +2396,7 @@ rcIpRoutePolicyNssaPbit OBJECT-TYPE
         ::= { rcIpRoutePolicyEntry 35 }
 
 rcIpRoutePolicyMatchVrf OBJECT-TYPE
-        SYNTAX        IdList (SIZE (0..256))
+        SYNTAX        IdList (SIZE (0..1024))
         MAX-ACCESS    read-create
         STATUS        current
         DESCRIPTION   "An array used to identify which source VRFs have leaked
@@ -2335,10 +2437,10 @@ rcIpRoutePolicySetExtCommunityMode  OBJECT-TYPE
         ::= { rcIpRoutePolicyEntry 39}
 
 rcIpRoutePolicyMatchLocalPref          OBJECT-TYPE
-        SYNTAX        Integer32
+        SYNTAX        Integer32 (0..2147483647)
         MAX-ACCESS    read-create
         STATUS        current
-        DESCRIPTION   "Match Local Prefix value."
+        DESCRIPTION   "Match Local Preference value."
         ::= { rcIpRoutePolicyEntry 40}
         
 rcIpRoutePolicyMatchIpRouteDest  OBJECT-TYPE
@@ -2365,6 +2467,43 @@ rcIpRoutePolicyIpv6SetNextHop OBJECT-TYPE
         DESCRIPTION   "Address of the ipv6 next hop router.  Ignored for
                        DVMRP routes."
         ::= { rcIpRoutePolicyEntry 43 }
+
+rcIpRoutePolicyMatchMetricTypeIsis OBJECT-TYPE
+        SYNTAX        INTEGER {
+                          any(1),
+                          internal(2),
+                          external(3)
+                      }
+        MAX-ACCESS    read-write
+        STATUS        current
+        DESCRIPTION   "Match metric type field in the incoming ISIS 
+                       routes in accept policy."
+        DEFVAL        { any }
+        ::= { rcIpRoutePolicyEntry 44 }
+
+rcIpRoutePolicySetMetricTypeIsis OBJECT-TYPE
+        SYNTAX        INTEGER {
+                          none(1),
+                          internal(2),
+                          external(3)
+                      }
+        MAX-ACCESS    read-write
+        STATUS        current
+        DESCRIPTION   "Set Metric type ISIS."
+        DEFVAL        { none }
+        ::= { rcIpRoutePolicyEntry 45 }
+
+rcIpRoutePolicySetMetricTypeBgp OBJECT-TYPE
+        SYNTAX        INTEGER {
+                          none(1),
+                          liveMetric(2)
+                      }
+        MAX-ACCESS    read-write
+        STATUS        current
+        DESCRIPTION   "Set Metric type BGP."
+         DEFVAL        { none } 
+        ::= { rcIpRoutePolicyEntry 46 }
+
 
 -- Ip Redistribute Table
 
@@ -2423,7 +2562,8 @@ rcIpRedistributeProtocol OBJECT-TYPE
                           bgp(2),
                           isis(3),
                           ospfv3(4),
-                          vrf-ext(5)
+                          vrf-ext(5),
+                          ripng(6)
                       }
         MAX-ACCESS    read-only
         STATUS        current
@@ -2439,7 +2579,8 @@ rcIpRedistributeRouteSource OBJECT-TYPE
                           rip(3),
                           ospf(4),
                           bgp(5),
-                          isis(6)
+                          isis(6),
+                          ripng(7)
                       }
         MAX-ACCESS    read-only
         STATUS        current
@@ -2695,7 +2836,9 @@ rcIpRoutePrefProtocol OBJECT-TYPE
                           ospfv3Intra(14),
                           ospfv3Inter(15),
                           ospfv3External1(16),
-                          ospfv3External2(17)
+                          ospfv3External2(17),
+                          spbmLevel1(18),
+                          spbmv6Level1(19)
                       }
         MAX-ACCESS    read-only
         STATUS        current
@@ -2769,7 +2912,11 @@ rcIpRedistributeInterVrfProtocol OBJECT-TYPE
                           vrf-ext(4),
                           extranet(5),
                           rip(6),
-                          ospfv3(10)
+                          ospfv3(10),
+			  bgpv6(11),
+			  isisv6(12),
+			  ripng(13),
+			  dvr(14)
                       }
         MAX-ACCESS    not-accessible
         STATUS        current
@@ -2793,10 +2940,14 @@ rcIpRedistributeInterVrfRouteSource OBJECT-TYPE
                           ospf(4),
                           bgp(5),
 			  extranet(6),
-                          isis(7),
                           v6direct(10),
                           v6static(11),
-                          ospfv3(12)
+                          ospfv3(12),
+                          isis(13),
+			  v6isis(14),
+			  v6bgp(15),
+                          ripng(16),
+			  dvr(17)
                       }
         MAX-ACCESS    not-accessible
         STATUS        current
@@ -2826,20 +2977,28 @@ rcIpRedistributeInterVrfMetric OBJECT-TYPE
 rcIpRedistributeInterVrfMetricType OBJECT-TYPE
         SYNTAX        INTEGER {
                           type1(1),
-                          type2(2)
+                          type2(2),
+                          live(3),
+                          none(4)
                       }
         MAX-ACCESS    read-write
         STATUS        current
-        DESCRIPTION   "specifies the type of the metric type, useful
-                       for OSPF and  BGP only."
-        DEFVAL        { type2 }
+        DESCRIPTION   "specifies the type of the metric type.
+                       for OSPF: value 1 means type1 redistributed route and 
+		       		 value 2 means type2 redistributed route.
+                       for ISIS: value 1 means internal redistributed route and 
+		       		 value 2 means external redistributed route.
+                       for BGP: live(3) metric type is used.
+                       none(4) is used for protocols that don't support any of the
+		               other defined values."
         ::= { rcIpRedistributeInterVrfEntry 7 }
 
 rcIpRedistributeInterVrfMatchRouteType OBJECT-TYPE
         SYNTAX        INTEGER {
                           internal(1),
                           external1(2),
-                          external2(3)
+                          external2(3),
+                          none(4)
                       }
         MAX-ACCESS    read-write
         STATUS        current
@@ -2857,13 +3016,13 @@ rcIpRedistributeInterVrfSetTag OBJECT-TYPE
 rcIpRedistributeInterVrfSubnets OBJECT-TYPE
         SYNTAX        INTEGER {
                           allow(1),
-                          suppress(2)
+                          suppress(2),
+                          none(3)
                       }
         MAX-ACCESS    read-write
         STATUS        current
         DESCRIPTION   "applicable to OSPF only. Indicates that all the
                        subnets need to be advertised individually."
-        DEFVAL        { allow }
         ::= { rcIpRedistributeInterVrfEntry 10 }
 
 rcIpRedistributeInterVrfRoutePolicy OBJECT-TYPE
@@ -3124,4 +3283,164 @@ rcIpExtACLPrefixRowStatus OBJECT-TYPE
            "Used to create/delete prefixes from ACL list."
     ::= { rcIpExtACLEntry 6 } 
 
+-- Ip Prefix List Name Table
+
+rcIpPrefixListNameTableSize OBJECT-TYPE
+        SYNTAX        Integer32
+        MAX-ACCESS    read-only
+        STATUS        current
+        DESCRIPTION   "table size"
+        ::= { rcIpGenPolicy 26 }
+
+rcIpPrefixListNameTable OBJECT-TYPE
+        SYNTAX          SEQUENCE OF RcIpPrefixListNameEntry
+        MAX-ACCESS      not-accessible
+        STATUS          current
+        DESCRIPTION     "Prefix List Name table"
+        ::= { rcIpGenPolicy 27 }
+
+rcIpPrefixListNameEntry OBJECT-TYPE
+        SYNTAX          RcIpPrefixListNameEntry
+        MAX-ACCESS      not-accessible
+        STATUS          current
+        DESCRIPTION     "An entry of Prefix List Name Table."
+        INDEX           { rcIpPrefixListNameId }
+        ::= { rcIpPrefixListNameTable 1 }
+
+RcIpPrefixListNameEntry ::=
+        SEQUENCE {
+                rcIpPrefixListNameId           Integer32,
+                rcIpPrefixListNameName         DisplayString
+        }
+
+rcIpPrefixListNameId OBJECT-TYPE
+        SYNTAX        Integer32 (0..2147483647)
+        MAX-ACCESS    not-accessible
+        STATUS        current
+        DESCRIPTION   "list id"
+        ::= { rcIpPrefixListNameEntry 1 }
+
+rcIpPrefixListNameName OBJECT-TYPE
+        SYNTAX        DisplayString (SIZE(1..64))
+        MAX-ACCESS    read-only
+        STATUS        current
+        DESCRIPTION   "list name"
+        ::= { rcIpPrefixListNameEntry 2 }
+
+
+-- Ip Route Policy Name Table
+
+rcIpRoutePolicyNameTable OBJECT-TYPE
+        SYNTAX          SEQUENCE OF RcIpRoutePolicyNameEntry
+        MAX-ACCESS      not-accessible
+        STATUS          current
+        DESCRIPTION     "Route Policy Name table for all VRFs"
+        ::= { rcIpGenPolicy 28 }
+
+rcIpRoutePolicyNameEntry OBJECT-TYPE
+        SYNTAX          RcIpRoutePolicyNameEntry
+        MAX-ACCESS      not-accessible
+        STATUS          current
+        DESCRIPTION     "An entry of Route Policy Name Table."
+        INDEX           { rcIpRoutePolicyNameVrfId, rcIpRoutePolicyNameId }
+        ::= { rcIpRoutePolicyNameTable 1 }
+
+RcIpRoutePolicyNameEntry ::=
+        SEQUENCE {
+                rcIpRoutePolicyNameVrfId        VrfIdentifier,
+                rcIpRoutePolicyNameId           Integer32,
+                rcIpRoutePolicyNameName         DisplayString
+        }
+
+rcIpRoutePolicyNameVrfId OBJECT-TYPE
+        SYNTAX        VrfIdentifier
+        MAX-ACCESS    not-accessible
+        STATUS        current
+        DESCRIPTION   "route policy vrfId"
+        ::= { rcIpRoutePolicyNameEntry 1 }
+
+rcIpRoutePolicyNameId OBJECT-TYPE
+        SYNTAX        Integer32 (0..2147483647)
+        MAX-ACCESS    not-accessible
+        STATUS        current
+        DESCRIPTION   "route policy id"
+        ::= { rcIpRoutePolicyNameEntry 2 }
+
+rcIpRoutePolicyNameName OBJECT-TYPE
+        SYNTAX        DisplayString (SIZE(1..64))
+        MAX-ACCESS    read-only
+        STATUS        current
+        DESCRIPTION   "route policy name"
+        ::= { rcIpRoutePolicyNameEntry 3 }
+
+-- New Ipv4 Route Pref Table
+
+rcIpNewRoutePrefTableSize OBJECT-TYPE
+        SYNTAX        Integer32
+        MAX-ACCESS    read-only
+        STATUS        current
+        DESCRIPTION   "table size"
+        ::= { rcIpGenPolicy 29 }
+
+rcIpNewRoutePrefTable OBJECT-TYPE
+        SYNTAX          SEQUENCE OF RcIpNewRoutePrefEntry
+        MAX-ACCESS      not-accessible
+        STATUS          current
+        DESCRIPTION     "New IPv4 Route Pref table. This table and
+	                 rcIpv6RoutePrefTable are designed
+	                 to obsolete the rcIpRoutePrefTable"
+        ::= { rcIpGenPolicy 30 }
+
+rcIpNewRoutePrefEntry OBJECT-TYPE
+        SYNTAX          RcIpNewRoutePrefEntry
+        MAX-ACCESS      not-accessible
+        STATUS          current
+        DESCRIPTION     "An entry of New Ipv4 Route Pref Table."
+        INDEX           { rcIpNewRoutePrefDefaultValue}
+        ::= { rcIpNewRoutePrefTable 1 }
+
+RcIpNewRoutePrefEntry ::=
+        SEQUENCE {
+		rcIpNewRoutePrefDefaultValue     Integer32,
+                rcIpNewRoutePrefProtocol         INTEGER,
+                rcIpNewRoutePrefConfiguredValue  Integer32
+        }
+
+rcIpNewRoutePrefDefaultValue OBJECT-TYPE
+        SYNTAX        Integer32 (0..255)
+        MAX-ACCESS    not-accessible
+        STATUS        current
+        DESCRIPTION   "Shows the default preference value for the given
+                       protocol."
+        ::= { rcIpNewRoutePrefEntry 1 }
+
+rcIpNewRoutePrefProtocol OBJECT-TYPE
+        SYNTAX        INTEGER {
+                          local(1),
+                          static(2),
+                          mpls(3),
+                          ospfIntra(4),
+                          ospfInter(5),
+                          isisLevel1(6),
+                          isisLevel2(7),
+                          ebgp(8),
+                          rip(9),
+                          ospfExternal1(10),
+                          ospfExternal2(11),
+                          ibgp(12),
+                          spbmLevel1(13)
+                      }
+        MAX-ACCESS    read-only
+        STATUS        current
+        DESCRIPTION   "Protocol name"
+        ::= { rcIpNewRoutePrefEntry 2 }
+
+rcIpNewRoutePrefConfiguredValue OBJECT-TYPE
+        SYNTAX        Integer32 (0..255)
+        MAX-ACCESS    read-write
+        STATUS        current
+        DESCRIPTION   "This value is configurable by the user"
+        ::= { rcIpNewRoutePrefEntry 3 }
+   
 END
+

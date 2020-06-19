@@ -13,7 +13,7 @@ IMPORTS
         FROM RAPID-CITY;
 
 rcSlppMib MODULE-IDENTITY
-       LAST-UPDATED "201011100000Z"
+       LAST-UPDATED "201210080000Z"
        ORGANIZATION "Bay Networks, Rapid-City Group"
        CONTACT-INFO "Yu-Ten Lee
                      Postal:           Nortel Networks, Inc. 
@@ -24,6 +24,14 @@ rcSlppMib MODULE-IDENTITY
                      E-mail:        ylee@nortelnetworks.com"
 
        DESCRIPTION         "Enterprise MIB for SLPP"
+
+        REVISION "201210080000Z" -- 08 October 2012
+       DESCRIPTION "Version 16:  Changed default value for rcSlppEtherType from '8104'h to '8102'h"
+
+       REVISION "201110060000Z" -- 06 October 2011
+       DESCRIPTION "Version 15:  Added rcSlppPortTimeToClrPktRxCount,
+	                         rcSlppPortRemainingTimeToClrPktRxCount,
+				 rcSlppPortClearPktRxCount."
 
        REVISION "201011100000Z" -- 10 November 2010
        DESCRIPTION "Version 14:  Added rcSlppPortGuardStatus,
@@ -111,7 +119,7 @@ rcSlppEtherType OBJECT-TYPE
         MAX-ACCESS    read-write
         STATUS        current
         DESCRIPTION   "SLPP Protocol Identification. The value is normally in Hex."
-        DEFVAL        { '8104'h }
+        DEFVAL        { '8102'h }
     ::= { rcSlppScalars 3 }
 
 rcSlppTimeout OBJECT-TYPE
@@ -218,7 +226,10 @@ RcSlppPortEntry ::= SEQUENCE {
     rcSlppPortGuardEnable     TruthValue,
     rcSlppPortGuardTimeout    Integer32,
     rcSlppPortGuardStatus     INTEGER,
-    rcSlppPortGuardTimerCount Integer32
+    rcSlppPortGuardTimerCount Integer32,
+    rcSlppPortTimeToClrPktRxCount Unsigned32,
+    rcSlppPortRemainingTimeToClrPktRxCount Unsigned32,
+    rcSlppPortClearPktRxCount TruthValue
 }
 
 rcSlppPortIfIndex OBJECT-TYPE
@@ -319,6 +330,36 @@ rcSlppPortGuardTimerCount OBJECT-TYPE
          object reaches the timeout value (rcSlppPortGuardTimeout),
          the port will become re-enabled."
     ::= { rcSlppPortEntry 11 }
+
+rcSlppPortTimeToClrPktRxCount OBJECT-TYPE
+    SYNTAX        Unsigned32 (1..86400)
+    UNITS	  "seconds"
+    MAX-ACCESS    read-write
+    STATUS        current
+    DESCRIPTION
+        "Time to clear the SLPP Rx PDU counter. This has a 
+	 maximum value of 86400 seconds. The timer starts 
+	 when SLPP is enabled and port starts receiving SLPP
+	 SLPP PDUs. When the time exceeds this configured value, 
+	 the SLPP Pkt Rx Count will be reset."
+    ::= { rcSlppPortEntry 12 }
+
+rcSlppPortRemainingTimeToClrPktRxCount OBJECT-TYPE
+    SYNTAX        Unsigned32 (1..86400)
+    UNITS	  "seconds"
+    MAX-ACCESS    read-only
+    STATUS        current
+    DESCRIPTION
+        "Remaining time to clear the SLPP Rx PDU counter."
+    ::= { rcSlppPortEntry 13 }
+
+rcSlppPortClearPktRxCount OBJECT-TYPE
+    SYNTAX        TruthValue
+    MAX-ACCESS    read-write
+    STATUS        current
+    DESCRIPTION
+        "Clear the SLPP Rx PDU counter."
+    ::= { rcSlppPortEntry 14 }
 
 -- --------------------------------------------------
 -- Notification Objects

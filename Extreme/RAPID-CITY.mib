@@ -5,7 +5,7 @@ IMPORTS
     enterprises, IpAddress, TimeTicks
         FROM SNMPv2-SMI
     TEXTUAL-CONVENTION, RowStatus, TruthValue, MacAddress, DisplayString,
-    DateAndTime, TimeInterval
+    DateAndTime, TimeInterval, TimeStamp
         FROM SNMPv2-TC
     InterfaceIndex
         FROM IF-MIB
@@ -14,19 +14,548 @@ IMPORTS
     InetAddressType, InetAddress, InetAddressPrefixLength,
     InetAutonomousSystemNumber
         FROM INET-ADDRESS-MIB
-    bgpPeerRemoteAddr, bgpPeerLastError, bgpPeerState
-        FROM BGP4-MIB
+    LldpPortIdSubtype, LldpPortId, lldpRemEntry, LldpManAddress, LldpSystemCapabilitiesMap
+        FROM LLDP-MIB	
     Ipv6Address
-        FROM IPV6-TC;
+        FROM IPV6-TC
+    AddressFamilyNumbers
+        FROM IANA-ADDRESS-FAMILY-NUMBERS-MIB;
 
 rapidCity MODULE-IDENTITY
-       LAST-UPDATED     "201109130000Z"
+       LAST-UPDATED     "201810100000Z"
        ORGANIZATION 	"Avaya"
        CONTACT-INFO 	"Avaya
                        	 4655 Great America Parkway 
                          Santa Clara, CA 95052-8185"
-
+		     
        DESCRIPTION      "Enterprise MIB for the Accelar product family."
+
+       REVISION "201810100000Z" -- 10 Oct  2018
+       DESCRIPTION "Version 246: Added rcWebROEnable"
+
+       REVISION "201809260000Z" -- 26 September  2018
+       DESCRIPTION "Version 245:  Add rcSysDefaultPingTracerouteContextType and
+	   			  rcSysDefaultPingTracerouteContextVrfName.
+				  Requested by Julie Carleton (Prem)"
+
+       REVISION "201808100000Z" -- 10 August  2018
+       DESCRIPTION "Version 244:  Added enueration label dynamic(3) to
+	   			 rcSysDnsServerListType"
+
+       REVISION "201808100000Z" -- 10 August 2018
+       DESCRIPTION "Version 243: Added rcChasType a4624GTSPWRPLUS and  
+	   			a4648GTSPWRPLUS"
+
+       REVISION "201807270000Z" -- 27 July 2018
+       DESCRIPTION "Version 242: Add rcSysLocatorLed
+	   			 Requested by Jathavedas (Prem)"
+
+       REVISION "201807120000Z" -- 12 July 2018
+       DESCRIPTION "Version 241: Change aES6108x32 to a7432CQ. 
+	   			 And aES6108x48vx8c to a7456VSC"
+                                            
+       REVISION "201805220000Z" -- 22 May 2018
+       DESCRIPTION "Version 240: Remove rcES6108-32c rcES6108-48v-8c
+                                 Added aES6108x32c and aES6108x48vx8c"
+
+       REVISION "201804090000Z" -- 09 April 2018
+       DESCRIPTION "Version 239: Added rcES6108-32c rcES6108-48v-8c"
+	   
+       REVISION "201803060000Z" -- 06 March 2018
+       DESCRIPTION "Version 238: Added rcChasPowerSupplyDetailInputOperLineVoltage
+	                         rcChasPowerSupplyDetailInputPower"
+	   
+       REVISION "201802210000Z" -- 21 Feb 2018
+       DESCRIPTION "Version 237: Added rcRestConf"
+	   
+       REVISION "201801170000Z" -- 17 January 2018
+       DESCRIPTION "Version 237: Added rcAppTelemetry.
+	   			 Requested by Sandu Elena (ppalarapu)"
+
+       REVISION "201711150000Z" -- 15 Nov 2017
+       DESCRIPTION "Version 236: Added rcSshcGlobalRekeyDataLimit."
+
+       REVISION "201709190000Z" -- 19 September 2017
+       DESCRIPTION "Version 235: Renamed rcCliUserRole to rcCliUserLevel.
+	   			 (prempa)"
+
+       REVISION "201709180000Z" -- 18 September 2017
+       DESCRIPTION "Version 234: Added rcSyslogGlobalIncludeHostIp and rcOvsdb.
+	   			 (prempa)"
+
+       REVISION "201709060000Z" -- 6 September 2017
+       DESCRIPTION "Version 233: Added rcCarrier.
+	   			 Requested by Vinotha (VSP9K) (prempa)"
+
+       REVISION "201708310000Z" -- 31 August 2017
+       DESCRIPTION "Version 232: Added rcCliUserTable.
+	   			 Requested by Claudiu Gabriel Mitroi, Levente Dozsa (submit 35924) (prempa)"
+
+       REVISION "201706130000Z" -- 13 June 2017
+       DESCRIPTION "Version 231: Added rcNls as {rcMgmt 223}.
+	   			 Requested by Mihai Catalin Bleont for
+				 Native Linux Stack(NLS) project (prempa)"
+
+       REVISION "201705080000Z" -- 08 May 2017
+       DESCRIPTION "Version 230: Added rcVSP5030GSXuPWR and rcVSP5054GSXuPWR
+	   			 Requested by Catalin Neacsu (prempa)."
+
+       REVISION "201702240000Z" -- 24 Feb 2017
+       DESCRIPTION "Version 229: Added rcSysReservedPower and rcSysRequiredPower
+	   			 Submit 32962 (prempa)."
+
+       REVISION "201701310000Z" -- 31 Jan 2017
+       DESCRIPTION "Version 228: Corrected MIB compiler errors."
+	   
+       REVISION "201701120000Z" -- 12 Jan 2017
+       DESCRIPTION "Version 227: Added rcLacpGlobalSysId
+				 Requested by Ababei Isabella (prempa)"
+	   
+       REVISION "201611180000Z" -- 18 Nov 2016
+       DESCRIPTION "Version 226: Changed rcSshGlobalDsaKeySize from (1024..2048) to
+	   			 1024
+				 Requested by Hariprasad Rajendran (shchang)" 	   
+
+       REVISION "201610250000Z" -- 25 Oct. 2016
+       DESCRIPTION "Version 225: Added 	rcLldpRemExtendedIpAddress"
+	   
+       REVISION "201610240000Z" -- 24 Oct. 2016
+       DESCRIPTION "Version 224:  Added rcLldpRemExtendedTable"
+	   
+       REVISION "201610130000Z" -- 13 Oct. 2016
+       DESCRIPTION "Version 223: Added rcSyslogHostSecureForwardingServerCertName.
+	   			 Requested by Hariprasad Rajendran (prempa)"
+	   
+       REVISION "201610050000Z" -- 05 Oct. 2016
+       DESCRIPTION "Version 222: Added rcLogLoggingGlobal"
+	   
+       REVISION "201609200000Z" -- 20 Sept. 2016
+       DESCRIPTION "Version 221: Increased the range of rcWebRWAPassword, 
+	   			 rcWebRWPassword, rcWebROPassword,
+				 rcWebRWL3Password and rcWebRWL2Password
+				 from 1-20 to 1-32.
+				 Requested by Hariprasad Rajendran (submit 30398)
+                                 (prempa)" 
+
+       REVISION "201609080000Z" -- 08 Sept. 2016
+       DESCRIPTION "Version 220: Renamed rcVSP9408 to rcVSP8608.
+	   			 Renamed a9408 under rcChasType to a8608
+                                 (prempa)" 
+
+       REVISION "201609010000Z" -- 01 Sept. 2016
+       DESCRIPTION "Version 219: Changed rcWebPasswordMinimumLength to rcWebMinimumPasswordLength.
+                                 (prempa)" 
+
+       REVISION "201609010000Z" -- 01 Sept. 2016
+       DESCRIPTION "Version 218: Added softResetCoreDump(14) under rcSysActionRwa.
+	                         Requested by Ning Zhong (shchang)"
+
+       REVISION "201608310000Z" -- 31 Aug. 2016
+       DESCRIPTION "Version 217: Added rcWebPasswordMinimumLength.
+                                 Requested by Hariprasad Rajendran (prempa)" 
+
+       REVISION "201608310000Z" -- 31 Aug. 2016
+       DESCRIPTION "Version 216: changed tlsProtec and sshProtect under 
+	   			 rcSyslogHostSecureForwardingMode to
+				 tls and ssh.
+				 Added rcSyslogRootCertificateTable.
+                                 Requested by Hariprasad Rajendran (prempa)"   
+
+       REVISION "201608160000Z" -- 16 Aug. 2016
+       DESCRIPTION "Version 215: change rcSshGlobalSshClientEnable
+                                to rcSshGlobalClientEnable"   
+	   
+       REVISION "201608100000Z" -- 10 Aug. 2016
+       DESCRIPTION "Version 214: added rcSshGlobalSshClientEnable"
+
+       REVISION "201607220000Z" -- 22 July 2016
+       DESCRIPTION "Version 213: update rcSshAuthType by removing
+	   	                 hmacSha2256(3),
+                                 hmacSha2512(4)"
+	   
+       REVISION "201605270000Z" -- 27 May 2016
+       DESCRIPTION "Version 212: Added rcDigitalCert as {rcMgmt 222}.
+	   			 Requested by Hari Prasad Rajendran
+				 For CC Release Digital Certificates
+				 Submit 27779 (prempa)"
+	   
+       REVISION "201605260000Z" -- 26 May 2016
+       DESCRIPTION "Version 211: Added rcWebTlsMinimumVersion"
+	   
+       REVISION "201605230000Z" -- 23 May 2016
+       DESCRIPTION "Version 210: Removed hmacSha196 from rcSshAuthType
+	   			 Requested by Hariprasad Rajendran (prempa)"
+	   
+       REVISION "201605090000Z" -- 09 May 2016
+       DESCRIPTION "Version 209: Added rcSflow"
+	   
+       REVISION "201605090000Z" -- 09 May 2016
+       DESCRIPTION "Version 208: Extended the range of rcSshGlobalRsaKeySize
+	   			 from 512..1024 to 512..2048 (prempa)"
+	   
+       REVISION "201605090000Z" -- 09 May 2016
+       DESCRIPTION "Version 207: Extended the range of rcSshGlobalDsaKeySize
+	   			 from 512..1024 to 512..2048.
+				 Requested by Hariprasad Rajendran (submit 27837) (prempa)"
+	   
+       REVISION "201605090000Z" -- 09 May 2016
+       DESCRIPTION "Version 206: Changed the syntax of 
+	   			 rcSshAuthType, rcSshEncryptionType and
+	   			 rcSshKeyExchangeMethod to BITS.
+				 Requested by Hariprasad Rajendran (submit 27837) (prempa)"
+	   
+       REVISION "201605090000Z" -- 09 May 2016
+       DESCRIPTION "Version 205: Added rcSshAuthType, rcSshEncryptionType and
+	   			 rcSshKeyExchangeMethod.
+				 Requested by Hariprasad Rajendran (submit 27837) (prempa)"
+	   
+       REVISION "201603150000Z" -- 15 Mar. 2016
+       DESCRIPTION "Version 204: Added DSG system OID rcDSG9032"
+	   
+       REVISION "201603020000Z" -- 02 Mar. 2016
+       DESCRIPTION "Version 203: Added DSG system OID and rcLldpExt objects"
+	   
+       REVISION "201603020000Z" -- 02 Mar. 2016
+       DESCRIPTION "Version 202: Added rcCliSystemMib"
+	   
+       REVISION "201601200000Z" -- 20 Jan. 2016
+       DESCRIPTION "Version 201: Added rcDvr"
+	   
+       REVISION "201601040000Z" -- 04 Jan. 2016
+       DESCRIPTION "Version 200: Added rcChasBrandName"
+	   
+       REVISION "201511280000Z" -- 28 Nov. 2015
+       DESCRIPTION "Version 199: Added rcVxLan"
+	   
+       REVISION "201511030000Z" -- 03 Nov. 2015
+       DESCRIPTION "Version 198: Added rcChasPartNumber and
+	                         rcChasModelName"
+      
+       REVISION "201510010000Z" -- 07 October 2015
+       DESCRIPTION "Version 197: Changed Range rcCliRWL3Password,
+	                         rcCliRWL2Password,rcCliRWL1Password,
+				 rcCliROPassword
+				 Requested by Tarun Shahi (malok)"
+			     
+       REVISION "201510010000Z" -- 01 October 2015
+       DESCRIPTION "Version 196: Increased the range of rcChasFanId 
+	   			 from 1..5 to 1..6.
+				 Based on submit 25224 (Prem)"
+	   
+       REVISION "201509210000Z" -- 21 Sept 2015
+       DESCRIPTION "Version 195: Added rcSshGlobalKeyboardInteractiveAuth (malok)"
+	   
+       REVISION "201507210000Z" -- 21 July 2015
+       DESCRIPTION "Version 194: Added rcSmtp
+				 Requested for NetApp (malok)"
+			     
+       REVISION "201506260000Z" -- 26 June 2015
+       DESCRIPTION "Version 193: Added redSteady and redBlinking values
+	   			 under rcChasLedStatus.
+				 Requested by Chris Vavruska for NetApp (Prem)"
+	   
+       REVISION "201506250000Z" -- 25 June 2015
+       DESCRIPTION "Version 192: Added rcCliSystem (Prem)"
+	   
+       REVISION "201506230000Z" -- 23 June 2015
+       DESCRIPTION "Version 191: Added rcVossSystem"
+	   
+       REVISION "201505220000Z" -- 22 May 2015
+       DESCRIPTION "Version 190: Replaced rcCdp (not needed anymore) with
+	   			 rcPimIpv6.
+				 Requested by Cristina/Oana for PIMv6.
+				 Submit 23521 (Prem)"
+	   
+       REVISION "201505190000Z" -- 19 May 2015
+       DESCRIPTION "Version 189: Added rcCdp"	   
+	   
+       REVISION "201504220000Z" -- 22 April 2015
+       DESCRIPTION "Version 188: Added rcSshGlobalSftpEnable"	   
+
+       REVISION "201504180000Z" -- 18 April 2015
+       DESCRIPTION "Version 187: changed rcL8032 to rcNetApp8032"
+	   	   
+       REVISION "201504170000Z" -- 17 April 2015
+       DESCRIPTION "Version 186: Correctrc rcL8032, a9408 and aNetApp8032"
+	   
+       REVISION "201504160000Z" -- 16 April 2015
+       DESCRIPTION "Version 185: Added rcVSP9408, rcL8032, a9408 and aL8032"
+	   
+       REVISION "201504140000Z" -- 14 April 2015
+       DESCRIPTION "Version 184: Added rcChasPowerSupplyFanFlowType.
+	   			 Requested by Pramod, submit 23759 (Prem)"
+	   
+       REVISION "201504130000Z" -- 13 April 2015
+       DESCRIPTION "Version 183: Added rcMRouteIpv6.
+	   			 Requested by Cristina for IPv6 MRoute (Prem)"
+
+       REVISION "201504100000Z" -- 10 April 2015
+       DESCRIPTION "Version 182: a8404C chassis type"
+	   
+       REVISION "201504060000Z" -- 06 April 2015
+       DESCRIPTION "Version 181: Added rcMld.
+	   			 Requested by Stefan for MLD (Prem)"
+	   
+       REVISION "201504020000Z" -- 02 April 2015
+       DESCRIPTION "Version 180: Correction in units to rcSshGlobalRekeyTimeInterval."
+	   
+       REVISION "201504020000Z" -- 02 April 2015
+       DESCRIPTION "Version 179: Added units to rcSshGlobalRekeyTimeInterval.
+	   			 Correction in the OID for rcSshGlobalRekeyDataLimit"
+	   
+       REVISION "201504020000Z" -- 02 April 2015
+       DESCRIPTION "Version 178: Added rcSshGlobalRekeyEnable, 
+	   			 rcSshGlobalRekeyTimeInterval and
+				 rcSshGlobalRekeyDataLimit.
+				 Requested by Sahana for changes made
+				 as part of a Federal requirement"
+	   
+       REVISION "201503140000Z" -- 14 March 2015
+       DESCRIPTION "Version 177: added rcLogMsgControl"
+	   	   	   
+       REVISION "201502050000Z" -- 05 Feb 2015
+       DESCRIPTION "Version 176: added rcWebInactivityTimeout"
+	   	   
+       REVISION "201502020000Z" -- 02 Feb 2015
+       DESCRIPTION "Version 175: added rcChasFanFlowType For VSP7K"
+	   
+       REVISION "201412100000Z" -- 10 Dec 2014
+       DESCRIPTION "Version 174: Increased the range of rcChasFanId 
+	   			 from 1..4 to 1..5.
+				 Requested by P.Nandan for changes made in
+				 Snowflake (Prem)"
+	   
+       REVISION "201411050000Z" -- 05 Nov 2014
+       DESCRIPTION "Version 173: added VSP4450GXS definition"
+	   
+       REVISION "201411050000Z" -- 05 Nov 2014
+       DESCRIPTION "Version 172: corrected rcVSP7254XSQ and rcVSP7254XTQ
+	                         definition"
+       REVISION "201410240000Z" -- 24 Oct 2014
+       DESCRIPTION "Version 171: added rcASG, rcASGGlobal, 
+	   			 rcASGGlobalEnableStatus,
+				 rcASGGlobalAccountsTable,
+				 rcASGGlobalAFHeader,
+				 rcASGGlobalAFHeaderAFID,
+				 rcASGGlobalAFHeaderProduct,
+				 rcASGGlobalAFHeaderDateAndTime and
+				 rcASGGlobalAFHeaderRelease
+				 Requested by Pratap Kandregula for 
+				 ASG feature on 4K/8K/Avalance (submit 21286).
+				 (Prem)"
+
+       REVISION "201410170000Z" -- 17 Oct 2014
+       DESCRIPTION "Version 170: added rcSysDnsServerIpv6Addr"
+	   	   
+       REVISION "201410150000Z" -- 15 Oct 2014
+       DESCRIPTION "Version 169: added rcVSP7254XSQ and rcVSP7254XTQ
+	                         Added vsp7k7254XSQ and vsp7k7254XTQ
+				       to rcChasType
+				 Added vsp7k7254XSQ and vsp7k7254XTQ to
+				 rcCardType"
+	   
+       REVISION "201410100000Z" -- 10 Oct 2014
+       DESCRIPTION "Version 168: correct  rcIpsec OID"	   
+
+       REVISION "201410090000Z" -- 09 Oct 2014
+       DESCRIPTION "Version 167: Added rcIpsec"
+	   	   	   
+       REVISION "201409090000Z" -- 09 Sept 2014
+       DESCRIPTION "Version 166: Added  a8404(1331823105) to rcChasType"
+	   	   
+       REVISION "201408260000Z" -- 26 August 2014
+       DESCRIPTION "Version 165: Added rcLacpGlobalVlacpSeqNumEnable"
+	   
+       REVISION "201406030000Z" -- 03 June 2014
+       DESCRIPTION "Version 164: Added rcChasFanZoneFPGATemperature and 
+	   			 rcChasFanZoneFATemperature"
+	   
+       REVISION "201405140000Z" -- 14 May 2014
+       DESCRIPTION "Version 163: Added rcVSP4450GSXPWRPLUS and vsp4k4450GTXHTPWRPLUS.
+	                         changed:  a4950GSXPWRPLUS(1231228978) to a4450GSXPWRPLUS(1231228978)"
+
+       REVISION "201404040000Z" -- 04 April 2014
+       DESCRIPTION "Version 162: Added rcMACSec"
+
+       REVISION "201404020000Z" -- 02 April 2014
+       DESCRIPTION "Version 161: Added dc(5) to
+	                         rcChasPowerSupplyDetailInputLineVoltage &
+				 rcChasPowerSupplyDetailOperLineVoltage
+				 Added notpresent to rcChasFanOperStatus"
+
+       REVISION "201402240000Z" -- 24 Feb 2014
+       DESCRIPTION "Version 160: Added ac1100vOr2200v to
+	                         rcChasPowerSupplyDetailInputLineVoltage &
+				 rcChasPowerSupplyDetailOperLineVoltage"
+       REVISION "201402110000Z" -- 11 Feb 2014
+       DESCRIPTION "Version 159: Changed thc chassis type from aVSP8284XSQ to
+	                         a8284XSQ"
+	   
+       REVISION "201401100000Z" -- 10 Jan 2014
+       DESCRIPTION "Version 158: Changed rcVSP6284XQ to rcVSP8284XSQ and add vsp8k8242XSQ
+	                         card type"
+
+       REVISION "201312110000Z" -- 11 December 2013
+       DESCRIPTION "Version 157: Added rcSingleCpSystem"
+
+       REVISION "201311150000Z" -- 15 November 2013
+       DESCRIPTION "Version 156: Added cbHSFanTray(1085158144) for rcCardType"
+	   
+       REVISION "201311140000Z" -- 14 November 2013
+       DESCRIPTION "Version 155: Added a4950GSXPWRPLUS"
+
+       REVISION "201311130000Z" -- 13 November 2013
+       DESCRIPTION "Version 154: Added rcVirtualIst"
+
+       REVISION "201310100000Z" -- 10 October 2013
+       DESCRIPTION "Version 153: Corrected syntax definitions."
+
+       REVISION "201308090000Z" -- 09 Aug 2013
+       DESCRIPTION "Version 152: Correct the VSP8000 to VSP6284XQ"
+	   
+       REVISION "201307100000Z" -- 10 July 2013
+       DESCRIPTION "Version 151: Modified the values for rof4x40GBaseSFP and rof12x40GBaseSFP"
+	   
+       REVISION "201307030000Z" -- 03 July 2013
+       DESCRIPTION "Version 150: Added rcIsid"
+	   
+       REVISION "201306190000Z" -- 19 June 2013
+       DESCRIPTION "Version 149: Added rcVSP8000"
+
+       REVISION "201306130000Z" -- 13 June 2013
+       DESCRIPTION "Version 148: Added enumeration value - error(5) under
+				 rcChasFanInfoOperSpeed"
+
+       REVISION "201305090000Z" -- 09 May 2013
+       DESCRIPTION "Version 147: Corrected the values of - 
+	                         cbMidplaneSapphire (from 1090388737 to 1090396928),
+				 cbFanTray (from 1085149953 to 1085154048) and
+				 cbSF9610 (from 1075712769 to 1075716864).
+				 These were created for a release 3.4), but
+				 were later changed during the development 
+				 phase of that release."
+
+       REVISION "201304120000Z" -- 12 April 2013
+       DESCRIPTION "Version 146: Remove BGP4-MIB from IMPORTS. Corrected
+                                 syntax error in RcChasLedEntry."
+
+       REVISION "201302200000Z" -- 20 February 2013
+       DESCRIPTION "Version 145: Added rcLldp as {rcMgmt 210} and rcLldpEnable"
+
+       REVISION "201301160000Z" -- 16 January 2013
+       DESCRIPTION "Version 144: Changed the range of rcChasPowerSupplyId
+	   			 from 1..6 to 1..8 since Sapphire chassis
+				 has 8 power supplies."
+
+       REVISION "201212190000Z" -- 19 December 2012
+       DESCRIPTION "Version 143: Added rcVSP9010"
+
+       REVISION "201212050000Z" -- 5 December 2012
+       DESCRIPTION "Version 142: Added rcLacpNotificationObjects
+	   		         and rcLacpMisconfigType"
+
+       REVISION "201210260000Z" -- 26 October 2012
+       DESCRIPTION "Version 141: Added rcWebLastHostAccessBlockedAddressType,
+	   	                       rcWebLastHostAccessBlockedAddress and
+				       deprecated rcWebLastHostAccessBlocked"
+       REVISION "201210220000Z" -- 22 October 2012
+       DESCRIPTION "Version 140: Added cbACPowerPlusSupply and cbFanTray rcCardType"
+
+       REVISION "201210080000Z" -- 08 October 2012
+       DESCRIPTION "Version 139: Added a9010 under rcChastype and 
+	                         cbMidplaneSapphire and cbSF9610 under
+				 rcCardType"
+
+       REVISION "201209180000Z" -- 18 Sept 2012
+       DESCRIPTION "Version 138: correct card type vsp4k4850GTSPWRPLUS"  
+	   
+       REVISION "201209170000Z" -- 17 Sept 2012
+       DESCRIPTION "Version 137: Added rcSysDataPathFaultShutdownEnable"  
+
+       REVISION "201208160000Z" -- 16 August 2012
+       DESCRIPTION "Version 136: Added vsp4k4850GTS and vsp4k4850GTSPWR"  
+
+       REVISION "201208130000Z" -- 13 August 2012
+       DESCRIPTION "Version 135: Added rcChasLed and rcChasLedTable"  
+
+       REVISION "201208110000Z" -- 11 August 2012
+       DESCRIPTION "Version 134: Added enumeration a4850GTS(1232273458),
+	                         a4850GTSPWR(1232277554) to rcChasType"  
+
+       REVISION "201208020000Z" -- 02 August 2012
+       DESCRIPTION "Version 133: Added rcChasRcBridgeFdbOldQueryFlagEnable"
+
+       REVISION "201207310000Z" -- 31 July 2012
+       DESCRIPTION "Version 132: Added rof48x1000SFP(1144152880),
+	   			       rofLoadBoard(1144152832),
+				       rof16x10GBaseSFP(1144218384),
+				       rof48x10GBaseSFP(1144218416),
+				       rof4x40GBaseSFP(1144283908),
+				       rof12x40GBaseSFP(1144283916)"
+				   
+       REVISION "201207160000Z" -- 16 July 2012
+       DESCRIPTION "Version 131: Added enum value of none(4) and changed
+	   			 notApplicable to 5 (from 4) for 
+				 rcChasPowerSupplyDetailDualAcInput"
+
+       REVISION "201207130000Z" -- 13 July 2012
+       DESCRIPTION "Version 130: Added rcChasPowerSupplyDetailDualAcInput
+	   			 to the rcChasPowerSupplyDetailTable"
+
+       REVISION "201207110000Z" -- 11 July 2012
+       DESCRIPTION "Version 129: Added rcSlaMon"
+
+       REVISION "201206270000Z" -- 27 June 2012
+       DESCRIPTION "Version 128: Added rcSysSoftwareTable"
+
+       REVISION "201204260000Z" -- 26 Apr 2012
+       DESCRIPTION "Version 127: Changed the range of 
+	   			 rcCliPasswordAccountUserName from 1..20 to 1..255
+				 rcCliPasswordUserAccessLevel from 1..255 to 1..20"
+
+       REVISION "201204050000Z" -- 05 Apr 2012
+       DESCRIPTION "Version 126: Modified the names of the following objects -
+	   			 rcCliUpperCase to rcCliPasswordUpperCase,
+				 rcCliLowerCase to rcCliPasswordLowerCase,
+				 rcCliNumbericCase to rcCliPasswordNumericCase,
+				 rcCliSpecialCase to rcCliPasswordSpecialCase,
+				 rcCliChangeInterval to rcCliPasswordChangeInterval,
+				 rcCliPreNotificationInterval1 to rcCliPasswordPreNotificationInterval1,
+				 rcCliPreNotificationInterval2 to rcCliPasswordPreNotificationInterval2,
+				 rcCliPreNotificationInterval3 to rcCliPasswordPreNotificationInterval3,
+				 rcCliPostNotificationInterval1 to rcCliPasswordPostNotificationInterval1,
+				 rcCliPostNotificationInterval2 to rcCliPasswordPostNotificationInterval2,
+				 rcCliPostNotificationInterval3 to rcCliPasswordPostNotificationInterval3,
+				 Added tje following objects -
+				 rcCliPasswordAccountIdleTime, 
+				 rcCliPasswordAccountUserName,
+				 rcCliPasswordUserAccessLevel,
+				 rcCliPasswordPostExpiryLogins,
+				 rcCliLoginAttemptErrorTrapEnable"
+
+       REVISION "201203260000Z" -- 26 Mar 2012
+       DESCRIPTION "Version 125: Added enumeration value of dualAc to
+	   			 rcChasPowerSupplyDetailType mib object."
+
+       REVISION "201203190000Z" -- 19 Mar 2012
+       DESCRIPTION "Version 124: Added mib objects -
+	   			 rcSyslogHostSecureForwardingEnable
+	                         rcSyslogHostSecureForwardingSshProtect
+				 and rcSyslogHostSecureForwardingTcpPort
+				 under rcSyslogHostTbl."
+
+       REVISION "201202130000Z" -- 13 Feb 2012
+       DESCRIPTION "Version 123: Added TEXTUAL-CONVENTION LPortSet"
+
+       REVISION "201201310000Z" -- 31 Jan 2012
+       DESCRIPTION "Version 122: Added TEXTUAL-CONVENTION RcVlanIdOrNone"
+
+       REVISION "201201090000Z" -- 09 Jan 2012
+       DESCRIPTION "Version 121: Added rcSyslogHostAddressType and
+	                         rcSyslogHostAddress  "
+
+       REVISION "201111030000Z" -- 03 November 2011
+       DESCRIPTION "Version 120: Added rcChasSecurityConsoleFlag"
 
        REVISION "201109130000Z" -- 13 September 2011
        DESCRIPTION "Version 119: Added rcSshGlobalDsaAuthKeyName and rcSshGlobalRsaAuthKeyName
@@ -504,6 +1033,25 @@ KhiStatusValue ::= TEXTUAL-CONVENTION
                             notApplicable(5)
                         }
 
+RcVlanIdOrNone ::= TEXTUAL-CONVENTION
+    STATUS current
+    DESCRIPTION
+            "Range of VLAN IDs supported for application"
+    SYNTAX INTEGER (1..4094)
+
+LPortSet         ::= TEXTUAL-CONVENTION
+    STATUS      current
+    DESCRIPTION
+        "The string is 256 octets long, for a total of 2048 bits. Each bit
+         corresponds to a logical port, as represented by its ifIndex value . 
+         When a bit has the value one(1), the corresponding port is a member 
+         of the set. When a bit has the value zero(0), the corresponding 
+         logical port is not a member of the set. The encoding is such that 
+         the most significant bit of octet #1 corresponds to ifIndex 704, 
+         while the least significant bit of octet #256 corresponds to 
+         ifIndex 2752. "
+    SYNTAX      OCTET STRING (SIZE (0..256))
+
 --
 -- Enterprise specific MIB groups
 --
@@ -550,7 +1098,7 @@ rcEsu1850               OBJECT IDENTIFIER ::= { rapidCity 51 }
 rcEsu1850dc             OBJECT IDENTIFIER ::= { rapidCity 52 }   
 rcEsu1800dc             OBJECT IDENTIFIER ::= { rapidCity 53 } 
 rcA8611co               OBJECT IDENTIFIER ::= { rapidCity 54 }  
-rcA8603r 		        OBJECT IDENTIFIER ::= { rapidCity 55 }
+rcA8603r 		OBJECT IDENTIFIER ::= { rapidCity 55 }
 rcERS8603r              OBJECT IDENTIFIER ::= { rapidCity 56 }
 rcA8803r                OBJECT IDENTIFIER ::= { rapidCity 57 }
 rcA8806                 OBJECT IDENTIFIER ::= { rapidCity 58 }
@@ -559,7 +1107,32 @@ rcA8810co               OBJECT IDENTIFIER ::= { rapidCity 60 }
 
 -- From rapidCity 100 to rapidCity 200 is reserved for OM chassises
 rcVSP9012               OBJECT IDENTIFIER ::= { rapidCity 201 }
-
+rcVSP4850GTS            OBJECT IDENTIFIER ::= { rapidCity 202 }
+rcVSP4850GTSPWRPLUS     OBJECT IDENTIFIER ::= { rapidCity 203 }
+rcVSP9010               OBJECT IDENTIFIER ::= { rapidCity 204 }
+rcVSP8284XSQ            OBJECT IDENTIFIER ::= { rapidCity 205 }
+rcVSP4450GSXPWRPLUS     OBJECT IDENTIFIER ::= { rapidCity 206 }
+rcVSP4450GTXHTPWRPLUS   OBJECT IDENTIFIER ::= { rapidCity 207 }
+rcVSP8404               OBJECT IDENTIFIER ::= { rapidCity 208 }
+rcVSP7254XSQ		OBJECT IDENTIFIER ::= { rapidCity 209 }
+rcVSP7254XTQ		OBJECT IDENTIFIER ::= { rapidCity 210 }
+rcVSP4450GSX            OBJECT IDENTIFIER ::= { rapidCity 211 }
+rcVSP8608               OBJECT IDENTIFIER ::= { rapidCity 212 }
+-- APLS device start
+rcDSG8032               OBJECT IDENTIFIER ::= { rapidCity 213 }
+rcDSG6248CFP            OBJECT IDENTIFIER ::= { rapidCity 214 }
+rcDSG7648               OBJECT IDENTIFIER ::= { rapidCity 215 }
+rcDSG7648C              OBJECT IDENTIFIER ::= { rapidCity 216 }
+rcDSG7480               OBJECT IDENTIFIER ::= { rapidCity 217 }
+rcDSG6248               OBJECT IDENTIFIER ::= { rapidCity 218 }
+rcDSG6248P              OBJECT IDENTIFIER ::= { rapidCity 219 }
+rcVSP8404C              OBJECT IDENTIFIER ::= { rapidCity 220 }
+rcDSG9032               OBJECT IDENTIFIER ::= { rapidCity 221 }
+rcDSG8064               OBJECT IDENTIFIER ::= { rapidCity 222 }
+rcVSP5030GSXuPWR        OBJECT IDENTIFIER ::= { rapidCity 223 }
+rcVSP5054GSXuPWR        OBJECT IDENTIFIER ::= { rapidCity 224 }
+-- No longer use Rappid city System OID. 
+-- Need to define and use Extreme sys OID
 --
 -- MIB groups.  Note that the ones that are commented out are now defined in
 -- separate MIB files.  These are kept as placeholders here.
@@ -644,7 +1217,12 @@ rcAccessMstp            OBJECT IDENTIFIER ::= { rcMgmt 83 }
 rcDhu                   OBJECT IDENTIFIER ::= { rcMgmt 84 }
 rcKhi                   OBJECT IDENTIFIER ::= { rcMgmt 85 }
 rcIke                   OBJECT IDENTIFIER ::= { rcMgmt 86 }
+rcIsid                  OBJECT IDENTIFIER ::= { rcMgmt 87 }
+rcMACSec                OBJECT IDENTIFIER ::= { rcMgmt 88 }
 rc2k                    OBJECT IDENTIFIER ::= { rcMgmt 100 }
+rcVossSystem            OBJECT IDENTIFIER ::= { rcMgmt 101 }
+rcCliSystem             OBJECT IDENTIFIER ::= { rcMgmt 102 }
+rcSmtp                  OBJECT IDENTIFIER ::= { rcMgmt 103 }
 rcOm8k                  OBJECT IDENTIFIER ::= { rcMgmt 200 }
 cobra                   OBJECT IDENTIFIER ::= { rcMgmt 201 }
 rcPowerRanger           OBJECT IDENTIFIER ::= { rcMgmt 202 }
@@ -654,6 +1232,25 @@ rcOlc                   OBJECT IDENTIFIER ::= { rcMgmt 205 }
 rcVrrpv3                OBJECT IDENTIFIER ::= { rcMgmt 206 }
 rcWlan                  OBJECT IDENTIFIER ::= { rcMgmt 207 }
 rcVspTalk               OBJECT IDENTIFIER ::= { rcMgmt 208 }
+rcSlaMon                OBJECT IDENTIFIER ::= { rcMgmt 209 }
+rcLldp                  OBJECT IDENTIFIER ::= { rcMgmt 210 }
+rcVirtualIst            OBJECT IDENTIFIER ::= { rcMgmt 211 }
+rcSingleCpSystem        OBJECT IDENTIFIER ::= { rcMgmt 212 }
+rcIpsec                 OBJECT IDENTIFIER ::= { rcMgmt 213 }
+rcASG                   OBJECT IDENTIFIER ::= { rcMgmt 214 }
+rcMld                   OBJECT IDENTIFIER ::= { rcMgmt 215 }
+rcMRouteIpv6            OBJECT IDENTIFIER ::= { rcMgmt 216 }
+rcPimIpv6               OBJECT IDENTIFIER ::= { rcMgmt 217 }
+rcVxlan                 OBJECT IDENTIFIER ::= { rcMgmt 218 }
+rcDvr                   OBJECT IDENTIFIER ::= { rcMgmt 219 }
+rcLldpExt               OBJECT IDENTIFIER ::= { rcMgmt 220 }
+rcSflow                 OBJECT IDENTIFIER ::= { rcMgmt 221 }
+rcDigitalCert           OBJECT IDENTIFIER ::= { rcMgmt 222 }
+rcNls                   OBJECT IDENTIFIER ::= { rcMgmt 223 }
+rcCarrier               OBJECT IDENTIFIER ::= { rcMgmt 224 }
+rcOvsdb                 OBJECT IDENTIFIER ::= { rcMgmt 225 }
+rcAppTelemetry          OBJECT IDENTIFIER ::= { rcMgmt 226 }
+rcRestConf              OBJECT IDENTIFIER ::= { rcMgmt 227 }
 
 -- LOGICAL (System) Elements
 
@@ -1594,7 +2191,8 @@ rcSysDnsServerListType OBJECT-TYPE
         SYNTAX        INTEGER {
                          primary(0),
                          secondary(1),
-                         tertiary(2)
+                         tertiary(2),
+			 dynamic(3)
                       }
         MAX-ACCESS    read-write
         STATUS        current
@@ -1984,7 +2582,8 @@ rcSysActionRwa OBJECT-TYPE
 --         		reserve(10)
                          setCsuAuto(11),
                          upgradeComplete(12),
-                         bootUpgrade(13)
+                         bootUpgrade(13),
+			 softResetCoreDump(14)  -- reset with coredump
                      }
         MAX-ACCESS    read-write
         STATUS        current
@@ -2353,6 +2952,158 @@ rcSysUdpSrcByVirtualIpEnable OBJECT-TYPE
 	DEFVAL	      { false }
 	::= { rcSystem 119 }
 
+--Software Release Info
+
+rcSysSoftwareTable OBJECT-TYPE
+        SYNTAX        SEQUENCE OF RcSysSoftwareEntry
+        MAX-ACCESS    not-accessible
+        STATUS        current
+        DESCRIPTION   "A list of software releases added to the switch. Maximum
+                       of 6 added releases can be present in the switch."
+        ::= { rcSystem 120 }
+
+rcSysSoftwareEntry OBJECT-TYPE
+        SYNTAX        RcSysSoftwareEntry
+        MAX-ACCESS    not-accessible
+        STATUS        current
+        DESCRIPTION   "Defines a row of rcSysSoftware Table using
+                       RcSysSoftwareEntry Type."
+        INDEX         { rcSysReleaseName }
+        ::= { rcSysSoftwareTable 1 }
+
+RcSysSoftwareEntry ::= SEQUENCE
+              {
+                rcSysReleaseName DisplayString,
+                rcSysReleaseAddedTime DateAndTime,
+                rcSysReleaseActivatedTime DateAndTime,
+                rcSysReleaseCommittedTime DateAndTime,
+                rcSysReleaseCommittedType INTEGER,
+                rcSysReleaseType INTEGER
+               }
+
+
+rcSysReleaseName OBJECT-TYPE
+        SYNTAX        DisplayString (SIZE (0..80))
+        MAX-ACCESS    not-accessible
+        STATUS        current
+        DESCRIPTION   "Software Release Name"
+        ::= { rcSysSoftwareEntry 1 }
+
+rcSysReleaseAddedTime OBJECT-TYPE
+        SYNTAX        DateAndTime
+        MAX-ACCESS    read-only
+        STATUS        current
+        DESCRIPTION   "Software Release Added Date and Time"
+        ::= { rcSysSoftwareEntry 2 }
+
+rcSysReleaseActivatedTime OBJECT-TYPE
+        SYNTAX        DateAndTime
+        MAX-ACCESS    read-only
+        STATUS        current
+        DESCRIPTION   "Software Release Activated Date and Time"
+        ::= { rcSysSoftwareEntry 3 }
+
+rcSysReleaseCommittedTime OBJECT-TYPE
+        SYNTAX        DateAndTime
+        MAX-ACCESS    read-only
+        STATUS        current
+        DESCRIPTION   "Software Release Committed Date and Time"
+        ::= { rcSysSoftwareEntry 4 }
+
+rcSysReleaseCommittedType OBJECT-TYPE
+        SYNTAX        INTEGER {
+                         auto(1),       -- Release was auto-committed
+                         manual(2),      -- Release was Manually committed
+                         notCommitted(3),  --Release was not committed
+                         none(4)        -- Details not available for this release
+                      }
+
+        MAX-ACCESS    read-only
+        STATUS        current
+        DESCRIPTION   "Software Release Committed Type"
+        ::= { rcSysSoftwareEntry 5 }
+
+rcSysReleaseType OBJECT-TYPE
+        SYNTAX        INTEGER {
+                         primary(1),  -- The Release is a primary release
+                         backup(2),   -- The Release is a backup release
+                         notUsed(3)   -- The Release is added but not being used
+                      }
+
+        MAX-ACCESS    read-only
+        STATUS        current
+        DESCRIPTION   "Software Release Type. This element tells whether the
+                       release is a primary release for the switch or a backup
+                       release or that the release has been added to the switch
+                       but is not being used currently."
+        ::= { rcSysSoftwareEntry 6 }
+
+rcSysDataPathFaultShutdownEnable OBJECT-TYPE
+    	SYNTAX		TruthValue
+	MAX-ACCESS	read-write
+	STATUS		current
+	DESCRIPTION	"Used to enable/disable data path fault shutdown."
+	DEFVAL 		{ true }
+	::= { rcSystem 121 }
+
+rcSysDnsServerIpv6Addr OBJECT-TYPE
+        SYNTAX        Ipv6Address
+        MAX-ACCESS    accessible-for-notify
+        STATUS        current
+        DESCRIPTION   "DNS server's IP address .  Used by trap rcnDNSv6RequestResponseTrap"
+        ::= { rcSystem 122 }
+
+rcSysReservedPower OBJECT-TYPE
+    	SYNTAX        Integer32
+        MAX-ACCESS    read-only
+        STATUS        current
+        DESCRIPTION   "Used to indicate the amount of power currently reserved 
+	    	       on the system for critical cards that are present and 
+		       other system critical modules such as cooling units."
+        ::= { rcSystem 123 }
+
+rcSysRequiredPower OBJECT-TYPE
+    	SYNTAX        Integer32
+        MAX-ACCESS    read-only
+        STATUS        current
+        DESCRIPTION   "Used to indicate the maximum amount of power required  
+	    	       on the system for all reserved and any additional cards
+		       that are present on the system to be powered on."
+        ::= { rcSystem 124 }
+
+rcSysLocatorLed OBJECT-TYPE
+    	SYNTAX        INTEGER
+                      {
+                          off(1),    -- Switch the Locator LED to off
+			  on(2)      -- Switch the Locator LED to on
+                      }
+        MAX-ACCESS    read-write
+        STATUS        current
+        DESCRIPTION   "Used to switch the locator LED on or off."
+	DEFVAL	      { off }
+        ::= { rcSystem 125 }
+
+rcSysDefaultPingTracerouteContextType OBJECT-TYPE
+    	SYNTAX        INTEGER {
+		        grt(1),
+			vrf(2),
+			mgmt(3)
+			}
+        MAX-ACCESS    read-write
+        STATUS        current
+        DESCRIPTION   "The context execution type for a ping or traceroute."
+	DEFVAL        { grt }
+        ::= { rcSystem 126 }
+
+rcSysDefaultPingTracerouteContextVrfName OBJECT-TYPE
+    	SYNTAX        DisplayString(SIZE(0..64))
+        MAX-ACCESS    read-write
+        STATUS        current
+        DESCRIPTION   "Vrf name associated with ping/traceroute context 
+                       selection. Only valid if 
+                       rcSystemDefaultPingTracerouteContextType equals vrf(2)."
+        ::= { rcSystem 127 }
+
 -- TFTP Upload/Download
 
 rcTftpHost OBJECT-TYPE
@@ -2441,7 +3192,37 @@ rcChasType OBJECT-TYPE
 -- Cobalt Blue
 			 -- Avaya Order#:	NTC201CA
 			 -- Customer Order#:	EC1402001
-			 a9012(1090388736) -- 0100 0000 1111 1110 0000 0011 0000 0000 0x40FE0300
+			 a9012(1090388736), -- 0100 0000 1111 1110 0000 0011 0000 0000 0x40FE0300
+			 a9010(1090388737), -- 0100 0000 1111 1110 0000 0011 0000 0001 0x40FE0301
+	              -- VSP4K 			 
+			 a4850GTS(1232273458), -- 0100 1001 0111 0011 0000 0000 0011 0010 0x49730032
+	   		 a4850GTSPWRPLUS(1232277554),    -- 0100 1001 0111 0011 0001 0000 0011 0010 0x49731032 
+                         a4450GSXPWRPLUS(1231228978),    -- 0100 1001 0110 0011 0001 0000 0011 0010 0x49631032
+			 a4450GSX(1231224882),               -- 0100 1001 0110 0011 0000 0000 0011 0010 0x49630032
+			 a4450GTXHTPWRPLUS(1232279602),  -- 0100 1001 0111 0011 0001 1000 0011 0010 0x49731832
+			 a8284XSQ(1331822677),      -- 0100 1111 0110 0010 0000 0000 0101 0101 0x4f620055
+			 a8404(1331823105),         -- 0100 1111 0110 0010 0000 0010 0000 0001 0x4f620201
+			 a8404C(1331839489),        -- 0100 1111 0110 0010 0100 0010 0000 0001 0x4f624201
+			 a8608(1425195264),         -- 0101 0100 1111 0010 1100 0001 0000 0000 (0x54f2c100)  
+			 a7254XSQ(1331855415),      -- 0100 1111 0110 0010 1000 0000 0011 0111 0x4f628037
+			 a7254XTQ(1332903991),      -- 0100 1111 0111 0010 1000 0000 0011 0111 0x4f728037
+-- APLS
+			 aDSG6248(1232274482),      -- 0100 1001 0111 0011 0000 0100 0011 0010  (0x49730432)
+			 aDSG6248P(1232278578),     -- 0100 1001 0111 0011 0001 0100 0011 0010  (0x49731432)
+			 aDSG6248CFP(1231230002),   -- 0100 1001 0110 0011 0001 0100 0011 0010 (0x49631432)
+			 aDSG7648(1331856439),      -- 0100 1111 0110 0010 1000 0100 0011 0111 (0x4f628437)
+			 aDSG7648C(1332905015),     -- 0100 1111 0111 0010 1000 0100 0011 0111 (0x4f728437) 
+			 aDSG7480(1331823701),      -- 0100 1111 0110 0010 0000 0100 0101 0101 (0x4f620455)
+			 aDSG8032(929170433),        -- 0011 0111 0110 0010 0000 0100 0000 0001 (0x37620401)	
+
+-- ES6100:
+                         a7432CQ(1332042530),    -- 0100 1111 0110 0101 0101 1011 0010 0010  (0x4f655b22) Display: VSP7432CQ
+			 a7456VSC(1332042554),   -- 0100 1111 0110 0101 0101 1011 0011 1010  (0x4f655b3a) Display: VSP7456VSC
+	                 a1104(1008861208),          -- 0011 1100 0010 0010 0000 0000 0001 1000 (0x3c220018)          			 
+                         a4624GTSPWRPLUS(2065862680), -- 0111 1011 0010 0010 1001 0000 0001 1000  (0x7B229018) (24 x 10/100/1000Mb Poe COPPER)
+                         a4648GTSPWRPLUS(2065862704)  -- 0111 1011 0010 0010 1001 0000 0011 0000  (2065862704) (48 x 10/100/1000Mb Poe COPPER)
+
+			 
 	              }
 	MAX-ACCESS 	  read-only
 	STATUS 	      current
@@ -2519,11 +3300,12 @@ RcChasFanEntry ::=
 		rcChasFanId Integer32,
 		rcChasFanOperStatus INTEGER,
 		rcChasFanAmbientTemperature Gauge32,
-            rcChasFanType INTEGER
+                rcChasFanType INTEGER,
+ 	        rcChasFanFlowType INTEGER
 	}
 
 rcChasFanId OBJECT-TYPE
-	SYNTAX        Integer32 (1..4)
+	SYNTAX        Integer32 (1..6)
 	MAX-ACCESS    read-only
 	STATUS        current
 	DESCRIPTION   "The chassis fan Id."
@@ -2533,14 +3315,16 @@ rcChasFanOperStatus OBJECT-TYPE
 	SYNTAX        INTEGER {
 		         unknown(1),
 		         up(2),
-		         down(3)
+		         down(3),
+			 notpresent(4)
 	              }
 	MAX-ACCESS    read-only
 	STATUS        current
 	DESCRIPTION   "Actual status of the Fan:
 	              - unknown(1) - status can not be determined.
 	              - up(2) - present and supplying power.
-	              - down(3) - present, but failure indicated."
+	              - down(3) - present, but failure indicated.
+		      - notpresent(4) -- not present"
 	::= { rcChasFanEntry 2 }
 
 rcChasFanAmbientTemperature OBJECT-TYPE
@@ -2564,7 +3348,21 @@ rcChasFanType OBJECT-TYPE
                       - regularSpeed(2) - regular speed fan is present.
                       - highSpeed(3) - high speed fan is present."
         ::= { rcChasFanEntry 4 }
-
+    
+rcChasFanFlowType OBJECT-TYPE
+        SYNTAX        INTEGER {
+                         unknown(1),
+                         frontToBack(2),
+                         backToFront(3)
+                      }
+        MAX-ACCESS    read-only
+        STATUS        current 
+        DESCRIPTION   "Direction of the Fan Flow:
+                      - unknown(1) - Flow can not be determined.
+                      - fronttoback(2) - Front to back flow.
+                      - backtofront(3) - Back to front flow."
+        ::= { rcChasFanEntry 5 }
+    
 rcChasFanZoneTable OBJECT-TYPE
      SYNTAX SEQUENCE OF RcChasFanZoneEntry
      MAX-ACCESS   not-accessible
@@ -2588,7 +3386,9 @@ RcChasFanZoneEntry ::=
            rcChasFanZoneAlarmTimer  Integer32,
            rcChasFanZoneTemperature Gauge32,
            rcChasFanZoneTray1LedColor INTEGER,
-           rcChasFanZoneTray2LedColor INTEGER
+           rcChasFanZoneTray2LedColor INTEGER,
+	   rcChasFanZoneFPGATemperature Integer32,
+	   rcChasFanZoneFATemperature   Integer32
      }
 
 rcChasFanZoneType OBJECT-TYPE
@@ -2679,6 +3479,32 @@ rcChasFanZoneTray1LedColor OBJECT-TYPE
                            Rear Zone Tray: It is not applicable for Rear Zone tray"
      ::= { rcChasFanZoneEntry 7 }
 
+rcChasFanZoneFPGATemperature OBJECT-TYPE
+     SYNTAX       Integer32
+     UNITS        "celsius"
+     MAX-ACCESS   read-only
+     STATUS       current
+     DESCRIPTION  "Highest FPGA temperature measured in celsius degree
+		   from all the FPGA sensors in the zone. FPGA sensors
+		   are only available on the RoF cards. Hence this is 
+		   applicable only for the front zone. 
+		   A value of 0 for this mib object indicates that this
+		   is not applicable."
+     ::= { rcChasFanZoneEntry 8 }
+
+rcChasFanZoneFATemperature OBJECT-TYPE
+     SYNTAX       Integer32
+     UNITS        "celsius"
+     MAX-ACCESS   read-only
+     STATUS       current
+     DESCRIPTION  "Highest FA temperature measured in celsius degree
+		   from all the FA sensors in the zone. FA sensors
+		   are only available on the RoF cards. Hence this is 
+		   applicable only for the front zone. 
+		   A value of 0 for this mib object indicates that this
+		   is not applicable."
+     ::= { rcChasFanZoneEntry 9 }
+
 rcChasFanInfoTable OBJECT-TYPE
      SYNTAX        SEQUENCE OF RcChasFanInfoEntry
      MAX-ACCESS    not-accessible
@@ -2739,7 +3565,8 @@ rcChasFanInfoOperSpeed OBJECT-TYPE
                  low(1),
                  medium(2),
                  high(3),
-                 hardware(4)
+                 hardware(4),
+                 error(5)
             }
      MAX-ACCESS   read-only
      STATUS       current
@@ -2784,10 +3611,11 @@ RcChasPowerSupplyEntry ::=
 	}
 
 rcChasPowerSupplyId OBJECT-TYPE
-	SYNTAX        	Integer32 (1..6)
-	MAX-ACCESS        	read-only
+	SYNTAX        	Integer32 (1..8)
+	MAX-ACCESS      read-only
 	STATUS        	current
-	DESCRIPTION    "The power supply Id."
+	DESCRIPTION    "The power supply Id.
+	    		Sapphire Chassis has 8 power supplies."
 	::= { rcChasPowerSupplyEntry 1 }
 
 
@@ -2836,7 +3664,13 @@ RcChasPowerSupplyDetailEntry ::=
 		rcChasPowerSupplyDetailPsePower      Integer32,
 		rcChasPowerSupplyDetailInputLineVoltage INTEGER,
 		rcChasPowerSupplyDetailOperLineVoltage INTEGER,
-		rcChasPowerSupplyDetailOutputWatts   Integer32
+		rcChasPowerSupplyDetailOutputWatts   Integer32,
+		rcChasPowerSupplyDetailDualAcInput   INTEGER,
+		rcChasPowerSupplyFanFlowType         INTEGER,
+		rcChasPowerSupplyDetailInputOperLineVoltage Integer32,
+                rcChasPowerSupplyDetailInputPower           Integer32
+ 
+
 	}
 
 rcChasPowerSupplyDetailId OBJECT-TYPE
@@ -2851,6 +3685,7 @@ rcChasPowerSupplyDetailType OBJECT-TYPE
                        unknown(0),
                        ac(1),
                        dc(2),
+		       dualAc(3),
                        poe(278798592) , -- 8300 110/200 V AC/DC PoE(0x109e2100)
 	  poe1400WPS(278802688), -- 8300 110/200 V 850W/1400W AC/DC PoE(0x109e3100)   
                       dc8005(277876736) -- 8005 1462W 48/60V DC Power Supply(0x10901000)
@@ -2900,7 +3735,9 @@ rcChasPowerSupplyDetailInputLineVoltage OBJECT-TYPE
                        unknown(0),
                        low110v(1),
                        high220v(2),
-		       minus48v(3)
+		       minus48v(3),
+		       ac110vOr220v(4),
+		       dc(5)
                   }
       MAX-ACCESS  read-only
       STATUS      current
@@ -2912,7 +3749,9 @@ rcChasPowerSupplyDetailOperLineVoltage OBJECT-TYPE
                        unknown(0),
                        low110v(1),
                        high220v(2),
-		       minus48v(3)
+		       minus48v(3),
+		       ac110vOr220v(4),
+		       dc(5)
                   }
       MAX-ACCESS  read-only
       STATUS      current
@@ -2927,6 +3766,49 @@ rcChasPowerSupplyDetailOutputWatts OBJECT-TYPE
       DESCRIPTION  "The output power of this power supply"
       ::= { rcChasPowerSupplyDetailEntry 10 }
 
+rcChasPowerSupplyDetailDualAcInput OBJECT-TYPE
+      SYNTAX       INTEGER {
+                       line1(1),
+                       line2(2),
+                       both(3),
+		       none(4),
+		       notApplicable(5)
+                   }
+      MAX-ACCESS   read-only
+      STATUS       current
+      DESCRIPTION  "The dual input power supply has two input AC lines.
+	  	    This mib object defines which of those AC lines are 
+		    supplying power. For a single input power supply the
+		    value will be set to notApplicable(5)."
+      DEFVAL	   { 5 }
+      ::= { rcChasPowerSupplyDetailEntry 11 }
+
+rcChasPowerSupplyFanFlowType    OBJECT-TYPE
+      SYNTAX      INTEGER {
+                       frontToback(1),
+                       backTofront(2),
+                       unknown(3)
+                   }
+      MAX-ACCESS   read-only
+      STATUS       current
+      DESCRIPTION  "The power supply Fan Flow Type."
+      ::= { rcChasPowerSupplyDetailEntry 12 }
+  
+rcChasPowerSupplyDetailInputOperLineVoltage OBJECT-TYPE
+      SYNTAX       Integer32
+      MAX-ACCESS   read-only
+      STATUS       current
+      DESCRIPTION  "The actual power supply input line voltage."
+      ::= { rcChasPowerSupplyDetailEntry 13 }
+
+rcChasPowerSupplyDetailInputPower OBJECT-TYPE
+      SYNTAX       Integer32
+      MAX-ACCESS   read-only
+      STATUS       current
+      DESCRIPTION  "The input power of this power supply."
+      ::= { rcChasPowerSupplyDetailEntry 14 }
+
+  
 rcCard OBJECT IDENTIFIER ::= { rcChassis 9 }
 
 rcCardTable OBJECT-TYPE
@@ -3036,22 +3918,41 @@ rcCardType OBJECT-TYPE
         rc2x1000BaseLXRBB(1682),         -- [1202LR] 1 1 01 001 0010
 -- Cobalt Blue
         cbMidplane-28(1090388736) ,      -- 0100 0000 1111 1110 0000 0011 0000 0000 0x40FE0300
-        cbACPowerSupply(1084097280),     -- 0100 0000 1001 1110 0000 0011 0000 0000 0x409E0300
-        cbCPFanTray(1085145856),         -- 0100 0000 1010 1110 0000 0011 0000 0000 0x40AE0300
+        cbMidplaneSapphire(1090396928),  -- 0100 0000 1111 1110 0010 0011 0000 0000 0x40FE2300
+	cbACPowerSupply(1084097280),     -- 0100 0000 1001 1110 0000 0011 0000 0000 0x409E0300
+        cbACPowerPlusSupply(1084130048), -- 0100 0000 1001 1110 1000 0110 0000 0000 0x409E8300	    
+	cbCPFanTray(1085145856),         -- 0100 0000 1010 1110 0000 0011 0000 0000 0x40AE0300
         cbIOFanTray(1085149952),         -- 0100 0000 1001 1110 0000 0011 0000 0000 0x40AE1300
-        cbAUX(1091437312),               -- 0100 0001 0000 1110 0000 0011 0000 0000 0x410E0300
+        cbFanTray(1085154048),           -- 0100 0000 1010 1110 0010 0011 0000 0000 0x40AE2300
+	cbHSFanTray(1085158144),         -- 0100 0000 1010 1110 0011 0011 0000 0000 0x40AE3300	    
+	cbAUX(1091437312),               -- 0100 0001 0000 1110 0000 0011 0000 0000 0x410E0300
         cbSF3200(1075708672),            -- 0100 0000 0001 1110 0000 0011 0000 0000 0x401E0300
         cbSF9600(1075712768),            -- 0100 0000 0001 1110 0001 0011 0000 0000 0x401E1300
-        cbCP-CSC(1073873665),            -- 0100 0000 0000 0010 0000 0011 0000 0001 0x40020301
+	cbSF9610(1075716864),            -- 0100 0000 0001 1110 0010 0011 0000 0000 0x401E2300
+	cbCP-CSC(1073873665),            -- 0100 0000 0000 0010 0000 0011 0000 0001 0x40020301
         cb48x1000BaseTX(1075970864),     -- 0100 0000 0010 0010 0000 0011 0011 0000 0x40220330
         cb48x1000BaseTXPOE(1075974960),  -- 0100 0000 0010 0010 0001 0011 0011 0000 0x40221330
         cb48x1000SFP(1077044016),        -- 0100 0000 0011 0010 0110 0011 0011 0000 0x40326330
         cb24x10GBaseSFP(1077109528),     -- 0100 0000 0011 0011 0110 0011 0001 1000 0x40336318
-        cb48x10GBaseSFP(1077109552)      -- 0100 0000 0011 0011 0110 0011 0011 0000 0x40336330
+        cb48x10GBaseSFP(1077109552),     -- 0100 0000 0011 0011 0110 0011 0011 0000 0x40336330
 -- Future CB Cards
         --  cbOPM(1087243008)           0x40CE0300
         --  cbSAS(1087247104)           0x40CE1300  
-        --  cbIPFIX(1087251200)         0x40CE2300 
+        --  cbIPFIX(1087251200)         0x40CE2300
+-- CB generation 2 (ROF) linecards
+        rof48x1000SFP(1144152880),           -- 0100 0100 0011 0010 0110 0011 0011 0000 0x44326330
+        rofLoadBoard(1144152832),            -- 0100 0100 0011 0010 0110 0011 0000 0000 0x44326300
+        rof16x10GBaseSFP(1144218384),        -- 0100 0100 0011 0011 0110 0011 0001 0000 0x44336310
+        rof48x10GBaseSFP(1144218416),        -- 0100 0100 0011 0011 0110 0011 0011 0000 0x44336330
+        rof4x40GBaseSFP(1144283920),       	 -- 0100 0100 0011 0100 0110 0011 0001 0000 0x44346310
+ 	rof12x40GBaseSFP(1144283952),      	 -- 0100 0100 0011 0100 0110 0011 0011 0000 0x44346330
+-- VSP4K card definitions
+	vsp4k4850GTS(1232273458),       -- 0100 1001 0111 0011 0000 0000 0011 0010 0x49730032
+	vsp4k4850GTSPWRPLUS(1232277554),    -- 0100 1001 0111 0011 0001 0000 0011 0010 0x49731032
+	vsp4k4450GSXPWRPLUS(1231228978),     -- 0100 1001 0110 0011 0001 0000 0011 0010 0x49631032
+	vsp4k4450GSX(1231224882),            -- 0100 1001 0110 0011 0000 0000 0011 0010 0x49630032 
+	vsp4k4450GTXHTPWRPLUS(1232279602),   -- 0100 1001 0111 0011 0001 1000 0011 0010 0x49731832
+	vsp8k8242XSQ(1298407466)             -- 0100 1101 0110 0100 0010 0000 0010 1010 0x4d64202a
 	}
 	MAX-ACCESS 	      	read-only
 	STATUS 	      	current
@@ -3314,7 +4215,29 @@ rcChasEocModeAdminStatus OBJECT-TYPE
                         The user can override this behavior by manually
                         specifying the EOC Mode they would like."
         ::= { rcChassis 14 }
-
+    
+rcChasPartNumber OBJECT-TYPE
+	SYNTAX      DisplayString (SIZE (0..16))
+	MAX-ACCESS    read-only
+	STATUS 	      current
+	DESCRIPTION   "Device part number or PEC code "
+	::= { rcChassis 66 }
+	
+rcChasModelName OBJECT-TYPE
+	SYNTAX      DisplayString (SIZE (0..32))
+	MAX-ACCESS    read-only
+	STATUS 	      current
+	DESCRIPTION   "Chassis model name. For APLS platform, The model name
+	               which is in the SEEPROM"
+	::= { rcChassis 67 }
+    
+rcChasBrandName OBJECT-TYPE
+	SYNTAX      DisplayString (SIZE (0..32))
+	MAX-ACCESS    read-only
+	STATUS 	      current
+	DESCRIPTION   "Brand name (company name). For APLS platform,
+	               The brand name which is programmed in SEEPROM"
+	::= { rcChassis 68 }    
 -- Agent Table
  
 rcAgentTable OBJECT-TYPE
@@ -3862,6 +4785,89 @@ rcChasAutoResetFabricEnable OBJECT-TYPE
 		       This change will take effect upon reboot."
         DEFVAL           { false }
         ::= { rcChassis 62 }
+
+rcChasSecurityConsoleFlag  OBJECT-TYPE
+	SYNTAX          TruthValue
+        MAX-ACCESS      read-write
+        STATUS          current
+        DESCRIPTION     "Used to enable/disable flag which is used for 
+	                 Security Console.When it is enabled, the console 
+			 connection works only with the null modem cable"
+	DEFVAL          { true }
+        ::= { rcChassis 63 }
+
+rcChasRcBridgeFdbOldQueryFlagEnable OBJECT-TYPE
+        SYNTAX          TruthValue
+        MAX-ACCESS      read-write
+        STATUS          current
+        DESCRIPTION     "Used to enable/disable rcBridgeNewFdbTable for 
+                         fdb query " 
+        DEFVAL          { false }
+        ::= { rcChassis 64 }
+
+rcChasLed OBJECT IDENTIFIER ::= { rcChassis 65 }
+
+rcChasLedTable OBJECT-TYPE
+	SYNTAX        SEQUENCE OF RcChasLedEntry
+	MAX-ACCESS    not-accessible
+	STATUS        current 
+	DESCRIPTION   "This table contains information about LEDs of the chassis"
+	::= { rcChasLed 1 }
+
+rcChasLedEntry OBJECT-TYPE
+	SYNTAX        RcChasLedEntry
+	MAX-ACCESS    not-accessible
+	STATUS        current 
+	DESCRIPTION   "Contains information regarding a LED Unit"
+	INDEX         { rcChasLedId }
+	::= { rcChasLedTable 1 }
+
+RcChasLedEntry ::=
+	SEQUENCE {
+		rcChasLedId            INTEGER,
+		rcChasLedLabel         DisplayString (SIZE (0..15)),
+		rcChasLedStatus        INTEGER
+	}
+
+rcChasLedId OBJECT-TYPE
+	SYNTAX        INTEGER(1..6)
+	MAX-ACCESS    read-only
+	STATUS        current 
+	DESCRIPTION   "The chassis LED Id."
+	::= { rcChasLedEntry 1 }
+
+rcChasLedLabel OBJECT-TYPE
+	SYNTAX        DisplayString (SIZE (0..15))
+	MAX-ACCESS    read-only
+	STATUS        current 
+	DESCRIPTION   "The LED's label name."
+	::= { rcChasLedEntry 2 }
+
+rcChasLedStatus OBJECT-TYPE
+        SYNTAX        INTEGER {
+                         unknown(1),
+                         greenSteady(2),
+                         greenBlinking(3),
+			 amberSteady(4),
+			 amberBlinking(5),
+			 off(6),
+			 redSteady(7),
+			 redBlinking(8)
+                      }
+        MAX-ACCESS    read-only
+        STATUS        current 
+        DESCRIPTION   "Type of the Led:
+                      - unknown(1) - type can not be determined.
+		      - greenSteady(2),
+                      - greenBlinking(3),
+		      - amberSteady(4),
+		      - amberBlinking(5),
+		      -	off(6),
+		      - redSteady(7),
+		      - redBlinking(8)
+		      For different Led, the meaning of each status is different."
+        ::= { rcChasLedEntry 3 }
+
 
 -- Dip-Switch Group
 
@@ -4696,7 +5702,7 @@ rcWebRWAUserName OBJECT-TYPE
         ::= { rcWeb 2 }
 
 rcWebRWAPassword OBJECT-TYPE
-        SYNTAX        DisplayString (SIZE (1..20))
+        SYNTAX        DisplayString (SIZE (1..32))
         MAX-ACCESS    read-write
         STATUS        current
         DESCRIPTION   "Password for the read-write-all web-server account."
@@ -4710,7 +5716,7 @@ rcWebRWUserName OBJECT-TYPE
         ::= { rcWeb 4 }
  
 rcWebRWPassword OBJECT-TYPE 
-        SYNTAX        DisplayString (SIZE (1..20)) 
+        SYNTAX        DisplayString (SIZE (1..32)) 
         MAX-ACCESS    read-write 
         STATUS        current 
         DESCRIPTION   "Password for the read-write web-server account." 
@@ -4724,7 +5730,7 @@ rcWebROUserName OBJECT-TYPE
         ::= { rcWeb 6 }
  
 rcWebROPassword OBJECT-TYPE 
-        SYNTAX        DisplayString (SIZE (1..20))
+        SYNTAX        DisplayString (SIZE (1..32))
         MAX-ACCESS    read-write 
         STATUS        current 
         DESCRIPTION   "Password for the read-only web-server account." 
@@ -4811,7 +5817,7 @@ rcWebRWL3UserName OBJECT-TYPE
         ::= { rcWeb 18 }
  
 rcWebRWL3Password OBJECT-TYPE
-        SYNTAX        DisplayString (SIZE (1..20))
+        SYNTAX        DisplayString (SIZE (1..32))
         MAX-ACCESS    read-write
         STATUS        current
         DESCRIPTION   "password for the L3 web server account"
@@ -4825,7 +5831,7 @@ rcWebRWL2UserName OBJECT-TYPE
         ::= { rcWeb 20 }
  
 rcWebRWL2Password OBJECT-TYPE
-        SYNTAX        DisplayString (SIZE (1..20))
+        SYNTAX        DisplayString (SIZE (1..32))
         MAX-ACCESS    read-write
         STATUS        current
         DESCRIPTION   "password for the L2 web server account"
@@ -4842,8 +5848,9 @@ rcWebDefaultDisplayRows OBJECT-TYPE
 rcWebLastHostAccessBlocked OBJECT-TYPE
         SYNTAX        IpAddress
         MAX-ACCESS    read-only
-        STATUS        current
-        DESCRIPTION   "last host access blocked"
+        STATUS        deprecated
+        DESCRIPTION   "last host access blocked. This deprecated by
+	               rcWebLastHostAccessBlockedAddress"
         ::= { rcWeb 23 }
  
 rcWebHelpTftpSourceDir OBJECT-TYPE
@@ -4879,6 +5886,60 @@ rcWebHttpsPort OBJECT-TYPE
 	DEFVAL	      { 443 }
         ::= { rcWeb 27 }
  
+rcWebLastHostAccessBlockedAddressType OBJECT-TYPE
+        SYNTAX 	      InetAddressType
+	MAX-ACCESS    read-only
+        STATUS        current
+        DESCRIPTION   "Address type (IPv4/IPv6) of last host access blocked"
+        ::= { rcWeb 28 }
+
+rcWebLastHostAccessBlockedAddress OBJECT-TYPE
+        SYNTAX        InetAddress
+        MAX-ACCESS    read-only
+        STATUS        current
+        DESCRIPTION   "last host access blocked"
+        ::= { rcWeb 29 }
+
+rcWebInactivityTimeout OBJECT-TYPE
+        SYNTAX        Unsigned32(30..65535)
+        UNITS         "seconds"
+        MAX-ACCESS    read-write
+        STATUS        current
+        DESCRIPTION   "Used to indicate the amount of idle time, in
+     		      seconds to wait before timing out EDM login
+		      sessions."
+	DEFVAL        { 900 }
+        ::= { rcWeb 30 }
+    
+rcWebTlsMinimumVersion OBJECT-TYPE
+        SYNTAX        INTEGER {
+                                tlsv10(1),
+                                tlsv11(2),
+                                tlsv12(3) }
+        MAX-ACCESS    read-write
+        STATUS        current
+        DESCRIPTION   "Specifies the minimum version of TLS protocol supported by the Web Server.
+                      tlsv10 sets the version to 1.0.
+                      tlsv11 sets the version to 1.1.
+                      tlsv12 sets the version to 1.2."
+        DEFVAL        { tlsv12 }
+        ::= { rcWeb 31 }
+
+rcWebMinimumPasswordLength OBJECT-TYPE
+        SYNTAX        Integer32 (1..32)
+        MAX-ACCESS    read-write
+        STATUS        current
+        DESCRIPTION   "Minimum length of password for web user"
+        ::= { rcWeb 32 }
+
+rcWebROEnable OBJECT-TYPE
+        SYNTAX        TruthValue
+        MAX-ACCESS    read-write
+        STATUS        current
+        DESCRIPTION   "Enable/Disable for the read-only Web Server (EDM) 
+	    	       account."
+        DEFVAL          { false }
+        ::= { rcWeb 33 }        
 
 -- rcCli related information
 
@@ -4890,7 +5951,7 @@ rcCliRWAUserName OBJECT-TYPE
         ::= { rcCli 1 }
 
 rcCliRWAPassword OBJECT-TYPE
-        SYNTAX        DisplayString (SIZE (0..256))
+        SYNTAX        OCTET STRING (SIZE (0..256))
         MAX-ACCESS    read-write
         STATUS        current
         DESCRIPTION   "Password for the read-write-all CLI account."
@@ -4904,7 +5965,7 @@ rcCliRWUserName OBJECT-TYPE
         ::= { rcCli 3 }
  
 rcCliRWPassword OBJECT-TYPE 
-        SYNTAX        DisplayString (SIZE (0..256)) 
+        SYNTAX        OCTET STRING (SIZE (0..256)) 
         MAX-ACCESS    read-write 
         STATUS        current 
         DESCRIPTION   "Password for the read-write CLI account." 
@@ -4918,7 +5979,7 @@ rcCliRWL3UserName OBJECT-TYPE
         ::= { rcCli 5 }
 
 rcCliRWL3Password OBJECT-TYPE
-        SYNTAX        DisplayString (SIZE (0..20))
+        SYNTAX        DisplayString (SIZE (0..32))
         MAX-ACCESS    read-write
         STATUS        current
         DESCRIPTION   "Password for the read-write layer-3 CLI account."
@@ -4932,7 +5993,7 @@ rcCliRWL2UserName OBJECT-TYPE
         ::= { rcCli 7 }  
  
 rcCliRWL2Password OBJECT-TYPE
-        SYNTAX        DisplayString (SIZE (0..20))
+        SYNTAX        DisplayString (SIZE (0..32))
         MAX-ACCESS    read-write
         STATUS        current
         DESCRIPTION   "Password for the read-write layer-2 CLI account."
@@ -4946,7 +6007,7 @@ rcCliROUserName OBJECT-TYPE
         ::= { rcCli 9 }
  
 rcCliROPassword OBJECT-TYPE 
-        SYNTAX        DisplayString (SIZE (0..20))
+        SYNTAX        DisplayString (SIZE (0..32))
         MAX-ACCESS    read-write 
         STATUS        current 
         DESCRIPTION   "Password for the read-only CLI account." 
@@ -4996,7 +6057,7 @@ rcCliRWL1UserName OBJECT-TYPE
         ::= { rcCli 15 }
  
 rcCliRWL1Password OBJECT-TYPE
-        SYNTAX        DisplayString (SIZE (0..20))
+        SYNTAX        DisplayString (SIZE (0..32))
         MAX-ACCESS    read-write
         STATUS        current
         DESCRIPTION   "Password for the read-write layer-1 CLI account."
@@ -5163,82 +6224,236 @@ rcCliAuditorEnable OBJECT-TYPE
         DEFVAL        { false }
         ::= { rcCli 33 }
 
-rcCliUpperCase OBJECT-TYPE
+rcCliPasswordUpperCase OBJECT-TYPE
         SYNTAX        Integer32 (1..9)
         MAX-ACCESS    read-write
         STATUS        current
-        DESCRIPTION   "upper case characters in password"
+        DESCRIPTION   "Number of mandatory upper case characters 
+	    	       to be included as part of user password,
+		       failing which password creation will
+		       not succeed"
         ::= { rcCli 34 }
 
-rcCliLowerCase OBJECT-TYPE
+rcCliPasswordLowerCase OBJECT-TYPE
         SYNTAX        Integer32 (1..9)
         MAX-ACCESS    read-write
         STATUS        current
-        DESCRIPTION   "lower case characters in password"
+        DESCRIPTION   "Number of mandatory lower case characters 
+	    	       to be included as part of user password,
+		       failing which password creation will
+		       not succeed"
         ::= { rcCli 35 }
 
-rcCliNumbericCase OBJECT-TYPE
+rcCliPasswordNumericCase OBJECT-TYPE
         SYNTAX        Integer32 (1..9)
         MAX-ACCESS    read-write
         STATUS        current
-        DESCRIPTION   "numeric characters in password"
+        DESCRIPTION   "Number of mandatory numeric characters
+	    	       to be included as part of user password,
+		       failing which password creation will
+		       not succeed"
         ::= { rcCli 36 }
 
-rcCliSpecialCase OBJECT-TYPE
+rcCliPasswordSpecialCase OBJECT-TYPE
         SYNTAX        Integer32 (1..9)
         MAX-ACCESS    read-write
         STATUS        current
-        DESCRIPTION   "special characters in password"
+        DESCRIPTION   "Number of mandatory special characters
+	    	       to be included as part of user password,
+		       failing which password creation will
+		       not succeed"
         ::= { rcCli 37 }
 
-rcCliChangeInterval OBJECT-TYPE
+rcCliPasswordChangeInterval OBJECT-TYPE
         SYNTAX      Integer32 (1..999)
         MAX-ACCESS    read-write
         STATUS        current
-        DESCRIPTION   "Password change interval"
+        DESCRIPTION   "The time interval in which user cannot
+	    	       change his password from the last password
+		       change"
         ::= { rcCli 38 }
 
-rcCliPreNotificationInterval1 OBJECT-TYPE
+rcCliPasswordPreNotificationInterval1 OBJECT-TYPE
         SYNTAX        Integer32 (1..99)
         MAX-ACCESS    read-write
         STATUS        current
-        DESCRIPTION   "pre notification interval 1."
+        DESCRIPTION   "The time for first notificateion to be sent to 
+	    	       the user before the expiry of user password"
         ::= { rcCli 39 }
 
-rcCliPreNotificationInterval2 OBJECT-TYPE
+rcCliPasswordPreNotificationInterval2 OBJECT-TYPE
         SYNTAX        Integer32 (1..99)
         MAX-ACCESS    read-write
         STATUS        current
-        DESCRIPTION   "pre notification interval 2."
+        DESCRIPTION   "The time for second notificateion to be sent to 
+	    	       the user before the expiry of user password."
         ::= { rcCli 40 }
 
-rcCliPreNotificationInterval3 OBJECT-TYPE
+rcCliPasswordPreNotificationInterval3 OBJECT-TYPE
         SYNTAX        Integer32 (1..99)
         MAX-ACCESS    read-write
         STATUS        current
-        DESCRIPTION   "pre notification interval 3"
+        DESCRIPTION   "The time for third notificateion to be sent to 
+	    	       the user before the expiry of user password."
         ::= { rcCli 41 }
 
-rcCliPostNotificationInterval1 OBJECT-TYPE
+rcCliPasswordPostNotificationInterval1 OBJECT-TYPE
         SYNTAX        Integer32 (1..99)
         MAX-ACCESS    read-write
         STATUS        current
-        DESCRIPTION   "post notification interval 1."
+        DESCRIPTION   "The time for first notificateion to be sent to 
+	    	       the user after the expiry of user password."
         ::= { rcCli 42 }
 
-rcCliPostNotificationInterval2 OBJECT-TYPE
+rcCliPasswordPostNotificationInterval2 OBJECT-TYPE
         SYNTAX        Integer32 (1..99)
         MAX-ACCESS    read-write
         STATUS        current
-        DESCRIPTION   "post notification interval 2."
+        DESCRIPTION   "The time for second notificateion to be sent to 
+	    	       the user after the expiry of user password."
         ::= { rcCli 43 }
 
-rcCliPostNotificationInterval3 OBJECT-TYPE
+rcCliPasswordPostNotificationInterval3 OBJECT-TYPE
         SYNTAX        Integer32 (1..99)
         MAX-ACCESS    read-write
         STATUS        current
-        DESCRIPTION   "post notification interval 3"
+        DESCRIPTION   "The time for third notificateion to be sent to 
+	    	       the user after the expiry of user password."
         ::= { rcCli 44 }
+
+rcCliPasswordAccountIdleTime OBJECT-TYPE
+        SYNTAX        Integer32 (1..365)
+        MAX-ACCESS    read-write
+        STATUS        current
+        DESCRIPTION   "Specifies time duration, in days, within which if a 
+	    	       user is not logged in, the account gets disabled."
+	DEFVAL        { 90 }
+        ::= { rcCli 45 }
+
+rcCliPasswordAccountUserName OBJECT-TYPE
+        SYNTAX        DisplayString (SIZE(1..255))
+        MAX-ACCESS    accessible-for-notify
+        STATUS        current
+        DESCRIPTION   "Object to be used for ecnUserAccountIdleTimeExpireTrap | 
+	    	       rcnAuthenticationFailureLoginAttemptsTrap to indicate
+		       that idle time has expired for user account or crossed 
+		       max-sessions"
+        ::= { rcCli 46 }
+
+rcCliPasswordUserAccessLevel OBJECT-TYPE
+        SYNTAX        DisplayString (SIZE(1..20))
+        MAX-ACCESS    accessible-for-notify
+        STATUS        current
+        DESCRIPTION   "Object to be used for ecnUserAccountIdleTimeExpireTrap | 
+	    	       rcnAuthenticationFailureLoginAttemptsTrap to indicate
+		       that idle time has expired for user account or crossed 
+		       max-sessions"
+        ::= { rcCli 47 }
+
+rcCliPasswordPostExpiryLogins OBJECT-TYPE
+        SYNTAX        Integer32 (1..5)
+        MAX-ACCESS    read-write
+        STATUS        current
+        DESCRIPTION   "Number of allowed logins for a user post the password expiry."
+	DEFVAL        { 2 }
+        ::= { rcCli 48 }
+
+rcCliLoginAttemptErrorTrapEnable OBJECT-TYPE
+        SYNTAX        TruthValue
+        MAX-ACCESS    read-write
+        STATUS        current
+        DESCRIPTION   "Indicates whether to send trap upon receiving a login 
+	    	       attempt error in the system."
+	DEFVAL        { true }
+        ::= { rcCli 49 }
+
+rcCliUserTable OBJECT-TYPE
+        SYNTAX          SEQUENCE OF RcCliUserEntry
+        MAX-ACCESS      not-accessible
+        STATUS          current
+        DESCRIPTION     "Table of user entries."
+        ::= { rcCli 50 }
+
+rcCliUserEntry OBJECT-TYPE
+        SYNTAX          RcCliUserEntry
+        MAX-ACCESS      not-accessible
+        STATUS          current
+        DESCRIPTION     "User Table Entry."
+        INDEX           { rcCliUserId }
+        ::= { rcCliUserTable 1 }
+
+RcCliUserEntry ::=
+        SEQUENCE {
+                rcCliUserId          Integer32,
+                rcCliUserName        DisplayString,
+                rcCliUserPassword    OCTET STRING,
+                rcCliUserLevel       INTEGER,
+                rcCliUserEnable      TruthValue,
+                rcCliUserType        INTEGER,
+                rcCliUserRowStatus   RowStatus
+        }
+
+rcCliUserId OBJECT-TYPE
+        SYNTAX          Integer32 (1..10)
+        MAX-ACCESS      not-accessible
+        STATUS          current
+        DESCRIPTION     "User id, which uniquely identify a user."
+        ::= { rcCliUserEntry 1 }
+
+rcCliUserName OBJECT-TYPE
+        SYNTAX          DisplayString (SIZE (1..20))
+        MAX-ACCESS      read-create
+        STATUS          current
+        DESCRIPTION     "User name. It must be unique."
+        ::= { rcCliUserEntry 2 }
+
+rcCliUserPassword OBJECT-TYPE
+        SYNTAX          OCTET STRING (SIZE (0..256))
+        MAX-ACCESS      read-create
+        STATUS          current
+        DESCRIPTION     "User password."
+        ::= { rcCliUserEntry 3 }
+
+rcCliUserLevel OBJECT-TYPE
+        SYNTAX          INTEGER {
+                         ro(1),
+                         rw(2),
+                         rwa(3)
+                        }
+        MAX-ACCESS      read-create
+        STATUS          current
+        DESCRIPTION     "User role. It is set at the creation and 
+	    		 cannot be changed later. A new user can 
+			 have any value, ro, rw or rwa."
+        ::= { rcCliUserEntry 4 }
+
+rcCliUserEnable OBJECT-TYPE
+        SYNTAX          TruthValue
+        MAX-ACCESS      read-create
+        STATUS          current
+        DESCRIPTION     "Enable/Disable for the user. If the user 
+	    		is enabled, it can be used to login to a session."
+        DEFVAL        { true }
+        ::= { rcCliUserEntry 5 }
+
+rcCliUserType OBJECT-TYPE
+        SYNTAX          INTEGER {
+                         default(1),
+                         userDefined(2)
+                        } 
+        MAX-ACCESS      read-only
+        STATUS          current
+        DESCRIPTION     "User Type. It is default for default users 
+	    		(ro, rw, rwa) or userDefined for new created users."
+        ::= { rcCliUserEntry 6 }
+
+rcCliUserRowStatus OBJECT-TYPE
+        SYNTAX          RowStatus
+        MAX-ACCESS      read-create
+        STATUS          current
+        DESCRIPTION     "Used to create/delete entries in rcCliUserTable. 
+	    		Default users (ro, rw, rwa) cannot be deleted."
+        ::= { rcCliUserEntry 7 }
 
 -- rcCoreDumpGlobals
 rcCoreDumpGlobal OBJECT IDENTIFIER ::= { rcCoreDump 1 }
@@ -5416,6 +6631,21 @@ rcSyslogGlobalHeader OBJECT-TYPE
          DEFVAL        { 1 }
          ::= { rcSyslogGlobal 4 }
 
+rcSyslogGlobalIncludeHostIp OBJECT-TYPE
+        SYNTAX        TruthValue
+        MAX-ACCESS    read-write
+        STATUS        current
+        DESCRIPTION   "By default, the Host Ip address is placed at the second field
+	               which is after the timestamp and before the log message.
+		       The Host Ip is allowed the syslog server to identify the device
+		       which the message is received from.
+		       
+		       In order to support the legacy message format which does not include
+		       the Host Ip. This object is introduced to allow user to disable the
+		       Host Ip. That means not to send the Host Ip in the log message"
+        DEFVAL        { true }
+        ::= { rcSyslogGlobal 5 }
+
 rcSyslogHostTbl OBJECT-TYPE
         SYNTAX        SEQUENCE OF RcSyslogHostEntry
         MAX-ACCESS    not-accessible
@@ -5450,7 +6680,14 @@ RcSyslogHostEntry ::= SEQUENCE {
 		rcSyslogHostLogTraceMsgs        TruthValue,
 		rcSyslogHostLogTrapMsgs         TruthValue,
 		rcSyslogHostEnable              TruthValue,
-                rcSyslogHostRowStatus           RowStatus
+                rcSyslogHostRowStatus           RowStatus,
+		rcSyslogHostAddressType         InetAddressType,
+		rcSyslogHostAddress             InetAddress,
+	  	rcSyslogHostSecureForwardingEnable TruthValue, 
+                rcSyslogHostSecureForwardingSshProtect TruthValue,
+                rcSyslogHostSecureForwardingTcpPort Integer32,
+		rcSyslogHostSecureForwardingMode INTEGER,
+		rcSyslogHostSecureForwardingServerCertName DisplayString
         }
 
 rcSyslogHostId OBJECT-TYPE
@@ -5714,7 +6951,206 @@ rcSyslogHostRowStatus OBJECT-TYPE
         STATUS        current
         DESCRIPTION   "Used to create/delete entries in the rcSyslogTable."
         ::= { rcSyslogHostEntry 18 }
+    
+rcSyslogHostAddressType OBJECT-TYPE
+        SYNTAX        InetAddressType
+        MAX-ACCESS    read-write
+        STATUS        current
+        DESCRIPTION   "Address Type of the Host."
+        ::= {rcSyslogHostEntry  19 }
 
+rcSyslogHostAddress OBJECT-TYPE
+        SYNTAX        InetAddress
+        MAX-ACCESS    read-write
+        STATUS        current
+        DESCRIPTION   "Address of the Host."
+        ::= {rcSyslogHostEntry  20 }
+
+rcSyslogHostSecureForwardingEnable OBJECT-TYPE
+        SYNTAX        TruthValue
+        MAX-ACCESS    read-write
+        STATUS        deprecated
+        DESCRIPTION   "Enable/Disable Secure forwarding of Syslog for a particular host.
+	               Deprecate/Obsolete by rcSyslogHostSecureForwardingMode"
+        DEFVAL        { true }
+        ::= { rcSyslogHostEntry  21 }
+
+rcSyslogHostSecureForwardingSshProtect OBJECT-TYPE
+        SYNTAX        TruthValue
+        MAX-ACCESS    read-write
+        STATUS        deprecated
+        DESCRIPTION   "Enable/Disable Secure forwarding of Syslog over SSH remote port forwarding
+	               for particular host.
+	               deprecate/Obsolete by rcSyslogHostSecureForwardingMode "
+        DEFVAL        { true }
+        ::= { rcSyslogHostEntry  22 }
+
+rcSyslogHostSecureForwardingTcpPort OBJECT-TYPE
+        SYNTAX        Integer32(1025..49151)
+        MAX-ACCESS    read-write
+        STATUS        current
+        DESCRIPTION   "Specifies the tcp port to use for Secure forwarding of for particular host."
+        DEFVAL        { 1025 }
+        ::= { rcSyslogHostEntry  23 }
+    
+rcSyslogHostSecureForwardingMode   OBJECT-TYPE
+        SYNTAX        INTEGER {
+	                 none(1),
+			 ssh(2),
+			 tls(3)
+		      }
+        MAX-ACCESS    read-write
+        STATUS        current
+	DESCRIPTION   "Set Secure forwarding mode for a particular Syslog host. This object is
+	              used to obsolete the rcSyslogHostSecureForwardingEnable and
+		      rcSyslogHostSecureForwardingSshProtect.
+		      ssh  - Set Secure forwarding mode for particular Syslog host over SSH tunnel 
+		      tls  -  Set Secure forwarding mode for particular Syslog host over TLS 
+		      none - Set Secure forwarding mode none for particular Syslog host"
+        DEFVAL        { none }
+        ::= { rcSyslogHostEntry  24 }
+
+rcSyslogHostSecureForwardingServerCertName   OBJECT-TYPE
+        SYNTAX        DisplayString (SIZE (0..64))
+        MAX-ACCESS    read-write
+        STATUS        current
+	DESCRIPTION   "Specifies the identity name of server certificate. It is used to match
+	    	       the subject name of the server certificate received during negotiation
+		       with this configured server cert name to allow negotiation"
+        ::= { rcSyslogHostEntry  25 }
+    
+-- logging msg control     
+rcLogMsgControl OBJECT IDENTIFIER ::= { rcSyslog 3 }
+
+rcLogMsgControlAction OBJECT-TYPE
+     SYNTAX      INTEGER{ 
+                     suppressMsg(1) , 
+		     sendTrap(2),
+		     both(3)
+                 }
+     MAX-ACCESS   read-write
+     STATUS       current
+     DESCRIPTION      " This value indicates the type of message control action"
+     DEFVAL    { suppressMsg }
+     ::= { rcLogMsgControl 1 }
+
+
+rcLogMsgControlInterval OBJECT-TYPE
+     SYNTAX         INTEGER (1..30)
+     MAX-ACCESS     read-write
+     STATUS         current
+     DESCRIPTION    "Indicates  the message control interval value in minutes"
+     DEFVAL         { 5 }
+     ::= { rcLogMsgControl 2}
+     
+rcLogMsgControlMaxMsgNum OBJECT-TYPE 
+     SYNTAX        INTEGER (2..500)
+     MAX-ACCESS    read-write
+     STATUS        current
+     DESCRIPTION   "Used to specify the maximum frequency/count
+                    of the occurence of the Log Message."
+     DEFVAL        { 5 }
+        ::= { rcLogMsgControl 3 }
+
+rcLogMsgControlEnable  OBJECT-TYPE
+      SYNTAX        TruthValue
+      MAX-ACCESS    read-write
+      STATUS        current
+      DESCRIPTION   "Indicates the status of the system message control"
+      DEFVAL        { false }
+      ::={ rcLogMsgControl 4 }
+
+-- logging config
+
+rcLogLoggingGlobal OBJECT IDENTIFIER ::= { rcSyslog 4 }
+
+rcLogLoggingEnable  OBJECT-TYPE
+      SYNTAX        TruthValue
+      MAX-ACCESS    read-only
+      STATUS        current
+      DESCRIPTION   "Indicates the status of the logging operational status"
+      ::={ rcLogLoggingGlobal 1}
+      
+rcLogLoggingLevel OBJECT-TYPE 
+     SYNTAX        INTEGER {
+                      info(1),
+		      warning(2),
+		      error(3),
+		      mfg(4),
+		      fatal(5)
+                   }     
+     MAX-ACCESS    read-write
+     STATUS        current
+     DESCRIPTION   "Use to set the logging msg level.
+                    'info(1)' logs any message level 1 and above.
+		    'warning(2)' logs any message level 2 and above.
+		    'error(3)' logs any message level 3 and above.
+		    'mfg(4)' logs any message level 4 and above.
+		    'fatal(5)' logs message level 5 only"
+		     
+     DEFVAL        { info }
+        ::= { rcLogLoggingGlobal 2 }
+    
+--SyslogRootCertificate Tbl
+
+rcSyslogRootCertificateTable OBJECT-TYPE
+      SYNTAX        SEQUENCE OF RcSyslogRootCertificateEntry
+      MAX-ACCESS    not-accessible
+      STATUS        current
+      DESCRIPTION   "Table containing file-name and actio to be performed 
+	    	     on the serever root certificate"
+      ::= { rcSyslog 5 }
+
+
+rcSyslogRootCertificateEntry OBJECT-TYPE
+      SYNTAX        RcSyslogRootCertificateEntry
+      MAX-ACCESS    not-accessible
+      STATUS        current
+      DESCRIPTION   "Entry containing name of the server root certificate and 
+                     the action to be performed on it"
+      INDEX         { rcSyslogRootCertificateFilename }
+      ::= { rcSyslogRootCertificateTable 1 }
+
+RcSyslogRootCertificateEntry ::= SEQUENCE {
+            rcSyslogRootCertificateFilename        DisplayString,
+            rcSyslogRootCertificateAction          INTEGER,
+            rcSyslogRootCertificateRowStatus       RowStatus
+      }
+
+
+rcSyslogRootCertificateFilename  OBJECT-TYPE
+      SYNTAX        DisplayString (SIZE (1..128))
+      MAX-ACCESS    not-accessible
+      STATUS        current
+      DESCRIPTION   "Root certificate file of a Syslog Server to be installed 
+	  	     or uninstalled. It requires object rcSyslogRootCertificate
+		     to be install or uninstall or none"
+      ::= { rcSyslogRootCertificateEntry 1 }
+
+rcSyslogRootCertificateAction  OBJECT-TYPE
+      SYNTAX        INTEGER {
+                           noAction(1),
+                           install(2),
+                           uninstall(3) }
+      MAX-ACCESS    read-create
+      STATUS        current
+      DESCRIPTION   "To install/uninstall Root certificate file of a Syslog 
+	             Server. It requires the object 
+		     rcSyslogGlobalSecureForwadingCertFilename with a valid 
+		     certification file. it always return noAction for query"
+      DEFVAL        { noAction }
+      ::= { rcSyslogRootCertificateEntry 2 }
+
+
+rcSyslogRootCertificateRowStatus OBJECT-TYPE
+      SYNTAX        RowStatus
+      MAX-ACCESS    read-create
+      STATUS        current
+      DESCRIPTION   "Used to create/delete entries in the 
+	  	     rcSyslogRootCertificateTable."
+      ::= { rcSyslogRootCertificateEntry 3 }
+
+   
 -- System Time Grp
 
 rcUserSetTimeYear OBJECT-TYPE
@@ -6444,7 +7880,7 @@ rcSshGlobalTimeout OBJECT-TYPE
      ::= { rcSshGlobal 4 }
 
 rcSshGlobalRsaKeySize OBJECT-TYPE
-     SYNTAX       Integer32 (0|512..1024)
+     SYNTAX       Integer32 (0|512..2048)
      MAX-ACCESS   read-write
      STATUS       current
      DESCRIPTION  "SSH Rsa key size."
@@ -6452,7 +7888,7 @@ rcSshGlobalRsaKeySize OBJECT-TYPE
      ::= { rcSshGlobal 5 }
 
 rcSshGlobalDsaKeySize OBJECT-TYPE
-     SYNTAX       Integer32 (0|512..1024)
+     SYNTAX       INTEGER(1024)
      MAX-ACCESS   read-write
      STATUS       current
      DESCRIPTION  "SSH Dsa key size."
@@ -6538,8 +7974,153 @@ rcSshGlobalRsaAuthKeyName OBJECT-TYPE
      STATUS      current
      DESCRIPTION "Name of the RSA Auth Key. When not used, the value is a zero
                   length string."
-     ::=  { rcSshGlobal 15 }     
+     ::=  { rcSshGlobal 15 }
 
+rcSshGlobalRekeyEnable OBJECT-TYPE
+     SYNTAX       TruthValue
+     MAX-ACCESS   read-write
+     STATUS       current
+     DESCRIPTION  "Enable/disable SSH Rekey. This needs global SSH flag to be 
+                   enabled"
+     DEFVAL       { false }
+     ::= { rcSshGlobal 16 }
+
+rcSshGlobalRekeyTimeInterval OBJECT-TYPE
+     SYNTAX       Integer32 (1..6)
+     UNITS        "hours"
+     MAX-ACCESS   read-write
+     STATUS       current
+     DESCRIPTION  "Time interval in hours after which active SSH sessions
+                   should start the rekey process."
+     DEFVAL       { 1 }
+     ::= { rcSshGlobal 17 }
+
+rcSshGlobalRekeyDataLimit OBJECT-TYPE
+     SYNTAX       Integer32 (1..6)
+     MAX-ACCESS   read-write
+     STATUS       current
+     DESCRIPTION  "Total data(in GB) Tx and Rx in active SSH sessions 
+                   after which sessions should start the rekey process."
+     DEFVAL       { 1 }
+     ::= { rcSshGlobal 18 }
+ 
+rcSshGlobalSftpEnable OBJECT-TYPE
+     SYNTAX       TruthValue
+     MAX-ACCESS   read-write
+     STATUS       current
+     DESCRIPTION  "Enable/disable SSH Sftp."
+     DEFVAL       { true }
+     ::= { rcSshGlobal 19 }
+
+rcSshGlobalKeyboardInteractiveAuth OBJECT-TYPE
+     SYNTAX       TruthValue
+     MAX-ACCESS   read-write
+     STATUS       current
+     DESCRIPTION  "Enable/disable SSH keyboard-interactive mode authentication"
+     DEFVAL       { false }
+     ::= { rcSshGlobal 20 } 
+
+rcSshAuthType  OBJECT-TYPE
+     SYNTAX         BITS
+		    {
+			   hmacSha1(0),
+			   aeadAes128GcmSsh(1),
+			   aeadAes256GcmSsh(2)
+		    }
+     MAX-ACCESS     read-write
+     STATUS         current
+     DESCRIPTION    "value is one of multiple (logically by 'OR' of
+                    following value:
+                        bit 0 - hmac_sha1
+                        bit 1 - aead_aes_128_gcm_ssh
+                        bit 2 - aead_aes_256_gcm_ssh
+                    hmac_sha1            : Enables hmac-sha1 auth type
+                    aead_aes_128_gcm_ssh : Enables aead-aes-128-gcm-ssh auth
+                                           type
+                    aead_aes_256_gcm_ssh : Enables aead-aes-256-gcm-ssh auth
+                                           type"
+    ::= { rcSshGlobal  21 }
+
+rcSshEncryptionType  OBJECT-TYPE
+     SYNTAX         BITS
+		    {
+			   aes128Cbc(0),
+			   aes256Cbc(1),
+			   threeDesCbc(2),
+			   aeadAes128GcmSsh(3),
+			   aeadAes256GcmSsh(4),
+			   aes128Ctr(5),
+			   rijndael128Cbc(6),
+			   aes256Ctr(7),
+			   aes192Ctr(8),
+			   aes192Cbc(9),
+			   rijndael192Cbc(10),
+			   blowfishCbc(11)
+		    }
+     MAX-ACCESS     read-write
+     STATUS         current
+     DESCRIPTION    "value is one of multiple (logically by 'OR' of
+                    following value:
+                        bit 0 - aes128_cbc
+                        bit 1 - aes256_cbc
+                        bit 2 - 3des_cbc
+                        bit 3 - aead_aes_128_gcm_ssh
+                        bit 4 - aead_aes_256_gcm_ssh
+                        bit 5 - aes128_ctr
+                        bit 6 - rijndael128_cbc
+                        bit 7 - aes256_ctr
+                        bit 8 - aes192_ctr
+                        bit 9 - aes192_cbc
+                        bit 10 - rijndael192_cbc
+                        bit 11 - blowfish_cbc
+                    aes128_cbc             : Enables hmac-sha1 encryption type
+                    aes256_cbc             : Enables aes256-cbc encrytption
+                                             type
+                    3des_cbc               : Enables 3des-cbc type
+                    aead_aes_128_gcm_ssh   : Enables aead-aes-128-gcm-ssh
+                                             encryption type
+                    aead_aes_256_gcm_ssh   : Enables  aead-aes-256-gcm-ssh
+                                             type
+                    aes128_ctr             : Enables  aes128-ctr auth type
+                    rijndael128_cbc        : Enables rijndael128-cbc
+                                             encryption type
+                    aes256_ctr             : Enables aes256-ctr encrytipn
+                                             type
+                    aes192_ctr             : Enables aes198-ctr encryption
+                                             type
+                    aes192_cbc             : Enables aes192-cbc type
+                    rijndael192_cbc        : Enables rijndael192-cbc
+                                             encryption type
+                    blowfish_cbc           : Enables  blowfish-cbc type"
+     ::= { rcSshGlobal  22 }
+
+rcSshKeyExchangeMethod  OBJECT-TYPE
+     SYNTAX         BITS
+		    {
+			   diffieHellmanGroup14Sha1(0),
+			   diffieHellmanGroup1Sha1(1)
+		    }
+     MAX-ACCESS     read-write
+     STATUS         current
+     DESCRIPTION    "value is one of multiple (logically by 'OR'
+                    of following value:
+                          bit 0 - diffie_hellman_group14_sha1
+                          bit 1 - diffie_hellman_group1_sha1
+                    diffie_hellman_group14_sha1 : Enables 
+                                        diffie-hellman-group14-sha1 method
+                    diffie_hellman_group1_sha1  : Enables
+                                        diffie_hellman_group1_sha1 method"
+     ::= { rcSshGlobal  23 }
+
+rcSshGlobalClientEnable OBJECT-TYPE
+     SYNTAX       TruthValue
+     MAX-ACCESS   read-write
+     STATUS       current
+     DESCRIPTION  "Enable/disable SSH Client."
+     DEFVAL       { true }
+     ::= { rcSshGlobal 24 }
+
+ 
 rcSslMipTable OBJECT-TYPE
      SYNTAX       SEQUENCE OF RcSslMipEntry
      MAX-ACCESS   not-accessible
@@ -6795,6 +8376,15 @@ rcSshcGlobalSftpServerInetAddress OBJECT-TYPE
       DESCRIPTION  "SFTP server IP address."
       ::= { rcSshcGlobal 22 }
 
+rcSshcGlobalRekeyDataLimit OBJECT-TYPE
+     SYNTAX       Integer32 (1..6)
+     MAX-ACCESS   read-write
+     STATUS       current
+     DESCRIPTION  "Total data(in GB) Tx and Rx in active SSH Client sessions 
+                   after which sessions will start the rekey process."
+     DEFVAL       { 1 }
+     ::= { rcSshcGlobal 23 }
+
 -- LACP Group
 -- LACP Global Information. 
 
@@ -6918,6 +8508,21 @@ rcLacpGlobalVlacpHoldTime OBJECT-TYPE
      STATUS       current
      DESCRIPTION  "Virtual LACP hold time"
      ::= { rcLacpGlobal 15 }
+
+rcLacpGlobalVlacpSeqNumEnable OBJECT-TYPE
+     SYNTAX       TruthValue
+     MAX-ACCESS   read-write
+     STATUS       current
+     DESCRIPTION  "globally enable/disable Virtual LACP Sequence Number"
+     DEFVAL       { true }
+     ::= { rcLacpGlobal 16 }
+
+rcLacpGlobalSysId OBJECT-TYPE
+     SYNTAX       MacAddress
+     MAX-ACCESS   read-only
+     STATUS       current
+     DESCRIPTION  "LACP system ID "
+     ::= { rcLacpGlobal 17 }
 
 -- rcVlacpPeerMacAddressTable  
 
@@ -7101,5 +8706,407 @@ rcLacpKeySmltId OBJECT-TYPE
         "SMLT Id associated with this key value."
     ::= { rcLacpKeyEntry 4 }
 
-END
+-- LacpMismatch Information.
 
+rcLacpNotificationObjects   OBJECT IDENTIFIER ::=  { rcLacp 5 }
+
+rcLacpMisconfigType  OBJECT-TYPE
+        SYNTAX       INTEGER {
+                         globalLacpDisable(1),
+                         portLevelLacpDisable(2),
+                         globalAndPortLacpDisable(3)
+                     }
+        MAX-ACCESS   accessible-for-notify
+        STATUS       current
+        DESCRIPTION  "This indicates the reason for Lacp Misconfig trap.
+                      Used by rcnLacpMisconfigTrap trap."
+        ::= { rcLacpNotificationObjects 1 }
+
+-- End of LacpMismatch Information.
+-- rcCLiCustom
+rcCliSystemMib   OBJECT IDENTIFIER ::= { rcCliSystem 1 }
+rcCliSystemObjects   OBJECT IDENTIFIER ::= { rcCliSystemMib 1 }
+rcCliCustom   OBJECT IDENTIFIER ::= { rcCliSystemObjects 1 }
+
+rcCliCustomBannerText  OBJECT-TYPE
+         SYNTAX         OCTET STRING (SIZE (0..1896))
+         MAX-ACCESS     read-only
+         STATUS         current
+         DESCRIPTION    "CLI customer banner. if object rcCliCustomBannerEnable
+	 		is not true, the customer banner will not be shown on
+			CLI session" 
+         ::= { rcCliCustom 1 }
+	 
+rcCliCustomBannerEnable  OBJECT-TYPE
+         SYNTAX         TruthValue
+         MAX-ACCESS     read-only
+         STATUS         current
+         DESCRIPTION    "Indicates wthether  the customer banner rcCliCustomBannerText is
+	                  shown on the CLI session"
+         ::= { rcCliCustom 2 }	
+    
+rcLldpEnable  OBJECT-TYPE
+        SYNTAX       TruthValue
+        MAX-ACCESS   read-write
+        STATUS       current
+        DESCRIPTION  "This object controls the LLDP protocol.
+                      It is used to enable/disable LLDP protocol."
+	DEFVAL       { false }
+        ::= { rcLldp 1 }
+
+--
+-- LLDP and CDP definition
+--
+rcLldpMIBObjects  OBJECT IDENTIFIER ::= { rcLldpExt 1 }
+rcLldpGlobal      OBJECT IDENTIFIER ::= { rcLldpMIBObjects 1 }
+rcLldpPort        OBJECT IDENTIFIER ::= { rcLldpMIBObjects 2 }
+
+    
+-- CDP port Table
+
+rcLldpPortCdpConfigTable OBJECT-TYPE
+    SYNTAX     SEQUENCE OF RcLldpPortCdpConfigEntry
+    MAX-ACCESS not-accessible
+    STATUS     current
+    DESCRIPTION "The table contains the configuration of CDP
+	         on the device's interfaces."
+    ::= { rcLldpPort 1 }
+
+rcLldpPortCdpConfigEntry OBJECT-TYPE
+    SYNTAX     RcLldpPortCdpConfigEntry
+    MAX-ACCESS not-accessible
+    STATUS     current
+    DESCRIPTION
+            "An entry in the rcLldpPortCdpConfigTable,
+            containing the status of CDP on an interface."
+    INDEX      { rcLldpPortCdpConfigIfIndex }
+    ::= { rcLldpPortCdpConfigTable 1 }
+
+RcLldpPortCdpConfigEntry ::= SEQUENCE {
+    rcLldpPortCdpConfigIfIndex      InterfaceIndex, 
+    rcLldpPortCdpConfigAdminState   TruthValue
+}
+
+rcLldpPortCdpConfigIfIndex OBJECT-TYPE
+    SYNTAX     InterfaceIndex
+    MAX-ACCESS not-accessible
+    STATUS     current
+    DESCRIPTION
+            "The ifIndex value of the local interface.
+	     It is local port interface index"
+    ::= { rcLldpPortCdpConfigEntry 1 }
+
+rcLldpPortCdpConfigAdminState OBJECT-TYPE
+    SYNTAX     TruthValue
+    MAX-ACCESS read-write
+    STATUS     current
+    DESCRIPTION
+            "Admininstrattely state of the CDP message on the interface.
+	    the value of this object has no meaning if CDP compatible mode
+	    is globally disabled
+	    (rcLldpGlobalCdpCompatibleModeEnbale is set to false)"
+    ::= { rcLldpPortCdpConfigEntry 2 }
+
+--
+-- The LLDP CDP REMOTE Info Table
+--
+
+rcLldpPortCdpRemTable OBJECT-TYPE
+    SYNTAX     SEQUENCE OF RcLldpPortCdpRemEntry
+    MAX-ACCESS not-accessible
+    STATUS     current
+    DESCRIPTION
+            "The table contains the Remote device information
+	     obtained via receiving CDP messages on
+	     the local interface. Each rows is per physical network
+             connection known to this agent "
+    ::= { rcLldpPort 2 }
+
+rcLldpPortCdpRemEntry OBJECT-TYPE
+    SYNTAX     RcLldpPortCdpRemEntry
+    MAX-ACCESS not-accessible
+    STATUS     current
+    DESCRIPTION
+            
+            "An entry of the rcLldpPortCdpRemTable,
+            contains the information received via CDP on one
+            interface from one device.  Entries is craeted when
+	    CDP message is received from neighbor and it is 
+	    deleted when CDP is disbaled on interface or globally"
+    INDEX      { rcLldpPortCdpRemLocalPortNum, rcLldpPortCdpRemIndex }
+    ::= { rcLldpPortCdpRemTable 1 }
+
+RcLldpPortCdpRemEntry ::= SEQUENCE {
+    rcLldpPortCdpRemLocalPortNum               InterfaceIndex,
+    rcLldpPortCdpRemIndex                      Integer32,
+    rcLldpPortCdpRemAddressType                AddressFamilyNumbers,
+    rcLldpPortCdpRemAddress                    LldpManAddress,
+    rcLldpPortCdpRemVersion                    DisplayString,
+    rcLldpPortCdpRemDeviceIdType               INTEGER, 
+    rcLldpPortCdpRemDeviceId                   DisplayString,
+    rcLldpPortCdpRemPortId                     DisplayString,
+    rcLldpPortCdpRemPlatform                   DisplayString,
+    rcLldpPortCdpRemCapabilities               LldpSystemCapabilitiesMap,  
+    rcLldpPortCdpRemSysName                    DisplayString,
+    rcLldpPortCdpRemLastChange                 TimeStamp
+}
+
+rcLldpPortCdpRemLocalPortNum  OBJECT-TYPE
+     SYNTAX      InterfaceIndex
+     MAX-ACCESS  not-accessible
+     STATUS      current
+     DESCRIPTION
+             "The port interface index value used to identify the port component
+             (contained in the local chassis with the LLDP/CDP agent)
+             associated with this entry.  The rcLldpPortCdpRemLocalPortNum
+             identifies the port on which the remote system information
+             is received."
+     ::= { rcLldpPortCdpRemEntry 1 }
+
+rcLldpPortCdpRemIndex OBJECT-TYPE
+    SYNTAX     Integer32 (1..2147483647)
+    MAX-ACCESS not-accessible
+    STATUS     current
+    DESCRIPTION
+             "This object represents an arbitrary local integer value used
+             by this agent to identify a particular connection instance,
+             unique only for the indicated remote system.
+
+             An agent is encouraged to assign monotonically increasing
+             index values to new entries, starting with one, after each
+             reboot.  It is considered unlikely that the
+	     rcLldpPortCdpRemDeviceIndex will wrap between reboots."
+    ::= { rcLldpPortCdpRemEntry 2 }
+
+rcLldpPortCdpRemAddressType OBJECT-TYPE
+    SYNTAX     AddressFamilyNumbers 
+    MAX-ACCESS read-only
+    STATUS     current
+    DESCRIPTION
+            "The type of address identifier encoding used in
+             the associated 'rcLldpPortCdpRemAddress' object."
+    ::= { rcLldpPortCdpRemEntry 3 }
+
+rcLldpPortCdpRemAddress OBJECT-TYPE
+    SYNTAX     LldpManAddress    
+    MAX-ACCESS read-only
+    STATUS     current
+    DESCRIPTION
+          "The string value used to identify the management address
+          component associated with the remote system.  It is reported
+	  in the Address TLV of the most recently received CDP message.
+	  And it is associated with rcLldpPortCdpRemAddressType"
+    ::= { rcLldpPortCdpRemEntry 4 }
+
+rcLldpPortCdpRemVersion OBJECT-TYPE
+    SYNTAX     DisplayString
+    MAX-ACCESS read-only
+    STATUS     current
+    DESCRIPTION
+            "The Version string as reported in CDP message"
+    ::= { rcLldpPortCdpRemEntry 5 }
+    
+rcLldpPortCdpRemDeviceIdType OBJECT-TYPE
+    SYNTAX     INTEGER { 
+                 serialNumber(1), 
+                 macAddress(2),
+                 other(3) 
+               } 
+    MAX-ACCESS read-only
+    STATUS     current
+    DESCRIPTION
+             " An indication of the format of Device Id (rcLldpPortCdpRemDeviceId)
+	     of remote device."
+    ::= { rcLldpPortCdpRemEntry 6 }
+
+rcLldpPortCdpRemDeviceId OBJECT-TYPE
+    SYNTAX     DisplayString
+    MAX-ACCESS read-only
+    STATUS     current
+    DESCRIPTION
+            "The value of string of remote device as reported in CDP message.
+	    The zero-length string indicates no Device-ID field TLV reported"
+    ::= { rcLldpPortCdpRemEntry 7 }
+
+rcLldpPortCdpRemPortId OBJECT-TYPE
+    SYNTAX     DisplayString
+    MAX-ACCESS read-only
+    STATUS     current
+    DESCRIPTION
+    	   "The string value used to identify the port component
+    	    associated with the remote system.
+            This will typically be the value of the ifName"
+    ::= { rcLldpPortCdpRemEntry 8 }
+
+rcLldpPortCdpRemPlatform OBJECT-TYPE
+      SYNTAX     DisplayString
+      MAX-ACCESS read-only
+      STATUS     current
+      DESCRIPTION
+              "The Device's Hardware Platform as reported in the most
+              recent CDP message.  The zero-length string indicates
+              that no Platform field (TLV) was reported in the most
+              recent CDP message."
+      ::= { rcLldpPortCdpRemEntry 9 }
+
+rcLldpPortCdpRemCapabilities OBJECT-TYPE
+    SYNTAX     LldpSystemCapabilitiesMap
+    MAX-ACCESS read-only
+    STATUS     current
+    DESCRIPTION
+             "The bitmap value used to identify which system capabilities
+             are supported on the retome system."
+    ::= { rcLldpPortCdpRemEntry 10 }
+
+rcLldpPortCdpRemSysName OBJECT-TYPE	
+    SYNTAX     DisplayString (SIZE (0..255))
+    MAX-ACCESS read-only
+    STATUS     current
+    DESCRIPTION
+             "The string value used to identify the system name of the
+             remote system. The valud of sysName MIB objec "
+    ::= { rcLldpPortCdpRemEntry 11 }
+
+rcLldpPortCdpRemLastChange OBJECT-TYPE	
+    SYNTAX     TimeStamp
+    MAX-ACCESS read-only
+    STATUS     current
+    DESCRIPTION
+        "Indicates the time when this cache entry was last changed.
+        This object is initialised to the current time when the entry
+        gets created and updated to the current time whenever the value
+        of any (other) object instance in the corresponding row is
+        modified."
+    ::= { rcLldpPortCdpRemEntry 12}
+
+--  extended LLDP remote Table
+rcLldpRemExtendedTable OBJECT-TYPE
+     SYNTAX      SEQUENCE OF RcLldpRemExtendedEntry
+     MAX-ACCESS  not-accessible
+     STATUS      current
+     DESCRIPTION   "This table is a extended table of lldpRemTable.
+                    It contains additional objects for lldpRemTable"
+     ::= { rcLldpPort 3 }
+     
+rcLldpRemExtendedEntry OBJECT-TYPE 
+                    
+     SYNTAX      RcLldpRemExtendedEntry
+     MAX-ACCESS  not-accessible
+     STATUS      current
+     DESCRIPTION
+             "Information about a particular physical network connection.
+	      This entry is additinal objects of the lldpRemTable"
+     AUGMENTS {	      
+     	 lldpRemEntry
+     }
+     ::= { rcLldpRemExtendedTable 1 }
+     
+RcLldpRemExtendedEntry ::= SEQUENCE {
+       rcLldpRemExtendedProtocolType   INTEGER,
+       rcLldpRemExtendedIpAddress      IpAddress
+       }
+rcLldpRemExtendedProtocolType  OBJECT-TYPE       
+   SYNTAX        INTEGER {
+                      lldp(1),
+		      cdp(2)
+                 }
+     MAX-ACCESS  read-only
+     STATUS      current
+     DESCRIPTION   "Indicates the entry is CDP or LLDP protocol"
+     ::= { rcLldpRemExtendedEntry 1 }
+
+rcLldpRemExtendedIpAddress   OBJECT-TYPE
+      SYNTAX        IpAddress
+      MAX-ACCESS    read-only	
+      STATUS        current
+      DESCRIPTION   "The neighbor Ip address"
+      ::= { rcLldpRemExtendedEntry 2}     
+
+ 
+ 
+-- Start of ASG
+
+rcASGGlobal OBJECT IDENTIFIER ::= { rcASG 1 }
+ 
+rcASGGlobalEnableStatus  OBJECT-TYPE
+        SYNTAX       TruthValue
+        MAX-ACCESS   read-only
+        STATUS       current
+        DESCRIPTION  "Display ASG enable/disable status"
+        ::= { rcASGGlobal 1 }
+ 
+rcASGGlobalAccountsTable OBJECT-TYPE
+        SYNTAX       SEQUENCE OF RcASGGlobalAccountsEntry
+        MAX-ACCESS   not-accessible
+        STATUS       current
+        DESCRIPTION  "Display ASG supported service login usernames 
+                      and their permission levels"
+        ::= { rcASGGlobal 2 }
+ 
+rcASGGlobalAccountsEntry OBJECT-TYPE
+        SYNTAX       RcASGGlobalAccountsEntry
+        MAX-ACCESS   not-accessible
+        STATUS       current
+        DESCRIPTION  "Contains an entry of rcASGGlobalAccountsEntry 
+                      which has username and persmission levels"
+        INDEX        { rcASGGlobalAccountsUsername }
+        ::= { rcASGGlobalAccountsTable 1 }
+ 
+RcASGGlobalAccountsEntry ::= SEQUENCE {
+            rcASGGlobalAccountsUsername      DisplayString,
+            rcASGGlobalAccountsAccessLevel   INTEGER
+        }
+ 
+rcASGGlobalAccountsUsername OBJECT-TYPE
+        SYNTAX       DisplayString
+        MAX-ACCESS   not-accessible
+        STATUS       current
+        DESCRIPTION  "ASG supported username"
+        ::= { rcASGGlobalAccountsEntry 1 }
+ 
+rcASGGlobalAccountsAccessLevel   OBJECT-TYPE
+        SYNTAX       INTEGER {
+                             rwa(1),
+                             rw(2),
+                             l1 (3),
+                             l2 (4)
+                           }
+        MAX-ACCESS   read-only
+        STATUS       current
+        DESCRIPTION  "permission level of the username which is mapped 
+                      to the existing ACLI user access level"
+        ::= { rcASGGlobalAccountsEntry 2 }
+ 
+rcASGGlobalAFHeader OBJECT IDENTIFIER ::= { rcASG 2 }
+ 
+rcASGGlobalAFHeaderAFID OBJECT-TYPE
+        SYNTAX       DisplayString (SIZE(0..32))
+        MAX-ACCESS   read-only
+        STATUS       current
+        DESCRIPTION  "Display lacfile/AF AF_ID"
+        ::= { rcASGGlobalAFHeader 1 }
+ 
+rcASGGlobalAFHeaderProduct OBJECT-TYPE
+        SYNTAX       OCTET STRING (SIZE(0..256))
+        MAX-ACCESS   read-only
+        STATUS       current
+        DESCRIPTION  "Display lacfile/AF product name"
+        ::= { rcASGGlobalAFHeader 2 }
+ 
+rcASGGlobalAFHeaderDateAndTime OBJECT-TYPE
+        SYNTAX       DateAndTime
+        MAX-ACCESS   read-only
+        STATUS       current
+        DESCRIPTION  "Display lacfile/AF generated date and time"
+        ::= { rcASGGlobalAFHeader 3 }
+ 
+rcASGGlobalAFHeaderRelease OBJECT-TYPE
+        SYNTAX       DisplayString (SIZE(0..32))
+        MAX-ACCESS   read-only
+        STATUS       current
+        DESCRIPTION  "Display lacfile/AF release version"
+        ::= { rcASGGlobalAFHeader 4 }
+
+-- End of ASG
+
+END

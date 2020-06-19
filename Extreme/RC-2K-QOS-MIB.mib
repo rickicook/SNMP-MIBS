@@ -10,11 +10,11 @@ IMPORTS
         FROM IF-MIB
     rc2kQos
         FROM RC-2K-MIB
-    EnableValue
+    EnableValue, PortSet
         FROM RAPID-CITY;
 
 rc2kQosMib MODULE-IDENTITY
-       LAST-UPDATED     "200809260000Z"
+       LAST-UPDATED     "201706080000Z"
        ORGANIZATION     "Bay Networks, Rapid-City Group"
        CONTACT-INFO     "
                                         Edwin Tsang
@@ -27,6 +27,16 @@ rc2kQosMib MODULE-IDENTITY
                          E-mail:        edwin_tsang@baynetworks.com
                         "
        DESCRIPTION      "Enterprise MIB for the Accelar product family."
+
+       REVISION "201706080000Z" -- 08 June 2017
+       DESCRIPTION "Version 13: Added rc2kQosQueueProfilePortList 
+	                              rc2kQosQueueProfileId range changed from (1..5) to (1..6)
+	   	                      rc2kQosQueuePId range changed from (1..5) to (1..6)(Helen)"
+	   
+       REVISION "201505260000Z" -- 26 May 2015
+       DESCRIPTION "Version 12: Added rc2kQosQueueProfileTable and rc2kQosQueueTable.
+	   			Requested by Hariprasad Rajendran for a Federal feature on VOSS.
+				Submit 24158 (Prem)"
        
        REVISION "200809260000Z" -- 26 Sept 2008
        DESCRIPTION "Version 11: Added rc2kQosFabricInterfaceStatsTable, rc2kQosFabricInterfaceStatsEntry,
@@ -1320,5 +1330,141 @@ rc2kQosFabricInterfaceStatsFabricTotalDropEvents OBJECT-TYPE
        DESCRIPTION   "Total count of Fabric drop events"
        ::= { rc2kQosFabricInterfaceStatsEntry 6 }
 
+-- 2k Qos Queue Profile Table
+rc2kQosQueueProfileTable OBJECT-TYPE
+        SYNTAX       SEQUENCE OF Rc2kQosQueueProfileEntry
+        MAX-ACCESS   not-accessible
+        STATUS       current
+        DESCRIPTION  "This table is used to specify queue profiles
+                      for the ports to which the profiles will be linked to.
+                      These queue profiles are used for shaping the egress
+                      queues of the port by specifying the transmit opportunity
+                      percentages and rate-limit percentages for each of Tx queues."
+        ::= { rc2kQos 25 }
+
+rc2kQosQueueProfileEntry OBJECT-TYPE
+        SYNTAX       Rc2kQosQueueProfileEntry
+        MAX-ACCESS   not-accessible
+        STATUS       current
+        DESCRIPTION  "Entry containing information of port egress queue shaping"
+        INDEX        { rc2kQosQueueProfileId }
+        ::= { rc2kQosQueueProfileTable 1 }
+
+Rc2kQosQueueProfileEntry ::= SEQUENCE {
+                rc2kQosQueueProfileId                Integer32,
+                rc2kQosQueueProfileName              DisplayString,
+                rc2kQosQueueProfileApply             TruthValue,
+                rc2kQosQueueProfileRowStatus         RowStatus,
+		rc2kQosQueueProfilePortList          PortSet
+                }
+rc2kQosQueueProfileId OBJECT-TYPE
+        SYNTAX       Integer32 (1..6)
+        MAX-ACCESS   not-accessible
+        STATUS       current
+        DESCRIPTION  "A value that uniquely identifies Queue  Profile."
+        ::= { rc2kQosQueueProfileEntry 1 }
+
+rc2kQosQueueProfileName OBJECT-TYPE
+        SYNTAX       DisplayString (SIZE (0..32))
+        MAX-ACCESS   read-create
+        STATUS       current
+        DESCRIPTION  "An administratively-assigned name for this Queue Profile."
+        ::= { rc2kQosQueueProfileEntry 2 }
+
+rc2kQosQueueProfileApply OBJECT-TYPE
+        SYNTAX       TruthValue
+        MAX-ACCESS   read-create
+        STATUS       current
+        DESCRIPTION  "When apply is issued by the administrator,
+                      the Queue Profile attributes are committed."
+        DEFVAL       { false }
+        ::= { rc2kQosQueueProfileEntry 3 }
+
+rc2kQosQueueProfileRowStatus OBJECT-TYPE
+        SYNTAX       RowStatus
+        MAX-ACCESS   read-create
+        STATUS       current
+        DESCRIPTION  "Create/delete operations for this entry."
+        ::= { rc2kQosQueueProfileEntry 4}
+
+rc2kQosQueueProfilePortList OBJECT-TYPE
+        SYNTAX       PortSet
+        MAX-ACCESS   read-create
+        STATUS       current
+        DESCRIPTION  "Indicates the ports to be added to this queue
+                     profile Entry."
+         ::= { rc2kQosQueueProfileEntry 5}
+    
+
+-- 2k Qos Queue Table
+rc2kQosQueueTable OBJECT-TYPE
+        SYNTAX       SEQUENCE OF Rc2kQosQueueEntry
+        MAX-ACCESS   not-accessible
+        STATUS       current
+        DESCRIPTION  "This table is used to specify egress queue 
+                      Weight values  and rate-limit enabled/disabled status
+                      for a particular Tx queue under a specific Queue Profile."
+        ::= { rc2kQos 26 }
+
+rc2kQosQueueEntry OBJECT-TYPE
+        SYNTAX       Rc2kQosQueueEntry
+        MAX-ACCESS   not-accessible
+        STATUS       current
+        DESCRIPTION  "Entry containing information of egress queue shaping parameters"
+        INDEX        { rc2kQosQueuePId,
+                       rc2kQosQueueId }
+        ::= { rc2kQosQueueTable 1 }
+
+Rc2kQosQueueEntry ::= SEQUENCE {
+                rc2kQosQueuePId                      Integer32,
+                rc2kQosQueueId                       Integer32,
+                rc2kQosQueueAdminWeight              Integer32,
+                rc2kQosQueueOperWeight               Integer32,
+                rc2kQosQueueAdminRateLimitStatus     TruthValue,
+                rc2kQosQueueOperRateLimitStatus      TruthValue
+ }
+rc2kQosQueuePId OBJECT-TYPE
+        SYNTAX       Integer32 (1..6)
+        MAX-ACCESS   not-accessible
+        STATUS       current
+        DESCRIPTION  "Queue Profile ID under which this queue parameters are set."
+        ::= { rc2kQosQueueEntry 1 }
+
+rc2kQosQueueId OBJECT-TYPE
+        SYNTAX       Integer32 (0..7)
+        MAX-ACCESS   not-accessible
+        STATUS       current
+        DESCRIPTION  "Tx Queue id for which the qos queue parameters are set."
+        ::= { rc2kQosQueueEntry 2 }
+
+rc2kQosQueueAdminWeight OBJECT-TYPE
+        SYNTAX       Integer32 (1..100)
+        MAX-ACCESS   read-write
+        STATUS       current
+        DESCRIPTION  "Administrative transmit opportunity percentage for this queue"
+        ::= { rc2kQosQueueEntry 3 }
+
+rc2kQosQueueOperWeight OBJECT-TYPE
+        SYNTAX       Integer32 (1..100)
+        MAX-ACCESS   read-only
+        STATUS       current
+        DESCRIPTION  "Operational transmit opportunity percentage for this queue"
+        ::= { rc2kQosQueueEntry 4}
+
+rc2kQosQueueAdminRateLimitStatus OBJECT-TYPE
+        SYNTAX       TruthValue
+        MAX-ACCESS   read-write
+        STATUS       current
+        DESCRIPTION  "Administrative rate limit status for this queue"
+        DEFVAL       { false }
+        ::= { rc2kQosQueueEntry 5 }
+
+rc2kQosQueueOperRateLimitStatus OBJECT-TYPE
+        SYNTAX       TruthValue
+        MAX-ACCESS   read-only
+        STATUS       current
+        DESCRIPTION  "Operational rate limit staus for this queue"   
+        DEFVAL       { false }
+        ::= { rc2kQosQueueEntry 6}
 
 END
