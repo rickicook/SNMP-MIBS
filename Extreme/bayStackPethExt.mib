@@ -1,0 +1,200 @@
+
+BAY-STACK-PETH-EXT-MIB DEFINITIONS ::= BEGIN
+
+IMPORTS
+    OBJECT-TYPE, MODULE-IDENTITY, NOTIFICATION-TYPE, Integer32, Gauge32
+        FROM SNMPv2-SMI
+    ifIndex
+        FROM IF-MIB
+    bayStackMibs
+        FROM SYNOPTICS-ROOT-MIB;
+
+bayStackPethExtMib MODULE-IDENTITY
+    LAST-UPDATED    "201107200000Z"
+    ORGANIZATION    "Avaya"
+    CONTACT-INFO    "Avaya"
+    DESCRIPTION
+        "BayStack Power Over Ethernet Extension MIB
+
+         Copyright 2004-2011 Avaya
+         All rights reserved.
+         This Avaya SNMP Management Information Base
+         Specification embodies Avaya's confidential and
+         proprietary intellectual property. Avaya retains
+         all title and ownership in the Specification, including any
+         revisions.
+
+         This Specification is supplied 'AS IS,' and Avaya
+         makes no warranty, either express or implied, as to the use,
+         operation, condition, or performance of the Specification."
+
+    REVISION "201201250000Z" -- 25 January 2012
+    DESCRIPTION "v6:  Added bspePoEPowerMode (bspeScalars 3)."
+
+    REVISION "201107200000Z" -- 20 July 2011
+    DESCRIPTION "v5:  Changed range of some objects: bspePethPsePortExtPowerLimit, 
+                 bspePethPsePortExtMeasuredCurrent, bspePethPsePortExtMeasuredPower,
+                 bspeIpPhonePowerLimit."
+	     
+    REVISION "201101100000Z" -- 10 January 2011
+    DESCRIPTION "v4:  Expanded range of some objects."
+
+    REVISION "200411110000Z" -- 11 November 2004
+    DESCRIPTION "v3:  Fixed typo, bspePethMainPseExtPowerPresent
+                      should be read-only."
+
+    REVISION "200410180000Z" -- 13 October 2004
+    DESCRIPTION "v2:  Removed bspePethPsePortExtForcePower.  Added
+                 bspePethPsePortExtCurrentStatus/CurrentStatusClear.
+                 Added bspePethPsePortCurrentStatusNotification."
+
+    REVISION "200409140000Z" -- 14 September 2004
+    DESCRIPTION "v1:  Initial version."
+
+    ::= { bayStackMibs 8 }
+
+bspeNotifications OBJECT IDENTIFIER ::= { bayStackPethExtMib 0 }
+bspeObjects       OBJECT IDENTIFIER ::= { bayStackPethExtMib 1 }
+
+--
+-- 802.3af PSE Port Extension Table
+--
+
+bspePethPsePortExtTable OBJECT-TYPE
+    SYNTAX SEQUENCE OF BspePethPsePortExtEntry
+    MAX-ACCESS not-accessible
+    STATUS current
+    DESCRIPTION
+        "This table extends the pethPsePortTable."
+    ::= { bspeObjects 1 }
+
+bspePethPsePortExtEntry OBJECT-TYPE
+    SYNTAX BspePethPsePortExtEntry
+    MAX-ACCESS not-accessible
+    STATUS current
+    DESCRIPTION
+        "An entry that extends pethPsePortEntry."
+    INDEX { bspePethPsePortExtGroupIndex, bspePethPsePortExtIndex }
+    ::= { bspePethPsePortExtTable 1 }
+
+BspePethPsePortExtEntry ::=
+    SEQUENCE {
+        bspePethPsePortExtGroupIndex           Integer32,
+        bspePethPsePortExtIndex                Integer32,
+        bspePethPsePortExtPowerLimit           Integer32,
+        bspePethPsePortExtMeasuredVoltage      Gauge32,
+        bspePethPsePortExtMeasuredCurrent      Gauge32,
+        bspePethPsePortExtMeasuredPower        Gauge32
+    }
+
+bspePethPsePortExtGroupIndex OBJECT-TYPE
+    SYNTAX      Integer32 (1..2147483647)
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION
+        "This object is equal to the value of pethPsePortGroupIndex
+         of the entry in the pethPsePortTable extended by this entry."
+    ::= { bspePethPsePortExtEntry 1 }
+
+bspePethPsePortExtIndex OBJECT-TYPE
+    SYNTAX      Integer32 (1..2147483647)
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION
+        "This object is equal to the value of pethPsePortIndex of the
+         entry in the pethPsePortTable extended by this entry."
+    ::= { bspePethPsePortExtEntry 2 }
+
+bspePethPsePortExtPowerLimit OBJECT-TYPE
+    SYNTAX      Integer32 (3..32)
+    UNITS       "watts"
+    MAX-ACCESS  read-write
+    STATUS      current
+    DESCRIPTION
+        "DTE Power limit per port."
+    ::= { bspePethPsePortExtEntry 3 }
+
+bspePethPsePortExtMeasuredVoltage OBJECT-TYPE
+    SYNTAX      Gauge32 (0|400..580)
+    UNITS       "decivolts"
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION
+        "Measured Port Voltage.  When the port is not supplying
+         power, the value will be 0."
+    ::= { bspePethPsePortExtEntry 5 }
+
+bspePethPsePortExtMeasuredCurrent OBJECT-TYPE
+    SYNTAX      Gauge32 (0..660)
+    UNITS       "milliamps"
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION
+        "Measured Port Current."
+    ::= { bspePethPsePortExtEntry 6 }
+
+bspePethPsePortExtMeasuredPower OBJECT-TYPE
+    SYNTAX      Gauge32 (0..32000)
+    UNITS       "milliwatts"
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION
+        "Measured Port Power. This value may not exceed 1000 times the
+         current value of bspePethPsePortExtPowerLimit."
+    ::= { bspePethPsePortExtEntry 7 }
+
+--
+-- 802.3af Main PSE Extension Table
+--
+
+bspePethMainPseExtTable OBJECT-TYPE
+    SYNTAX      SEQUENCE OF BspePethMainPseExtEntry
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION
+        "This table extends the pethMainPseTable."
+    ::= { bspeObjects 2 }
+
+bspePethMainPseExtEntry OBJECT-TYPE
+    SYNTAX      BspePethMainPseExtEntry
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION
+        "An entry that extends pethMainPseEntry. "
+    INDEX    { bspePethMainPseExtGroupIndex }
+    ::= { bspePethMainPseExtTable 1 }
+
+BspePethMainPseExtEntry ::=
+   SEQUENCE {
+        bspePethMainPseExtGroupIndex           Integer32,
+        bspePethMainPseExtPowerPresent         INTEGER
+    }
+
+bspePethMainPseExtGroupIndex OBJECT-TYPE
+    SYNTAX      Integer32 (1..2147483647)
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION
+        "This object is equal to the value of pethMainPseGroupIndex
+         of the entry in the pethMainPseTable extended by this entry."
+    ::= { bspePethMainPseExtEntry 1 }
+
+bspePethMainPseExtPowerPresent OBJECT-TYPE
+    SYNTAX      INTEGER   {
+                  acOnly(1),
+                  dcOnly(2),
+                  acDc(3)
+                }
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION
+        "Current Power Source Present. Available power sources are AC
+         and DC.
+         A value of acOnly(1) indicates that the only power supply is AC.
+         A value of dcOnly(2) indicates that the only power supply is DC.
+         A value of acDc(3) indicates that there are two power supplies;
+         both AC and DC are supplying power."
+    ::= { bspePethMainPseExtEntry 2 }
+
+END
+

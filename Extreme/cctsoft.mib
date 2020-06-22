@@ -1,0 +1,35 @@
+ CCT-SOFT-MIB DEFINITIONS ::= BEGIN  
+
+IMPORTS
+    MODULE-IDENTITY, OBJECT-TYPE FROM SNMPv2-SMI
+    enterprises   FROM RFC1155-SMI;     
+    
+cctMIB MODULE-IDENTITY
+       LAST-UPDATED     "201607140000Z"
+       ORGANIZATION     "China Communication Software information Co., Ltd."
+       CONTACT-INFO     "http://www.huaxunchina.cn
+                         Postal:       
+                         Tel:           
+                         Fax:           
+                         E-mail:   http://www.huaxunchina.cn"
+             
+    DESCRIPTION      "Enterprise MIB for the CCT SOFT product."
+       ::= { enterprises 42211 }
+
+cctSoft                   OBJECT IDENTIFIER ::= { cctMIB 187 }
+cctNetworkSwitch          OBJECT IDENTIFIER ::= { cctSoft 10 }       
+
+cctE3524GT                OBJECT IDENTIFIER ::= { cctNetworkSwitch 101 }
+cctE3524GTPWRPLUS         OBJECT IDENTIFIER ::= { cctNetworkSwitch 102 }
+cctE3549GTS               OBJECT IDENTIFIER ::= { cctNetworkSwitch 103 }
+cctE3549GTSPWRPLUS        OBJECT IDENTIFIER ::= { cctNetworkSwitch 104 }
+cctE4926GTS               OBJECT IDENTIFIER ::= { cctNetworkSwitch 201 }
+cctE4926GTSPWRPLUS        OBJECT IDENTIFIER ::= { cctNetworkSwitch 202 }
+cctE4950GTS               OBJECT IDENTIFIER ::= { cctNetworkSwitch 203 }
+cctE4950GTSPWRPLUS        OBJECT IDENTIFIER ::= { cctNetworkSwitch 204 }
+cctV4450GSXPWRPLUS        OBJECT IDENTIFIER ::= { cctNetworkSwitch 301 }
+cctV4850GTS               OBJECT IDENTIFIER ::= { cctNetworkSwitch 302 }
+cctV4850GTSPWRPLUS        OBJECT IDENTIFIER ::= { cctNetworkSwitch 303 }
+cctV8404                  OBJECT IDENTIFIER ::= { cctNetworkSwitch 401 }
+
+END
