@@ -1,0 +1,35 @@
+-- Defines the private Trimble, Inc. MIB
+-- [RFC2578]
+
+TRIMBLE-MIB DEFINITIONS ::= BEGIN
+
+IMPORTS
+    MODULE-IDENTITY
+        FROM SNMPv2-SMI
+    ;
+
+trimble MODULE-IDENTITY
+    LAST-UPDATED  "201610281510Z" -- October 28, 2016
+    ORGANIZATION
+        "Trimble, Inc."
+    CONTACT-INFO
+        "Contact: Haroon Muhammad
+         Email: haroon_muhammad@trimble.com"
+    DESCRIPTION
+        "Trimble, Inc.'s private MIB"
+    REVISION      "201610281510Z" -- October 28, 2016
+    DESCRIPTION
+        "Replaced project name references, changed company name
+         references"
+    REVISION      "201606272044Z" -- June 27, 2016
+    DESCRIPTION
+        "First draft"
+    ::= { iso(1) 3 6 1 4 1 46285 }
+
+trimbleTiming OBJECT IDENTIFIER ::= { trimble 1 }
+
+trimbleTBlt OBJECT IDENTIFIER ::= { trimbleTiming 1 }
+
+trimbleTBlt2 OBJECT IDENTIFIER ::= { trimbleTiming 2 }
+
+END

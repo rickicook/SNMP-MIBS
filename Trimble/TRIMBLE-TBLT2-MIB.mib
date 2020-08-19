@@ -1,0 +1,3149 @@
+TRIMBLE-TBLT2-MIB DEFINITIONS ::= BEGIN
+
+IMPORTS
+    MODULE-COMPLIANCE, NOTIFICATION-GROUP, OBJECT-GROUP
+        FROM SNMPv2-CONF
+    Integer32, MODULE-IDENTITY, NOTIFICATION-TYPE, OBJECT-IDENTITY,
+    OBJECT-TYPE
+        FROM SNMPv2-SMI
+    TEXTUAL-CONVENTION, DisplayString, RowStatus, StorageType
+        FROM SNMPv2-TC
+    trimbleTiming
+        FROM TRIMBLE-MIB
+    ;
+
+trimbleTBlt2 MODULE-IDENTITY
+    LAST-UPDATED  "201910151234Z" -- Oct15, 2019
+    ORGANIZATION
+        "Trimble, Inc."
+    CONTACT-INFO
+        "Contact: Haroon Muhammad
+        Email: haroon_muhammad@trimble.com"
+    DESCRIPTION
+        "Updated to allow IPv6 to be disabled on interfaces."
+    REVISION      "201910151234Z" -- Oct15, 2019
+    DESCRIPTION
+        "Updated to include multiple SNMP trap destinations and syslog destinations."
+    REVISION      "201905011234Z" -- May 1, 2019
+    DESCRIPTION
+        "Resolved issue with provisioning NTP Broadcast attributes."
+    REVISION      "201902141234Z" -- Feb 14, 2019
+    DESCRIPTION
+        "Resolved issue with PTP multicast MAC configuration."
+    REVISION      "201901081234Z" -- Jan 08, 2019
+    DESCRIPTION
+        "Added status and configuration for PTP Operational mode."
+    REVISION      "201812031234Z" -- Dec 13, 2018
+    DESCRIPTION
+        "GNSS is always a input source, cannot be enabled/disabled.
+        Resolved the Alarm Level definition issue."
+    REVISION      "201811081234Z" -- Nov 08, 2018
+    DESCRIPTION
+        "Added ptp L2 MAC Default and Alternative addresses."
+    REVISION      "201808141234Z" -- Aug 14, 2018
+    DESCRIPTION
+        "Move ptp vlan priority configuration to vlans."
+    REVISION      "201807151234Z" -- July 15, 2018
+    DESCRIPTION
+        "Updated PTP configuration section."
+    REVISION      "201806201234Z" -- June 20, 2018
+    DESCRIPTION
+        "Add ptp client address list."
+    REVISION      "201805031234Z" -- May 3, 2018
+    DESCRIPTION
+        "Update to System, GNSS, PTP status information."
+    REVISION      "201803231234Z" -- Mar 23, 2018
+    DESCRIPTION
+        "Added IPv6 configuration."
+    REVISION      "201801101234Z" -- Jan 10, 2018
+    DESCRIPTION
+        "Added ability to disable telnet."
+    REVISION      "201712081234Z" -- Dec 8, 2017
+    DESCRIPTION
+        "Added TodType and TodDelay parameters."
+    REVISION      "201711301234Z" -- Nov 30, 2017
+    DESCRIPTION
+        "Added antenna delay and survey length parameters."
+    REVISION      "201711171234Z" -- Nov 17, 2017
+    DESCRIPTION
+        "Update to Settings and values for Trimble, Inc.'s Thunderbolt PTP GM200."
+    REVISION      "201710061234Z" -- Oct 6, 2017
+    DESCRIPTION
+    "Repair syntax errors"
+    REVISION      "201709221744Z" -- September 22, 2017
+    DESCRIPTION
+        "Settings and values for Trimble, Inc.'s Thunderbolt PTP GM200."
+    REVISION      "201705311234Z" -- May 31, 2017
+    DESCRIPTION
+        "Completely redesigned"
+    REVISION      "201701121234Z" -- January 12, 2017
+    DESCRIPTION
+        "Version for Testing"
+    REVISION      "201610281639Z" -- October 28, 2016
+    DESCRIPTION
+        "First draft"
+    ::= { trimbleTiming 2 }
+
+Tblt2AlarmActivity ::= TEXTUAL-CONVENTION
+    STATUS        current
+    DESCRIPTION
+        "Used to show the whether an alarm is currently in an 'alarmed'
+         state (Active), or is currently off (Cleared)"
+    SYNTAX        INTEGER {
+        alarmCleared(1),
+        alarmActive(2)
+    }
+
+Tblt2AlarmLevel ::= TEXTUAL-CONVENTION
+    STATUS        current
+    DESCRIPTION
+        "Used to indicate (and set) the severity of an alarm. One of:
+         Ignored(0), Notification(1), Minor(2), Major(4), Critical(8),
+         or Disabled(64)."
+    SYNTAX        INTEGER {
+        alarmIgnored(0),
+        alarmNotification(1),
+        alarmMinor(2),
+        alarmMajor(4),
+        alarmCritical(8),
+        alarmDisabled(64)
+    }
+
+Tblt2EthProv ::= TEXTUAL-CONVENTION
+    STATUS        current
+    DESCRIPTION
+        "Used to indicate the type of provisioning for an ethernet
+         port.  One of: provDisabled(1), provStatic(2), or provDhcp(3)"
+    SYNTAX        INTEGER {
+        provDisabled(1),
+        provStatic(2),
+        provDhcp(3)
+    }
+
+Tblt2EthSynce ::= TEXTUAL-CONVENTION
+    STATUS        current
+    DESCRIPTION
+        "Used to indicate the SyncE configuration for an ethernet
+         port.  One of: synceOff(1), synceOutput(2), synceInput(3)."
+    SYNTAX        INTEGER {
+        synceOff(1),
+        synceOutput(2),
+        synceInput(3)
+    }
+
+Tblt2PtpStatus ::= TEXTUAL-CONVENTION
+    STATUS        current
+    DESCRIPTION
+        "Used to indicate the PTP status for an ethernet port.
+         One of ptpDisable(1), ptpEnable(2), ptpDefault(3)."
+    SYNTAX        INTEGER {
+        ptpDisable(1),
+        ptpEnable(2),
+        ptpDefault(3)
+    }
+
+Tblt2PtpProfile ::= TEXTUAL-CONVENTION
+    STATUS        current
+    DESCRIPTION
+        "Used to indicate the PTP profile for an ethernet port."
+    SYNTAX        INTEGER {
+        ptpG8275-1(1),
+        ptpG8265-1-II(2),
+        ptpIeee1588(3),
+        ptpTelecom(4),
+        ptpPower(5),
+        ptpG8275-2(6),
+        ptpEnterprise(7),
+        ptpG8265-1-I(8),
+        ptpSMPTE(9)
+    }
+
+Tblt2PtpSyncMode ::= TEXTUAL-CONVENTION
+    STATUS        current
+    DESCRIPTION
+        "Used to indicate the PTP Sync Mode for an ethernet port."
+    SYNTAX        INTEGER {
+        ptpOneStep(1),
+        ptpTwoStep(2)
+    }
+
+Tblt2PtpTransport ::= TEXTUAL-CONVENTION
+    STATUS        current
+    DESCRIPTION
+        "Used to indicate the PTP Transport Mode for an ethernet port."
+    SYNTAX        INTEGER {
+        ptpTransIpv4(1),
+        ptpTransIpv6(2),
+        ptpTransIeee8023(3)
+    }
+
+Tblt2PtpIpMode ::= TEXTUAL-CONVENTION
+    STATUS        current
+    DESCRIPTION
+        "Used to indicate the PTP IP mode (Multicast, Unicast or Hybrid)."
+    SYNTAX        INTEGER {
+        ptpIpMulticast(1),
+        ptpIpUnicast(2),
+        ptpIpHybrid(3)
+    }
+
+Tblt2PtpDelayMech ::= TEXTUAL-CONVENTION
+    STATUS        current
+    DESCRIPTION
+        "Used to indicate the PTP Delay Mechanism (E2E or P2P)."
+    SYNTAX        INTEGER {
+        ptpDelayDisabled(0),
+        ptpE2E(1),
+        ptpP2P(2)
+    }
+
+Tblt2PtpL2Mac ::= TEXTUAL-CONVENTION
+    STATUS        current
+    DESCRIPTION
+        "Used to indicate PTP 803.2 Multicast MAC in use, 
+         def(1): 01-1B-19-00-00-00 (routable)
+         alt(2): 01-80-C2-00-00-0E (non-routable)"
+    SYNTAX        INTEGER {
+        def(1),
+        alt(2)
+    }
+
+Tblt2PtpOperMode ::= TEXTUAL-CONVENTION
+    STATUS        current
+    DESCRIPTION
+        "Used to indicate the PTP Operational Mode for an ethernet port."
+    SYNTAX        INTEGER {
+        normal(0),
+        freerun(1)
+    }
+
+Tblt2PtpMode ::= TEXTUAL-CONVENTION
+    STATUS        current
+    DESCRIPTION
+        "Used to indicate master or slave mode for
+        a PTP clock."
+    SYNTAX        INTEGER {
+        ptpMaster(1),
+        ptpSlave(2)
+    }
+
+Tblt2DisEn ::= TEXTUAL-CONVENTION
+    STATUS        current
+    DESCRIPTION
+        "Used to indicate a property that is disabled/enabled."
+    SYNTAX        INTEGER {
+        disable(1),
+        enable(2)
+    }
+
+Tblt2EnDis ::= TEXTUAL-CONVENTION
+    STATUS        current
+    DESCRIPTION
+        "Used to indicate a property that is enabled/disabled."
+    SYNTAX        INTEGER {
+        enable(1),
+        disable(2)
+    }
+
+Tblt2TCLoginType ::= TEXTUAL-CONVENTION
+    STATUS        current
+    DESCRIPTION
+        "Used to indicate a login type."
+    SYNTAX        INTEGER {
+        serial(1),
+        ssh(2),
+        telnet(3),
+        web(4)
+    }
+
+Tblt2TCAuthType ::= TEXTUAL-CONVENTION
+    STATUS        current
+    DESCRIPTION
+        "Used to indicate authorization method."
+    SYNTAX INTEGER {
+        local(1),
+        tacacs(2),
+        radius(3),
+        disable(4)
+    }
+
+tblt2Status OBJECT IDENTIFIER ::= { trimbleTBlt2 1 }
+
+tblt2StSystem OBJECT IDENTIFIER ::= { tblt2Status 1 }
+
+tblt2StSysModelName OBJECT-TYPE
+    SYNTAX        DisplayString
+    MAX-ACCESS    read-only
+    STATUS        current
+    DESCRIPTION
+        "Full Model Name"
+    ::= { tblt2StSystem 1 }
+
+tblt2StSysProdID OBJECT-TYPE
+    SYNTAX        DisplayString
+    MAX-ACCESS    read-only
+    STATUS        current
+    DESCRIPTION
+        "Product ID"
+    ::= { tblt2StSystem 2 }
+
+tblt2StSysHWID OBJECT-TYPE
+    SYNTAX        DisplayString
+    MAX-ACCESS    read-only
+    STATUS        current
+    DESCRIPTION
+        "Hardware ID"
+    ::= { tblt2StSystem 3 }
+
+tblt2StSysSerialNum OBJECT-TYPE
+    SYNTAX        DisplayString
+    MAX-ACCESS    read-only
+    STATUS        current
+    DESCRIPTION
+        "Serial Number"
+    ::= { tblt2StSystem 4 }
+
+tblt2StSysBuildDate OBJECT-TYPE
+    SYNTAX        DisplayString
+    MAX-ACCESS    read-only
+    STATUS        current
+    DESCRIPTION
+        "Build Date"
+    ::= { tblt2StSystem 5 }
+
+tblt2StSysExtSN OBJECT-TYPE
+    SYNTAX        DisplayString
+    MAX-ACCESS    read-only
+    STATUS        current
+    DESCRIPTION
+        "Extended Serial Number"
+    ::= { tblt2StSystem 6 }
+
+tblt2StSysVer OBJECT-TYPE
+    SYNTAX        DisplayString
+    MAX-ACCESS    read-only
+    STATUS        current
+    DESCRIPTION
+        "System Software Version."
+    ::= { tblt2StSystem 7 }
+
+tblt2StSysGnssVer OBJECT-TYPE
+    SYNTAX        DisplayString
+    MAX-ACCESS    read-only
+    STATUS        current
+    DESCRIPTION
+        "GNSS Software Version."
+    ::= { tblt2StSystem 8 }
+
+tblt2StSysFpgaVer OBJECT-TYPE
+    SYNTAX        DisplayString
+    MAX-ACCESS    read-only
+    STATUS        current
+    DESCRIPTION
+        "FPGA Version."
+    ::= { tblt2StSystem 9 }
+
+tblt2StSysAlarmState OBJECT-TYPE
+    SYNTAX        DisplayString
+    MAX-ACCESS    read-only
+    STATUS        current
+    DESCRIPTION
+        "Highest currently-active alarm level."
+    ::= { tblt2StSystem 10 }
+
+tblt2StSysAlActList OBJECT-TYPE
+    SYNTAX        Integer32
+    MAX-ACCESS    read-only
+    STATUS        current
+    DESCRIPTION
+        "This is a bit-field representing the currently-active state of
+         all system alarms. The presence of a 1 indicates that the
+         corresponding alarm is active."
+    ::= { tblt2StSystem 11 }
+
+tblt2StSysSaved OBJECT-TYPE
+    SYNTAX        DisplayString
+    MAX-ACCESS    read-write
+    STATUS        current
+    DESCRIPTION
+        "Human-readable string describing whether or not
+         the current system configuration has been saved
+         to non-volatile storage."
+    ::= { tblt2StSystem 12 }
+
+tblt2StSysEv OBJECT IDENTIFIER ::= { tblt2StSystem 13 }
+
+tblt2StSysEvStart OBJECT-TYPE
+    SYNTAX        Integer32
+    MAX-ACCESS    read-write
+    STATUS        current
+    DESCRIPTION
+        "Control for displaying sections of the event log.
+         Writing to this number will set the beginning event index
+         of the event log entries returned by the event table."
+    ::= { tblt2StSysEv 1 }
+
+tblt2StSysEvReverse OBJECT-TYPE
+    SYNTAX        Integer32
+    MAX-ACCESS    read-write
+    STATUS        current
+    DESCRIPTION
+        "Control for reversing order of display of event log.
+         Can be set to 2 (reversed), or any other number for
+         chronologically ascending order."
+    ::= { tblt2StSysEv 2 }
+
+tblt2StSysEvTable OBJECT-TYPE
+    SYNTAX        SEQUENCE OF Tblt2StSysEvEntry
+    MAX-ACCESS    not-accessible
+    STATUS        current
+    DESCRIPTION
+        "Table of event log entries."
+    ::= { tblt2StSysEv 3 }
+
+tblt2StSysEvEntry OBJECT-TYPE
+    SYNTAX        Tblt2StSysEvEntry
+    MAX-ACCESS    not-accessible
+    STATUS        current
+    DESCRIPTION
+        "Entry (conceptual row) for an entry in the event log."
+    INDEX
+        { tblt2StSysEvIndex }
+    ::= { tblt2StSysEvTable 1 }
+
+Tblt2StSysEvEntry ::= SEQUENCE
+{
+    tblt2StSysEvIndex   Integer32,
+    tblt2StSysEvEvIndex Integer32,
+    tblt2StSysEvLine    DisplayString
+}
+
+tblt2StSysEvIndex OBJECT-TYPE
+    SYNTAX        Integer32 (1..20)
+    MAX-ACCESS    read-only
+    STATUS        current
+    DESCRIPTION
+        "Index for event log table."
+    ::= { tblt2StSysEvEntry 1 }
+
+tblt2StSysEvEvIndex OBJECT-TYPE
+    SYNTAX        Integer32
+    MAX-ACCESS    read-only
+    STATUS        current
+    DESCRIPTION
+        "Event index in event log."
+    ::= { tblt2StSysEvEntry 2 }
+
+tblt2StSysEvLine OBJECT-TYPE
+    SYNTAX        DisplayString
+    MAX-ACCESS    read-only
+    STATUS        current
+    DESCRIPTION
+        "Line from event log, including date and time, subsystem,
+         and a description of the event."
+    ::= { tblt2StSysEvEntry 3 }
+
+tblt2StGnss OBJECT IDENTIFIER ::= { tblt2Status 2 }
+
+tblt2StGnssLatitude OBJECT-TYPE
+    SYNTAX        DisplayString
+    MAX-ACCESS    read-only
+    STATUS        current
+    DESCRIPTION
+        "String displaying the latitude of this unit."
+    ::= { tblt2StGnss 1 }
+
+tblt2StGnssLongitude OBJECT-TYPE
+    SYNTAX        DisplayString
+    MAX-ACCESS    read-only
+    STATUS        current
+    DESCRIPTION
+        "String displaying the longitude of this unit."
+    ::= { tblt2StGnss 2 }
+
+tblt2StGnssAltitude OBJECT-TYPE
+    SYNTAX        DisplayString
+    MAX-ACCESS    read-only
+    STATUS        current
+    DESCRIPTION
+        "String displaying the altitude of this unit."
+    ::= { tblt2StGnss 3 }
+
+tblt2StGnssStatus OBJECT-TYPE
+    SYNTAX        DisplayString
+    MAX-ACCESS    read-only
+    STATUS        current
+    DESCRIPTION
+        "String displaying the current activity of the GNSS receiver."
+    ::= { tblt2StGnss 4 }
+
+tblt2StGnssAlmanac OBJECT-TYPE
+    SYNTAX        DisplayString
+    MAX-ACCESS    read-only
+    STATUS        current
+    DESCRIPTION
+        "String displaying the current health of the GNSS almanac."
+    ::= { tblt2StGnss 5 }
+
+tblt2StGnssConst OBJECT-TYPE
+    SYNTAX        DisplayString
+    MAX-ACCESS    read-only
+    STATUS        current
+    DESCRIPTION
+        "String listing the current constellations in use, may include
+         GPS, GLO, BDS, GAL, QZS."
+    ::= { tblt2StGnss 6 }
+
+tblt2StGnssSvUsed OBJECT-TYPE
+    SYNTAX        Integer32 (1..32)
+    MAX-ACCESS    read-only
+    STATUS        current
+    DESCRIPTION
+        "Number of satellite vehicles currently being used by GNSS receiver."
+    ::= { tblt2StGnss 7 }
+
+tblt2StAntState OBJECT-TYPE
+    SYNTAX        DisplayString
+    MAX-ACCESS    read-only
+    STATUS        current
+    DESCRIPTION
+        "String displaying GNSS antenna state, 
+        Ok | Off | Open | Shorted | Unknown."
+    ::= { tblt2StGnss 8 }
+
+tblt2StGnssSatTable OBJECT-TYPE
+    SYNTAX        SEQUENCE OF Tblt2StGnssSatEntry
+    MAX-ACCESS    not-accessible
+    STATUS        current
+    DESCRIPTION
+        "Table displaying list of currently visible satellites."
+    ::= { tblt2StGnss 9 }
+
+tblt2StGnssSatEntry OBJECT-TYPE
+    SYNTAX        Tblt2StGnssSatEntry
+    MAX-ACCESS    not-accessible
+    STATUS        current
+    DESCRIPTION
+        "Entry in satellite table, describing information about a visible satellite."
+    INDEX
+        { tblt2StGnssSatIndex }
+    ::= { tblt2StGnssSatTable 1 }
+
+Tblt2StGnssSatEntry ::= SEQUENCE
+{
+    tblt2StGnssSatIndex Integer32,
+    tblt2StGnssSatSV    Integer32,
+    tblt2StGnssSatSnr   DisplayString,
+    tblt2StGnssSatAz    DisplayString,
+    tblt2StGnssSatElev  DisplayString,
+    tblt2StGnssSatState DisplayString
+}
+
+tblt2StGnssSatIndex OBJECT-TYPE
+    SYNTAX        Integer32 (1..32)
+    MAX-ACCESS    read-only
+    STATUS        current
+    DESCRIPTION
+        "Index for table of satellite information."
+    ::= { tblt2StGnssSatEntry 1 }
+
+tblt2StGnssSatSV OBJECT-TYPE
+    SYNTAX        Integer32
+    MAX-ACCESS    read-only
+    STATUS        current
+    DESCRIPTION
+        "Satellite vehicle number."
+    ::= { tblt2StGnssSatEntry 2 }
+
+tblt2StGnssSatSnr OBJECT-TYPE
+    SYNTAX        DisplayString
+    MAX-ACCESS    read-only
+    STATUS        current
+    DESCRIPTION
+        "String displaying the Signal-to-noise ratio for this satellite."
+    ::= { tblt2StGnssSatEntry 3 }
+
+tblt2StGnssSatAz OBJECT-TYPE
+    SYNTAX        DisplayString
+    MAX-ACCESS    read-only
+    STATUS        current
+    DESCRIPTION
+        "String displaying the azimuth of the satellite."
+    ::= { tblt2StGnssSatEntry 4 }
+
+tblt2StGnssSatElev OBJECT-TYPE
+    SYNTAX        DisplayString
+    MAX-ACCESS    read-only
+    STATUS        current
+    DESCRIPTION
+        "String displaying the elevation of the satellite."
+    ::= { tblt2StGnssSatEntry 5 }
+
+tblt2StGnssSatState OBJECT-TYPE
+    SYNTAX        DisplayString
+    MAX-ACCESS    read-only
+    STATUS        current
+    DESCRIPTION
+        "String displaying the useability of this satellite.
+
+         TIME: Satellite is being used for computing the timing
+         output. This can also include being used for positioning,
+         if the system is in the positioning mode.
+
+         POS: Satellite is being used for position computation.
+
+         TRACK: Satellite is being tracked.  If only TRACK is
+         displayed, the satellite is not being used for timing or
+         positioning.  This may be because the data from the
+         satellite hasn't been gathered yet, or the signal level
+         or elevation are below the user set masks."
+    ::= { tblt2StGnssSatEntry 6 }
+
+tblt2StNtp OBJECT IDENTIFIER ::= { tblt2Status 3 }
+
+tblt2StNtpStatus OBJECT-TYPE
+    SYNTAX        DisplayString
+    MAX-ACCESS    read-only
+    STATUS        current
+    DESCRIPTION
+        "NTP system status word."
+    ::= { tblt2StNtp 1 }
+
+tblt2StNtpStratum OBJECT-TYPE
+    SYNTAX        Integer32
+    MAX-ACCESS    read-only
+    STATUS        current
+    DESCRIPTION
+        "NTP stratum."
+    ::= { tblt2StNtp 2 }
+
+tblt2StNtpPrecision OBJECT-TYPE
+    SYNTAX        DisplayString
+    MAX-ACCESS    read-only
+    STATUS        current
+    DESCRIPTION
+       "NTP precision."
+    ::= { tblt2StNtp 3 }
+
+tblt2StNtpOffset OBJECT-TYPE
+    SYNTAX        DisplayString
+    MAX-ACCESS    read-only
+    STATUS        current
+    DESCRIPTION
+       "NTP Offset."
+    ::= { tblt2StNtp 4 }
+
+tblt2StNtpFrequency OBJECT-TYPE
+    SYNTAX        DisplayString
+    MAX-ACCESS    read-only
+    STATUS        current
+    DESCRIPTION
+       "NTP Frequency."
+    ::= { tblt2StNtp 5 }
+
+tblt2StNtpJitter OBJECT-TYPE
+    SYNTAX        DisplayString
+    MAX-ACCESS    read-only
+    STATUS        current
+    DESCRIPTION
+       "NTP Jitter."
+    ::= { tblt2StNtp 6 }
+
+tblt2StNtpPeers OBJECT-TYPE
+    SYNTAX        DisplayString
+    MAX-ACCESS    read-only
+    STATUS        current
+    DESCRIPTION
+       "NTP Peers."
+    ::= { tblt2StNtp 7 }
+
+tblt2StNtpTable OBJECT-TYPE
+    SYNTAX        SEQUENCE OF Tblt2StNtpEntry
+    MAX-ACCESS    not-accessible
+    STATUS        current
+    DESCRIPTION
+        "Table of NTP status information for eth0(1) and eth1(2)."
+    ::= { tblt2StNtp 8 }
+
+tblt2StNtpEntry OBJECT-TYPE
+    SYNTAX        Tblt2StNtpEntry
+    MAX-ACCESS    not-accessible
+    STATUS        current
+    DESCRIPTION
+        "Entry (conceptual row) of NTP status information for an ethernet port."
+    INDEX
+        { tblt2StNtpIndex }
+    ::= { tblt2StNtpTable 1 }
+
+Tblt2StNtpEntry ::= SEQUENCE
+{
+    tblt2StNtpIndex     Integer32,
+    tblt2StNtpDisabled  Integer32,
+    tblt2StNtpBcastEna  Integer32,
+    tblt2StNtpBcastAddr DisplayString,
+    tblt2StNtpBcastTtl  Integer32
+}
+
+tblt2StNtpIndex OBJECT-TYPE
+    SYNTAX        Integer32 (1..2)
+    MAX-ACCESS    read-only
+    STATUS        current
+    DESCRIPTION
+        "Index for NTP status information per ethernet port."
+    ::= { tblt2StNtpEntry 1 }
+
+tblt2StNtpDisabled OBJECT-TYPE
+    SYNTAX        Integer32 (0..1)
+    MAX-ACCESS    read-only
+    STATUS        current
+    DESCRIPTION
+        "NTP disable.  Displays whether NTP is disabled(1) or enabled(0)."
+    ::= { tblt2StNtpEntry 2 }
+
+tblt2StNtpBcastEna OBJECT-TYPE
+    SYNTAX        Integer32
+    MAX-ACCESS    read-only
+    STATUS        current
+    DESCRIPTION
+        "NTP Broadcast Enabled. Displays whether NTP broadcasts
+         are enabled(1) or disabled(0) on this port."
+    ::= { tblt2StNtpEntry 3 }
+
+tblt2StNtpBcastAddr OBJECT-TYPE
+    SYNTAX        DisplayString
+    MAX-ACCESS    read-only
+    STATUS        current
+    DESCRIPTION
+        "NTP Broadcast address. This is the address of the subnet on
+         which NTP broadcasts are done for this port."
+    ::= { tblt2StNtpEntry 4 }
+
+tblt2StNtpBcastTtl OBJECT-TYPE
+    SYNTAX        Integer32
+    MAX-ACCESS    read-only
+    STATUS        current
+    DESCRIPTION
+        "NTP Broadcast TTL.  This is the Time-to-live setting for packets
+         broadcast from this port."
+    ::= { tblt2StNtpEntry 5 }
+
+tblt2StNtpEthGroup OBJECT-GROUP
+    OBJECTS
+        { tblt2StNtpIndex, tblt2StNtpDisabled, tblt2StNtpBcastEna,
+          tblt2StNtpBcastAddr, tblt2StNtpBcastTtl }
+    STATUS        current
+    DESCRIPTION
+        "A collection of objects displaying NTP status information per-ethernet port."
+    ::= { tblt2ConfGroups 1 }
+
+tblt2StPtp OBJECT IDENTIFIER ::= { tblt2Status 4 }
+
+tblt2StPtpTable OBJECT-TYPE
+    SYNTAX        SEQUENCE OF Tblt2StPtpEntry
+    MAX-ACCESS    not-accessible
+    STATUS        current
+    DESCRIPTION
+        "Table of PTP status information for eth0(1) and eth1(2)."
+    ::= { tblt2StPtp 1 }
+
+tblt2StPtpEntry OBJECT-TYPE
+    SYNTAX        Tblt2StPtpEntry
+    MAX-ACCESS    not-accessible
+    STATUS        current
+    DESCRIPTION
+        "Entry (conceptual row) of PTP status information for an ethernet port."
+    INDEX
+        { tblt2StPtpIndex }
+    ::= { tblt2StPtpTable 1 }
+
+Tblt2StPtpEntry ::= SEQUENCE
+{
+    tblt2StPtpIndex  Integer32,
+    tblt2StPtpProfile    DisplayString,
+    tblt2StPtpStatus DisplayString,
+    tblt2StPtpId     DisplayString,
+    tblt2StPtpBmc     DisplayString,
+    tblt2StPtpClkClass     Integer32,
+    tblt2StPtpOperMode    DisplayString,
+    tblt2StPtpUniClientCnt     Integer32
+}
+
+tblt2StPtpIndex OBJECT-TYPE
+    SYNTAX        Integer32 (1..2)
+    MAX-ACCESS    read-only
+    STATUS        current
+    DESCRIPTION
+        "Index for PTP status information per ethernet port."
+    ::= { tblt2StPtpEntry 1 }
+
+tblt2StPtpStatus OBJECT-TYPE
+    SYNTAX        DisplayString
+    MAX-ACCESS    read-only
+    STATUS        current
+    DESCRIPTION
+        "Human-readable string describing whether PTP is disabled or enabled for this ethernet port."
+    ::= { tblt2StPtpEntry 2 }
+
+tblt2StPtpProfile OBJECT-TYPE
+    SYNTAX        DisplayString
+    MAX-ACCESS    read-only
+    STATUS        current
+    DESCRIPTION
+        "Index for PTP profile used on each ethernet port"
+    ::= { tblt2StPtpEntry 3 }
+
+tblt2StPtpId OBJECT-TYPE
+    SYNTAX        DisplayString
+    MAX-ACCESS    read-only
+    STATUS        current
+    DESCRIPTION
+        "PTP IEEE EUI-64 clockIdentity value on each ethernet port."
+    ::= { tblt2StPtpEntry 4 }
+
+tblt2StPtpBmc OBJECT-TYPE
+    SYNTAX        DisplayString
+    MAX-ACCESS    read-only
+    STATUS        current
+    DESCRIPTION
+        "PTP IEEE EUI-64 Best Master Clock clockIdentity value on each ethernet port."
+    ::= { tblt2StPtpEntry 5 }
+
+tblt2StPtpClkClass OBJECT-TYPE
+    SYNTAX        Integer32 (1..255)
+    MAX-ACCESS    read-only
+    STATUS        current
+    DESCRIPTION
+        "PTP Clock Class value on each ethernet port."
+    ::= { tblt2StPtpEntry 6 }
+
+tblt2StPtpOperMode OBJECT-TYPE
+    SYNTAX        DisplayString
+    MAX-ACCESS    read-only
+    STATUS        current
+    DESCRIPTION
+        "Index for PTP operational mode (normal or freerun) used on each ethernet port"
+    ::= { tblt2StPtpEntry 7 }
+
+tblt2StPtpUniClientCnt OBJECT-TYPE
+    SYNTAX        Integer32 (1..255)
+    MAX-ACCESS    read-only
+    STATUS        current
+    DESCRIPTION
+        "PTP Unicast Client Count value on each ethernet port."
+    ::= { tblt2StPtpEntry 8 }
+
+tblt2StPtpGroup OBJECT-GROUP
+    OBJECTS
+        { tblt2StPtpIndex,
+          tblt2StPtpStatus,
+          tblt2StPtpProfile,
+          tblt2StPtpId,
+          tblt2StPtpBmc,
+          tblt2StPtpClkClass,
+          tblt2StPtpOperMode,
+          tblt2StPtpUniClientCnt }
+    STATUS        current
+    DESCRIPTION
+        "Conceptual row describing status of a PTP interface."
+    ::= { tblt2ConfGroups 2 }
+
+tblt2StPtpClientTable OBJECT-TYPE
+    SYNTAX        SEQUENCE OF Tblt2StPtpClientEntry
+    MAX-ACCESS    not-accessible
+    STATUS        current
+    DESCRIPTION
+        "Table of PTP clients."
+    ::= { tblt2StPtp 2 }
+
+tblt2StPtpClientEntry OBJECT-TYPE
+    SYNTAX        Tblt2StPtpClientEntry
+    MAX-ACCESS    not-accessible
+    STATUS        current
+    DESCRIPTION
+        "Entry in PTP client table."
+    INDEX
+        { tblt2StPtpIndex, tblt2StPtpClientIndex }
+    ::= { tblt2StPtpClientTable 1 }
+
+Tblt2StPtpClientEntry ::= SEQUENCE
+{
+    tblt2StPtpClientIndex     Integer32,
+    tblt2StPtpClientIpv4Addr  DisplayString,
+    tblt2StPtpClientAnnInt    Integer32,
+    tblt2StPtpClientSyncInt   Integer32,
+    tblt2StPtpClientDlyRqInt  Integer32,
+    tblt2StPtpClientPDlyRqInt Integer32
+}
+
+tblt2StPtpClientIndex OBJECT-TYPE
+    SYNTAX        Integer32 (1..512)
+    MAX-ACCESS    read-only
+    STATUS        current
+    DESCRIPTION
+        "Index into the table of PTP clients for an interface,
+         Used together with tblt2StPtpIndex."
+    ::= { tblt2StPtpClientEntry 1 }
+
+tblt2StPtpClientIpv4Addr OBJECT-TYPE
+    SYNTAX        DisplayString
+    MAX-ACCESS    read-only
+    STATUS        current
+    DESCRIPTION
+        "The IPv4 address of a PTP client, indexed by tblt2StPtpIndex
+         and tblt2StPtpClientIndex."
+     ::= { tblt2StPtpClientEntry 2 }
+
+tblt2StPtpClientAnnInt OBJECT-TYPE
+    SYNTAX        Integer32
+    MAX-ACCESS    read-only
+    STATUS        current
+    DESCRIPTION
+        "Announce Interval granted to client. Units are log-base-2 seconds,
+         (0 = 1/sec, -1 = 2/sec, ...)"
+    ::= { tblt2StPtpClientEntry 3 }
+
+
+tblt2StPtpClientSyncInt OBJECT-TYPE
+    SYNTAX        Integer32
+    MAX-ACCESS    read-only
+    STATUS        current
+    DESCRIPTION
+        "Sync Interval granted to client."
+    ::= { tblt2StPtpClientEntry 4 }
+
+tblt2StPtpClientDlyRqInt OBJECT-TYPE
+    SYNTAX        Integer32
+    MAX-ACCESS    read-only
+    STATUS        current
+    DESCRIPTION
+        "Delay Request interval granted to client."
+    ::= { tblt2StPtpClientEntry 5 }
+    
+tblt2StPtpClientPDlyRqInt OBJECT-TYPE
+    SYNTAX        Integer32
+    MAX-ACCESS    read-only
+    STATUS        current
+    DESCRIPTION
+        "P-Delay Request interval granted to client."
+    ::= { tblt2StPtpClientEntry 6 }
+
+tblt2StTiming OBJECT IDENTIFIER ::= { tblt2Status 5 }
+
+tblt2StTmSource OBJECT-TYPE
+    SYNTAX        DisplayString
+    MAX-ACCESS    read-only
+    STATUS        current
+    DESCRIPTION
+        "String describing the synchronization input source."
+    ::= { tblt2StTiming 1 }
+
+tblt2StTmState OBJECT-TYPE
+    SYNTAX        DisplayString
+    MAX-ACCESS    read-only
+    STATUS        current
+    DESCRIPTION
+        "String describing the control loop state."
+    ::= { tblt2StTiming 2 }
+
+tblt2StTmDuration OBJECT-TYPE
+    SYNTAX        DisplayString
+    MAX-ACCESS    read-only
+    STATUS        current
+    DESCRIPTION
+        "String displaying holdover duration."
+    ::= { tblt2StTiming 3 }
+
+tblt2StTmBnc OBJECT-TYPE
+    SYNTAX        DisplayString
+    MAX-ACCESS    read-only
+    STATUS        current
+    DESCRIPTION
+        "String displaying the output type or status of the BNC output."
+    ::= { tblt2StTiming 4 }
+
+tblt2StTmSrcTable OBJECT-TYPE
+    SYNTAX        SEQUENCE OF Tblt2StTmSrcEntry
+    MAX-ACCESS    not-accessible
+    STATUS        current
+    DESCRIPTION
+        "Table of synchronization source statistics."
+    ::= { tblt2StTiming 5 }
+
+tblt2StTmSrcEntry OBJECT-TYPE
+    SYNTAX        Tblt2StTmSrcEntry
+    MAX-ACCESS    not-accessible
+    STATUS        current
+    DESCRIPTION
+        "Entry describing the statistics of a synchronization source."
+    INDEX
+        { tblt2StTmSrcIndex }
+    ::= { tblt2StTmSrcTable 1 }
+
+Tblt2StTmSrcEntry ::= SEQUENCE
+{
+    tblt2StTmSrcIndex     Integer32,
+    tblt2StTmSrcType      DisplayString,
+    tblt2StTmSrcTmOffset  DisplayString,
+    tblt2StTmSrcMean      DisplayString,
+    tblt2StTmSrcSigma     DisplayString,
+    tblt2StTmSrcFrqOffset DisplayString
+}
+
+tblt2StTmSrcIndex OBJECT-TYPE
+    SYNTAX        Integer32 (1..10)
+    MAX-ACCESS    read-only
+    STATUS        current
+    DESCRIPTION
+        "Index of entry in table of source statistics."
+    ::= { tblt2StTmSrcEntry 1 }
+
+tblt2StTmSrcType OBJECT-TYPE
+    SYNTAX        DisplayString
+    MAX-ACCESS    read-only
+    STATUS        current
+    DESCRIPTION
+        "String describing the name and/or type of syncronization source."
+    ::= { tblt2StTmSrcEntry 2 }
+
+tblt2StTmSrcTmOffset OBJECT-TYPE
+    SYNTAX        DisplayString
+    MAX-ACCESS    read-only
+    STATUS        current
+    DESCRIPTION
+        "String displaying the current offset, including units."
+    ::= { tblt2StTmSrcEntry 3 }
+
+tblt2StTmSrcMean OBJECT-TYPE
+    SYNTAX        DisplayString
+    MAX-ACCESS    read-only
+    STATUS        current
+    DESCRIPTION
+        "String displaying the current mean, including units."
+    ::= { tblt2StTmSrcEntry 4 }
+
+tblt2StTmSrcSigma OBJECT-TYPE
+    SYNTAX        DisplayString
+    MAX-ACCESS    read-only
+    STATUS        current
+    DESCRIPTION
+        "String displaying the current sigma, including units."
+    ::= { tblt2StTmSrcEntry 5 }
+
+tblt2StTmSrcFrqOffset OBJECT-TYPE
+    SYNTAX        DisplayString
+    MAX-ACCESS    read-only
+    STATUS        current
+    DESCRIPTION
+        "String displaying the current frequency offset."
+    ::= { tblt2StTmSrcEntry 6 }
+
+tblt2StInterfaces OBJECT IDENTIFIER ::= { tblt2Status 6 }
+
+tblt2StIfTable OBJECT-TYPE
+    SYNTAX        SEQUENCE OF Tblt2StIfEntry
+    MAX-ACCESS    not-accessible
+    STATUS        current
+    DESCRIPTION
+        "Table of entries show current status of ethernet interfaces."
+    ::= { tblt2StInterfaces 1 }
+
+tblt2StIfEntry OBJECT-TYPE
+    SYNTAX        Tblt2StIfEntry
+    MAX-ACCESS    not-accessible
+    STATUS        current
+    DESCRIPTION
+        "Entry describing current status of an ethernet interface."
+    INDEX
+        { tblt2StIfIndex }
+    ::= { tblt2StIfTable 1 }
+
+Tblt2StIfEntry ::= SEQUENCE
+{
+    tblt2StIfIndex     Integer32,
+    tblt2StIfMac       DisplayString,
+    tblt2StIfStatus    DisplayString,
+    tblt2StIfProv      DisplayString,
+    tblt2StIfAddr      DisplayString,
+    tblt2StIfMask      DisplayString,
+    tblt2StIfBroadcast DisplayString,
+    tblt2StIfGateway   DisplayString,
+    tblt2StIfAutoNeg   DisplayString,
+    tblt2StIfProv6      DisplayString,
+    tblt2StIfBond      DisplayString,
+    tblt2StIfSynce     DisplayString
+}
+
+tblt2StIfIndex OBJECT-TYPE
+    SYNTAX        Integer32 (1..3)
+    MAX-ACCESS    read-only
+    STATUS        current
+    DESCRIPTION
+        "Index into table of ethernet interfaces.
+         1=eth0, 2=eth1, 3=eth2."
+    ::= { tblt2StIfEntry 1 }
+
+tblt2StIfMac OBJECT-TYPE
+    SYNTAX        DisplayString
+    MAX-ACCESS    read-only
+    STATUS        current
+    DESCRIPTION
+        "MAC address of interface"
+    ::= { tblt2StIfEntry 2 }
+
+tblt2StIfStatus OBJECT-TYPE
+    SYNTAX        DisplayString
+    MAX-ACCESS    read-only
+    STATUS        current
+    DESCRIPTION
+        "Current operating status of interface"
+    ::= { tblt2StIfEntry 3 }
+
+tblt2StIfProv OBJECT-TYPE
+    SYNTAX        DisplayString
+    MAX-ACCESS    read-only
+    STATUS        current
+    DESCRIPTION
+        "Interface provisioning type. This is a string
+         showing DHCP, static or disabled."
+    ::= { tblt2StIfEntry 4 }
+
+tblt2StIfAddr OBJECT-TYPE
+    SYNTAX        DisplayString
+    MAX-ACCESS    read-only
+    STATUS        current
+    DESCRIPTION
+        "String showing dotted-decimal notation of
+         the interface IPv4 address."
+    ::= { tblt2StIfEntry 5 }
+
+tblt2StIfMask OBJECT-TYPE
+    SYNTAX        DisplayString
+    MAX-ACCESS    read-only
+    STATUS        current
+    DESCRIPTION
+        "String showing dotted-decimal notation of
+         the interface IPv4 mask."
+    ::= { tblt2StIfEntry 6 }
+
+tblt2StIfBroadcast OBJECT-TYPE
+    SYNTAX        DisplayString
+    MAX-ACCESS    read-only
+    STATUS        current
+    DESCRIPTION
+        "String showing dotted-decimal notation of
+         the interface IPv4 broadcast address."
+    ::= { tblt2StIfEntry 7 }
+
+tblt2StIfGateway OBJECT-TYPE
+    SYNTAX        DisplayString
+    MAX-ACCESS    read-only
+    STATUS        current
+    DESCRIPTION
+        "String showing dotted-decimal notation of
+         the interface IPv4 gateway address."
+    ::= { tblt2StIfEntry 8 }
+
+tblt2StIfAutoNeg OBJECT-TYPE
+    SYNTAX        DisplayString
+    MAX-ACCESS    read-only
+    STATUS        current
+    DESCRIPTION
+        "String showing the current auto-negotiation 
+         status of the interface. This only applies for
+         eth0 and eth1."
+    ::= { tblt2StIfEntry 9 }
+
+tblt2StIfProv6 OBJECT-TYPE
+    SYNTAX        DisplayString
+    MAX-ACCESS    read-only
+    STATUS        current
+    DESCRIPTION
+        "Interface provisioning type. This is a string
+         showing current type: disabled, static, slaac, dhcp."
+    ::= { tblt2StIfEntry 10 }
+
+tblt2StIfBond OBJECT-TYPE
+    SYNTAX        DisplayString
+    MAX-ACCESS    read-only
+    STATUS        current
+    DESCRIPTION
+        "String showing the current port-bonding status
+         of the interface. This only applies for
+         eth0 and eth1."
+    ::= { tblt2StIfEntry 11 }
+
+tblt2StIfSynce OBJECT-TYPE
+    SYNTAX        DisplayString
+    MAX-ACCESS    read-only
+    STATUS        current
+    DESCRIPTION
+        "String showing the current SyncE status.
+         This only applies for eth0 and eth1."
+    ::= { tblt2StIfEntry 12 }
+
+tblt2StIfIpv6Table OBJECT-TYPE
+    SYNTAX        SEQUENCE OF Tblt2StIfIpv6Entry
+    MAX-ACCESS    not-accessible
+    STATUS        current
+    DESCRIPTION
+        "Table of IPv6 addresses."
+    ::= { tblt2StInterfaces 2 }
+
+tblt2StIfIpv6Entry OBJECT-TYPE
+    SYNTAX        Tblt2StIfIpv6Entry
+    MAX-ACCESS    not-accessible
+    STATUS        current
+    DESCRIPTION
+        "Entry in IPv6 address table."
+    INDEX
+        { tblt2StIfIndex, tblt2StIfIpv6Index }
+    ::= { tblt2StIfIpv6Table 1 }
+
+Tblt2StIfIpv6Entry ::= SEQUENCE
+{
+    tblt2StIfIpv6Index   Integer32,
+    tblt2StIfIpv6Address DisplayString
+}
+
+tblt2StIfIpv6Index OBJECT-TYPE
+    SYNTAX        Integer32 (1..99)
+    MAX-ACCESS    read-only
+    STATUS        current
+    DESCRIPTION
+        "Index into the table of IPv6 mode and addresses for an interface,
+         Used together with tblt2StIfIndex."
+    ::= { tblt2StIfIpv6Entry 1 }
+
+tblt2StIfIpv6Address OBJECT-TYPE
+    SYNTAX        DisplayString
+    MAX-ACCESS    read-only
+    STATUS        current
+    DESCRIPTION
+        "An IPv6 address for a particular interface, indexed by
+         tblt2StIfIndex and tblt2StIfIpv6Address."
+    ::= { tblt2StIfIpv6Entry 2 }
+
+tblt2StUsers OBJECT IDENTIFIER ::= { tblt2Status 7 }
+
+tblt2StUserTable OBJECT-TYPE
+    SYNTAX        SEQUENCE OF Tblt2StUserEntry
+    MAX-ACCESS    not-accessible
+    STATUS        current
+    DESCRIPTION
+        "Table of user accounts available for local authentication."
+    ::= { tblt2StUsers 1 }
+
+tblt2StUserEntry OBJECT-TYPE
+    SYNTAX        Tblt2StUserEntry
+    MAX-ACCESS    not-accessible
+    STATUS        current
+    DESCRIPTION
+        "Entry in user accounts table."
+    INDEX
+        { tblt2StUserIndex }
+    ::= { tblt2StUserTable 1 }
+
+Tblt2StUserEntry ::= SEQUENCE
+{
+    tblt2StUserIndex Integer32,
+    tblt2StUserName  DisplayString,
+    tblt2StUserLevel DisplayString,
+    tblt2StUserEmail DisplayString
+}
+
+tblt2StUserIndex OBJECT-TYPE
+    SYNTAX        Integer32 (0..128)
+    MAX-ACCESS    read-only
+    STATUS        current
+    DESCRIPTION
+        "User Entry Index in User Table."
+    ::= { tblt2StUserEntry 1 }
+
+tblt2StUserName OBJECT-TYPE
+    SYNTAX        DisplayString
+    MAX-ACCESS    read-only
+    STATUS        current
+    DESCRIPTION
+        "Name of user."
+    ::= { tblt2StUserEntry 2 }
+
+tblt2StUserLevel OBJECT-TYPE
+    SYNTAX        DisplayString
+    MAX-ACCESS    read-only
+    STATUS        current
+    DESCRIPTION
+        "Admin Level of user.  One of 'User', 'Admin' or 'Super'"
+    ::= { tblt2StUserEntry 3 }
+
+tblt2StUserEmail OBJECT-TYPE
+    SYNTAX        DisplayString
+    MAX-ACCESS    read-only
+    STATUS        current
+    DESCRIPTION
+        "(optional) Email address of user."
+    ::= { tblt2StUserEntry 4 }
+
+tblt2StSessions OBJECT IDENTIFIER ::= { tblt2Status 8 }
+
+
+tblt2StSessTable OBJECT-TYPE
+    SYNTAX        SEQUENCE OF Tblt2StSessEntry 
+    MAX-ACCESS    not-accessible
+    STATUS        current
+    DESCRIPTION
+        "Table of currently active user sessions."
+    ::= { tblt2StSessions 1 }
+
+tblt2StSessEntry OBJECT-TYPE
+    SYNTAX        Tblt2StSessEntry
+    MAX-ACCESS    not-accessible
+    STATUS        current
+    DESCRIPTION
+        "Entry in session table, describing a single currently active user session."
+    INDEX
+        { tblt2StSessIndex }
+    ::= { tblt2StSessTable 1 }
+
+Tblt2StSessEntry ::= SEQUENCE
+{
+    tblt2StSessIndex   Integer32,
+    tblt2StSessID      Integer32,
+    tblt2StSessName    DisplayString,
+    tblt2StSessLevel   DisplayString,
+    tblt2StSessType    Tblt2TCLoginType,
+    tblt2StSessService DisplayString,
+    tblt2StSessTime    DisplayString
+} 
+
+tblt2StSessIndex OBJECT-TYPE
+    SYNTAX        Integer32 (0..16)
+    MAX-ACCESS    read-only
+    STATUS        current
+    DESCRIPTION
+        "Index into Session Table."
+    ::= { tblt2StSessEntry 1 }
+
+tblt2StSessID OBJECT-TYPE
+    SYNTAX        Integer32
+    MAX-ACCESS    read-only
+    STATUS        current
+    DESCRIPTION
+        "Session ID number."
+    ::= { tblt2StSessEntry 2 }
+
+tblt2StSessName OBJECT-TYPE
+    SYNTAX        DisplayString
+    MAX-ACCESS    read-only
+    STATUS        current
+    DESCRIPTION
+        "Session user name."
+    ::= { tblt2StSessEntry 3 }
+
+tblt2StSessLevel OBJECT-TYPE
+    SYNTAX        DisplayString
+    MAX-ACCESS    read-only
+    STATUS        current
+    DESCRIPTION
+        "Session admin level."
+    ::= { tblt2StSessEntry 4 }
+
+tblt2StSessType OBJECT-TYPE
+    SYNTAX        Tblt2TCLoginType
+    MAX-ACCESS    read-only
+    STATUS        current
+    DESCRIPTION
+        "Session login type (Serial, SSH, WebUI, Telnet)"
+    ::= { tblt2StSessEntry 5 }
+
+tblt2StSessService OBJECT-TYPE
+    SYNTAX        DisplayString
+    MAX-ACCESS    read-only
+    STATUS        current
+    DESCRIPTION
+        "Descriptive string indicating the source of the connection.
+         For example Rem-192.168.100.2 indicates a remote connection."
+    ::= { tblt2StSessEntry 6 }
+
+tblt2StSessTime OBJECT-TYPE
+    SYNTAX        DisplayString
+    MAX-ACCESS    read-only
+    STATUS        current
+    DESCRIPTION
+        "Time when session was initiated."
+    ::= { tblt2StSessEntry 7 }
+
+tblt2StSerComm OBJECT IDENTIFIER ::= { tblt2Status 9 }
+
+tblt2StSerCommBaud OBJECT-TYPE
+    SYNTAX        Integer32
+    MAX-ACCESS    read-only
+    STATUS        current
+    DESCRIPTION
+        "Serial Port Baud Rate.
+        Valid Rates: 9600, 19200, 38400, 57600, 115200, 230400."
+    ::= { tblt2StSerComm 1 }
+
+tblt2StSerCommParity OBJECT-TYPE
+    SYNTAX        DisplayString
+    MAX-ACCESS    read-only
+    STATUS        current
+    DESCRIPTION
+       "Serial Port Parity Type, cannot be set."
+    ::= { tblt2StSerComm 2 }
+
+tblt2StSerCommBits OBJECT-TYPE
+    SYNTAX        Integer32
+    MAX-ACCESS    read-only
+    STATUS        current
+    DESCRIPTION
+       "Serial Port Stop Bits, cannot be set"
+   ::= { tblt2StSerComm 3 }
+
+tblt2StSerCommTodType OBJECT-TYPE
+    SYNTAX        Integer32
+    MAX-ACCESS    read-only
+    STATUS        current
+    DESCRIPTION
+       "Serial port to output TOD on demand. This
+       is used in conjuction with the PPS output on the
+       serial port (on the DCD pin). Possible values are:
+       none(0) - TOD output disabled (default),
+       rmc(5) - NMEA RMC output,
+       zda(4) - NMEA ZDA output."
+   ::= { tblt2StSerComm 4 }
+
+tblt2StSerCommTodDelay OBJECT-TYPE
+    SYNTAX        Integer32
+    MAX-ACCESS    read-only
+    STATUS        current
+    DESCRIPTION
+       "Number of microseconds to delay the TOD message
+       after the PPS occurs."
+   ::= { tblt2StSerComm 5 }
+
+tblt2StPwdRules OBJECT IDENTIFIER ::= { tblt2Status 10 }
+
+tblt2StMinLen OBJECT-TYPE
+    SYNTAX        Integer32 (3..29)
+    MAX-ACCESS    read-only
+    STATUS        current
+    DESCRIPTION
+        "Defines a measure of complexity related to 
+        the password length.
+
+        Range: 3 <= minlen <= 29"
+    ::= { tblt2StPwdRules 1 }
+
+tblt2StLCredit OBJECT-TYPE
+    SYNTAX        Integer32 (-5..5)
+    MAX-ACCESS    read-only
+    STATUS        current
+    DESCRIPTION
+       "Defines the minimum number of required 
+       lowercase letters
+        
+        Range: -5 <= lcredit <= 5"
+    ::= { tblt2StPwdRules 2 }
+
+tblt2StUCredit OBJECT-TYPE
+    SYNTAX        Integer32 (-5..5)
+    MAX-ACCESS    read-only
+    STATUS        current
+    DESCRIPTION
+       "Defines the minimum number of required 
+       uppercase letters
+        
+        Range: -5 <= ucredit <= 5"
+    ::= { tblt2StPwdRules 3 }
+
+tblt2StDCredit OBJECT-TYPE
+    SYNTAX        Integer32 (-5..5)
+    MAX-ACCESS    read-only
+    STATUS        current
+    DESCRIPTION
+       "Defines the minimum number of required 
+       digits
+        
+        Range: -5 <= dcredit <= 5"
+    ::= { tblt2StPwdRules 4 }
+
+tblt2StOCredit OBJECT-TYPE
+    SYNTAX        Integer32 (-5..5)
+    MAX-ACCESS    read-only
+    STATUS        current
+    DESCRIPTION
+       "Defines the minimum number of required 
+       other characters
+        
+        Range: -5 <= ocredit <= 5"
+    ::= { tblt2StPwdRules 5 }
+
+tblt2StDiffOk OBJECT-TYPE
+    SYNTAX        DisplayString  
+    MAX-ACCESS    read-only
+    STATUS        current
+    DESCRIPTION
+        "Defines if the user is required to enter a 
+        different password when changing their password
+
+        Value: Yes | No"
+    ::= { tblt2StPwdRules 6 }
+
+
+tblt2Alarms OBJECT IDENTIFIER ::= { trimbleTBlt2 2 }
+
+tblt2AlTable OBJECT-TYPE
+    SYNTAX        SEQUENCE OF Tblt2AlEntry
+    MAX-ACCESS    not-accessible
+    STATUS        current
+    DESCRIPTION
+        "The alarms table."
+    ::= { tblt2Alarms 1 }
+
+tblt2AlEntry OBJECT-TYPE
+    SYNTAX        Tblt2AlEntry
+    MAX-ACCESS    not-accessible
+    STATUS        current
+    DESCRIPTION
+        "Row describing alarm information."
+    INDEX
+        { tblt2AlIndex }
+    ::= { tblt2AlTable 1 }
+
+Tblt2AlEntry ::= SEQUENCE
+{
+    tblt2AlIndex     Integer32,
+    tblt2AlNumber    Integer32,
+    tblt2AlName      DisplayString,
+    tblt2AlLevel     Tblt2AlarmLevel,
+    tblt2AlActive    Integer32,
+    tblt2AlIsSet     Integer32,
+    tblt2AlSetTime   Integer32,
+    tblt2AlClrTime   Integer32,
+    tblt2AlStateTime Integer32
+}
+
+
+tblt2AlIndex OBJECT-TYPE
+    SYNTAX        Integer32 (1..32)
+    MAX-ACCESS    read-only
+    STATUS        current
+    DESCRIPTION
+        "Alarm entry index (1 based)"
+    ::= { tblt2AlEntry 1 }
+
+tblt2AlNumber OBJECT-TYPE
+    SYNTAX        Integer32
+    MAX-ACCESS    read-only
+    STATUS        current
+    DESCRIPTION
+        "Number for the alarm. (0 based)"
+    ::= { tblt2AlEntry 2 }
+
+tblt2AlName OBJECT-TYPE
+    SYNTAX        DisplayString
+    MAX-ACCESS    read-only
+    STATUS        current
+    DESCRIPTION
+        "Name of the alarm."
+    ::= { tblt2AlEntry 3 }
+
+tblt2AlLevel OBJECT-TYPE
+    SYNTAX        Tblt2AlarmLevel
+    MAX-ACCESS    read-write
+    STATUS        current
+    DESCRIPTION
+        "Severity level of the alarm. May be one of
+         Ignored(0), Notification(1), Minor(2), Major(4), Critical(8),
+         or Disabled(64)"
+    ::= { tblt2AlEntry 4 }
+
+tblt2AlActive OBJECT-TYPE
+    SYNTAX        Integer32
+    MAX-ACCESS    read-only
+    STATUS        current
+    DESCRIPTION
+        "Whether this alarm is currently in an 'alarmed' state (1), or
+         is not (0)."
+    ::= { tblt2AlEntry 5 }
+
+tblt2AlIsSet OBJECT-TYPE
+    SYNTAX        Integer32
+    MAX-ACCESS    read-only
+    STATUS        current
+    DESCRIPTION
+        "If value 1, indicates that the underlying condition is true.
+         If the Alarm Set Time has not expired or the Alarm Level is
+         set to Ignored, this value may differ from tblt2AlActive."
+    ::= { tblt2AlEntry 6 }
+
+tblt2AlSetTime OBJECT-TYPE
+    SYNTAX        Integer32
+    MAX-ACCESS    read-write
+    STATUS        current
+    DESCRIPTION
+        "Alarm Set Time is the number of seconds the underlying condition must
+         be true before the alarm is made 'Active'."
+    ::= { tblt2AlEntry 7 }
+
+tblt2AlClrTime OBJECT-TYPE
+    SYNTAX        Integer32
+    MAX-ACCESS    read-write
+    STATUS        current
+    DESCRIPTION
+        "Alarm Clear Time is the number of seconds the underlying condition must
+         be calse before the alarm is cleared."
+    ::= { tblt2AlEntry 8 }
+
+tblt2AlStateTime OBJECT-TYPE
+    SYNTAX        Integer32
+    MAX-ACCESS    read-only
+    STATUS        current
+    DESCRIPTION
+        "Alarm State Time is the number of seconds the underlying condition has
+         been steady."
+    ::= { tblt2AlEntry 9 }
+
+tblt2Configuration OBJECT IDENTIFIER ::= { trimbleTBlt2 3 }
+
+tblt2CfgSystem OBJECT IDENTIFIER ::= { tblt2Configuration 1 }
+
+tblt2CfgSysReboot OBJECT-TYPE 
+    SYNTAX        DisplayString
+    MAX-ACCESS    read-write
+    STATUS        current
+    DESCRIPTION
+        "Writing the string 'yes' to this object
+         will cause the system to be rebooted.
+         When read, this will be an empty string."
+    ::= { tblt2CfgSystem 1 }
+
+tblt2CfgSysSave OBJECT-TYPE
+    SYNTAX        Integer32
+    MAX-ACCESS    read-write
+    STATUS        current
+    DESCRIPTION
+        "Writing the value 1 to this object will save
+         current configuration to non-volatile storage.
+         If the current configuration is already saved,
+         this will return 1 when read, otherwise 2."
+    ::= { tblt2CfgSystem 2 }
+
+tblt2CfgSysEthChgPending OBJECT-TYPE
+    SYNTAX        Integer32
+    MAX-ACCESS    read-only
+    STATUS        current
+    DESCRIPTION
+        "Changes to ethernet configuration may not occur more often
+         than once every ten seconds.   This number is the number of seconds
+         remaining before the most recent ethernet configuration change
+         takes effect."
+    ::= { tblt2CfgSystem  3 }
+
+tblt2CfgSysLastError OBJECT-TYPE
+    SYNTAX        DisplayString
+    MAX-ACCESS    read-write
+    STATUS        current
+    DESCRIPTION
+        "This shows the most recent SNMP interface error message,
+         particularly those related to 'wrong value' errors.
+         Writing any value to this item will clear it."
+    ::= { tblt2CfgSystem  4 }
+
+tblt2CfgAuthentication OBJECT IDENTIFIER ::= { tblt2Configuration 2 }
+
+tblt2CfgAuthType OBJECT IDENTIFIER ::= { tblt2CfgAuthentication 1 }
+
+tblt2CfgAuthTelnet OBJECT-TYPE
+    SYNTAX        Tblt2TCAuthType
+    MAX-ACCESS    read-write
+    STATUS        current
+    DESCRIPTION
+        "This selects the authorization method for telnet connections.
+         Possible values are local(1), TACACS+(2), RADIUS(3), or disable(4)."
+    ::= { tblt2CfgAuthType 1 }
+
+tblt2CfgAuthSsh OBJECT-TYPE
+    SYNTAX        Tblt2TCAuthType
+    MAX-ACCESS    read-write
+    STATUS        current
+    DESCRIPTION
+        "This selects the authorization method for ssh connections.
+         Possible values are local(1), TACACS+(2), or RADIUS(3)."
+    ::= { tblt2CfgAuthType 2 }
+
+tblt2CfgAuthWeb OBJECT-TYPE
+    SYNTAX        Tblt2TCAuthType
+    MAX-ACCESS    read-write
+    STATUS        current
+    DESCRIPTION
+        "This selects the authorization method for web connections.
+         Possible values are local(1), TACACS+(2), or RADIUS(3)."
+    ::= { tblt2CfgAuthType 3 }
+
+tblt2CfgAuthRadius OBJECT IDENTIFIER ::= { tblt2CfgAuthentication 2 }
+
+tblt2CfgAuthRadPrimary OBJECT-TYPE
+    SYNTAX        DisplayString
+    MAX-ACCESS    read-write
+    STATUS        current
+    DESCRIPTION
+        "IP address of the primary RADIUS server."
+    ::= { tblt2CfgAuthRadius 1 }
+
+tblt2CfgAuthRadSecondary OBJECT-TYPE
+    SYNTAX        DisplayString
+    MAX-ACCESS    read-write
+    STATUS        current
+    DESCRIPTION
+        "IP address of the secondary RADIUS server."
+    ::= { tblt2CfgAuthRadius 2 }
+    
+tblt2CfgAuthRadPort OBJECT-TYPE
+    SYNTAX        Integer32 (1..65535)
+    MAX-ACCESS    read-write
+    STATUS        current
+    DESCRIPTION
+        "Port number for authentication server (used for both servers)."
+    ::= { tblt2CfgAuthRadius 3 }
+
+tblt2CfgAuthRadSecret OBJECT-TYPE
+    SYNTAX        DisplayString
+    MAX-ACCESS    read-write
+    STATUS        current
+    DESCRIPTION
+        "Shared secret for RADIUS remote authentication."
+    ::= { tblt2CfgAuthRadius 4 }
+
+tblt2CfgAuthRadTimeout OBJECT-TYPE
+    SYNTAX        Integer32 (1..60)
+    MAX-ACCESS    read-write
+    STATUS        current
+    DESCRIPTION
+        "Timeout, in seconds, for communicating with RADIUS server."
+    ::= { tblt2CfgAuthRadius 5 }
+
+tblt2CfgAuthTacacs OBJECT IDENTIFIER ::= { tblt2CfgAuthentication 3 }
+
+tblt2CfgAuthTacPrimary OBJECT-TYPE
+    SYNTAX        DisplayString
+    MAX-ACCESS    read-write
+    STATUS        current
+    DESCRIPTION
+        "IP address of the primary TACACS+ server."
+    ::= { tblt2CfgAuthTacacs 1 }
+
+tblt2CfgAuthTacSecondary OBJECT-TYPE
+    SYNTAX        DisplayString
+    MAX-ACCESS    read-write
+    STATUS        current
+    DESCRIPTION
+        "IP address of the secondary TACACS+ server."
+    ::= { tblt2CfgAuthTacacs 2 }
+
+tblt2CfgAuthTacPort OBJECT-TYPE
+    SYNTAX        Integer32 (1..65535)
+    MAX-ACCESS    read-write
+    STATUS        current
+    DESCRIPTION
+        "Port number for TACACS+ server (used for both servers)."
+    ::= { tblt2CfgAuthTacacs 3 }
+
+tblt2CfgAuthTacSecret OBJECT-TYPE
+    SYNTAX        DisplayString
+    MAX-ACCESS    read-write
+    STATUS        current
+    DESCRIPTION
+        "Shared secret for TACACS+ remote authentication."
+    ::= { tblt2CfgAuthTacacs 4 }
+
+tblt2CfgAuthTacTimeout OBJECT-TYPE
+    SYNTAX        Integer32
+    MAX-ACCESS    read-write
+    STATUS        current
+    DESCRIPTION
+        "Timeout (in seconds) used when talking to TACACS+ server."
+    ::= { tblt2CfgAuthTacacs 5 }
+
+tblt2CfgAuthTacService OBJECT-TYPE
+    SYNTAX        DisplayString
+    MAX-ACCESS    read-write
+    STATUS        current
+    DESCRIPTION
+        "For TACACS+, the service type being requested (e.g. ppp or slip)"
+    ::= { tblt2CfgAuthTacacs 6 }
+
+tblt2CfgAuthTacProto OBJECT-TYPE
+    SYNTAX        DisplayString
+    MAX-ACCESS    read-write
+    STATUS        current
+    DESCRIPTION
+        "For TACACS+, the protocol type being requested (e.g. ip)"
+    ::= { tblt2CfgAuthTacacs 7 }
+
+tblt2CfgAuthSnmp OBJECT IDENTIFIER ::= { tblt2CfgAuthentication 4 }
+
+tblt2CfgAuthTrapHost OBJECT-TYPE
+    SYNTAX        DisplayString
+    MAX-ACCESS    read-write
+    STATUS        deprecated
+    DESCRIPTION
+        "IP address to which to send traps or notifications.
+         If blank, no traps will be sent."
+    ::= { tblt2CfgAuthSnmp 1 }
+
+tblt2CfgAuthTrapPort OBJECT-TYPE
+    SYNTAX        Integer32
+    MAX-ACCESS    read-write
+    STATUS        deprecated
+    DESCRIPTION
+        "IP port to which to send traps or notifications."
+    ::= { tblt2CfgAuthSnmp 2 }
+
+tblt2CfgAuthTrapCommunity OBJECT-TYPE
+    SYNTAX        DisplayString
+    MAX-ACCESS    read-write
+    STATUS        deprecated
+    DESCRIPTION
+        "Community string for sending traps or notifications."
+    ::= { tblt2CfgAuthSnmp 3 }
+
+tblt2CfgAuthTrapType OBJECT-TYPE
+    SYNTAX        Integer32
+    MAX-ACCESS    read-write
+    STATUS        deprecated
+    DESCRIPTION
+        "This controls the sending of traps or notifications.
+         A value of 0 will turn off all traps or notifications.
+         A value of 1 will allow sending of v2c notifications."
+    ::= { tblt2CfgAuthSnmp 4 }
+
+
+tblt2CfgPwdRules OBJECT IDENTIFIER ::= { tblt2CfgAuthentication 5 }
+
+tblt2CfgMinLen OBJECT-TYPE
+    SYNTAX        Integer32 (3..29)
+    MAX-ACCESS    read-only
+    STATUS        current
+    DESCRIPTION
+        "Sets a measure of complexity related to the 
+        password length.
+
+        Range: 3 <= minlen <= 29"
+    ::= { tblt2CfgPwdRules 1 }
+
+tblt2CfgLCredit OBJECT-TYPE
+    SYNTAX        Integer32 (-5..5)
+    MAX-ACCESS    read-only
+    STATUS        current
+    DESCRIPTION
+       "Sets the minimum number of required lowercase letters
+        
+        Range: -5 <= lcredit <= 5"
+    ::= { tblt2CfgPwdRules 2 }
+
+tblt2CfgUCredit OBJECT-TYPE
+    SYNTAX        Integer32 (-5..5)
+    MAX-ACCESS    read-only
+    STATUS        current
+    DESCRIPTION
+       "Sets the minimum number of required uppercase letters
+        
+        Range: -5 <= ucredit <= 5"
+    ::= { tblt2CfgPwdRules 3 }
+
+tblt2CfgDCredit OBJECT-TYPE
+    SYNTAX        Integer32 (0..5)
+    MAX-ACCESS    read-only
+    STATUS        current
+    DESCRIPTION
+       "Sets the minimum number of required digits
+        
+        Range: -5 <= dcredit <= 5"
+    ::= { tblt2CfgPwdRules 4 }
+
+tblt2CfgOCredit OBJECT-TYPE
+    SYNTAX        Integer32 (-5..5)
+    MAX-ACCESS    read-only
+    STATUS        current
+    DESCRIPTION
+       "Sets the minimum number of required other characters
+        
+        Range: -5 <= ocredit <= 5"
+    ::= { tblt2CfgPwdRules 5 }
+
+tblt2CfgDiffOk OBJECT-TYPE
+    SYNTAX        Integer32  (0..1)
+    MAX-ACCESS    read-only
+    STATUS        current
+    DESCRIPTION
+        "Sets if the user is required to enter a different password
+        when changing their password.
+
+        Values: 1 = yes |  0 = no"
+    ::= { tblt2CfgPwdRules 6 }
+
+tblt2CfgPreConfig OBJECT-TYPE
+    SYNTAX        DisplayString
+    MAX-ACCESS    read-only
+    STATUS        current
+    DESCRIPTION
+        "Sets a 'preconfigured' password criteria:
+        p0 : require a minimum of 6 characters, no other
+            requirements. 
+        p1 : require at least 1 uppercase letter. The
+            password must be at least 6 characters long.
+        p2 : require at least 1 uppercase and 2 lowercase
+            letters. The password must be at least 6
+            characters long.
+        p3 : require at least 1 uppercase, 2 lowercase, and
+            1 number. The password must be at least 6
+            characters long.
+        p4 : require at least 1 uppercase, 2 lowercase, 1
+            number and 1 'other' character. The password
+            must be at least 6 characters long.
+                
+        Values: p0, p1, p2, p3, p4"
+    ::= { tblt2CfgPwdRules 7 }
+
+
+tblt2CfgInterfaces OBJECT IDENTIFIER ::= { tblt2Configuration 3 }
+
+tblt2CfgIfSerial OBJECT IDENTIFIER ::= { tblt2CfgInterfaces 1 }
+
+tblt2CfgIfSerBaud OBJECT-TYPE
+    SYNTAX        Integer32
+    MAX-ACCESS    read-write
+    STATUS        current
+    DESCRIPTION
+        "This is the baud rate for the front serial port. (e.g. 115200)."
+    ::= { tblt2CfgIfSerial 1 }
+
+tblt2CfgIfSerTodType OBJECT-TYPE
+    SYNTAX        Integer32
+    MAX-ACCESS    read-write
+    STATUS        current
+    DESCRIPTION
+        "Sets the serial port to output TOD on demand. This
+        is used in conjuction with the PPS output on the
+        serial port (on the DCD pin). Possible values are:
+        none(0) - disable the TOD output (default),
+        rmc(5) - Set NMEA RMC output,
+        zda(4) - Set NMEA ZDA output."
+    ::= { tblt2CfgIfSerial 2 }
+
+tblt2CfgIfSerTodDelay OBJECT-TYPE
+    SYNTAX        Integer32
+    MAX-ACCESS    read-write
+    STATUS        current
+    DESCRIPTION
+        "Set a delay for the TOD output in microseconds. This delays
+        the TOD message for this number of microseconds after the PPS."
+    ::= { tblt2CfgIfSerial 3 }
+
+tblt2CfgIfEthernet OBJECT IDENTIFIER ::= { tblt2CfgInterfaces 2 }
+
+tblt2CfgIfEthIpv4Table OBJECT-TYPE
+    SYNTAX        SEQUENCE OF Tblt2CfgIfEthIpv4Entry
+    MAX-ACCESS    not-accessible
+    STATUS        current
+    DESCRIPTION
+        "Table of configuration entries for ethernet ports."
+    ::= { tblt2CfgIfEthernet 1 }
+
+tblt2CfgIfEthIpv4Entry OBJECT-TYPE
+    SYNTAX        Tblt2CfgIfEthIpv4Entry
+    MAX-ACCESS    not-accessible
+    STATUS        current
+    DESCRIPTION
+        "IPv4 configuration entry for an ethernet port."
+    INDEX
+        { tblt2CfgIfEthIndex }
+    ::= { tblt2CfgIfEthIpv4Table 1 }
+
+Tblt2CfgIfEthIpv4Entry ::= SEQUENCE
+{
+    tblt2CfgIfEthIndex         Integer32,
+    tblt2CfgIfEthIpv4Prov      Tblt2EthProv,
+    tblt2CfgIfEthIpv4Addr      DisplayString,
+    tblt2CfgIfEthIpv4Mask      DisplayString,
+    tblt2CfgIfEthIpv4Broadcast DisplayString,
+    tblt2CfgIfEthIpv4Gateway   DisplayString,
+    tblt2CfgIfEthSynce         Tblt2EthSynce,
+    tblt2CfgIfEthBond          Integer32,
+    tblt2CfgIfEthVpriority     Integer32,
+    tblt2CfgIfEthVids          DisplayString,
+    tblt2CfgIfEthIpv6Prov      Tblt2EthProv,
+    tblt2CfgIfEthIpv6Addr      DisplayString,
+    tblt2CfgIfEthAutoNeg       Integer32
+}
+
+tblt2CfgIfEthIndex OBJECT-TYPE
+    SYNTAX        Integer32 (1..3)
+    MAX-ACCESS    read-only
+    STATUS        current
+    DESCRIPTION
+          "Logical index of ethernet ports (1=eth0, 2=eth1, 3=eth2)"
+    ::= { tblt2CfgIfEthIpv4Entry 1 }
+
+tblt2CfgIfEthIpv4Prov OBJECT-TYPE
+    SYNTAX        Tblt2EthProv
+    MAX-ACCESS    read-write
+    STATUS        current
+    DESCRIPTION
+        "Controls the provisioning type for the Management Ethernet Port.
+         A setting of 1 disables the port.
+         A setting of 2 enables static provisioning.
+         A setting of 3 enables DHCP provisioning."
+    ::= { tblt2CfgIfEthIpv4Entry 2 }
+
+tblt2CfgIfEthIpv4Addr OBJECT-TYPE
+    SYNTAX        DisplayString
+    MAX-ACCESS    read-write
+    STATUS        current
+    DESCRIPTION
+        "Internet address for ethernet port, e.g. 192.168.0.1
+         If this field is a single hyphen, DHCP is in use."
+    ::= { tblt2CfgIfEthIpv4Entry 3 }
+
+tblt2CfgIfEthIpv4Mask OBJECT-TYPE
+    SYNTAX        DisplayString
+    MAX-ACCESS    read-write
+    STATUS        current
+    DESCRIPTION
+        "IPv4 netmask, e.g. 255.255.254.0"
+    ::= { tblt2CfgIfEthIpv4Entry 4 }
+
+tblt2CfgIfEthIpv4Broadcast OBJECT-TYPE
+    SYNTAX        DisplayString
+    MAX-ACCESS    read-write
+    STATUS        current
+    DESCRIPTION
+        "IPv4 broadcast, e.g. 192.168.1.255"
+    ::= { tblt2CfgIfEthIpv4Entry 5 }
+
+tblt2CfgIfEthIpv4Gateway OBJECT-TYPE
+    SYNTAX        DisplayString
+    MAX-ACCESS    read-write
+    STATUS        current
+    DESCRIPTION
+        "IPv4 gateway address e.g. 192.168.1.100"
+    ::= { tblt2CfgIfEthIpv4Entry 6 }
+
+tblt2CfgIfEthSynce OBJECT-TYPE
+    SYNTAX        Tblt2EthSynce
+    MAX-ACCESS    read-write
+    STATUS        current
+    DESCRIPTION
+        "SyncE configuration.  Only available for eth0 and eth1.
+         Valid values are 1 (off), 2 (output), 3 (input)."
+    ::= { tblt2CfgIfEthIpv4Entry 7 }
+
+tblt2CfgIfEthBond OBJECT-TYPE
+    SYNTAX        Integer32 (1..3)
+    MAX-ACCESS    read-write
+    STATUS        current
+    DESCRIPTION
+        "Port bonding configuration.  Only available for eth0 and eth1.
+         Valid values are 1 (disable), 2 (enable), 3 (standby)."
+    ::= { tblt2CfgIfEthIpv4Entry 8 }
+
+tblt2CfgIfEthVpriority OBJECT-TYPE
+    SYNTAX        Integer32 (0..7)
+    MAX-ACCESS    read-write
+    STATUS        deprecated
+    DESCRIPTION
+        "VLAN priority configuration.  Only available for eth0 and eth1.
+         Valid values are (0..7). VLAN IDs must be set before configuring
+         VLAN priority. Time protocols must be disabled to change this value."
+    ::= { tblt2CfgIfEthIpv4Entry 9 }
+
+tblt2CfgIfEthVids OBJECT-TYPE
+    SYNTAX        DisplayString
+    MAX-ACCESS    read-write
+    STATUS        current
+    DESCRIPTION
+        "VLAN IDs.  Only available for eth0 and eth1.
+         This is a comma separated list of id numbers,
+         each in range 3..4094.
+         There can be a maximum of eight ids assigned.
+         Writing the special string '-1' will disable
+         VLAN configuration, and remove all vlan settings.
+         NOTE: vlan IDs, and all VlanTable parameters cannot
+         be set while any timing protocol is enabled on the interface.
+         Requests to modify these values while a timing
+         protocol is active will be rejected with
+         an 'inconsistent value' error."
+    ::= { tblt2CfgIfEthIpv4Entry 10 }
+
+tblt2CfgIfEthIpv6Prov OBJECT-TYPE
+    SYNTAX        Tblt2EthProv
+    MAX-ACCESS    read-write
+    STATUS        current
+    DESCRIPTION
+        "Controls the IPv6 provisioning type for the Ethernet Port.
+         A setting of 1 disables IPv6.
+         A setting of 2 enables static provisioning.
+         A setting of 3 enables DHCP provisioning."
+    ::= { tblt2CfgIfEthIpv4Entry 11 }
+
+tblt2CfgIfEthIpv6Addr OBJECT-TYPE
+    SYNTAX        DisplayString
+    MAX-ACCESS    read-write
+    STATUS        current
+    DESCRIPTION
+        "Internet v6 address for ethernet port, 
+         e.g. fd6b:fd64:9e0c:beef::/128
+         If this field is a single hyphen, 
+         default address is assigned."
+    ::= { tblt2CfgIfEthIpv4Entry 12 }
+
+tblt2CfgIfEthAutoNeg OBJECT-TYPE
+    SYNTAX        Integer32 (0..1)
+    MAX-ACCESS    read-write
+    STATUS        current
+    DESCRIPTION
+        "Port auto-negotiation configuration.  
+         Only available for eth0 and eth1.
+         Valid values are 0 (disable), 1 (enable)."
+    ::= { tblt2CfgIfEthIpv4Entry 13 }
+
+
+tblt2CfgIfEthVlanTable OBJECT-TYPE
+    SYNTAX        SEQUENCE OF Tblt2CfgIfEthVlanEntry
+    MAX-ACCESS    not-accessible
+    STATUS        current
+    DESCRIPTION
+        "Table of VLAN configuration entries."
+    ::= { tblt2CfgIfEthernet 2 }
+
+tblt2CfgIfEthVlanEntry OBJECT-TYPE
+    SYNTAX        Tblt2CfgIfEthVlanEntry
+    MAX-ACCESS    not-accessible
+    STATUS        current
+    DESCRIPTION
+        "VLAN configuration entry, indexed by ethernet interface eth0(1)
+         or eth1(2), and a sequence number (1..8)."
+    INDEX
+        { tblt2CfgIfEthIndex, tblt2CfgIfEthVlanIndex }
+    ::= { tblt2CfgIfEthVlanTable 1 }
+
+Tblt2CfgIfEthVlanEntry ::= SEQUENCE
+{
+    tblt2CfgIfEthVlanIndex     Integer32,
+    tblt2CfgIfEthVlanVid       Integer32,
+    tblt2CfgIfEthVlanStatus    DisplayString,
+    tblt2CfgIfEthVlanProv      Tblt2EthProv,
+    tblt2CfgIfEthVlanAddr      DisplayString,
+    tblt2CfgIfEthVlanMask      DisplayString,
+    tblt2CfgIfEthVlanBroadcast DisplayString,
+    tblt2CfgIfEthVlanGateway   DisplayString,
+    tblt2CfgIfEthVlanIpv6Link  DisplayString,
+    tblt2CfgIfEthVlanPrio      Integer32
+}
+
+tblt2CfgIfEthVlanIndex OBJECT-TYPE
+    SYNTAX        Integer32 (1..8)
+    MAX-ACCESS    read-only
+    STATUS        current
+    DESCRIPTION
+        "Index into the VLAN table for a given interface."
+    ::= { tblt2CfgIfEthVlanEntry 1 }
+
+tblt2CfgIfEthVlanVid OBJECT-TYPE
+    SYNTAX        Integer32 (3..4094)
+    MAX-ACCESS    read-only
+    STATUS        current
+    DESCRIPTION
+        "VLAN VID, as set in tblt2CfgIfEthVids. Range is 3 to 4094."
+    ::= { tblt2CfgIfEthVlanEntry 2 }
+
+tblt2CfgIfEthVlanStatus OBJECT-TYPE
+    SYNTAX        DisplayString
+    MAX-ACCESS    read-only
+    STATUS        current
+    DESCRIPTION
+        "Connection status string for this VLAN entry."
+    ::= { tblt2CfgIfEthVlanEntry 3 }
+
+tblt2CfgIfEthVlanProv OBJECT-TYPE
+    SYNTAX        Tblt2EthProv
+    MAX-ACCESS    read-write
+    STATUS        current
+    DESCRIPTION
+        "Type of address provisioning for this VLAN entry. One of:
+         provDisabled(1), provStatic(2), or provDhcp(3)."
+    ::= { tblt2CfgIfEthVlanEntry 4 }
+
+tblt2CfgIfEthVlanAddr OBJECT-TYPE
+    SYNTAX        DisplayString
+    MAX-ACCESS    read-write
+    STATUS        current
+    DESCRIPTION
+        "Ipv4 address for this VLAN entry."
+    ::= { tblt2CfgIfEthVlanEntry 5 }
+
+tblt2CfgIfEthVlanMask OBJECT-TYPE
+    SYNTAX        DisplayString
+    MAX-ACCESS    read-write
+    STATUS        current
+    DESCRIPTION
+        "IPv4 netmask for this VLAN entry."
+    ::= { tblt2CfgIfEthVlanEntry 6 }
+
+tblt2CfgIfEthVlanBroadcast OBJECT-TYPE
+    SYNTAX        DisplayString
+    MAX-ACCESS    read-write
+    STATUS        current
+    DESCRIPTION
+        "IPv4 broadcast address for this VLAN entry."
+    ::= { tblt2CfgIfEthVlanEntry 7 }
+
+tblt2CfgIfEthVlanGateway OBJECT-TYPE
+    SYNTAX        DisplayString
+    MAX-ACCESS    read-write
+    STATUS        current
+    DESCRIPTION
+        "IPv4 gateway address for this VLAN entry."
+    ::= { tblt2CfgIfEthVlanEntry 8 }
+
+tblt2CfgIfEthVlanIpv6Link OBJECT-TYPE
+    SYNTAX        DisplayString
+    MAX-ACCESS    read-only
+    STATUS        current
+    DESCRIPTION
+        "IPv6 Link address for this VLAN entry."
+    ::= { tblt2CfgIfEthVlanEntry 9 }
+
+tblt2CfgIfEthVlanPrio OBJECT-TYPE
+    SYNTAX        Integer32 (0..7)
+    MAX-ACCESS    read-write
+    STATUS        current
+    DESCRIPTION
+        "VLAN priority configuration. Valid values are (0..7), default is 0.
+         Time protocols must be disabled to change this value."
+    ::= { tblt2CfgIfEthVlanEntry 10 }
+
+tblt2CfgIfSnmpTrap OBJECT IDENTIFIER ::= { tblt2CfgInterfaces 3 }
+
+tblt2CfgIfSnmpTrapTable OBJECT-TYPE
+    SYNTAX        SEQUENCE OF Tblt2CfgIfSnmpTrapEntry
+    MAX-ACCESS    not-accessible
+    STATUS        current
+    DESCRIPTION
+        "Table of configuration entries for SNMP trap destinations."
+    ::= { tblt2CfgIfSnmpTrap 1 }
+
+tblt2CfgIfSnmpTrapEntry OBJECT-TYPE
+    SYNTAX        Tblt2CfgIfSnmpTrapEntry
+    MAX-ACCESS    not-accessible
+    STATUS        current
+    DESCRIPTION
+        "SNMP trap destination configuration entry."
+    INDEX
+        { tblt2CfgIfSnmpTrapIndex }
+    ::= { tblt2CfgIfSnmpTrapTable 1 }
+
+Tblt2CfgIfSnmpTrapEntry ::= SEQUENCE
+{
+    tblt2CfgIfSnmpTrapIndex  Integer32,
+    tblt2CfgIfSnmpTrapEnable Integer32,
+    tblt2CfgIfSnmpTrapHost   DisplayString,
+    tblt2CfgIfSnmpTrapPort   Integer32,
+    tblt2CfgIfSnmpTrapType   Integer32,
+    tblt2CfgIfSnmpTrapComm   DisplayString,
+    tblt2CfgIfSnmpTrapName   DisplayString,
+    tblt2CfgIfSnmpTrapPass   DisplayString,
+    tblt2CfgIfSnmpTrapPriv   DisplayString
+}
+
+tblt2CfgIfSnmpTrapIndex OBJECT-TYPE
+    SYNTAX        Integer32 (1..4)
+    MAX-ACCESS    read-only
+    STATUS        current
+    DESCRIPTION
+        "Index of SNMP trap destination entry"
+    ::= { tblt2CfgIfSnmpTrapEntry 1 }
+
+tblt2CfgIfSnmpTrapEnable OBJECT-TYPE
+    SYNTAX        Integer32 (0..1)
+    MAX-ACCESS    read-write
+    STATUS        current
+    DESCRIPTION
+        "Disable (0) or enable (1) this entry"
+    ::= { tblt2CfgIfSnmpTrapEntry 2 }
+
+tblt2CfgIfSnmpTrapHost OBJECT-TYPE
+    SYNTAX        DisplayString
+    MAX-ACCESS    read-write
+    STATUS        current
+    DESCRIPTION
+        "IP address (IPv4 or IPv6) for the trap destination"
+    ::= { tblt2CfgIfSnmpTrapEntry 3 }
+
+tblt2CfgIfSnmpTrapPort OBJECT-TYPE
+    SYNTAX        Integer32 (1..65535)
+    MAX-ACCESS    read-write
+    STATUS        current
+    DESCRIPTION
+        "UDP port for the trap destination (1..65535). Default is 162."
+    ::= { tblt2CfgIfSnmpTrapEntry 4 }
+
+tblt2CfgIfSnmpTrapType OBJECT-TYPE
+    SYNTAX        Integer32 (0..3)
+    MAX-ACCESS    read-write
+    STATUS        current
+    DESCRIPTION
+        "Authentication method for accessing the SNMP trap destination.
+         Choices are (0) send v2c trap with a community string.
+         (1) send v3 trap with username only.
+         (2) send v3 trap with username and SHA1 authentication password.
+         (3) send v3 trap with username, SHA1 authentication and AES encryption."
+    ::= { tblt2CfgIfSnmpTrapEntry 5 }
+
+tblt2CfgIfSnmpTrapComm OBJECT-TYPE
+    SYNTAX        DisplayString
+    MAX-ACCESS    read-write
+    STATUS        current
+    DESCRIPTION
+        "Community string to use when sending v2c traps."
+    ::= { tblt2CfgIfSnmpTrapEntry 6 }
+
+tblt2CfgIfSnmpTrapName OBJECT-TYPE
+    SYNTAX        DisplayString
+    MAX-ACCESS    read-write
+    STATUS        current
+    DESCRIPTION
+        "Username to use when sending v3 traps."
+    ::= { tblt2CfgIfSnmpTrapEntry 7 }
+
+tblt2CfgIfSnmpTrapPass OBJECT-TYPE
+    SYNTAX        DisplayString
+    MAX-ACCESS    read-write
+    STATUS        current
+    DESCRIPTION
+        "Password to use when sending v3 traps with authentication (SHA1)."
+    ::= { tblt2CfgIfSnmpTrapEntry 8 }
+
+tblt2CfgIfSnmpTrapPriv OBJECT-TYPE
+    SYNTAX        DisplayString
+    MAX-ACCESS    read-write
+    STATUS        current
+    DESCRIPTION
+        "Password to use when sending v3 traps with AES encryption.
+         If this entry is blank and encryption is requested, the authentication
+         password will be used."
+     ::= { tblt2CfgIfSnmpTrapEntry 9 }
+
+tblt2CfgIfSyslog OBJECT IDENTIFIER ::= { tblt2CfgInterfaces 4 }
+
+tblt2CfgIfSyslogTable OBJECT-TYPE
+    SYNTAX        SEQUENCE OF Tblt2CfgIfSyslogEntry
+    MAX-ACCESS    not-accessible
+    STATUS        current
+    DESCRIPTION
+        "Table of configuration entries for Syslog destinations."
+    ::= { tblt2CfgIfSyslog 1 }
+
+tblt2CfgIfSyslogEntry OBJECT-TYPE
+    SYNTAX        Tblt2CfgIfSyslogEntry
+    MAX-ACCESS    not-accessible
+    STATUS        current
+    DESCRIPTION
+        "Syslog destination configuration entry."
+    INDEX
+        { tblt2CfgIfSyslogIndex }
+    ::= { tblt2CfgIfSyslogTable 1 }
+
+Tblt2CfgIfSyslogEntry ::= SEQUENCE
+{
+    tblt2CfgIfSyslogIndex  Integer32,
+    tblt2CfgIfSyslogEnable Integer32,
+    tblt2CfgIfSyslogHost   DisplayString,
+    tblt2CfgIfSyslogPort   Integer32
+}
+
+tblt2CfgIfSyslogIndex OBJECT-TYPE
+    SYNTAX        Integer32 (1..4)
+    MAX-ACCESS    read-only
+    STATUS        current
+    DESCRIPTION
+        "Index of Syslog destination entry"
+    ::= { tblt2CfgIfSyslogEntry 1 }
+
+tblt2CfgIfSyslogEnable OBJECT-TYPE
+    SYNTAX        Integer32
+    MAX-ACCESS    read-write
+    STATUS        current
+    DESCRIPTION
+        "Disable (0) or enable (1) this entry"
+    ::= { tblt2CfgIfSyslogEntry 2 }
+
+tblt2CfgIfSyslogHost OBJECT-TYPE
+    SYNTAX        DisplayString
+    MAX-ACCESS    read-write
+    STATUS        current
+    DESCRIPTION
+        "IP address (IPv4 or IPv6) for the syslog destination.
+         Only one address type at a time is supported."
+    ::= { tblt2CfgIfSyslogEntry 3 }
+
+tblt2CfgIfSyslogPort OBJECT-TYPE
+    SYNTAX        Integer32 (1..65535)
+    MAX-ACCESS    read-write
+    STATUS        current
+    DESCRIPTION
+        "IP port for the syslog destination. Default is 514."
+    ::= { tblt2CfgIfSyslogEntry 4 }
+
+tblt2CfgOutputs OBJECT IDENTIFIER ::= { tblt2Configuration 4 }
+
+tblt2CfgOutBnc OBJECT-TYPE
+    SYNTAX        Integer32
+    MAX-ACCESS    read-write
+    STATUS        current
+    DESCRIPTION
+        "Controls the status of the BNC output. Possible values are:
+         Off(1), Low(2), High(3), PPS(4), Even(5), 10MHz(6), Periodic(7),
+         Invert-Off(-1), Invert-Low(-2), Invert-High(-3), Invert-PPS(-4),
+         Invert-Even(-5), Invert-10Hz(-6), Invert-Periodic(-7)."
+    ::= { tblt2CfgOutputs 1 }
+
+tblt2CfgOutOutWidth OBJECT-TYPE
+    SYNTAX        Integer32 (100..500000000)
+    MAX-ACCESS    read-write
+    STATUS        current
+    DESCRIPTION
+        "Width, in nanoseconds, of the output pulse.
+         Valid range is 100 to 500000000 (5E8)."
+    ::= { tblt2CfgOutputs 2 }
+
+tblt2CfgOutOutDelay OBJECT-TYPE
+    SYNTAX        Integer32 (-500000000..500000000)
+    MAX-ACCESS    read-write
+    STATUS        current
+    DESCRIPTION
+        "Delay, in nanoseconds, of the output pulse.
+         This is used to compensate for cable and other delays.
+         Valid range is -5E8 to 5E8."
+    ::= { tblt2CfgOutputs 3 }
+
+tblt2CfgOutPerWidth OBJECT-TYPE
+    SYNTAX        Integer32 (100..500000000)
+    MAX-ACCESS    read-write
+    STATUS        current
+    DESCRIPTION
+        "Width, in nanoseconds, of the periodic output system.
+         Valid range is 100 to 5E8."
+    ::= { tblt2CfgOutputs 4 }
+
+tblt2CfgOutPerPeriod OBJECT-TYPE
+    SYNTAX        Integer32 (2..100000)
+    MAX-ACCESS    read-write
+    STATUS        current
+    DESCRIPTION
+        "This sets the time modulo value (period) for the periodic
+         output.  Valid range is 2..100000. This allows for complex
+         periodic outputs. To achieve an output of once per second,
+         set tblt2CfgOutBnc to PPS(4)."
+    ::= { tblt2CfgOutputs 5 }
+
+tblt2CfgOutPerValue OBJECT-TYPE
+    SYNTAX        Integer32 (0..100000)
+    MAX-ACCESS    read-write
+    STATUS        current
+    DESCRIPTION
+        "Periodic comparison value. Valid range is 0..100000.
+         This value is used to determine time alignment of the
+         periodic output, in seconds. This value is compared with
+         the modulo time based on the tblt2CfgOutPerPeriod value.
+         This allows for complex periodic pulses to be generated.
+         Note that it is possible to disable the periodic output
+         by setting this to a value that will never be satisfied
+         based on the modulo setting."
+    ::= { tblt2CfgOutputs 6 }
+
+tblt2CfgPtp OBJECT IDENTIFIER ::= { tblt2Configuration 5 }
+
+tblt2CfgPtpTable OBJECT-TYPE
+    SYNTAX        SEQUENCE OF Tblt2CfgPtpEntry
+    MAX-ACCESS    not-accessible
+    STATUS        current
+    DESCRIPTION
+        "Table of ethernet port PTP configuration entries."
+    ::= { tblt2CfgPtp 1 }
+
+tblt2CfgPtpEntry OBJECT-TYPE
+    SYNTAX        Tblt2CfgPtpEntry
+    MAX-ACCESS    not-accessible
+    STATUS        current
+    DESCRIPTION
+        "Row describing ethernet port PTP configuration."
+    INDEX
+        { tblt2CfgPtpIndex }
+    ::= { tblt2CfgPtpTable 1 }
+
+Tblt2CfgPtpEntry ::= SEQUENCE
+{
+    tblt2CfgPtpIndex Integer32,
+    tblt2CfgPtpStatus Tblt2PtpStatus,
+    tblt2CfgPtpProfile Tblt2PtpProfile,
+    tblt2CfgPtpSyncMode Tblt2PtpSyncMode,
+    tblt2CfgPtpTransp Tblt2PtpTransport,
+    tblt2CfgPtpIpMode Tblt2PtpIpMode,
+    tblt2CfgPtpDelay Tblt2PtpDelayMech,
+    tblt2CfgPtpDomain Integer32,
+    tblt2CfgPtpAnnInter Integer32,
+    tblt2CfgPtpAnnTimeout Integer32,
+    tblt2CfgPtpSyncInter Integer32,
+    tblt2CfgPtpReqInter Integer32,
+    tblt2CfgPtpClockID DisplayString,
+    tblt2CfgPtpPri1 Integer32,
+    tblt2CfgPtpPri2 Integer32,
+    tblt2CfgPtpClass Integer32,
+    tblt2CfgPtpHoldTime Integer32,
+    tblt2CfgPtpPDelayReqInter Integer32,
+    tblt2CfgPtpDuration Integer32,
+    tblt2CfgPtpGrantor DisplayString,
+    tblt2CfgPtpTtl Integer32,
+    tblt2CfgPtpL2Mac Tblt2PtpL2Mac,
+    tblt2CfgPtpOperMode Tblt2PtpOperMode,
+    tblt2CfgPtpMode Tblt2PtpMode
+    }
+
+tblt2CfgPtpIndex OBJECT-TYPE
+    SYNTAX        Integer32 (1..2)
+    MAX-ACCESS    read-only
+    STATUS        current
+    DESCRIPTION
+        "Index in table, corresponding to the ethernet port.
+         1 is eth0, 2 is eth1."
+    ::= { tblt2CfgPtpEntry 1 }
+
+tblt2CfgPtpStatus OBJECT-TYPE
+    SYNTAX        Tblt2PtpStatus
+    MAX-ACCESS    read-write
+    STATUS        current
+    DESCRIPTION
+        "Disable/Enable/Default.  Possible values are
+         disable(1), enable(2), default(3).  This instance
+         must be disabled before the values in this row
+         may be set.  Setting this to default will reset
+         all values in the row to defaults, based on currently
+         selected profile."
+    ::= { tblt2CfgPtpEntry 2 }
+
+tblt2CfgPtpProfile OBJECT-TYPE
+    SYNTAX        Tblt2PtpProfile
+    MAX-ACCESS    read-write
+    STATUS        current
+    DESCRIPTION
+        "PTP profile.  Possible values are ptpG8275(1), ptpG8265(2)
+         ptpIeee1588(3), ptpTelecom(4), ptpPower(5)ptpG8275.2(6), 
+         ptpEnterprise(7), ptpG8265.1.I(8), ptpSMPTE(9)."
+    ::= { tblt2CfgPtpEntry 3 }
+        
+
+tblt2CfgPtpSyncMode OBJECT-TYPE
+    SYNTAX        Tblt2PtpSyncMode
+    MAX-ACCESS    read-write
+    STATUS        current
+    DESCRIPTION
+        "Sync-Mode.  Possible values are ptpOneStep(1) and
+         ptpTwoStep(2)."
+    ::= { tblt2CfgPtpEntry 4 }
+
+tblt2CfgPtpTransp OBJECT-TYPE
+    SYNTAX        Tblt2PtpTransport
+    MAX-ACCESS    read-write
+    STATUS        current
+    DESCRIPTION
+        "Transport Protocol.  Possible values are
+         IPv4(1), IPv6(2), IEEE 802.3(3)."
+    ::= { tblt2CfgPtpEntry 5 }
+
+tblt2CfgPtpIpMode OBJECT-TYPE
+    SYNTAX        Tblt2PtpIpMode
+    MAX-ACCESS    read-write
+    STATUS        current
+    DESCRIPTION
+        "IP Mode.  Possible values are Multicast(1),
+         Unicast(2), Hybrid(3)."
+    ::= { tblt2CfgPtpEntry 6 }
+
+tblt2CfgPtpDelay OBJECT-TYPE
+    SYNTAX        Tblt2PtpDelayMech
+    MAX-ACCESS    read-write
+    STATUS        current
+    DESCRIPTION
+        "Delay Mechanism.  Possible values are
+         E2E(1) or P2P(2)."
+    ::= { tblt2CfgPtpEntry 7 }
+
+tblt2CfgPtpDomain OBJECT-TYPE
+    SYNTAX        Integer32
+    MAX-ACCESS    read-write
+    STATUS        current
+    DESCRIPTION
+        "Domain number.  Valid range is [0-255]."
+    ::= { tblt2CfgPtpEntry 8 }
+
+tblt2CfgPtpAnnInter OBJECT-TYPE
+    SYNTAX        Integer32
+    MAX-ACCESS    read-write
+    STATUS        current
+    DESCRIPTION
+        "Announce Interval.  Valid range is [-7..7]."
+    ::= { tblt2CfgPtpEntry 9 }
+
+tblt2CfgPtpAnnTimeout OBJECT-TYPE
+    SYNTAX        Integer32
+    MAX-ACCESS    read-write
+    STATUS        current
+    DESCRIPTION
+        "Announce Timeout. Valid range is [2-255]."
+    ::= { tblt2CfgPtpEntry 10 }
+
+tblt2CfgPtpSyncInter OBJECT-TYPE
+    SYNTAX        Integer32
+    MAX-ACCESS    read-write
+    STATUS        current
+    DESCRIPTION
+        "Sync Interval. Valid range is [-7..7]."
+    ::= { tblt2CfgPtpEntry 11 }
+
+tblt2CfgPtpReqInter OBJECT-TYPE
+    SYNTAX        Integer32
+    MAX-ACCESS    read-write
+    STATUS        current
+    DESCRIPTION
+        "Delay Request Interval. Valid range is [-7..7]."
+    ::= { tblt2CfgPtpEntry 12 }
+
+tblt2CfgPtpClockID OBJECT-TYPE
+    SYNTAX        DisplayString
+    MAX-ACCESS    read-only
+    STATUS        current
+    DESCRIPTION
+        "String displaying the PTP Clock ID for this port. If the
+         port is disabled, this string will be empty."
+    ::= { tblt2CfgPtpEntry 13 }
+
+tblt2CfgPtpPri1 OBJECT-TYPE
+    SYNTAX        Integer32
+    MAX-ACCESS    read-write
+    STATUS        current
+    DESCRIPTION
+        "Priority 1. Valid range is [0-255]."
+    ::= { tblt2CfgPtpEntry 14 }
+
+tblt2CfgPtpPri2 OBJECT-TYPE
+    SYNTAX        Integer32
+    MAX-ACCESS    read-write
+    STATUS        current
+    DESCRIPTION
+        "Priority 2. Valid range is [0-255]."
+    ::= { tblt2CfgPtpEntry 15 }
+
+tblt2CfgPtpClass OBJECT-TYPE
+    SYNTAX        Integer32
+    MAX-ACCESS    read-write
+    STATUS        current
+    DESCRIPTION
+        "Clock class. Valid range is [0-254]."
+    ::= { tblt2CfgPtpEntry 16 }
+
+tblt2CfgPtpHoldTime OBJECT-TYPE
+    SYNTAX        Integer32
+    MAX-ACCESS    read-write
+    STATUS        current
+    DESCRIPTION
+        "Holdover time in minutes. Valid range is [0-2880]. 
+        75 minutes is the default, 0=disable.
+        This is a 111224-35 variant option only."
+    ::= { tblt2CfgPtpEntry 17 }
+
+tblt2CfgPtpPDelayReqInter OBJECT-TYPE
+    SYNTAX        Integer32
+    MAX-ACCESS    read-write
+    STATUS        current
+    DESCRIPTION
+        "Peer Delay Request Interval. Valid range is [-7..7]."
+    ::= { tblt2CfgPtpEntry 18 }
+
+tblt2CfgPtpDuration OBJECT-TYPE
+    SYNTAX        Integer32 (10..1000)
+    MAX-ACCESS    read-write
+    STATUS        current
+    DESCRIPTION
+        "Duration field for unicast grant messages. Valid range
+         is 10-1000, 300 is typical default."
+    ::= { tblt2CfgPtpEntry 19 }
+
+tblt2CfgPtpGrantor OBJECT-TYPE
+    SYNTAX        DisplayString
+    MAX-ACCESS    read-write
+    STATUS        current
+    DESCRIPTION
+        "For unicast input profiles only. This allows setting the
+         unicast GrandMaster to use as the grantor for requests.
+         Format is a single IPv4 or IPv6 address.
+         A special value of - clears the field.
+         Setting this value when not using a unicast input
+         profile will result in an inconsistentValue error."
+    ::= { tblt2CfgPtpEntry 20 }
+
+tblt2CfgPtpTtl OBJECT-TYPE
+    SYNTAX        Integer32 (1..255)
+    MAX-ACCESS    read-write
+    STATUS        current
+    DESCRIPTION
+        "Set the multicast ttl value for the transmission.
+         Valid range is 1-255, although some profiles restrict
+         this range to 1-6 or less."
+    ::= { tblt2CfgPtpEntry 21 }
+
+tblt2CfgPtpL2Mac OBJECT-TYPE
+    SYNTAX        Tblt2PtpL2Mac 
+    MAX-ACCESS    read-write
+    STATUS        current
+    DESCRIPTION
+        "Set the 803.2 Multicast MAC. 
+         Valid values are default(1) and alternate(2):
+         def(1): 01-1B-19-00-00-00 (routable)
+         alt(2): 01-80-C2-00-00-0E (non-routable)
+         Profiles that allow this setting to be modified
+         include: 8275.1, 1588, and Power."
+    DEFVAL { 1 }
+    ::= { tblt2CfgPtpEntry 22 }
+
+tblt2CfgPtpOperMode OBJECT-TYPE
+    SYNTAX        Tblt2PtpOperMode
+    MAX-ACCESS    read-write
+    STATUS        current
+    DESCRIPTION
+        "PTP Operational Mode.  
+         Possible values are normal(0), freerun(1)."
+    ::= { tblt2CfgPtpEntry 23 }
+        
+tblt2CfgPtpMode OBJECT-TYPE
+    SYNTAX        Tblt2PtpMode
+    MAX-ACCESS    read-write
+    STATUS        current
+    DESCRIPTION
+        "Set the current clock mode. Valid values are
+        ptpMaster(1) and ptpSlave(2)."
+    ::= { tblt2CfgPtpEntry 24 }
+
+tblt2CfgNtp OBJECT IDENTIFIER ::= { tblt2Configuration 6 }
+
+tblt2CfgNtpSec OBJECT IDENTIFIER ::= { tblt2CfgNtp 1 }
+
+tblt2CfgNtpSecEnc OBJECT-TYPE
+    SYNTAX        Tblt2DisEn
+    MAX-ACCESS    read-write
+    STATUS        current
+    DESCRIPTION
+        "Enable/Disable NTP encryption.  Possible values are
+         Disable(1), Enable(2)."
+    ::= { tblt2CfgNtpSec 1 }
+
+tblt2CfgNtpSecHost OBJECT-TYPE
+    SYNTAX        DisplayString
+    MAX-ACCESS    read-write
+    STATUS        current
+    DESCRIPTION
+        "Host name for the encryption certificate.
+         Allowed characters are A-Za-z0-9 and _."
+    ::= { tblt2CfgNtpSec 2 }
+
+tblt2CfgNtpSecGrp OBJECT-TYPE
+    SYNTAX        DisplayString
+    MAX-ACCESS    read-write
+    STATUS        current
+    DESCRIPTION
+        "Group name for the encryption certificate.
+         Allowed characters are A-Za-z0-9 and _."
+    ::= { tblt2CfgNtpSec 3 }
+
+tblt2CfgNtpSecRenew OBJECT-TYPE
+    SYNTAX        Integer32
+    MAX-ACCESS    read-write
+    STATUS        current
+    DESCRIPTION
+        "Allows the renewal of the encryption certificate.
+         Writing a 2 to this OID will cause the certificate
+         to be renewed.  This should be done approximately
+         every 30 days to keep the certificate valid."
+    ::= { tblt2CfgNtpSec 4 }
+
+tblt2CfgNtpTable OBJECT-TYPE
+    SYNTAX        SEQUENCE OF Tblt2CfgNtpEntry
+    MAX-ACCESS    not-accessible
+    STATUS        current
+    DESCRIPTION
+        "Table of ethernet port NTP configuration entries."
+    ::= { tblt2CfgNtp 2 }
+
+tblt2CfgNtpEntry OBJECT-TYPE
+    SYNTAX        Tblt2CfgNtpEntry
+    MAX-ACCESS    not-accessible
+    STATUS        current
+    DESCRIPTION
+        "Row describing ethernet port NTP configuration."
+    INDEX
+        { tblt2CfgNtpIndex }
+    ::= { tblt2CfgNtpTable 1 }
+
+Tblt2CfgNtpEntry ::= SEQUENCE
+{
+    tblt2CfgNtpIndex   Integer32,
+    tblt2CfgNtpProto   Integer32,
+    tblt2CfgNtpBcastEn Tblt2DisEn,
+    tblt2CfgNtpBcastIp DisplayString,
+    tblt2CfgNtpBcastInter Integer32,
+    tblt2CfgNtpBcastTtl Integer32
+}
+
+tblt2CfgNtpIndex OBJECT-TYPE
+    SYNTAX        Integer32 (1..2)
+    MAX-ACCESS    read-write
+    STATUS        current
+    DESCRIPTION
+        "Index in table, corresponding to the ethernet port.
+         1 is eth0, 2 is eth1."
+    ::= { tblt2CfgNtpEntry 1 }
+
+tblt2CfgNtpProto OBJECT-TYPE
+    SYNTAX        Integer32
+    MAX-ACCESS    read-write
+    STATUS        current
+    DESCRIPTION
+        "NTP Protocol enable.  This allows enable, disable or
+         reset of the NTP protocol.  Possible values are
+         Disable(1), Enable(2), Reset(3).  Writing Reset(3) will
+         reset NTP parameters to default values."
+    ::= { tblt2CfgNtpEntry 2 }
+
+tblt2CfgNtpBcastEn OBJECT-TYPE
+    SYNTAX        Tblt2DisEn
+    MAX-ACCESS    read-write
+    STATUS        current
+    DESCRIPTION
+        "NTP Protocol broadcast enable.  This enables or disables
+         Broadcast NTP protocol. Valid settings are Disable(1), or
+         Enable(2)."
+    ::= { tblt2CfgNtpEntry 3 }
+
+tblt2CfgNtpBcastIp OBJECT-TYPE
+    SYNTAX        DisplayString
+    MAX-ACCESS    read-write
+    STATUS        current
+    DESCRIPTION
+        "NTP Broadcast IP address. If broadcast is enabled, this
+         IP must be in the same domain as the domain of the port."
+    ::= { tblt2CfgNtpEntry 4 }
+
+tblt2CfgNtpBcastInter OBJECT-TYPE
+    SYNTAX        Integer32
+    MAX-ACCESS    read-write
+    STATUS        current
+    DESCRIPTION
+        "NTP Broadcast Interval, in seconds to the power of 2.
+         For example, a value of 4 sets the broadcast interval
+         to 2^4 = 16 seconds.  Allowed range is [4-17]."
+    ::= { tblt2CfgNtpEntry 5 }
+
+tblt2CfgNtpBcastTtl OBJECT-TYPE
+    SYNTAX        Integer32
+    MAX-ACCESS    read-write
+    STATUS        current
+    DESCRIPTION
+        "NTP Broadcast packet TTL.  Allowed range is [1..7]."
+    ::= { tblt2CfgNtpEntry 6 }
+
+tblt2CfgNtpServer OBJECT IDENTIFIER ::= { tblt2CfgNtp 3 }
+
+tblt2CfgNtpPeers OBJECT-TYPE
+    SYNTAX        DisplayString
+    MAX-ACCESS    read-write
+    STATUS        current
+    DESCRIPTION
+        "String of NTP Peer IP address(es), comma-delimited without spaces. 
+         Enables NTP Peering when one peer address has been assigned.
+         For example, '192.168.101.250,172.16.123.250'; the NTP server will
+         automatically determine the appropriate interface to use for 
+         peerring based on the system's interfaces and VLANs."
+    ::= { tblt2CfgNtpServer 1 }
+
+tblt2CfgGnss OBJECT IDENTIFIER ::= { tblt2Configuration 7 }
+
+tblt2CfgGnssConst OBJECT-TYPE
+    SYNTAX        DisplayString
+    MAX-ACCESS    read-write
+    STATUS        current
+    DESCRIPTION
+        "String to configure the satellite constellation(s) to use.
+         For example, 'gps|GLO' would enable the GPS and GLONASS
+         constellations. The configuration string can be any combination
+         of gps, glo, bds, gal, qzs, separated by '|'.  GLO is GLONASS,
+         BDS is the Beidou constellation, GAL is the Galileo constellation,
+         and QZS is the QZSS constellation.  Note that selecting QZSS also
+         enables GPS."
+    ::= { tblt2CfgGnss 1 }
+
+tblt2CfgGnssMode OBJECT-TYPE
+    SYNTAX        DisplayString
+    MAX-ACCESS    read-write
+    STATUS        current
+    DESCRIPTION
+        "String controlling the positioning mode of the GNSS system.
+         Possible values are: 'auto' (automatic mode), 'survey' (survey mode),
+         'dynamic' (dynamic mode) used when position is constantly changing,
+         and a string representing the approximate location of the unit
+         (manual mode), in the format '<lat> <lon> <ht>' where <lat> and
+         <lon> are in degrees and <ht> is in meters (HAE).
+         Note that the position will be validated by the receiver for
+         accuracy and, if it is too far out of range (thereby making the
+         timing of the unit inaccurate) the position will be recomputed.
+         'auto' sets the unit to not force a user entered position on startup.
+         If the unit has a stored position then it will be used on startup,
+         with the same validation criteria as used for a user-entered position.
+         'survey' forces the unit to recompute a surveyed position.  The
+         surveyed position will then be used by the system on the next startup
+         (to speed startup).  This also forces 'auto' mode."
+    ::= { tblt2CfgGnss 2 }
+
+tblt2CfgGnssPos OBJECT-TYPE
+    SYNTAX        DisplayString
+    MAX-ACCESS    read-only
+    STATUS        current
+    DESCRIPTION
+        "A string describing the current latitude, longitude and altitude
+         of the unit. Latitude and longitude are given in degrees, and
+         altitude is in meters (HAE)"
+    ::= { tblt2CfgGnss 3 }
+
+tblt2CfgGnssElev OBJECT-TYPE
+    SYNTAX        DisplayString
+    MAX-ACCESS    read-write
+    STATUS        current
+    DESCRIPTION
+        "Satellite elevation mask, in degrees. Valid range is [0.0-90.0)."
+    ::= { tblt2CfgGnss 4 }
+
+tblt2CfgGnssLevel OBJECT-TYPE
+    SYNTAX        DisplayString
+    MAX-ACCESS    read-write
+    STATUS        current
+    DESCRIPTION
+        "The aquisition/tracking signal level. Valid range is [0.0-55.0)."
+    ::= { tblt2CfgGnss 5 }
+
+tblt2CfgGnssPdop OBJECT-TYPE
+    SYNTAX        DisplayString
+    MAX-ACCESS    read-write
+    STATUS        current
+    DESCRIPTION
+        "PDOP mask level. Valid range is (0.0-10.0)."
+    ::= { tblt2CfgGnss 6 }
+ 
+tblt2CfgGnssAntPwr OBJECT-TYPE
+    SYNTAX        Integer32
+    MAX-ACCESS    read-write
+    STATUS        current
+    DESCRIPTION
+        "Enables or disables power to the antenna. If power is turned
+         off, then no status will be generated and no alarm conditions
+         are available (they will be cleared). Possible values are
+         on(1), off(2)."
+    ::= { tblt2CfgGnss 7 }
+    
+tblt2CfgGnssRestart OBJECT-TYPE
+    SYNTAX        Integer32
+    MAX-ACCESS    read-write
+    STATUS        current
+    DESCRIPTION
+        "Allows a warm or cold restart of the GNSS receiver.
+         Possible values are Do Nothing(1), Warm Restart(2),
+         Cold Restart (3)."
+     ::= { tblt2CfgGnss 8 }
+
+tblt2CfgGnssSurveyLength OBJECT-TYPE
+    SYNTAX        Integer32
+    MAX-ACCESS    read-write
+    STATUS        current
+    DESCRIPTION
+        "Survey length. This is the number of position
+         fixes that will be averaged. Only fixes that match
+         other criteria (PDOP) will be used in the average.
+         Acceptable range is from 60 (1 minute) to
+         259200 (3 days)."
+    ::= { tblt2CfgGnss 9 }
+
+tblt2CfgGnssAntennaDelay OBJECT-TYPE
+    SYNTAX        Integer32
+    MAX-ACCESS    read-write
+    STATUS        current
+    DESCRIPTION
+        "Antenna delay for the system. This affects
+         all timing outputs from the system. <d> is in
+         nanoseconds with a range of +/- 50000000 (50ms)."
+    ::= { tblt2CfgGnss 10 }
+
+tblt2CfgSource OBJECT IDENTIFIER ::= { tblt2Configuration 8 }
+
+tblt2CfgSrcSynceEth0 OBJECT-TYPE
+    SYNTAX        Tblt2DisEn
+    MAX-ACCESS    read-write
+    STATUS        current
+    DESCRIPTION
+        "Allows use of SyncE-eth0 as a frequency control reference
+         input candidate.  Possible values are 1 (Disabled)
+         or 2 (Enabled)."
+    ::= { tblt2CfgSource 1 }
+
+tblt2CfgSrcSynceEth1 OBJECT-TYPE
+    SYNTAX        Tblt2DisEn
+    MAX-ACCESS    read-write
+    STATUS        current
+    DESCRIPTION
+        "Allows use of SyncE-eth1 as a frequency control reference
+         input candidate.  Possible values are 1 (Disabled)
+         or 2 (Enabled)."
+    ::= { tblt2CfgSource 2 }
+
+tblt2CfgSrcPtpEth0 OBJECT-TYPE
+    SYNTAX        Tblt2DisEn
+    MAX-ACCESS    read-write
+    STATUS        current
+    DESCRIPTION
+        "Allows use of PTP-eth0 as a frequency control reference
+         input candidate.  Possible values are 1 (Disabled)
+         or 2 (Enabled)."
+    ::= { tblt2CfgSource 3 }
+
+tblt2CfgSrcPtpEth1 OBJECT-TYPE
+    SYNTAX        Tblt2DisEn
+    MAX-ACCESS    read-write
+    STATUS        current
+    DESCRIPTION
+        "Allows use of PTP-eth1 as a frequency control reference
+         input candidate.  Possible values are 1 (Disabled)
+         or 2 (Enabled)."
+    ::= { tblt2CfgSource 4 }
+
+tblt2Events OBJECT IDENTIFIER ::= { trimbleTBlt2 4 }
+
+tblt2EvNotifications OBJECT IDENTIFIER ::= { tblt2Events 1 }
+
+tblt2EvNfyPrefix OBJECT IDENTIFIER ::= { tblt2EvNotifications 1 }
+
+tblt2EvNfyAlarm NOTIFICATION-TYPE
+    OBJECTS
+{
+    tblt2EvNfyAlNumber,
+    tblt2EvNfyAlDescr,
+    tblt2EvNfyAlLevel,
+    tblt2EvNfyAlActive,
+    tblt2EvNfyAlActList,
+    tblt2EvNfyAlSerNum
+}
+    STATUS        current
+    DESCRIPTION
+        "Notification for change of alarm state."
+    ::= { tblt2EvNfyPrefix 1 }
+
+tblt2EvNfyObject OBJECT IDENTIFIER ::= { tblt2EvNotifications 2 }
+
+tblt2EvNfyAlNumber OBJECT-TYPE
+    SYNTAX      Integer32
+    MAX-ACCESS  accessible-for-notify
+    STATUS      current
+    DESCRIPTION
+        "Alarm number (zero-based) of the relevant alarm."
+    ::= { tblt2EvNfyObject 1 }
+
+tblt2EvNfyAlDescr OBJECT-TYPE
+    SYNTAX        DisplayString
+    MAX-ACCESS    accessible-for-notify
+    STATUS        current
+    DESCRIPTION
+        "Description of alarm, including set/clear, name, number and severity."
+    ::= { tblt2EvNfyObject 2 }
+
+tblt2EvNfyAlLevel OBJECT-TYPE
+    SYNTAX        Integer32
+    MAX-ACCESS    accessible-for-notify
+    STATUS        current
+    DESCRIPTION
+        "Severity level of the alarm. May be one of
+         IGN(1), NFY(2), MIN(4), MAJ(8), or CRI(16)."
+    ::= { tblt2EvNfyObject 3 }
+
+tblt2EvNfyAlActive OBJECT-TYPE
+    SYNTAX        Integer32
+    MAX-ACCESS    accessible-for-notify
+    STATUS        current
+    DESCRIPTION
+        "Whether this alarm is currently in an 'alarmed' state (2), or
+         is not (1)."
+    ::= { tblt2EvNfyObject 4 }
+
+tblt2EvNfyAlActList OBJECT-TYPE
+    SYNTAX        Integer32
+    MAX-ACCESS    accessible-for-notify
+    STATUS        current
+    DESCRIPTION
+        "This is a bit-field representing the currently-active state of
+         all system alarms. The presence of a 1 indicates that the
+         corresponding alarm is active."
+    ::= { tblt2EvNfyObject 5 }
+
+tblt2EvNfyAlSerNum OBJECT-TYPE
+    SYNTAX        Integer32
+    MAX-ACCESS    accessible-for-notify
+    STATUS        current
+    DESCRIPTION
+        "This is the serial number of the unit producing this trap."
+    ::= { tblt2EvNfyObject 6 }
+
+tblt2Conformance OBJECT IDENTIFIER ::= { trimbleTBlt2 5 }
+
+tblt2ConfGroups OBJECT IDENTIFIER ::= { tblt2Conformance 1 }
+
+tblt2AlarmGroup OBJECT-GROUP
+    OBJECTS
+        { tblt2AlIndex, tblt2AlNumber, tblt2AlName,
+        tblt2AlLevel, tblt2AlActive }
+    STATUS        current
+    DESCRIPTION
+        "A collection of objects describing a TBlt2 Alarm."
+    ::= { tblt2ConfGroups 4 }
+
+tblt2NotifyAlarmGroup OBJECT-GROUP
+    OBJECTS
+        { tblt2EvNfyAlNumber,
+          tblt2EvNfyAlDescr,
+          tblt2EvNfyAlLevel,
+          tblt2EvNfyAlActive,
+          tblt2EvNfyAlActList }
+    STATUS        current
+    DESCRIPTION
+        "A collection of objects describing a TBlt2 Alarm
+         notification."
+    ::= { tblt2ConfGroups 5 }
+
+tblt2AlarmNotificationsGroup NOTIFICATION-GROUP
+    NOTIFICATIONS
+        { tblt2EvNfyAlarm }
+    STATUS        current
+    DESCRIPTION
+        "Notifications sent from Trimble Thunderbolt2 Agent when
+         various conditions occur."
+    ::= { tblt2ConfGroups 6 }
+
+tblt2Compliances OBJECT IDENTIFIER ::= { tblt2Conformance 2 }
+
+END
+
