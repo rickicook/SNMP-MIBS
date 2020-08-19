@@ -1,0 +1,23 @@
+-- Copyright Evertz Microsystems Ltd.
+-- 10/10/2000
+-- Confidential
+
+EVERTZ-ROOT DEFINITIONS ::= BEGIN
+
+IMPORTS
+	enterprises
+                FROM RFC1155-SMI;
+
+-- Node Definitions
+
+	evertz			OBJECT IDENTIFIER ::= { enterprises 6827 }
+
+	evtzProducts		OBJECT IDENTIFIER ::= { evertz 1 }
+	evtzExperimental	OBJECT IDENTIFIER ::= { evertz 10 } 	
+	evtzDevelopment		OBJECT IDENTIFIER ::= { evertz 100 } 
+	evtzInternal		OBJECT IDENTIFIER ::= { evertz 200 }
+
+-- new mini-agent only nodes
+	evtzMiniExperimental OBJECT IDENTIFIER ::= { evertz 50 } 
+	evtzMiniDevelopment OBJECT IDENTIFIER ::= { evertz 500 }
+END
