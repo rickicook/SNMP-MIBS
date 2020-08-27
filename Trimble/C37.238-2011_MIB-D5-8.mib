@@ -1,0 +1,1355 @@
+IEEEC37-238-MIB DEFINITIONS ::= BEGIN	
+--=====================================================================
+-- MIB for support of IEEE C37.238 Standard Profile for Use of
+-- IEEE 1588 Precision Time Protocol in Power System Applications 
+--=====================================================================
+IMPORTS							
+    MODULE-IDENTITY, OBJECT-TYPE, NOTIFICATION-TYPE, Unsigned32, Integer32
+        FROM SNMPv2-SMI  			-- [RFC2578]
+    TEXTUAL-CONVENTION, TruthValue 
+        FROM SNMPv2-TC  			-- [RFC2579]
+    MODULE-COMPLIANCE, OBJECT-GROUP, NOTIFICATION-GROUP -- [RFC2580]
+       FROM SNMPv2-CONF
+   ifGeneralInformationGroup
+       FROM IF-MIB;  				-- [RFC2863]
+
+ieeeC37238TSMib 	MODULE-IDENTITY			
+    LAST-UPDATED "201105050000Z" 	-- May 5, 2011
+    ORGANIZATION "IEEE PSRC / SUB Working Group H7/SubC7"
+    CONTACT-INFO
+        		 "WG-URL: http://www.pes-psrc.org/h/
+           		  WG-EMail:
+           		  Contact: Galina S. Antonova		
+           		  Postal:  600-3731 North Fraser Way
+                          Burnaby, BC V5J 5J2 Canada
+           		  E-mail:  galina.antonova@ieee.org"
+
+    DESCRIPTION
+        		"The Management Information Base module for
+        		 IEEE C37.238 time synchronization protocol."
+	             
+    REVISION     "201105050000Z" -- May 5, 2011
+    DESCRIPTION
+         "Published as part of IEEE PC37.238 Draft D5.8
+          Copyright (C) IEEE (2011)."
+
+-- IEEE C37.238 MIB info.
+   ::= { iso(1) org(3) ieee(111) standards-association-c-series-standards (3) std-c37 (37) part238 (238) 9999 }
+
+ieeeC37238Notifications  OBJECT IDENTIFIER ::= { ieeeC37238TSMib 0 }
+ieeeC37238Objects  	 OBJECT IDENTIFIER ::= { ieeeC37238TSMib 1 }
+ieeeC37238Conformance 	 OBJECT IDENTIFIER ::= { ieeeC37238TSMib 2 }
+
+--=====================================================================
+-- Textual Conventions
+--=====================================================================
+
+ClockIdentity ::= TEXTUAL-CONVENTION
+    DISPLAY-HINT 
+        "1x:"
+    STATUS current
+    DESCRIPTION
+        "IEEE 802 MAC address represented in the `canonical' order, EUI-64.  EUI-48 converts to EUI-64 as specified by IEEE."
+    REFERENCE    "IEEE Std 1588-2008 5.3.4 and 7.5.2.2"
+    SYNTAX OCTET STRING (SIZE (8))
+
+IEEEC37238TimeInterval ::= TEXTUAL-CONVENTION
+    DISPLAY-HINT  "2x:"
+    STATUS current
+    DESCRIPTION
+        "TimeInterval Value from IEEE Std 1588-2008 5.3.2"
+    REFERENCE    "IEEE Std 1588-2008 5.3.2"
+    SYNTAX OCTET STRING (SIZE (8))
+
+IEEEC37238ClockClassValue ::= TEXTUAL-CONVENTION		
+    STATUS       current
+    DESCRIPTION
+        "Clock Class Value from IEEE Std 1588-2008 7.6.2.4,
+         with the following interpretation placed on the value:
+
+         6: A clock that is synchronized to a primary reference 
+            time source,
+         7: A clock that has previously been designated as clockClass
+            6  but that has lost the ability to synchronize to a primary
+            reference time source and is in holdover mode and within
+            holdover specifications,
+        13: A clock that is synchronized to an application-specific
+            source of time,
+        14: A clock that has previously been designated as clockClass 13
+            but that has lost the ability to synchronize to an
+            application-specific source of time and is in holdover mode
+            and within holdover specifications,
+        52: Degradation alternative A for a clock of clockClass 7 that
+            is not within holdover specification,
+        58: Degradation alternative A for a clock of clockClass 14 that
+            is not within holdover specification,
+        68..122: For use by alternate PTP profiles (68..122),
+       133..170: For use by alternate PTP profiles (133..170),
+       187: Degradation alternative B for a clock of clockClass 7 that
+            is not within holdover specification,
+       193: Degradation alternative B for a clock of clockClass 14 that
+            is not within holdover specification,
+       216..232: For use by alternate PTP profiles,
+       248:  Default none of the other clockClass definitions apply,
+       255:  A slave-only clock(255)."
+    REFERENCE    "IEEE Std 1588-2008 7.6.2.4"
+    SYNTAX     INTEGER {
+        primarySync(6),
+        primarySyncLost(7),
+        applicationSpecificSync(13),
+        applicationSpecficSyncLost(14),
+        primarySyncAlternativeA(52),
+        applicationSpecificAlternativeA(58),
+        primarySyncAlternativeB(187),
+        applicationSpecficAlternativeB(193),
+        default(248),
+        slaveOnlyClock(255)
+        }
+
+IEEEC37238ClockAccuracyValue ::= TEXTUAL-CONVENTION
+    STATUS	current		
+    DESCRIPTION
+        "Clock Accuracy Value from IEEE Std 1588-2008 8.6.2.3, 
+with the following
+         interpretation placed on the value:
+         32: The time is accurate to within 25 ns,
+         33: The time is accurate to within 100 ns,
+         34: The time is accurate to within 250 ns,
+         35: The time is accurate to within 1 us,
+         36: The time is accurate to within 2.5 us,
+         37: The time is accurate to within 10 us,
+         38: The time is accurate to within 25 us,
+         39: The time is accurate to within 100 us,
+         40: The time is accurate to within 250 us,
+         41: The time is accurate to within 1 ms,
+         42: The time is accurate to within 2.5 ms,
+         43: The time is accurate to within 10 ms,
+         44: The time is accurate to within 25 ms,
+         45: The time is accurate to within 100 ms,
+         46: The time is accurate to within 250 ms,
+         47: The time is accurate to within 1 s,
+         48: The time is accurate to within 10 s,
+         49: The time is accurate to within > 10 s,
+        254: Default indicating unknown"
+    REFERENCE    "IEEE Std 1588-2008 7.6.2.5 and Table 6"
+    SYNTAX     INTEGER {
+        timeAccurateTo25ns(32),
+        timeAccurateTo100ns(33),
+        timeAccurateTo250ns(34),
+        timeAccurateTo1us(35),
+        timeAccurateTo2to5us(36),
+        timeAccurateTo10us(37),
+        timeAccurateTo25us(38),
+        timeAccurateTo100us(39),
+        timeAccurateTo250us(40),
+        timeAccurateTo1ms(41),
+        timeAccurateTo2to5ms(42),
+        timeAccurateTo10ms(43),
+        timeAccurateTo25ms(44),
+        timeAccurateTo100ms(45),
+        timeAccurateTo250ms(46),
+        timeAccurateTo1s(47),
+        timeAccurateTo10s(48),
+        timeAccurateToGT10s(49),
+        timeAccurateToUnknown(254)
+        }
+
+IEEEC37238TimeSourceValue ::= TEXTUAL-CONVENTION		
+    STATUS current
+    DESCRIPTION
+        "The timeSource is an information only attribute indicating 
+         the type of source of time used by a grandmaster clock. 
+         The following value are defined:
+            16:  Atomic Clock,
+            32:  GPS,
+            48:  Terrestrial Radio,
+            64:  PTP,
+            80:  NTP,
+            96:  Hand Set,
+           144:  Other,
+           160:  Internal Oscillator"
+    REFERENCE "IEEE Std 1588-2008 7.6.2.6 and Table 7"
+    SYNTAX INTEGER {
+        atomicClock(16),
+        gps(32),
+        terrestrialRadio(48),
+        ptp(64),
+        ntp(80),
+        handSet(96),
+        other(144),
+        internalOscillator(160)
+        }
+
+Integer48 ::= TEXTUAL-CONVENTION
+	DISPLAY-HINT  "12d"
+	STATUS current
+	DESCRIPTION
+	    "48bit Integer value"
+	SYNTAX OCTET STRING (SIZE (6))    
+
+--=====================================================================
+-- Subtrees in the IEEEC37-238-MIB IEEE C37.238 system Parameters
+--=====================================================================
+
+--=====================================================================
+--   The Default data set represents native time capability of a IEEE 
+--   C37.238 system 
+--=====================================================================
+
+ieeeC37238DefaultDS OBJECT IDENTIFIER ::= { ieeeC37238Objects 1 }
+
+ieeeC37238DefaultDSTwoStepFlag OBJECT-TYPE
+    SYNTAX	TruthValue
+    MAX-ACCESS	read-write
+    STATUS 	current
+    DESCRIPTION
+      "True if the clock is a two-step clock, False otherwise."
+    REFERENCE	"IEEE Std 1588-2008 8.2.1.2.1"
+    ::= { ieeeC37238DefaultDS 1 }
+
+ieeeC37238DefaultDSClkIdentity OBJECT-TYPE
+    SYNTAX	ClockIdentity
+    MAX-ACCESS	read-only
+    STATUS 	current
+    DESCRIPTION
+      "ClockIdentity of the local clock"
+    REFERENCE	"IEEE Std 1588-2008 7.6.2.1 and 8.2.1.2.2"
+    ::= { ieeeC37238DefaultDS 2 }
+
+ieeeC37238DefaultDSNumberPorts OBJECT-TYPE
+    SYNTAX	Unsigned32(0..255)
+    MAX-ACCESS	read-only
+    STATUS	current
+    DESCRIPTION
+      "The number of PTP ports on the device. For an ordinary clock, this value shall be 1."
+    REFERENCE	"IEEE Std 1588-2008 8.2.1.2.3"
+    ::= { ieeeC37238DefaultDS 3 }
+
+ieeeC37238DefaultDSClkClass OBJECT-TYPE			
+    SYNTAX	IEEEC37238ClockClassValue
+    MAX-ACCESS	read-only
+    STATUS	current
+    DESCRIPTION
+      "ClockClass of the local clock."
+    REFERENCE	"IEEE Std 1588-2008 7.6.2.4 and 8.2.1.3.1"
+    ::= { ieeeC37238DefaultDS 4 }
+
+ieeeC37238DefaultDSClkAccuracy OBJECT-TYPE		
+    SYNTAX	IEEEC37238ClockAccuracyValue	
+    MAX-ACCESS	read-only
+    STATUS	current
+    DESCRIPTION
+      "ClockAccuracy of the local clock."
+    REFERENCE	"IEEE Std 1588-2008 8.2.1.3.1.2"
+    ::= { ieeeC37238DefaultDS 5 }
+
+ieeeC37238DefaultDSOfsScdLogVar OBJECT-TYPE		
+    SYNTAX	Integer32(-32768..32767)				
+    MAX-ACCESS	read-only
+    STATUS	current	
+    DESCRIPTION
+      "The value is scaled, offset representation of an estimate of the PTP variance. The PTP variance characterizes the precision and frequency stability of the grandmaster clock."
+    REFERENCE	"IEEE Std 1588-2008 8.2.1.3.1.3"
+    ::= { ieeeC37238DefaultDS 6 }
+
+ieeeC37238DefaultDSPriority1 OBJECT-TYPE
+    SYNTAX	Unsigned32(0..255)
+    MAX-ACCESS	read-write
+    STATUS	current
+    DESCRIPTION
+    "Priority1 attribute of the local clock."
+    REFERENCE	"IEEE Std 1588-2008 7.6.2.2 and 8.2.1.4.1"
+    ::= { ieeeC37238DefaultDS 7 }
+
+ieeeC37238DefaultDSPriority2 OBJECT-TYPE
+    SYNTAX	Unsigned32
+    MAX-ACCESS	read-write
+    STATUS	current
+    DESCRIPTION
+      "Priority2 attribute of the local clock."
+    REFERENCE	"IEEE Std 1588-2008 7.6.2.3 and 8.2.1.4.2"
+    ::= { ieeeC37238DefaultDS 8 }
+
+ieeeC37238DefaultDSDomainNumber OBJECT-TYPE
+    SYNTAX	Integer32
+    MAX-ACCESS	read-write
+    STATUS 	current
+    DESCRIPTION
+      "Default domain of the local clock"
+    REFERENCE	"IEEE Std 1588-2008 7.1 and 8.2.1.4.3"
+    ::= { ieeeC37238DefaultDS 9 }
+
+ieeeC37238DefaultDSSlaveOnly OBJECT-TYPE
+    SYNTAX	TruthValue
+    MAX-ACCESS	read-write
+    STATUS 	current
+    DESCRIPTION
+      "True if the local clock is a slave-only clock, False otherwise."
+    REFERENCE	"IEEE Std 1588-2008 9.2.2, 9.2.3 and 8.2.1.4.4"
+    ::= { ieeeC37238DefaultDS 10 }
+
+ieeeC37238DefaultDSGMIdentity OBJECT-TYPE
+    SYNTAX	Integer32
+    MAX-ACCESS	read-write
+    STATUS 	current
+    DESCRIPTION
+      "Grandmaster Identity to be transmitted in IEEE_C37_238 TLV (2 bytes).
+       Most significant byte is reserved and shall be 0. Configurable for grandmaster-capable devices only."
+    ::= { ieeeC37238DefaultDS 11 }
+
+ieeeC37238DefaultDSNetTimeInacc OBJECT-TYPE
+    SYNTAX	Unsigned32
+    MAX-ACCESS	read-write
+    STATUS 	current
+    DESCRIPTION
+      "networkTimeInaccuracy to be transmitted in IEEE_C37_238 TLV."
+    ::= { ieeeC37238DefaultDS 12 }
+
+ieeeC37238DefaultDSEngTimeInacc OBJECT-TYPE
+    SYNTAX	Unsigned32
+    MAX-ACCESS	read-write
+    STATUS 	current
+    DESCRIPTION
+      "Engineered networkTimeInaccuracy in ns. This value represents the worst networkTimeInaccuracy from this device to all "
+    ::= { ieeeC37238DefaultDS 13 }
+
+ieeeC37238DefaultDSLocTimeInacc OBJECT-TYPE
+    SYNTAX	Unsigned32
+    MAX-ACCESS	read-only
+    STATUS 	current
+    DESCRIPTION
+      "Maximum TimeInaccuracy that the device contributes to the total networkTimeInaccuracy."
+    ::= { ieeeC37238DefaultDS 14 }
+
+ieeeC37238DefaultDSOfstFrMLimit OBJECT-TYPE
+    SYNTAX	IEEEC37238TimeInterval
+    UNITS "2**-16 ns * 2**64"
+    MAX-ACCESS	read-write
+    STATUS 	current
+    DESCRIPTION
+      "Offset from Master Limit to generate OfstExceedsLimit event."
+    ::= { ieeeC37238DefaultDS 15 }
+
+--=====================================================================
+-- The Current data set represents this system’s topological location 
+-- relative to the known Grandmaster system.
+--=====================================================================
+
+ieeeC37238CurrentDS OBJECT IDENTIFIER ::= { ieeeC37238Objects 2 }
+
+ieeeC37238CurrentDSStepsRemoved OBJECT-TYPE
+    SYNTAX	Integer32(-32768..32767)
+    MAX-ACCESS	read-only
+    STATUS	current
+    DESCRIPTION
+      "The number of communication paths traversed between the local clock and the grandmaster clock. The initialization value shall be 0."
+    REFERENCE	"IEEE Std 1588-2008 8.2.2.2"
+    DEFVAL { 0 }
+    ::= { ieeeC37238CurrentDS 1 }
+
+ieeeC37238CurrentDSOfstFrMaster OBJECT-TYPE
+    SYNTAX IEEEC37238TimeInterval
+    UNITS "2**-16 ns * 2**64"
+    MAX-ACCESS	read-only
+    STATUS	current
+    DESCRIPTION  
+       "Implementation-specific representation of the current value of the time difference between a master and a slave as computed by the slave; i.e., <offsetFromMaster> = <Time on the slave clock> ? <Time on the master clock>. The most significant 4 bytes. The data type should be TimeInterval."
+    REFERENCE	"IEEE Std 1588-2008 8.2.2.3"
+    ::= { ieeeC37238CurrentDS 2 }
+
+ieeeC37238CurrentDSLocTimeInacc OBJECT-TYPE
+    SYNTAX Unsigned32
+    MAX-ACCESS	read-only
+    STATUS	current
+    DESCRIPTION  
+       "TimeInaccuracy contribution of the device in nanoseconds."
+    ::= { ieeeC37238CurrentDS 3 }
+
+--=====================================================================
+-- The Parent data set represents timing towards Grandmaster system’s 
+-- parameters as measured at this system.
+--=====================================================================
+
+ieeeC37238ParentDS  OBJECT IDENTIFIER ::= { ieeeC37238Objects 3 }
+
+ieeeC37238ParentDSClkIdentity OBJECT-TYPE
+    SYNTAX ClockIdentity
+    MAX-ACCESS read-only
+    STATUS current
+    DESCRIPTION
+         "Clock Identity of the master that synchronizes this clock."
+    REFERENCE "IEEE Std 1588-2008 8.2.3.2"
+    ::= { ieeeC37238ParentDS 1 }
+
+ieeeC37238ParentDSPortNumber OBJECT-TYPE
+    SYNTAX Unsigned32(0..65535)
+    MAX-ACCESS read-only
+    STATUS current
+    DESCRIPTION
+         "Port Number of the port on the master that issues the Sync messages used in synchronizing this clock."
+    REFERENCE "IEEE Std 1588-2008 8.2.3.2"
+    DEFVAL { 0 }
+    ::= { ieeeC37238ParentDS 2 }
+
+ieeeC37238ParentDSStats OBJECT-TYPE
+    SYNTAX TruthValue
+    MAX-ACCESS read-only
+    STATUS current
+    DESCRIPTION
+         "True if all of the following 2 conditions are satisfied:
+	- The clock has a port in the SLAVE state.
+	- The clock has computed statistically valid estimates of the 	parentDS.observedParentOffsetScaledLog Variance and the
+	parentDS.observedParentClockPhaseChangeRate members.
+	False otherwise. The initialization value shall be FALSE."
+    REFERENCE "IEEE Std 1588-2008 8.2.3.3"
+    DEFVAL { false }
+    ::= { ieeeC37238ParentDS 3 }
+
+ieeeC37238ParentDSObsOfstScdLVar OBJECT-TYPE
+    SYNTAX Unsigned32(0..65535)
+    MAX-ACCESS read-only
+    STATUS current
+    DESCRIPTION
+         "An estimate of the parent clock PTP variance as observed by the slave clock, computed and represented as described in IEEE Std 1588-2008 7.6.3.5. The initialization value shall be FFFF."
+    REFERENCE "IEEE Std 1588-2008 7.6.3.3, 7.6.3.5 and 8.2.3.4"
+    DEFVAL { 65535 }
+    ::= { ieeeC37238ParentDS 4 }
+
+ieeeC37238ParentDSObsPhChgRate OBJECT-TYPE
+    SYNTAX Unsigned32(0..65535)
+    MAX-ACCESS read-only
+    STATUS current
+    DESCRIPTION
+         "An estimate of the parent clock phase change rate as observed by the slave clock as defined in IEEE Std 1588-2008 7.6.4.4. If the estimate exceeds the capacity of its data type, this value shall be set to 7FFF FFFF or 8000 0000, as appropriate. A positive sign indicates that the parent clock phase change rate is greater than the rate of the slave clock. The initialization value shall be 7FFF FFFF."
+    REFERENCE "IEEE Std 1588-2008 7.6.4.4, 15.5.3.5.1.4 and 8.2.3.5"
+    DEFVAL { 65535 }
+    ::= { ieeeC37238ParentDS 5 }
+
+ieeeC37238ParentDSGMClkIdentity OBJECT-TYPE
+    SYNTAX	ClockIdentity
+    MAX-ACCESS	read-only
+    STATUS	current
+    DESCRIPTION
+       "ClockIdentity of the grandmaster clock."
+    REFERENCE	"IEEE Std 1588-2008 7.6.2.1 and 8.2.3.6"
+    ::= { ieeeC37238ParentDS 6 }
+
+ieeeC37238ParentDSGMClkClass OBJECT-TYPE
+    SYNTAX 	IEEEC37238ClockClassValue
+    MAX-ACCESS	read-only
+    STATUS	current
+    DESCRIPTION
+      "ClockClass of the grandmaster clock."
+    REFERENCE	"IEEE Std 1588-2008 8.2.3.7"
+    ::= { ieeeC37238ParentDS 7 }
+
+ieeeC37238ParentDSGMClkAccuracy OBJECT-TYPE
+    SYNTAX	IEEEC37238ClockAccuracyValue
+    MAX-ACCESS	read-only
+    STATUS	current
+    DESCRIPTION
+      "ClockAccuracy of the grandmaster clock."
+    REFERENCE	"IEEE Std 1588-2008 8.2.3.7"
+    ::= { ieeeC37238ParentDS 8 }
+
+ieeeC37238ParentDSGMOfstScdLVar OBJECT-TYPE
+    SYNTAX Integer32(-32768..32767)
+    MAX-ACCESS	read-only
+    STATUS	current
+    DESCRIPTION
+      "OffsetScaledLog Variance of the grandmaster clock."
+    REFERENCE	"IEEE Std 1588-2008 8.2.3.7"
+    ::= { ieeeC37238ParentDS 9 }
+
+ieeeC37238ParentDSGMPriority1 OBJECT-TYPE
+    SYNTAX Unsigned32(0..255)
+    MAX-ACCESS read-only
+    STATUS current
+    DESCRIPTION
+      "Priority1 attribute of the grandmaster clock."
+    REFERENCE "IEEE Std 1588-2008 8.2.3.8"
+    ::= { ieeeC37238ParentDS 10 }
+
+ieeeC37238ParentDSGMPriority2 OBJECT-TYPE
+    SYNTAX Unsigned32(0..255)
+    MAX-ACCESS read-only
+    STATUS current
+    DESCRIPTION
+        "Priority2 attribute of the grandmaster clock."
+    REFERENCE "IEEE Std 1588-2008 8.2.3.9"
+    ::= { ieeeC37238ParentDS 11 }
+
+ieeeC37238ParentDSGMIdentity OBJECT-TYPE
+    SYNTAX Integer32
+    MAX-ACCESS read-only
+    STATUS current
+    DESCRIPTION
+        "Grandmaster Identity received in IEEE_C37_238 TLV."
+    ::= { ieeeC37238ParentDS 12 }
+
+ieeeC37238ParentDSGMTimeInacc OBJECT-TYPE
+    SYNTAX Unsigned32
+    MAX-ACCESS read-only
+    STATUS current
+    DESCRIPTION
+        "grandmasterTimeInaccuracy received in IEEE_C37_238 TLV in nanoseconds."
+    ::= { ieeeC37238ParentDS 13 }
+
+ieeeC37238ParentDSNetTimeInacc OBJECT-TYPE
+    SYNTAX Unsigned32
+    MAX-ACCESS read-only
+    STATUS current
+    DESCRIPTION
+        "networkTimeInaccuracy received in IEEE_C37_238 TLV in nanoseconds."
+    ::= { ieeeC37238ParentDS 14 }
+
+--=====================================================================
+-- Time Properties data set represents the grandmaster’ parameters, as 
+-- measured at this system and are derived from IEEE C37.238 protocol.
+--=====================================================================
+
+ieeeC37238TimePropDS OBJECT IDENTIFIER ::= { ieeeC37238Objects 4 }
+
+ieeeC37238TimePropDSCurUTCOfst OBJECT-TYPE
+    SYNTAX Integer32(-32768..32767)
+    MAX-ACCESS read-only
+    STATUS current
+    DESCRIPTION
+         "The current offset between TAI and UTC in units of seconds."
+    REFERENCE "IEEE Std 1588-2008 8.2.4.2"
+    ::= { ieeeC37238TimePropDS 1 }
+
+ieeeC37238TimePropDSCurUTCOfstVd OBJECT-TYPE
+    SYNTAX TruthValue
+    MAX-ACCESS read-only
+    STATUS current
+    DESCRIPTION
+         "True if the the currentUtcOffset is known to be correct."
+    REFERENCE "IEEE Std 1588-2008 8.2.4.3"
+    ::= { ieeeC37238TimePropDS 2 }
+
+ieeeC37238TimePropDSLeap59 OBJECT-TYPE
+    SYNTAX TruthValue
+    MAX-ACCESS read-only
+    STATUS current
+    DESCRIPTION
+         "True value indicates that the last minute of the current UTC day contains 59 seconds."
+    REFERENCE "IEEE Std 1588-2008 8.2.4.4"
+    ::= { ieeeC37238TimePropDS 3 }
+
+ieeeC37238TimePropDSLeap61 OBJECT-TYPE
+    SYNTAX TruthValue
+    MAX-ACCESS read-only
+    STATUS current
+    DESCRIPTION
+         "True value indicates that the last minute of the current UTC day contains 61 seconds."
+    REFERENCE "IEEE Std 1588-2008 8.2.4.5"
+    ::= { ieeeC37238TimePropDS 4 }
+
+ieeeC37238TimePropDSTmeTraceable OBJECT-TYPE
+    SYNTAX TruthValue
+    MAX-ACCESS read-only
+    STATUS current
+    DESCRIPTION
+         "True if the timescale and the value of currentUtcOffset are traceable to a primary reference; False otherwise."
+    REFERENCE "IEEE Std 1588-2008 8.2.4.6"
+    ::= { ieeeC37238TimePropDS 5 }
+
+ieeeC37238TimePropDSFrqTraceable OBJECT-TYPE
+    SYNTAX TruthValue
+    MAX-ACCESS read-only
+    STATUS current
+    DESCRIPTION
+         "True if the frequency determining the timescale is
+traceable to a primary reference, False otherwise."
+    REFERENCE "IEEE Std 1588-2008 8.2.4.7"
+    ::= { ieeeC37238TimePropDS 6 }
+
+ieeeC37238TimePropDSPTPTimescale OBJECT-TYPE
+    SYNTAX TruthValue
+    MAX-ACCESS read-only
+    STATUS current
+    DESCRIPTION
+        "True if the clock timescale of the grandmaster clock is PTP.       
+This value shall always be True for IEEE C37.238 compliant implementations."
+    REFERENCE "IEEE Std 1588-2008 7.2.1 and 8.2.4.8"
+    ::= { ieeeC37238TimePropDS 7 }
+
+ieeeC37238TimePropDSTimeSource OBJECT-TYPE
+    SYNTAX IEEEC37238TimeSourceValue
+    MAX-ACCESS read-only
+    STATUS current
+    DESCRIPTION
+        "The source of time used by the grandmaster clock."
+    REFERENCE "IEEE Std 1588-2008 8.2.4.9"
+    ::= { ieeeC37238TimePropDS 8 }
+
+ieeeC37238TimePropDSLocalTCurOfs OBJECT-TYPE
+    SYNTAX Integer32(-32768..32767)
+    MAX-ACCESS read-write
+    STATUS current
+    DESCRIPTION
+         "The offset of the alternate time, in seconds, from the node time. The alternate time is the sum of this value and the node time."
+    REFERENCE "IEEE Std 1588-2008 16.3.3.4"
+    ::= { ieeeC37238TimePropDS 9 }
+
+ieeeC37238TimePropDSLocalTJumpS OBJECT-TYPE
+    SYNTAX Integer32(-32768..32767)
+    MAX-ACCESS read-write
+    STATUS current
+    DESCRIPTION
+         "The size of the next discontinuity, in seconds, of the alternate time. A value of zero indicates that no discontinuity is expected. A positive value indicates that the discontinuity will cause the currentOffset of the alternate time to increase."
+    REFERENCE "IEEE Std 1588-2008 16.3.3.5"
+    ::= { ieeeC37238TimePropDS 10 }
+
+ieeeC37238TimePropDSLocalTNtJump OBJECT-TYPE
+    SYNTAX Integer48
+    MAX-ACCESS read-write
+    STATUS current
+    DESCRIPTION
+         "The value of the seconds portion of the transmitting node time at the time that the next discontinuity will occur. The discontinuity occurs at the start of the second indicated by this value."
+    REFERENCE "IEEE Std 1588-2008 16.3.3.6"
+    ::= { ieeeC37238TimePropDS 11 }
+
+ieeeC37238TimePropDSLocalTName OBJECT-TYPE	
+    SYNTAX	OCTET STRING(SIZE(4))
+    MAX-ACCESS	read-write
+    STATUS	current
+    DESCRIPTION
+      "The value of displayName shall be the text name of the alternate timescale" 
+    REFERENCE	"IEEE Std 1588-2008 16.3.3.7"
+    ::= { ieeeC37238TimePropDS 12 }
+
+ieeeC37238TimePropDSLeapEvLatest OBJECT-TYPE	
+    SYNTAX	Integer48
+    MAX-ACCESS	read-write
+    STATUS	current
+    DESCRIPTION
+      "The seconds portion of PTP time for the second prior to the latest IERS-announced leap-second event (may be past or future)." 
+    ::= { ieeeC37238TimePropDS 13 }
+
+ieeeC37238TimePropDSUTCOfstNext OBJECT-TYPE	
+    SYNTAX	Integer32(-32768..32767)
+    MAX-ACCESS	read-write
+    STATUS	current
+    DESCRIPTION
+      "Seconds offset between TAI and UTC timescales after LeapEvLatest(same as CurUTCOfst after LeapEvLatest time)." 
+    ::= { ieeeC37238TimePropDS 14 }
+
+ieeeC37238TimePropDSLeapEvExpiry OBJECT-TYPE	
+    SYNTAX	Integer48
+    MAX-ACCESS	read-write
+    STATUS	current
+    DESCRIPTION
+      "The seconds portion of PTP time for the expiry of the latest IERS-announced leap-second event. If PTP time > LeapEvExpiry, devices shall set CurUTCOfstVd to False." 
+    ::= { ieeeC37238TimePropDS 15 }
+
+--=====================================================================
+-- Port data set parameters for each IEEE C37.238 capable port. 
+--=====================================================================
+
+ieeeC37238PortDSIfTable OBJECT-TYPE
+    SYNTAX SEQUENCE OF IeeeC37238PortDSIfEntry
+    MAX-ACCESS not-accessible
+    STATUS current
+    DESCRIPTION
+         "A table of port related variables. A value of 1 is used 
+          in device that does not have multiple ports."
+    ::= { ieeeC37238Objects 5 }
+
+ieeeC37238PortDSIfEntry OBJECT-TYPE
+    SYNTAX IeeeC37238PortDSIfEntry
+    MAX-ACCESS not-accessible
+    STATUS current
+    DESCRIPTION
+         "A list of objects pertaining to a port."
+    INDEX { ifIeeeC37238PortDSifIndex }
+    ::= { ieeeC37238PortDSIfTable 1 }
+
+IeeeC37238PortDSIfEntry ::=
+    SEQUENCE {
+	  ifIeeeC37238PortDSifIndex			Unsigned32,
+        ifIeeeC37238PortDSClkIdentity		ClockIdentity,
+        ifIeeeC37238PortDSPortNumber		Unsigned32,
+        ifIeeeC37238PortDSPortState 		INTEGER,
+        ifIeeeC37238PortDSMPathPDly			IEEEC37238TimeInterval,
+        ifIeeeC37238PortDSLogAnnounceInt 		Integer32,
+        ifIeeeC37238PortDSAnnounceRcTout 		Unsigned32,
+        ifIeeeC37238PortDSLogSyncInt	 	Integer32,  
+        ifIeeeC37238PortDSDelayMech			INTEGER, 
+        ifIeeeC37238PortDSLogMinPdlyRInt	 	Integer32,       
+        ifIeeeC37238PortDSVersionNumber 		Unsigned32,
+	  ifIeeeC37238PortDSPtpPortEnabled 		TruthValue,
+        ifIeeeC37238PortDSDlyAsymmetry 		IEEEC37238TimeInterval,
+        ifIeeeC37238PortDSProfileId			INTEGER, 
+        ifIeeeC37238PortDSNetProtocol		INTEGER,
+        ifIeeeC37238PortDSVlanId			Unsigned32,
+	  ifIeeeC37238PortDSPriority			Unsigned32
+      }
+
+ifIeeeC37238PortDSifIndex OBJECT-TYPE
+    SYNTAX Unsigned32(0..65535)
+    MAX-ACCESS not-accessible
+    STATUS current
+    DESCRIPTION
+       "Index for PortDS Table"
+    ::= { ieeeC37238PortDSIfEntry 1 }
+
+ifIeeeC37238PortDSClkIdentity OBJECT-TYPE
+    SYNTAX ClockIdentity
+    MAX-ACCESS read-only
+    STATUS current
+    DESCRIPTION
+         "Clock Identity of the local clock."
+    REFERENCE "IEEE Std 1588-2008 8.2.5.2.1"
+    ::= { ieeeC37238PortDSIfEntry 2 }
+
+ifIeeeC37238PortDSPortNumber OBJECT-TYPE
+    SYNTAX Unsigned32(0..65535)
+    MAX-ACCESS read-only
+    STATUS current
+    DESCRIPTION
+         "Port Number of the local port."
+    REFERENCE "IEEE Std 1588-2008 8.2.5.2.1"
+    ::= { ieeeC37238PortDSIfEntry 3 }
+
+ifIeeeC37238PortDSPortState OBJECT-TYPE
+    SYNTAX INTEGER {  
+        initalizing	(1),
+        faulty		(2),	          
+        disabled		(3),
+        listening		(4),
+        premaster		(5),
+        master		(6),
+        passive		(7),
+        uncalibrated	(8),
+        slave		(9)
+      }
+    MAX-ACCESS read-only
+    STATUS current
+    DESCRIPTION
+        "The current state of the PTP protocol engine associated with this port."
+    REFERENCE "IEEE Std 1588-2008 8.2.5.2.1 and Table 8"
+    DEFVAL { 3 }					
+    ::= { ieeeC37238PortDSIfEntry 4 }
+
+ifIeeeC37238PortDSMPathPDly OBJECT-TYPE
+    SYNTAX IEEEC37238TimeInterval
+    MAX-ACCESS read-only
+    STATUS current
+    DESCRIPTION
+	   "An estimate of the current one-way propagation delay on the link, attached to this port computed using the peer delay mechanism.
+The initialization value shall be zero."
+    REFERENCE "IEEE Std 1588-2008 11.4 and 8.2.5.3.3"
+    ::= { ieeeC37238PortDSIfEntry 5 }
+
+ifIeeeC37238PortDSLogAnnounceInt OBJECT-TYPE
+    SYNTAX Integer32(-128..127)
+    MAX-ACCESS read-write
+    STATUS current
+    DESCRIPTION
+         "The logarithm to the base 2 of the mean announceInterval."
+    REFERENCE "IEEE Std 1588-2008 7.7.2.2 and 8.2.5.4.1"
+    DEFVAL { 0 }
+    ::= { ieeeC37238PortDSIfEntry 6 }
+
+ifIeeeC37238PortDSAnnounceRcTout OBJECT-TYPE
+    SYNTAX Unsigned32(0..255)
+    MAX-ACCESS read-write
+    STATUS current
+    DESCRIPTION
+         "The AnnounceReceiptTimeout, an integral multiple of announceInterval."
+    REFERENCE "IEEE Std 1588-2008 7.7.3.1 and 8.2.5.4.2"
+    DEFVAL { 3 }
+    ::= { ieeeC37238PortDSIfEntry 7 }
+
+ifIeeeC37238PortDSLogSyncInt OBJECT-TYPE
+    SYNTAX Integer32 (-128..127)
+    MAX-ACCESS read-write
+    STATUS current
+    DESCRIPTION
+         "The logarithm to the base 2 of the mean SyncInterval for multicast messages."
+    REFERENCE "IEEE Std 1588-2008 7.7.2.3 and 8.2.5.4.3"
+    DEFVAL { 0 }				
+    ::= { ieeeC37238PortDSIfEntry 8 }
+
+ifIeeeC37238PortDSDelayMech OBJECT-TYPE
+    SYNTAX INTEGER {
+	            e2e		(1),
+		      p2p 		(2),
+	            disabled	(254)
+		   }
+    MAX-ACCESS 	read-write
+    STATUS 	current
+    DESCRIPTION
+      "The propagation delay measuring option used by the port. For IEEE C37.238 compliant implementations this value shall be 2 (p2p)."
+    REFERENCE "IEEE Std 1588-2008 8.2.5.4.4 and Table 9"
+    DEFVAL  { 2 }	
+    ::= { ieeeC37238PortDSIfEntry 9 }
+
+ifIeeeC37238PortDSLogMinPdlyRInt OBJECT-TYPE
+    SYNTAX Integer32(-128..127)
+    MAX-ACCESS read-write
+    STATUS current
+    DESCRIPTION
+         "The logarithm to the base 2 of the minPdelayReqInterval."
+    REFERENCE "IEEE Std 1588-2008 7.7.2.5 and 8.2.5.4.5"
+    DEFVAL { 0 }
+    ::= { ieeeC37238PortDSIfEntry 10 }
+
+ifIeeeC37238PortDSVersionNumber OBJECT-TYPE
+    SYNTAX Unsigned32(0..63)
+    MAX-ACCESS read-only
+    STATUS current
+    DESCRIPTION
+         "The PTP version in use on the port. For IEEE C37.238 compliant implementations this value shall be 2."
+    REFERENCE "IEEE Std 1588-2008 8.2.5.4.6"
+    DEFVAL { 2 }				 
+    ::= { ieeeC37238PortDSIfEntry 11 }
+
+ifIeeeC37238PortDSPtpPortEnabled OBJECT-TYPE
+    SYNTAX TruthValue
+    MAX-ACCESS read-write
+    STATUS current
+    DESCRIPTION
+         "True if port is enabled."
+    DEFVAL { false }
+    ::= { ieeeC37238PortDSIfEntry 12 }
+
+ifIeeeC37238PortDSDlyAsymmetry OBJECT-TYPE
+    SYNTAX IEEEC37238TimeInterval
+    MAX-ACCESS read-write
+    STATUS current
+    DESCRIPTION
+         "Path delay asymmetry."
+    ::= { ieeeC37238PortDSIfEntry 13 }
+
+ifIeeeC37238PortDSProfileId OBJECT-TYPE		
+    SYNTAX INTEGER {
+                    ieee1588Default		(0),
+                    power		   	(1),
+                    ieee8021as		(2),
+                    lxi	     			(3),
+                    telecom 			(4)
+                   }				  
+    MAX-ACCESS	read-write
+    STATUS	current
+    DESCRIPTION
+      "Indicates the PTP Profile in use."
+    DEFVAL { 1 }							
+    ::= { ieeeC37238PortDSIfEntry 14 }
+
+ifIeeeC37238PortDSNetProtocol OBJECT-TYPE
+    SYNTAX INTEGER {		
+	            ieee8023   (1),
+                  udpIpv4    (2)
+	           }
+    MAX-ACCESS 	read-write
+    STATUS 	current
+    DESCRIPTION
+       "Indicates Network Protocol in use. For IEEE C37.238 compliant implementations this value shall be 1 (ieee8023)."
+    DEFVAL 	{ 1 }						
+    ::= { ieeeC37238PortDSIfEntry 15 }
+
+ifIeeeC37238PortDSVlanId OBJECT-TYPE		
+    SYNTAX	Unsigned32(0..4095)
+    MAX-ACCESS 	read-write
+    STATUS	current
+    DESCRIPTION
+      "Indicates VLAN ID in use."
+    DEFVAL 	{ 0 }	
+    ::= { ieeeC37238PortDSIfEntry 16 }
+
+ifIeeeC37238PortDSPriority OBJECT-TYPE		
+    SYNTAX	Unsigned32(0..7)
+    MAX-ACCESS 	read-write
+    STATUS	current
+    DESCRIPTION
+      "Indicates VLAN tag Priority in use."
+    DEFVAL 	{ 4 }	
+    ::= { ieeeC37238PortDSIfEntry 17 }
+ 
+--=====================================================================
+--  Transparent Clock Default data set represents default Transparent 
+--  Clock parameters.
+--=====================================================================
+
+ieeeC37238TCDefaultDS
+    OBJECT IDENTIFIER ::= { ieeeC37238Objects 6 }
+
+ieeeC37238TCDefaultDSClkIdentity OBJECT-TYPE
+    SYNTAX	ClockIdentity
+    MAX-ACCESS	read-only
+    STATUS 	current
+    DESCRIPTION
+      "The Clock Identity of the local clock."
+    REFERENCE	"IEEE Std 1588-2008 7.6.2.1 and 8.3.2.2.1"
+    ::= { ieeeC37238TCDefaultDS 1 }
+
+ieeeC37238TCDefaultDSNumberPorts OBJECT-TYPE
+    SYNTAX	Unsigned32(0..255)
+    MAX-ACCESS	read-only
+    STATUS	current
+    DESCRIPTION
+      "The number of PTP ports of the device."
+    REFERENCE	"IEEE Std 1588-2008 8.3.2.2.2"
+    ::= { ieeeC37238TCDefaultDS 2 }
+
+ieeeC37238TCDefaultDSDelayMech OBJECT-TYPE
+    SYNTAX INTEGER {
+	            e2e		(1),
+		      p2p		(2),
+	            disabled	(254)
+		   }
+    MAX-ACCESS 	read-write
+    STATUS 	current
+    DESCRIPTION
+      "The Delay Mechanism used by the device.For IEEE C37.238 compliant implementations this value shall be 2 (p2p)."
+    REFERENCE "IEEE Std 1588-2008 8.3.2.3.1 and Table 9"
+    DEFVAL  { 254 }	
+    ::= { ieeeC37238TCDefaultDS 3 }
+
+ieeeC37238TCDefaultDSPriDomain OBJECT-TYPE		
+    SYNTAX	Integer32
+    MAX-ACCESS	read-write
+    STATUS	current
+    DESCRIPTION
+       	"Domain number of the primary syntonization domain. The initialization value shall be 0."
+    REFERENCE "IEEE Std 1588-2008 10.1 and 8.3.2.3.2"
+    ::= { ieeeC37238TCDefaultDS 4 }
+
+ieeeC37238TCDefaultDSSyntonize OBJECT-TYPE			
+    SYNTAX	TruthValue
+    MAX-ACCESS	read-write
+    STATUS	current
+    DESCRIPTION
+      "True if syntonization enabled."
+    ::= { ieeeC37238TCDefaultDS 5 }
+
+ieeeC37238TCDefaultDSCurGMaster OBJECT-TYPE		
+    SYNTAX	ClockIdentity 
+    MAX-ACCESS	read-only
+    STATUS	current
+    DESCRIPTION
+      "Comprises current grandmaster identity."
+    ::= { ieeeC37238TCDefaultDS 6 }
+
+ieeeC37238TCDefaultDSTwoStepFlag OBJECT-TYPE
+    SYNTAX	TruthValue
+    MAX-ACCESS	read-write
+    STATUS 	current
+    DESCRIPTION
+      "True if the clock is a two-step clock."
+    REFERENCE	"IEEE Std 1588-2008 8.2.1.2.1"
+    ::= { ieeeC37238TCDefaultDS 7 }
+
+ieeeC37238TCDefaultDSGMIdentity OBJECT-TYPE		
+    SYNTAX	Integer32
+    MAX-ACCESS	read-only
+    STATUS	current
+    DESCRIPTION
+      "Grandmaster Identity received in GRANDMASTER_ID TLV."
+    ::= { ieeeC37238TCDefaultDS 8 }
+
+ieeeC37238TCDefaultDSNetProtocol OBJECT-TYPE		
+    SYNTAX INTEGER {		
+	            ieee8023   (1),
+                  udpIpv4    (2)
+	           }
+    MAX-ACCESS 	read-write
+    STATUS	current
+    DESCRIPTION
+      "Indicates Network Protocol in use. For IEEE C37.238 compliant implementations this value shall be 1 (ieee8023)."
+    DEFVAL 	{ 1 }	
+    ::= { ieeeC37238TCDefaultDS 9 }
+
+ieeeC37238TCDefaultDSVlanId OBJECT-TYPE		
+    SYNTAX	Unsigned32(0..4095)
+    MAX-ACCESS 	read-write
+    STATUS	current
+    DESCRIPTION
+      "Indicates VLAN ID in use."
+    DEFVAL 	{ 0 }	
+    ::= { ieeeC37238TCDefaultDS 10 }
+
+ieeeC37238TCDefaultDSPriority OBJECT-TYPE		
+    SYNTAX	Unsigned32(0..7)
+    MAX-ACCESS 	read-write
+    STATUS	current
+    DESCRIPTION
+      "Indicates VLAN tag Priority in use."
+    DEFVAL 	{ 4 }	
+    ::= { ieeeC37238TCDefaultDS 11 }
+
+ieeeC37238TCDefaultDSGMTimeInacc OBJECT-TYPE		
+    SYNTAX	Unsigned32
+    MAX-ACCESS 	read-only
+    STATUS	current
+    DESCRIPTION
+      "grandmasterTimeInaccuracy received in IEEE_C37_238 TLV."
+    ::= { ieeeC37238TCDefaultDS 12 }
+
+ieeeC37238TCDefaultDSNetTimeInacc OBJECT-TYPE		
+    SYNTAX	Unsigned32
+    MAX-ACCESS 	read-only
+    STATUS	current
+    DESCRIPTION
+      "networkTimeInaccuracy received in IEEE_C37_238 TLV."
+    ::= { ieeeC37238TCDefaultDS 13 }
+
+ieeeC37238TCDefaultDSLocTimeInacc OBJECT-TYPE		
+    SYNTAX	Unsigned32
+    MAX-ACCESS 	read-only
+    STATUS	current
+    DESCRIPTION
+      "TimeInaccuracy contribution of the local clock in nanoseconds."
+    ::= { ieeeC37238TCDefaultDS 14 }
+
+--=====================================================================
+--  Transparent Clock per port data set represents per port Transparent 
+--  Clock parameters.
+--=====================================================================
+
+ieeeC37238TCPortDSIfTable OBJECT-TYPE
+    SYNTAX SEQUENCE OF IeeeC37238TCPortDSIfEntry
+    MAX-ACCESS not-accessible
+    STATUS current
+    DESCRIPTION
+         "A table of Transparent Clock port related variables."
+    ::= { ieeeC37238Objects 7 }
+
+ieeeC37238TCPortDSIfEntry OBJECT-TYPE
+    SYNTAX IeeeC37238TCPortDSIfEntry
+    MAX-ACCESS not-accessible
+    STATUS current
+    DESCRIPTION
+         "A list of objects pertaining to a transparent clock port."
+    INDEX { ifIeeeC37238TCPortDSIfIndex }
+    ::= { ieeeC37238TCPortDSIfTable 1 }
+
+IeeeC37238TCPortDSIfEntry ::=
+    SEQUENCE {
+	ifIeeeC37238TCPortDSIfIndex			Unsigned32,
+	ifIeeeC37238TCPortDSPortNumber		Unsigned32,
+	ifIeeeC37238TCPortDSLMinPdlyRInt		Integer32,
+	ifIeeeC37238TCPortDSFaulty			TruthValue,
+	ifIeeeC37238TCPortDSMPathPDly			IEEEC37238TimeInterval,
+      ifIeeeC37238TCPortDSDlyAsymm			IEEEC37238TimeInterval
+      }
+
+ifIeeeC37238TCPortDSIfIndex OBJECT-TYPE
+    SYNTAX Unsigned32(0..65535)
+    MAX-ACCESS not-accessible
+    STATUS current
+    DESCRIPTION
+         "Index for TCPortDS Table"
+    ::= { ieeeC37238TCPortDSIfEntry 1 }
+
+ifIeeeC37238TCPortDSPortNumber OBJECT-TYPE
+    SYNTAX Unsigned32(0..65535)
+    MAX-ACCESS read-only
+    STATUS current
+    DESCRIPTION
+         "Port number of the local port."
+    REFERENCE "IEEE Std 1588-2008 7.5.2 and 8.3.3.2.1"
+    ::= { ieeeC37238TCPortDSIfEntry 2 }
+
+ifIeeeC37238TCPortDSLMinPdlyRInt OBJECT-TYPE
+    SYNTAX Integer32(-128..127)
+    MAX-ACCESS read-write
+    STATUS current
+    DESCRIPTION
+         "The logarithm to the base 2 of the minPdelayReqInterval."
+    REFERENCE "IEEE Std 1588-2008 7.7.2.5 and 8.3.3.3.1"
+    DEFVAL { 0 }
+    ::= { ieeeC37238TCPortDSIfEntry 3 }
+
+ifIeeeC37238TCPortDSFaulty OBJECT-TYPE			
+    SYNTAX	TruthValue
+    MAX-ACCESS	read-only
+    STATUS	current
+    DESCRIPTION
+      "True if the port is faulty and False if the port
+is operating normally. The initialization value shall be False."
+    REFERENCE "IEEE Std 1588-2008 8.3.3.3.2"
+    ::= { ieeeC37238TCPortDSIfEntry 4 }
+
+ifIeeeC37238TCPortDSMPathPDly OBJECT-TYPE
+    SYNTAX IEEEC37238TimeInterval
+    MAX-ACCESS read-only
+    STATUS current
+    DESCRIPTION
+         "The estimate of the current one-way propagation delay."
+    REFERENCE "IEEE Std 1588-2008 8.3.3.3.3"
+    ::= { ieeeC37238TCPortDSIfEntry 5 }
+
+ifIeeeC37238TCPortDSDlyAsymm OBJECT-TYPE
+    SYNTAX IEEEC37238TimeInterval
+    MAX-ACCESS read-write
+    STATUS current
+    DESCRIPTION
+         "Path delay asymmetry."
+    ::= { ieeeC37238TCPortDSIfEntry 6 }
+
+-- =============================================================== 
+--        IEEE C37.238  M I B   N O T I F I C A T I O N S		 
+-- ===============================================================
+
+ieeeC37238Events OBJECT IDENTIFIER ::= { ieeeC37238Notifications 0 }
+
+ieeeC37238EventChangeOfMaster NOTIFICATION-TYPE
+    OBJECTS	{ ieeeC37238ParentDSGMClkIdentity }
+    STATUS      current
+    DESCRIPTION
+        "Indicates that new grandmaster has been selected."
+    ::= { ieeeC37238Events 1 }
+
+ieeeC37238EventMasterStepChange NOTIFICATION-TYPE
+    OBJECTS	{ ieeeC37238ParentDSGMClkIdentity }
+    STATUS      current
+    DESCRIPTION
+        "Indicates that a step change occurred in current grandmaster time."
+    ::= { ieeeC37238Events 2 }
+
+ieeeC37238EventFaultyState NOTIFICATION-TYPE
+    OBJECTS	{ ifIeeeC37238PortDSPortNumber }
+    STATUS      current
+    DESCRIPTION
+        "Indicates that a clock has entered faulty state."
+    ::= { ieeeC37238Events 3 }
+
+ieeeC37238EventPortStateChange NOTIFICATION-TYPE
+    OBJECTS	{ ifIeeeC37238PortDSPortNumber, ifIeeeC37238PortDSPortState }
+    STATUS      current
+    DESCRIPTION
+        "Indicates that port state has changed."
+    ::= { ieeeC37238Events 4 }
+
+ieeeC37238EventOfstExceedsLimit NOTIFICATION-TYPE
+    OBJECTS {ieeeC37238CurrentDSOfstFrMaster, ieeeC37238DefaultDSOfstFrMLimit }
+    STATUS      current
+    DESCRIPTION
+        "Indicates that for a clock in a slave state Offset from Master exceeds configurable limit."
+    ::= { ieeeC37238Events 5 }
+
+ieeeC37238EventOtherProfileDetect NOTIFICATION-TYPE
+    OBJECTS	{ ifIeeeC37238PortDSPortNumber }
+    STATUS      current
+    DESCRIPTION
+        "Indicates that other then C37.238 PTP profile has been detected."
+    ::= { ieeeC37238Events 6 }
+
+ieeeC37238EventLeapSecAnnounced NOTIFICATION-TYPE
+    STATUS      current
+    DESCRIPTION
+        "Indicates that a leap second has been announced."
+    ::= { ieeeC37238Events 7 }
+
+ieeeC37238EventPTPServiceStarted NOTIFICATION-TYPE
+    STATUS      current
+    DESCRIPTION
+        "Indicates that PTP service has started."
+    ::= { ieeeC37238Events 8 }
+
+ieeeC37238EventPTPServiceStopped NOTIFICATION-TYPE
+    STATUS      current
+    DESCRIPTION
+        "Indicates that PTP service has stopped."
+    ::= { ieeeC37238Events 9 }
+
+--=====================================================================
+-- IEEE C37.238  MIB Module - Conformance Information
+--=====================================================================
+
+ieeeC37238Compliances OBJECT IDENTIFIER ::= { ieeeC37238Conformance 1 }
+ieeeC37238Groups	    OBJECT IDENTIFIER ::= { ieeeC37238Conformance 2 }
+
+ieeeC37238SystemDefaultReqdGroup OBJECT-GROUP
+    OBJECTS {
+	ieeeC37238DefaultDSTwoStepFlag,
+	ieeeC37238DefaultDSClkIdentity,
+	ieeeC37238DefaultDSNumberPorts,
+	ieeeC37238DefaultDSClkClass,
+	ieeeC37238DefaultDSClkAccuracy,
+	ieeeC37238DefaultDSOfsScdLogVar,
+	ieeeC37238DefaultDSPriority1,
+	ieeeC37238DefaultDSPriority2,
+	ieeeC37238DefaultDSDomainNumber,
+	ieeeC37238DefaultDSSlaveOnly,
+	ieeeC37238DefaultDSGMIdentity,
+        ieeeC37238DefaultDSNetTimeInacc,
+        ieeeC37238DefaultDSEngTimeInacc,
+        ieeeC37238DefaultDSLocTimeInacc,
+      ieeeC37238DefaultDSOfstFrMLimit
+      }
+    STATUS current
+    DESCRIPTION
+         "Objects in the System Default required global group."
+    ::= { ieeeC37238Groups 1 }
+
+ieeeC37238SystemCurrentGroup OBJECT-GROUP
+    OBJECTS {
+      ieeeC37238CurrentDSStepsRemoved,
+      ieeeC37238CurrentDSOfstFrMaster,
+      ieeeC37238CurrentDSLocTimeInacc
+     }
+    STATUS current
+    DESCRIPTION
+         "Objects in the System Current global group."
+    ::= { ieeeC37238Groups 2 }
+
+ieeeC37238SystemClockParentGroup OBJECT-GROUP
+    OBJECTS {
+       ieeeC37238ParentDSClkIdentity,
+       ieeeC37238ParentDSPortNumber,
+       ieeeC37238ParentDSStats,
+       ieeeC37238ParentDSObsOfstScdLVar,
+       ieeeC37238ParentDSObsPhChgRate,    
+       ieeeC37238ParentDSGMClkIdentity,
+       ieeeC37238ParentDSGMClkClass,
+       ieeeC37238ParentDSGMClkAccuracy,
+       ieeeC37238ParentDSGMOfstScdLVar,
+       ieeeC37238ParentDSGMPriority1,
+       ieeeC37238ParentDSGMPriority2,
+       ieeeC37238ParentDSGMIdentity,
+       ieeeC37238ParentDSGMTimeInacc,
+       ieeeC37238ParentDSNetTimeInacc
+      }
+    STATUS current
+    DESCRIPTION
+         "Objects in the Clock Parent global group."
+    ::= { ieeeC37238Groups 3 }
+
+ieeeC37238SystemTimePropGroup OBJECT-GROUP
+    OBJECTS {
+	ieeeC37238TimePropDSCurUTCOfst,
+	ieeeC37238TimePropDSCurUTCOfstVd,
+	ieeeC37238TimePropDSLeap59,
+	ieeeC37238TimePropDSLeap61,
+	ieeeC37238TimePropDSTmeTraceable,
+	ieeeC37238TimePropDSFrqTraceable,
+	ieeeC37238TimePropDSPTPTimescale,
+	ieeeC37238TimePropDSTimeSource,
+	ieeeC37238TimePropDSLocalTCurOfs,
+	ieeeC37238TimePropDSLocalTJumpS,
+	ieeeC37238TimePropDSLocalTNtJump,
+	ieeeC37238TimePropDSLocalTName,
+      ieeeC37238TimePropDSLeapEvLatest,
+      ieeeC37238TimePropDSUTCOfstNext,
+      ieeeC37238TimePropDSLeapEvExpiry
+     }
+    STATUS current
+    DESCRIPTION
+         "Objects for the Time Properties Global group."
+    ::= { ieeeC37238Groups 4 }
+
+ieeeC37238PortDataSetGlobalGroup OBJECT-GROUP
+    OBJECTS {
+        ifIeeeC37238PortDSClkIdentity,
+        ifIeeeC37238PortDSPortNumber,
+        ifIeeeC37238PortDSPortState,
+        ifIeeeC37238PortDSMPathPDly,
+        ifIeeeC37238PortDSLogAnnounceInt,
+        ifIeeeC37238PortDSAnnounceRcTout,
+        ifIeeeC37238PortDSLogSyncInt,  
+        ifIeeeC37238PortDSDelayMech,
+        ifIeeeC37238PortDSLogMinPdlyRInt,       
+        ifIeeeC37238PortDSVersionNumber,
+	  ifIeeeC37238PortDSPtpPortEnabled,
+        ifIeeeC37238PortDSDlyAsymmetry,
+        ifIeeeC37238PortDSProfileId, 
+        ifIeeeC37238PortDSNetProtocol,
+	  ifIeeeC37238PortDSVlanId,
+        ifIeeeC37238PortDSPriority
+      }
+    STATUS current
+    DESCRIPTION
+         "Objects for the port dataset media independent global group."
+    ::= {ieeeC37238Groups 5 }
+
+ieeeC37238TCPropertiesGroup OBJECT-GROUP  
+    OBJECTS { 
+	ieeeC37238TCDefaultDSClkIdentity,
+	ieeeC37238TCDefaultDSNumberPorts,
+	ieeeC37238TCDefaultDSDelayMech,
+	ieeeC37238TCDefaultDSPriDomain,
+	ieeeC37238TCDefaultDSSyntonize,
+	ieeeC37238TCDefaultDSCurGMaster,
+	ieeeC37238TCDefaultDSTwoStepFlag,
+	ieeeC37238TCDefaultDSGMIdentity,
+      ieeeC37238TCDefaultDSNetProtocol,
+      ieeeC37238TCDefaultDSVlanId,
+      ieeeC37238TCDefaultDSPriority,
+      ieeeC37238TCDefaultDSGMTimeInacc,
+      ieeeC37238TCDefaultDSNetTimeInacc,
+      ieeeC37238TCDefaultDSLocTimeInacc
+   }
+    STATUS current
+    DESCRIPTION
+         "Objects for the Transparent Clock group."
+    ::= { ieeeC37238Groups 6 }
+
+ieeeC37238TCPortDataSetGroup OBJECT-GROUP
+    OBJECTS {
+	ifIeeeC37238TCPortDSPortNumber,
+	ifIeeeC37238TCPortDSLMinPdlyRInt,
+	ifIeeeC37238TCPortDSFaulty,
+	ifIeeeC37238TCPortDSMPathPDly,
+	ifIeeeC37238TCPortDSDlyAsymm
+      }
+    STATUS current
+    DESCRIPTION
+         "Per port Objects for the Transparent Clock group."
+    ::= { ieeeC37238Groups 7 }
+
+ieeeC37238EventsPropertiesGroup NOTIFICATION-GROUP
+    NOTIFICATIONS { 
+      ieeeC37238EventChangeOfMaster,
+      ieeeC37238EventMasterStepChange,
+      ieeeC37238EventFaultyState,
+      ieeeC37238EventPortStateChange,
+      ieeeC37238EventOfstExceedsLimit,
+      ieeeC37238EventOtherProfileDetect,
+      ieeeC37238EventLeapSecAnnounced,
+      ieeeC37238EventPTPServiceStarted,
+      ieeeC37238EventPTPServiceStopped
+   }
+    STATUS current
+    DESCRIPTION
+         "Objects for the Notification Properties group."
+    ::= { ieeeC37238Groups 8 }
+
+--=====================================================================
+-- MIB Module Compliance statements				
+--=====================================================================
+
+ieeeC37238Compliance MODULE-COMPLIANCE
+    STATUS current
+    DESCRIPTION
+         "The compliance statement for support by a bridge of
+          the IEEEC37-238-MIB module."
+
+MODULE SNMPv2-MIB 		-- The SNMPv2-MIB [RFC3418]
+    MANDATORY-GROUPS {
+        systemGroup
+    }
+
+MODULE IF-MIB 			-- The interfaces MIB [RFC2863]
+    MANDATORY-GROUPS {
+        ifGeneralInformationGroup
+    }
+
+MODULE
+    MANDATORY-GROUPS {
+        ieeeC37238SystemDefaultReqdGroup,
+        ieeeC37238SystemCurrentGroup,
+        ieeeC37238SystemClockParentGroup,
+        ieeeC37238SystemTimePropGroup,
+        ieeeC37238PortDataSetGlobalGroup,
+        ieeeC37238TCPropertiesGroup,
+	  ieeeC37238TCPortDataSetGroup,
+        ieeeC37238EventsPropertiesGroup
+    }
+  ::= { ieeeC37238Compliances 1 }
+
+END
