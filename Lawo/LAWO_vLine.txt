@@ -1,0 +1,433 @@
+-- LAWO_vLine.txt --
+-- MIB file for V__line Product Family
+-- powered by arkona technologies --
+-- ====================================================================
+
+LAWO-NODE-MIB DEFINITIONS ::= BEGIN
+
+IMPORTS
+        MODULE-IDENTITY,OBJECT-TYPE,Integer32, enterprises	FROM SNMPv2-SMI
+		OBJECT-GROUP                          				FROM SNMPv2-CONF
+        DisplayString                       				FROM SNMPv2-TC;
+
+lawoSnmp MODULE-IDENTITY
+    LAST-UPDATED "201604011100Z"
+    ORGANIZATION "www.lawo.com"
+    CONTACT-INFO    
+         "postal:   Lawo AG 
+                    Am Oberwald 8 
+                    76437 Rastatt
+                    Germany
+          email:    service@lawo.com"
+    DESCRIPTION
+         "1st release"
+    REVISION "201604011100Z"
+    DESCRIPTION "Restructured MIB"
+    ::= { lawo 1 }
+
+lawo                           OBJECT IDENTIFIER ::= { enterprises 14859 }
+lawoProducts                   OBJECT IDENTIFIER ::= { lawo 2 }
+vLine                          OBJECT IDENTIFIER ::= { lawoProducts 20 }
+
+
+-- V__line Main Alerts & video/audio status info, valid for V_link4, V_remote4
+
+vLineTop  OBJECT IDENTIFIER ::= { vLine 1 }
+
+vLineStatus  OBJECT IDENTIFIER ::= { vLineTop 1 }
+
+vLineStatusGroup OBJECT-GROUP
+    OBJECTS { vLineDevName,
+              vLineTempAlert,
+              vLineFanError,
+              vLinePSU1Error,
+              vLinePSU2Error,
+              vLineVidRAMError }
+    STATUS  current
+    DESCRIPTION
+            "All V__line Status Parameters"
+    ::= { vLineTop 6 }
+
+vLineDevName OBJECT-TYPE
+        SYNTAX  DisplayString (SIZE (0..32))
+        MAX-ACCESS  read-only
+        STATUS  current
+        DESCRIPTION "V__line Device Name"
+        ::= { vLineStatus 1 }
+
+vLineTempAlert OBJECT-TYPE
+        SYNTAX  INTEGER  { noAlert (0),
+                           criticalLevel(1),
+		           exceedLevel(2) }
+        MAX-ACCESS  read-only
+        STATUS  current
+        DESCRIPTION
+                "V__line Temperature Alert"
+        ::= { vLineStatus 2 }
+
+vLineFanError OBJECT-TYPE
+        SYNTAX  INTEGER  { noError (0),
+                           lowSpeed (1) }
+        MAX-ACCESS  read-only
+        STATUS  current
+        DESCRIPTION
+                "V__line Fan Speed Alert"
+        ::= { vLineStatus 3 }
+
+vLinePSU1Error OBJECT-TYPE
+        SYNTAX  INTEGER  { noError (0),
+                           powerSupplyAlert(1),
+                           boardSupplyAlert(2) }
+        MAX-ACCESS  read-only
+        STATUS  current
+        DESCRIPTION
+                "V__line Power Supply 1 Alert"
+        ::= { vLineStatus 4 }
+
+vLinePSU2Error OBJECT-TYPE
+        SYNTAX  INTEGER  { noError (0),
+                           powerSupplyAlert(1),
+                           boardSupplyAlert(2) }
+        MAX-ACCESS  read-only
+        STATUS  current
+        DESCRIPTION
+                "V__line Power Supply 2 Alert"
+        ::= { vLineStatus 5 }
+
+vLineVidRAMError OBJECT-TYPE
+        SYNTAX  INTEGER  { noError (0),
+                           videoRamError(1) }
+        MAX-ACCESS  read-only
+        STATUS  current
+        DESCRIPTION
+                "V__line Video RAM Error"
+        ::= { vLineStatus 6 }
+
+-- V__line Video / Audio Status Info, valid for V_link4, V_remote4
+
+vLineAVGroup OBJECT-GROUP
+    OBJECTS { 
+              vLineVideoInputLost,
+              vLineVideoInputAudioSilent,
+			  vLineVideoOutputAudioSilent,
+			  vLineMadiInputLost,
+			  vLineMadiInputAudioSilent,
+			  vLineMadiOutputAudioSilent
+			  }
+    STATUS  current
+    DESCRIPTION
+            "All V__line Audio / Video Parameters"
+    ::= { vLineTop 7 }
+
+
+vLineVideoInputTable OBJECT-TYPE
+   SYNTAX      SEQUENCE OF VLineVideoInputEntry
+   MAX-ACCESS  not-accessible
+   STATUS      current
+   DESCRIPTION "V__line Video Input Table"
+   ::= { vLineTop 2 }
+
+vLineVideoInputEntry OBJECT-TYPE
+   SYNTAX      VLineVideoInputEntry
+   MAX-ACCESS  not-accessible
+   STATUS      current
+   DESCRIPTION "An entry in the Video Input Table"
+   INDEX       { vLineVideoInputIndex }
+   ::= { vLineVideoInputTable 1 }
+
+VLineVideoInputEntry ::= SEQUENCE {
+   vLineVideoInputIndex       Integer32,
+   vLineVideoInputLost        INTEGER,
+   vLineVideoInputAudioSilent BITS
+}
+
+vLineVideoInputIndex OBJECT-TYPE
+   SYNTAX      Integer32 (1..8)
+   MAX-ACCESS  not-accessible
+   STATUS      current
+   DESCRIPTION "The auxiliary variable used for identifying instances of the columnar objects in the vLineVideoInputTable"
+   ::= { vLineVideoInputEntry 1 }
+
+vLineVideoInputLost OBJECT-TYPE
+   SYNTAX      INTEGER  { inputPresent(0),
+                          inputLost(1) }
+   MAX-ACCESS  read-only
+   STATUS      current
+   DESCRIPTION "V__line Video Input Lost"
+   ::= { vLineVideoInputEntry 2 }
+
+vLineVideoInputAudioSilent OBJECT-TYPE
+        SYNTAX  BITS  { channel1(0),
+                        channel2(1),
+                        channel3(2),
+                        channel4(3),
+                        channel5(4),
+                        channel6(5),
+                        channel7(6),
+                        channel8(7),
+                        channel9(8),
+                        channel10(9),
+                        channel11(10),
+                        channel12(11),
+                        channel13(12),
+                        channel14(13),
+                        channel15(14),
+                        channel16(15) }
+        MAX-ACCESS  read-only
+        STATUS      current
+        DESCRIPTION "V__line Audio Silence on Input"
+        ::= { vLineVideoInputEntry 3 }
+
+vLineVideoOutputTable OBJECT-TYPE
+   SYNTAX      SEQUENCE OF VLineVideoOutputEntry
+   MAX-ACCESS  not-accessible
+   STATUS      current
+   DESCRIPTION "V__line Video Output Table"
+   ::= { vLineTop 3 }
+
+vLineVideoOutputEntry OBJECT-TYPE
+   SYNTAX      VLineVideoOutputEntry
+   MAX-ACCESS  not-accessible
+   STATUS      current
+   DESCRIPTION "An entry in the Video Output Table"
+   INDEX       { vLineVideoOutputIndex }
+   ::= { vLineVideoOutputTable 1 }
+
+VLineVideoOutputEntry ::= SEQUENCE {
+   vLineVideoOutputIndex       Integer32,
+   vLineVideoOutputAudioSilent BITS
+}
+
+vLineVideoOutputIndex OBJECT-TYPE
+   SYNTAX      Integer32 (1..8)
+   MAX-ACCESS  not-accessible
+   STATUS      current
+   DESCRIPTION "The auxiliary variable used for identifying instances of the columnar objects in the vLineVideoOutputTable"
+   ::= { vLineVideoOutputEntry 1 }
+
+vLineVideoOutputAudioSilent OBJECT-TYPE
+   SYNTAX  BITS { channel1(0),
+                  channel2(1),
+                  channel3(2),
+                  channel4(3),
+                  channel5(4),
+                  channel6(5),
+                  channel7(6),
+                  channel8(7),
+                  channel9(8),
+                  channel10(9),
+                  channel11(10),
+                  channel12(11),
+                  channel13(12),
+                  channel14(13),
+                  channel15(14),
+                  channel16(15) }
+   MAX-ACCESS  read-only
+   STATUS      current
+   DESCRIPTION "V__line Audio Silence on Output"
+   ::= { vLineVideoOutputEntry 2 }
+
+vLineMadiInputTable OBJECT-TYPE
+   SYNTAX      SEQUENCE OF VLineMadiInputEntry
+   MAX-ACCESS  not-accessible
+   STATUS      current
+   DESCRIPTION "V__line MADI Input Table"
+   ::= { vLineTop 4 }
+
+vLineMadiInputEntry OBJECT-TYPE
+   SYNTAX      VLineMadiInputEntry
+   MAX-ACCESS  not-accessible
+   STATUS      current
+   DESCRIPTION "An entry in the MADI Input Table"
+   INDEX       { vLineMadiInputIndex }
+   ::= { vLineMadiInputTable 1 }
+
+VLineMadiInputEntry ::= SEQUENCE {
+   vLineMadiInputIndex       Integer32,
+   vLineMadiInputLost        INTEGER,
+   vLineMadiInputAudioSilent BITS
+}
+
+vLineMadiInputIndex OBJECT-TYPE
+   SYNTAX      Integer32 (1..2)
+   MAX-ACCESS  not-accessible
+   STATUS      current
+   DESCRIPTION "The auxiliary variable used for identifying instances of the columnar objects in the vLineMadiInputTable"
+   ::= { vLineMadiInputEntry 1 }
+
+vLineMadiInputLost OBJECT-TYPE
+   SYNTAX      INTEGER  { inputPresent(0),
+                          inputLost(1) }
+   MAX-ACCESS  read-only
+   STATUS      current
+   DESCRIPTION "V__line MADI Input Lost"
+   ::= { vLineMadiInputEntry 2 }
+
+vLineMadiInputAudioSilent OBJECT-TYPE
+   SYNTAX  BITS { channel1(0),
+                  channel2(1),
+                  channel3(2),
+                  channel4(3),
+                  channel5(4),
+                  channel6(5),
+                  channel7(6),
+                  channel8(7),
+                  channel9(8),
+                  channel10(9),
+                  channel11(10),
+                  channel12(11),
+                  channel13(12),
+                  channel14(13),
+                  channel15(14),
+                  channel16(15),
+                  channel17(16),
+                  channel18(17),
+                  channel19(18),
+                  channel20(19),
+                  channel21(20),
+                  channel22(21),
+                  channel23(22),
+                  channel24(23),
+                  channel25(24),
+                  channel26(25),
+                  channel27(26),
+                  channel28(27),
+                  channel29(28),
+                  channel30(29),
+                  channel31(30),
+                  channel32(31),
+                  channel33(32),
+                  channel34(33),
+                  channel35(34),
+                  channel36(35),
+                  channel37(36),
+                  channel38(37),
+                  channel39(38),
+                  channel40(39),
+                  channel41(40),
+                  channel42(41),
+                  channel43(42),
+                  channel44(43),
+                  channel45(44),
+                  channel46(45),
+                  channel47(46),
+                  channel48(47),
+                  channel49(48),
+                  channel50(49),
+                  channel51(50),
+                  channel52(51),
+                  channel53(52),
+                  channel54(53),
+                  channel55(54),
+                  channel56(55),
+                  channel57(56),
+                  channel58(57),
+                  channel59(58),
+                  channel60(59),
+                  channel61(60),
+                  channel62(61),
+                  channel63(62),
+                  channel64(63) }
+   MAX-ACCESS  read-only
+   STATUS      current
+   DESCRIPTION "V__line MADI Input Audio Silence"
+   ::= { vLineMadiInputEntry 3 }
+
+vLineMadiOutputTable OBJECT-TYPE
+   SYNTAX      SEQUENCE OF VLineMadiOutputEntry
+   MAX-ACCESS  not-accessible
+   STATUS      current
+   DESCRIPTION "MADI Output Table"
+   ::= { vLineTop 5 }
+
+vLineMadiOutputEntry OBJECT-TYPE
+   SYNTAX      VLineMadiOutputEntry
+   MAX-ACCESS  not-accessible
+   STATUS      current
+   DESCRIPTION "An entry in the MADI Output Table"
+   INDEX       { vLineMadiOutputIndex }
+   ::= { vLineMadiOutputTable 1 }
+
+VLineMadiOutputEntry ::= SEQUENCE {
+   vLineMadiOutputIndex       Integer32,
+   vLineMadiOutputAudioSilent BITS
+}
+
+vLineMadiOutputIndex OBJECT-TYPE
+   SYNTAX      Integer32 (1..2)
+   MAX-ACCESS  not-accessible
+   STATUS      current
+   DESCRIPTION "The auxiliary variable used for identifying instances of the columnar objects in the vLineMadiOutputTable"
+   ::= { vLineMadiOutputEntry 1 }
+
+vLineMadiOutputAudioSilent OBJECT-TYPE
+   SYNTAX  BITS { channel1(0),
+                  channel2(1),
+                  channel3(2),
+                  channel4(3),
+                  channel5(4),
+                  channel6(5),
+                  channel7(6),
+                  channel8(7),
+                  channel9(8),
+                  channel10(9),
+                  channel11(10),
+                  channel12(11),
+                  channel13(12),
+                  channel14(13),
+                  channel15(14),
+                  channel16(15),
+                  channel17(16),
+                  channel18(17),
+                  channel19(18),
+                  channel20(19),
+                  channel21(20),
+                  channel22(21),
+                  channel23(22),
+                  channel24(23),
+                  channel25(24),
+                  channel26(25),
+                  channel27(26),
+                  channel28(27),
+                  channel29(28),
+                  channel30(29),
+                  channel31(30),
+                  channel32(31),
+                  channel33(32),
+                  channel34(33),
+                  channel35(34),
+                  channel36(35),
+                  channel37(36),
+                  channel38(37),
+                  channel39(38),
+                  channel40(39),
+                  channel41(40),
+                  channel42(41),
+                  channel43(42),
+                  channel44(43),
+                  channel45(44),
+                  channel46(45),
+                  channel47(46),
+                  channel48(47),
+                  channel49(48),
+                  channel50(49),
+                  channel51(50),
+                  channel52(51),
+                  channel53(52),
+                  channel54(53),
+                  channel55(54),
+                  channel56(55),
+                  channel57(56),
+                  channel58(57),
+                  channel59(58),
+                  channel60(59),
+                  channel61(60),
+                  channel62(61),
+                  channel63(62),
+                  channel64(63) }
+   MAX-ACCESS  read-only
+   STATUS      current
+   DESCRIPTION "V__line MADI Output Audio Silence"
+   ::= { vLineMadiOutputEntry 2 }
+
+END

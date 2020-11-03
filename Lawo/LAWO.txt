@@ -1,0 +1,607 @@
+-- LAWO.txt -- 
+-- ====================================================================
+
+LAWO-NODE-MIB DEFINITIONS ::= BEGIN
+
+IMPORTS
+        MODULE-IDENTITY,OBJECT-TYPE,NOTIFICATION-TYPE   FROM SNMPv2-SMI
+        DisplayString                                   FROM SNMPv2-TC
+        Counter, enterprises,ObjectName                 FROM RFC1155-SMI
+        sysObjectID                                     FROM RFC1213-MIB;
+
+
+lawoSnmp MODULE-IDENTITY
+    LAST-UPDATED "201312120000Z"
+    ORGANIZATION "www.lawo.de"
+    CONTACT-INFO    
+         "postal:   Lawo AG 
+                    Am Oberwald 8 
+                    76437 Rastatt
+                    Germany
+          email:    support@lawo.com"
+    DESCRIPTION
+         "3rd draft"
+    ::= { lawo 1 }
+
+
+-- TEXTUAL CONVENTIONS =====================================================
+--DisplayString ::=  OCTET STRING
+
+-- starting point of MIB ===================================================
+lawo                           OBJECT IDENTIFIER ::= { enterprises 14859 }
+lawoProducts                   OBJECT IDENTIFIER ::= { lawo 2 }
+mcx                            OBJECT IDENTIFIER ::= { lawoProducts 10 }
+vline                          OBJECT IDENTIFIER ::= { lawoProducts 20 }
+
+vPro8Table  OBJECT-TYPE
+        SYNTAX  SEQUENCE OF vPro8Entry
+        MAX-ACCESS  not-accessible
+        STATUS  current
+        DESCRIPTION "This table provides the list of alerts."
+        ::= { vline 1 }
+
+
+nova73Table  OBJECT-TYPE
+        SYNTAX  SEQUENCE OF Nova73Entry
+        MAX-ACCESS  not-accessible
+        STATUS  current
+        DESCRIPTION "This table provides the list of managed HD Core Units for a mcx-system."
+        ::= { mcx 1 }
+
+moduleTable  OBJECT-TYPE
+        SYNTAX  SEQUENCE OF ModuleEntry
+        MAX-ACCESS  not-accessible
+        STATUS  current
+        DESCRIPTION "This table provides the list of modules in the HD Core Unit."
+        ::= { mcx 2 }
+
+portTable  OBJECT-TYPE
+        SYNTAX  SEQUENCE OF PortEntry
+        MAX-ACCESS  not-accessible
+        STATUS  current
+        DESCRIPTION "This table provides the list of ports in the HD Core Unit."
+        ::= { mcx 3 }
+
+dallisTable  OBJECT-TYPE
+        SYNTAX  SEQUENCE OF DallisEntry
+        MAX-ACCESS  not-accessible
+        STATUS  current
+        DESCRIPTION "This table provides the list of DALLIS Stageboxes in the HD Core Unit."
+        ::= { mcx 4 }
+
+dallisModuleTable  OBJECT-TYPE
+        SYNTAX  SEQUENCE OF DallisModuleTableEntry
+        MAX-ACCESS  not-accessible
+        STATUS  current
+        DESCRIPTION "This table provides the list of DALLIS IO modules."
+        ::= { mcx 5 }
+
+gpiTable OBJECT-TYPE
+        SYNTAX  SEQUENCE OF GpiEntry
+        MAX-ACCESS  not-accessible
+        STATUS  current
+        DESCRIPTION "This table provides states of the general purpose inputs of the system indexed by HLSD."
+        ::= { mcx 6 }
+
+mcxNotification NOTIFICATION-TYPE
+        OBJECTS     { mcxOid }
+        STATUS      current
+        DESCRIPTION "This notifies the trap receiver that the specified OID within the Lawo MIB tree has changed."
+        ::= { mcx 7 }
+
+
+
+
+
+-- vpro8
+
+vPro8Entry::= SEQUENCE {
+  vPro8ConfigName  DisplayString,
+  vPro8TempWarning INTEGER,
+  vPro8FanStatus   INTEGER,
+  vPro8PSU1Status  INTEGER,
+  vPro8PSU2Status  INTEGER,
+  vPro8RamStatus  INTEGER }
+
+vPro8Entry OBJECT-TYPE
+        SYNTAX  vPro8Entry
+        MAX-ACCESS  not-accessible
+        STATUS  current
+        DESCRIPTION
+        "Entries of vPro8Table."
+        INDEX { boxIndex }
+        ::= { vPro8Table 1 }
+
+vPro8ConfigName OBJECT-TYPE
+        SYNTAX  DisplayString (SIZE (0..32))
+        MAX-ACCESS  read-only
+        STATUS  current
+        DESCRIPTION "The configured name of the vPro8."
+        ::= { vPro8Entry 1 }
+
+vPro8TempWarning OBJECT-TYPE
+        SYNTAX  INTEGER  { ok (0),
+                           criticalLevel (1) }
+        MAX-ACCESS  read-only
+        STATUS  current
+        DESCRIPTION
+                "Temprature warning flag of the vPro8 board."
+        ::= { vPro8Entry 2 }
+
+vPro8FanStatus OBJECT-TYPE
+        SYNTAX  INTEGER  { ok (0),
+                           lowSpeed (1) }
+        MAX-ACCESS  read-only
+        STATUS  current
+        DESCRIPTION
+                "Fan warning."
+        ::= { vPro8Entry 3 }
+
+vPro8PSU1Status OBJECT-TYPE
+        SYNTAX  INTEGER  { ok (0),
+                           powerSupplyAlert (1),
+                           boardSupplyAlert (2)}
+        MAX-ACCESS  read-only
+        STATUS  current
+        DESCRIPTION
+                "Status of the primary power supply unit."
+        ::= { vPro8Entry 4 }
+
+vPro8PSU2Status OBJECT-TYPE
+        SYNTAX  INTEGER  { ok (0),
+                           powerSupplyAlert (1),
+                           boardSupplyAlert (2)}
+        MAX-ACCESS  read-only
+        STATUS  current
+        DESCRIPTION
+                "Status of the redundant power supply unit."
+        ::= { vPro8Entry 5 }
+vPro8RAMStatus OBJECT-TYPE
+        SYNTAX  INTEGER  { ok (0),
+                           videoRamError (1)}
+        MAX-ACCESS  read-only
+        STATUS  current
+        DESCRIPTION
+                "Status of the rams."
+        ::= { vPro8Entry 6 }
+
+
+-- Nova73 
+
+Nova73Entry ::= SEQUENCE {
+  boxIndex          INTEGER,
+  routerConfigName  DisplayString,
+  routerTempWarning INTEGER,
+  routerFanStatus   INTEGER,
+  routerPSU1Status  INTEGER,
+  routerPSU2Status  INTEGER,
+  routerSyncStatus  INTEGER }
+
+nova73Entry OBJECT-TYPE
+        SYNTAX  Nova73Entry
+        MAX-ACCESS  not-accessible
+        STATUS  current
+        DESCRIPTION
+        "Entries of nova73Table."
+        INDEX { boxIndex }
+        ::= { nova73Table 1 }
+
+boxIndex OBJECT-TYPE
+         SYNTAX  INTEGER(1..16)
+         MAX-ACCESS  read-only
+         STATUS  current
+         DESCRIPTION "Index of HD Core in mcx-system"
+         ::= { nova73Entry 1 }
+
+routerConfigName OBJECT-TYPE
+        SYNTAX  DisplayString (SIZE (0..32))
+        MAX-ACCESS  read-only
+        STATUS  current
+        DESCRIPTION "The configured name of the router."
+        ::= { nova73Entry 2 }
+
+routerTempWarning OBJECT-TYPE
+        SYNTAX  INTEGER  { ok (1),
+                           critical (2) }
+        MAX-ACCESS  read-only
+        STATUS  current
+        DESCRIPTION
+                "Temprature warning flag of the router board."
+        ::= { nova73Entry 3 }
+
+routerFanStatus OBJECT-TYPE
+        SYNTAX  INTEGER  { ok (1),
+                           notoperational (2) }
+        MAX-ACCESS  read-only
+        STATUS  current
+        DESCRIPTION
+                "Fan warning flag of the HD Core."
+        ::= { nova73Entry 4 }
+
+routerPSU1Status OBJECT-TYPE
+        SYNTAX  INTEGER  { ok (1),
+                           notoperational (2) }
+        MAX-ACCESS  read-only
+        STATUS  current
+        DESCRIPTION
+                "Status of the primary power supply unit."
+        ::= { nova73Entry 5 }
+
+routerPSU2Status OBJECT-TYPE
+        SYNTAX  INTEGER  { ok (1),
+                           notoperational (2) }
+        MAX-ACCESS  read-only
+        STATUS  current
+        DESCRIPTION
+                "Status of the redundant power supply unit."
+        ::= { nova73Entry 6 }
+
+routerSyncStatus OBJECT-TYPE
+        SYNTAX  INTEGER  { multichannel(1),
+                           input1(2),
+                           input2 (3),
+                           internal (4) }
+        MAX-ACCESS  read-only
+        STATUS  current
+        DESCRIPTION
+                "Synchronization source of the audio matrix."
+        ::= { nova73Entry 7 }
+
+-- router modules
+ModuleEntry ::= SEQUENCE {
+  moduleTableBoxIndex     INTEGER,
+  moduleSlotIndex         INTEGER,
+  moduleConfigName        DisplayString,
+  moduleAvailability      INTEGER }
+
+moduleEntry OBJECT-TYPE
+        SYNTAX  ModuleEntry
+        MAX-ACCESS  not-accessible
+        STATUS  current
+        DESCRIPTION
+        "Entries of moduleTable."
+        INDEX { moduleTableBoxIndex,moduleSlotIndex }
+        ::= { moduleTable 1 }
+
+moduleTableBoxIndex OBJECT-TYPE
+        SYNTAX  INTEGER(1..16)
+        MAX-ACCESS  read-only
+        STATUS  current
+        DESCRIPTION
+                "HD Core index in module table."
+        ::= { moduleEntry 1 }
+
+moduleSlotIndex OBJECT-TYPE
+        SYNTAX  INTEGER(1..18)
+        MAX-ACCESS  read-only
+        STATUS  current
+        DESCRIPTION
+                "HD Core slot index."
+        ::= { moduleEntry 2 }
+
+moduleConfigName OBJECT-TYPE
+        SYNTAX  DisplayString (SIZE (0..32))
+        MAX-ACCESS  read-only
+        STATUS  current
+        DESCRIPTION
+                "The configured name of the module attached to the audio switch in this slot."
+        ::= { moduleEntry 3 }
+
+moduleAvailability OBJECT-TYPE
+        SYNTAX  INTEGER { available (1),
+                          unavailable (2),
+                          hostedUnavailable (3) }
+        MAX-ACCESS  read-only
+        STATUS  current
+        DESCRIPTION
+                "The operational state of this module.
+                When available, the module is operational.
+                When unavailable, the module is not operational.
+                When hostedUnavailable, the hosting device is unavailable, 
+                therefore no real availability information is available, but the device is not operational."
+        ::= { moduleEntry 4 }
+
+-- ports 
+
+-- PortTable ::= SEQUENCE OF PortEntry
+
+PortEntry ::= SEQUENCE {
+          portTableBoxIndex     INTEGER,
+          portTableSlotIndex    INTEGER,
+          portIndex             INTEGER,
+          portConfigName        DisplayString,
+          portAState            INTEGER,
+          portBState            INTEGER,
+          portMode              INTEGER,
+          portAvailability      INTEGER }
+
+portEntry OBJECT-TYPE
+        SYNTAX  PortEntry
+        MAX-ACCESS  not-accessible
+        STATUS  current
+        DESCRIPTION
+        "Entries of PortTable"
+        INDEX { portTableBoxIndex, portTableSlotIndex, portIndex } 
+        ::= { portTable 1 }
+
+portTableBoxIndex OBJECT-TYPE
+        SYNTAX  INTEGER(1..16)
+        MAX-ACCESS  read-only
+        STATUS  current
+        DESCRIPTION
+                "HD Core index in port table."
+        ::= { portEntry 1 }
+
+portTableSlotIndex OBJECT-TYPE
+        SYNTAX  INTEGER(1..18)
+        MAX-ACCESS  read-only
+        STATUS  current
+        DESCRIPTION
+                "HD Core slot index in port table."
+        ::= { portEntry 2 }
+
+portIndex OBJECT-TYPE
+        SYNTAX  INTEGER(0..16)
+        MAX-ACCESS  read-only
+        STATUS  current
+        DESCRIPTION
+                "HD Core port index."
+        ::= { portEntry 3 }
+
+portConfigName OBJECT-TYPE
+        SYNTAX  DisplayString (SIZE (0..32))
+        MAX-ACCESS  read-only
+        STATUS  current
+        DESCRIPTION "The configured name of the port."
+        ::= { portEntry 4 }
+
+
+portAState OBJECT-TYPE
+        SYNTAX  INTEGER { physicalLayerOk (1),
+                          physicalLayerNotOk (2),
+                          notAvailable (3)}
+        MAX-ACCESS  read-only
+        STATUS  current
+        DESCRIPTION  "The physical layer status of the port."
+        ::= { portEntry 5 }
+
+portBState OBJECT-TYPE
+        SYNTAX  INTEGER { physicalLayerOk (1),
+                          physicalLayerNotOk (2),
+                          notAvailable (3)}
+        MAX-ACCESS  read-only
+        STATUS  current
+        DESCRIPTION "The physical layer status of the port."
+        ::= { portEntry 6 }
+
+portMode OBJECT-TYPE
+        SYNTAX  INTEGER { portAActive (1),
+                          portBActive (2),
+                          bridgeMode (3),
+                          notAvailable (4)}
+        MAX-ACCESS  read-only
+        STATUS  current
+        DESCRIPTION
+                "Port Activity."
+        ::= { portEntry 7 }
+
+portAvailability OBJECT-TYPE
+        SYNTAX  INTEGER { available (1),
+                          unavailable (2),
+                          hostedUnavailable (3) }
+        MAX-ACCESS  read-only
+        STATUS  current
+        DESCRIPTION
+                "The operational state of this port.
+                When available, the port is operational.
+                When unavailable, the port is not operational.
+                When hostedUnavailable, the hosting device is unavailable, 
+                therefore no real availability information is available, but the port is not operational."
+        ::= { portEntry 8 }
+
+---   Dallis Teil 
+
+DallisEntry ::= SEQUENCE { 
+          dallisTableBoxIndex   INTEGER,
+          dallisTableSlotIndex  INTEGER,
+          dallisTablePortIndex  INTEGER,
+  
+          dallisConfigName      DisplayString,
+          dallisTempWarning     INTEGER,
+          dallisPSU1Status      INTEGER,
+          dallisPSU2Status      INTEGER  }
+
+dallisEntry  OBJECT-TYPE
+        SYNTAX  DallisEntry
+        MAX-ACCESS  not-accessible
+        STATUS  current
+        DESCRIPTION "describes a dallis frame"
+        INDEX { dallisTableBoxIndex, dallisTableSlotIndex, dallisTablePortIndex } 
+        ::= { dallisTable 1}
+
+dallisTableBoxIndex OBJECT-TYPE
+        SYNTAX  INTEGER(1..16)
+        MAX-ACCESS  read-only
+        STATUS  current
+        DESCRIPTION "HD Core index in port table."
+        ::= { dallisEntry 1 }
+
+dallisTableSlotIndex OBJECT-TYPE
+        SYNTAX  INTEGER(1..18)
+        MAX-ACCESS  read-only
+        STATUS  current
+        DESCRIPTION "HD Core slot index in port table."
+        ::= { dallisEntry 2 }
+
+dallisTablePortIndex OBJECT-TYPE
+        SYNTAX  INTEGER(1..16)
+        MAX-ACCESS  read-only
+        STATUS  current
+        DESCRIPTION "HD Core port index."
+        ::= { dallisEntry 3 }
+
+dallisConfigName OBJECT-TYPE
+        SYNTAX  DisplayString (SIZE (0..32))
+        MAX-ACCESS  read-only
+        STATUS  current
+        DESCRIPTION "The configured name of the DALLIS frame."
+        ::= { dallisEntry 4 }
+
+
+dallisTempWarning OBJECT-TYPE
+        SYNTAX  INTEGER  { ok (1),
+                           critical (2) }
+        MAX-ACCESS  read-only
+        STATUS  current
+        DESCRIPTION  "Temprature warning flag for DALLIS frame."
+        ::= { dallisEntry 5 }
+
+dallisPSU1Status OBJECT-TYPE
+        SYNTAX  INTEGER  { ok (1),
+                           notoperational (2) }
+        MAX-ACCESS  read-only
+        STATUS  current
+        DESCRIPTION "Primary DALLIS power supply state."
+        ::= { dallisEntry 6 }
+
+dallisPSU2Status OBJECT-TYPE
+        SYNTAX  INTEGER  { ok (1),
+                           notoperational (2) }
+        MAX-ACCESS  read-only
+        STATUS  current
+        DESCRIPTION "Redundant DALLIS power supply state."
+        ::= { dallisEntry 7 }
+
+-- Dallis Module 
+
+-- DallisModuleTable ::= SEQUENCE OF DallisModuleTableEntry
+
+DallisModuleTableEntry ::= SEQUENCE {
+          dallisModuleTableBoxIndex             INTEGER,
+          dallisModuleTableSlotIndex            INTEGER,
+          dallisModuleTablePortIndex            INTEGER,
+          dallisModuleTableDallisslotIndex      INTEGER,
+          dallisModuleConfigName                DisplayString,
+          dallisModuleAvailability              INTEGER }
+
+dallisModuleEntry OBJECT-TYPE
+        SYNTAX  DallisModuleTableEntry
+        MAX-ACCESS  not-accessible
+        STATUS  current
+        DESCRIPTION
+        "Entries of DallisModuleTable"
+        INDEX { dallisModuleTableBoxIndex, dallisModuleTableSlotIndex, dallisModuleTablePortIndex, dallisModuleTableDallisslotIndex}
+        ::= { dallisModuleTable 1 }
+
+dallisModuleTableBoxIndex OBJECT-TYPE
+        SYNTAX  INTEGER(1..16)
+        MAX-ACCESS  read-only
+        STATUS  current
+        DESCRIPTION "HD Core index in port table."
+        ::= { dallisModuleEntry 1 }
+
+dallisModuleTableSlotIndex OBJECT-TYPE
+        SYNTAX  INTEGER(1..18)
+        MAX-ACCESS  read-only
+        STATUS  current
+        DESCRIPTION "HD Core slot index in port table."
+        ::= { dallisModuleEntry 2 }
+
+dallisModuleTablePortIndex OBJECT-TYPE
+        SYNTAX  INTEGER(1..16)
+        MAX-ACCESS  read-only
+        STATUS  current
+        DESCRIPTION "HD Core port index."
+        ::= { dallisModuleEntry 3 }
+
+dallisModuleTableDallisslotIndex  OBJECT-TYPE
+        SYNTAX  INTEGER(1..21)
+        MAX-ACCESS  read-only
+        STATUS  current
+        DESCRIPTION
+                "HD Core DALLIS slot index."
+        ::= { dallisModuleEntry 4 }
+
+dallisModuleConfigName OBJECT-TYPE
+        SYNTAX  DisplayString (SIZE (0..32))
+        MAX-ACCESS  read-only
+        STATUS  current
+        DESCRIPTION "The configured name of the DALLIS board."
+        ::= { dallisModuleEntry 5 }
+
+dallisModuleAvailability  OBJECT-TYPE
+        SYNTAX  INTEGER { available (1),
+                          unavailable (2),
+                          hostedUnavailable (3) }
+        MAX-ACCESS  read-only
+        STATUS  current
+        DESCRIPTION
+                "The operational state of this DALLIS module."
+        ::= { dallisModuleEntry 6 }
+
+
+-- GPI
+-- GpiTable ::= SEQUENCE OF GpiEntry
+
+GpiEntry ::= SEQUENCE {
+          gpiHlsdClass          INTEGER,
+          gpiHlsdSubclass       INTEGER,
+          gpiHlsdComponent      INTEGER,
+          gpiHlsdSubcomponent INTEGER,
+          gpiValue              INTEGER }
+
+gpiEntry OBJECT-TYPE
+        SYNTAX  GpiEntry
+        MAX-ACCESS  not-accessible
+        STATUS  current
+        DESCRIPTION
+        "Entries of GpiTable"
+        INDEX { gpiHlsdClass, gpiHlsdSubclass, gpiHlsdComponent, gpiHlsdSubcomponent }
+        ::= { gpiTable 1 }
+
+gpiHlsdClass OBJECT-TYPE
+        SYNTAX  INTEGER(0..255)
+        MAX-ACCESS  read-only
+        STATUS  current
+        DESCRIPTION "The HLSD class of the GPI signal."
+        ::= { gpiEntry 1 }
+
+gpiHlsdSubclass OBJECT-TYPE
+        SYNTAX  INTEGER(0..255)
+        MAX-ACCESS  read-only
+        STATUS  current
+        DESCRIPTION "The HLSD subclass of the GPI signal."
+        ::= { gpiEntry 2 }
+
+gpiHlsdComponent OBJECT-TYPE
+        SYNTAX  INTEGER(0..255)
+        MAX-ACCESS  read-only
+        STATUS  current
+        DESCRIPTION "The HLSD component of the GPI signal."
+        ::= { gpiEntry 3 }
+
+gpiHlsdSubcomponent OBJECT-TYPE
+        SYNTAX  INTEGER(0..255)
+        MAX-ACCESS  read-only
+        STATUS  current
+        DESCRIPTION "The HLSD subcomponent of the GPI signal."
+        ::= { gpiEntry 4 }
+
+gpiValue  OBJECT-TYPE
+        SYNTAX  INTEGER(0..1)
+        MAX-ACCESS  read-only
+        STATUS  current
+        DESCRIPTION
+                "The operational state of this general purpose input."
+        ::= { gpiEntry 5 }
+
+
+-- Notification 
+mcxOid  OBJECT-TYPE
+        SYNTAX  OBJECT IDENTIFIER
+        MAX-ACCESS  read-only
+        STATUS  current
+        DESCRIPTION "The SNMP-OID of the changed object."
+        ::= { mcx 8 }
+
+END
