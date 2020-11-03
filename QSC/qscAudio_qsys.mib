@@ -1,0 +1,254 @@
+-- Title:   QSC QSYS MIB
+-- Version: qsc.mib 16    04/15/05 10:51a DH
+-- Revision History
+--		11 07 14 First Created
+
+    QSCAUDIO-MIB DEFINITIONS ::= BEGIN
+
+    IMPORTS
+        Counter
+            FROM RFC1155-SMI
+        enterprises, Opaque
+            FROM SNMPv2-SMI
+        OBJECT-TYPE
+            FROM RFC-1212
+        PhysAddress
+            FROM RFC1213-MIB
+        TEXTUAL-CONVENTION
+            FROM SNMPv2-TC;
+
+    Float ::= TEXTUAL-CONVENTION
+    STATUS      current
+    DESCRIPTION
+        "A single precision floating-point number.  The semantics
+         and encoding are identical for type 'single' defined in
+         IEEE Standard for Binary Floating-Point,
+         ANSI/IEEE Std 754-1985.
+         The value is restricted to the BER serialization of
+         the following ASN.1 type:
+             FLOATTYPE ::= [120] IMPLICIT FloatType
+         (note: the value 120 is the sum of '30'h and '48'h)
+         The BER serialization of the length for values of
+         this type must use the definite length, short
+         encoding form.
+
+         For example, the BER serialization of value 123
+         of type FLOATTYPE is '9f780442f60000'h.  (The tag
+         is '9f78'h; the length is '04'h; and the value is
+         '42f60000'h.) The BER serialization of value
+         '9f780442f60000'h of data type Opaque is
+         '44079f780442f60000'h. (The tag is '44'h; the length
+         is '07'h; and the value is '9f780442f60000'h."
+    SYNTAX Opaque (SIZE (7))
+
+
+
+    qscAudio OBJECT IDENTIFIER ::= { enterprises 1536 }
+
+    products OBJECT IDENTIFIER ::= { qscAudio 1 }
+
+    allProducts OBJECT IDENTIFIER ::= { products 1 }
+       
+    dspProcessors OBJECT IDENTIFIER ::= { products 2 }
+       --dcp300 OBJECT IDENTIFIER ::= { dspProcessors 1 }
+       qsys OBJECT IDENTIFIER ::= { dspProcessors 2 }
+
+    --serialNumber OBJECT IDENTIFIER ::= { allProducts 1 }
+    firmware OBJECT IDENTIFIER ::= { allProducts 2 }
+
+    design OBJECT IDENTIFIER ::= { qsys 1 }
+    inventory OBJECT IDENTIFIER ::= { qsys 2 }
+    snapshot OBJECT IDENTIFIER ::= { qsys 3 }
+
+    -- firmware
+
+    firmwareMajorVersion OBJECT-TYPE
+        SYNTAX INTEGER
+        ACCESS read-only
+        STATUS mandatory
+        DESCRIPTION
+            "Major release series."
+        ::= { firmware 1 }
+
+    firmwareMinorVersion OBJECT-TYPE
+        SYNTAX INTEGER
+        ACCESS read-only
+        STATUS mandatory
+        DESCRIPTION
+            "Minor release series."
+        ::= { firmware 2 }
+
+   firmwareBuildVersion OBJECT-TYPE
+        SYNTAX INTEGER
+        ACCESS read-only
+        STATUS mandatory
+        DESCRIPTION
+            "Build number."
+        ::= { firmware 3 }
+
+    --firmwareBootVersion OBJECT-TYPE
+    --    SYNTAX INTEGER
+    --    ACCESS read-only
+    --    STATUS mandatory
+    --    DESCRIPTION
+    --        "Boot version."
+    --    ::= { firmware 4 }
+
+------------------------------------------------------------------------------------
+--  design
+------------------------------------------------------------------------------------
+    qsysDesignName OBJECT-TYPE
+        SYNTAX OCTET STRING
+        ACCESS read-only
+        STATUS mandatory
+        DESCRIPTION
+            "Q-Sys Design Name"
+        ::= { design 1 }
+
+------------------------------------------------------------------------------------
+--  inventory
+------------------------------------------------------------------------------------
+
+  inventoryTable OBJECT-TYPE
+    SYNTAX SEQUENCE OF InventoryDeviceEntry
+    ACCESS not-accessible
+    STATUS mandatory
+    DESCRIPTION
+    "This table contains the status of the inventory items placed in a QSys Design."
+    ::= { inventory 1 }
+
+  inventoryEntry OBJECT-TYPE
+    SYNTAX InventoryDeviceEntry
+    ACCESS read-only
+    STATUS mandatory
+    DESCRIPTION
+    "A row describing the inventory item and its status"  
+    INDEX { invTableIndex }
+    ::= { inventoryTable 1 } 
+
+  InventoryDeviceEntry ::=
+    SEQUENCE {
+      invTableIndex   INTEGER,
+      invDeviceName   OCTET STRING,
+      invDeviceType   OCTET STRING,
+      invDeviceModel  OCTET STRING,
+      invLocation     OCTET STRING,
+      invDeviceStatus OCTET STRING,
+      invDeviceStatusValue    INTEGER
+    }
+
+  invTableIndex OBJECT-TYPE
+    SYNTAX INTEGER
+    ACCESS read-only
+    STATUS mandatory
+    DESCRIPTION "Inventory Item"
+    ::= { inventoryEntry 1 }
+
+  invDeviceName OBJECT-TYPE
+    SYNTAX 	OCTET STRING
+    ACCESS read-only
+    STATUS mandatory
+    DESCRIPTION "Inventory Device Name"
+    ::= { inventoryEntry 2 }
+
+  invDeviceType OBJECT-TYPE
+    SYNTAX 	OCTET STRING
+    ACCESS read-only
+    STATUS mandatory
+    DESCRIPTION "Inventory Device Type"
+    ::= { inventoryEntry 3 }
+
+  invDeviceModel OBJECT-TYPE
+    SYNTAX 	OCTET STRING
+    ACCESS read-only
+    STATUS mandatory
+    DESCRIPTION "Inventory Device Model Name"
+    ::= { inventoryEntry 4 }
+
+  invLocation OBJECT-TYPE
+    SYNTAX 	OCTET STRING
+    ACCESS read-only
+    STATUS mandatory
+    DESCRIPTION "Inventory Device Location"
+    ::= { inventoryEntry 5 }
+
+  invDeviceStatus OBJECT-TYPE
+    SYNTAX OCTET STRING
+    ACCESS read-only
+    STATUS mandatory
+    DESCRIPTION "Status String"
+    ::= { inventoryEntry 6 }
+
+  invDeviceStatusValue OBJECT-TYPE
+    SYNTAX 	INTEGER
+    ACCESS read-only
+    STATUS mandatory
+    DESCRIPTION "Status Value"
+    ::= { inventoryEntry 7 }
+
+------------------------------------------------------------------------------------
+--  snapshot
+------------------------------------------------------------------------------------
+
+  snapshotTable OBJECT-TYPE
+    SYNTAX SEQUENCE OF SnapshotEntry
+    ACCESS not-accessible
+    STATUS mandatory
+    DESCRIPTION
+    "This table contains the snapshots"
+    ::= { snapshot 1 }
+
+  snapshotEntry OBJECT-TYPE
+    SYNTAX SnapshotEntry
+    ACCESS read-only
+    STATUS mandatory
+    DESCRIPTION
+    "A row describing the snapshot bank"  
+    INDEX { ssTableIndex }
+    ::= { snapshotTable 1 } 
+
+  SnapshotEntry ::=
+    SEQUENCE {
+      ssTableIndex      INTEGER,
+      ssSnapshotName   OCTET STRING,
+      ssTotalSnapshots INTEGER,
+      ssActiveSnapshot  INTEGER,
+      ssRampTimeSec     Float
+    }
+
+  ssTableIndex OBJECT-TYPE
+    SYNTAX INTEGER
+    ACCESS read-only
+    STATUS mandatory
+    DESCRIPTION "Snapshot Bank Item"
+    ::= { snapshotEntry 1 }
+
+  ssSnapshotName OBJECT-TYPE
+    SYNTAX OCTET STRING
+    ACCESS read-only
+    STATUS mandatory
+    DESCRIPTION "Snapshot Bank Name"
+    ::= { snapshotEntry 2 }
+
+  ssTotalSnapshots OBJECT-TYPE
+    SYNTAX INTEGER
+    ACCESS read-only
+    STATUS mandatory
+    DESCRIPTION "Total Available Snapshots"
+    ::= { snapshotEntry 3 }
+
+  ssActiveSnapshot OBJECT-TYPE
+    SYNTAX INTEGER
+    ACCESS read-write
+    STATUS mandatory
+    DESCRIPTION "Active Snapshot"
+    ::= { snapshotEntry 4 }
+
+  ssRampTimeSec OBJECT-TYPE
+    SYNTAX Float
+    ACCESS read-write
+    STATUS mandatory
+    DESCRIPTION "Ramp Time"
+    ::= { snapshotEntry 5 }
+
+    END
