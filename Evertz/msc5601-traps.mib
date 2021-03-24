@@ -1,0 +1,259 @@
+-- Copyright 2017 Evertz Microsystems Ltd.
+-- Thu Dec 21 14:19:34 2017
+-- Confidential
+
+MSC5601-TRAPS DEFINITIONS ::= BEGIN
+
+IMPORTS
+    mscTraps
+        FROM MSC5601-MIB
+    TRAP-TYPE
+        FROM RFC-1215;
+
+    trapFault OBJECT IDENTIFIER ::= { mscTraps 1 }
+
+
+-- beginning of referenceFault trap
+
+    faultreferenceFaultFalse TRAP-TYPE
+        ENTERPRISE  trapFault
+        DESCRIPTION
+            "Reference locked"
+    ::= 1000
+    
+    faultreferenceFaultTrue TRAP-TYPE
+        ENTERPRISE  trapFault
+        DESCRIPTION
+            "Reference not locked"
+    ::= 1001
+
+-- end of referenceFault trap
+
+-- beginning of timeFault trap
+
+    faulttimeFaultFalse TRAP-TYPE
+        ENTERPRISE  trapFault
+        DESCRIPTION
+            "Time locked"
+    ::= 1002
+    
+    faulttimeFaultTrue TRAP-TYPE
+        ENTERPRISE  trapFault
+        DESCRIPTION
+            "Time not locked"
+    ::= 1003
+
+-- end of timeFault trap
+
+-- beginning of referenceJamNeeded trap
+
+    faultreferenceJamNeededFalse TRAP-TYPE
+        ENTERPRISE  trapFault
+        DESCRIPTION
+            "Reference, user jam not needed"
+    ::= 1004
+    
+    faultreferenceJamNeededTrue TRAP-TYPE
+        ENTERPRISE  trapFault
+        DESCRIPTION
+            "Reference, user jam needed"
+    ::= 1005
+
+-- end of referenceJamNeeded trap
+
+-- beginning of timeJamNeeded trap
+
+    faulttimeJamNeededFalse TRAP-TYPE
+        ENTERPRISE  trapFault
+        DESCRIPTION
+            "Time user jam not needed"
+    ::= 1006
+    
+    faulttimeJamNeededTrue TRAP-TYPE
+        ENTERPRISE  trapFault
+        DESCRIPTION
+            "Time user jam needed"
+    ::= 1007
+
+-- end of timeJamNeeded trap
+
+-- beginning of fanFailureLeftFront trap
+
+    faultfanFailureLeftFrontFalse TRAP-TYPE
+        ENTERPRISE  trapFault
+        DESCRIPTION
+            "Fan left front Ok"
+    ::= 1008
+    
+    faultfanFailureLeftFrontTrue TRAP-TYPE
+        ENTERPRISE  trapFault
+        DESCRIPTION
+            "Fan left front failure"
+    ::= 1009
+
+-- end of fanFailureLeftFront trap
+
+-- beginning of fanFailureLeftRear trap
+
+    faultfanFailureLeftRearFalse TRAP-TYPE
+        ENTERPRISE  trapFault
+        DESCRIPTION
+            "Fan left rear Ok"
+    ::= 1010
+    
+    faultfanFailureLeftRearTrue TRAP-TYPE
+        ENTERPRISE  trapFault
+        DESCRIPTION
+            "Fan left rear failure"
+    ::= 1011
+
+-- end of fanFailureLeftRear trap
+
+-- beginning of fanFailureRightFront trap
+
+    faultfanFailureRightFrontFalse TRAP-TYPE
+        ENTERPRISE  trapFault
+        DESCRIPTION
+            "Fan right front Ok"
+    ::= 1012
+    
+    faultfanFailureRightFrontTrue TRAP-TYPE
+        ENTERPRISE  trapFault
+        DESCRIPTION
+            "Fan right front failure"
+    ::= 1013
+
+-- end of fanFailureRightFront trap
+
+-- beginning of fanFailureRightRear trap
+
+    faultfanFailureRightRearFalse TRAP-TYPE
+        ENTERPRISE  trapFault
+        DESCRIPTION
+            "Fan right rear Ok"
+    ::= 1014
+    
+    faultfanFailureRightRearTrue TRAP-TYPE
+        ENTERPRISE  trapFault
+        DESCRIPTION
+            "Fan right rear failure"
+    ::= 1015
+
+-- end of fanFailureRightRear trap
+
+-- beginning of psLeftFailure trap
+
+    faultpsLeftFailureFalse TRAP-TYPE
+        ENTERPRISE  trapFault
+        DESCRIPTION
+            "Power supply left ok"
+    ::= 1016
+    
+    faultpsLeftFailureTrue TRAP-TYPE
+        ENTERPRISE  trapFault
+        DESCRIPTION
+            "Power supply left failure"
+    ::= 1017
+
+-- end of psLeftFailure trap
+
+-- beginning of psRightFailure trap
+
+    faultpsRightFailureFalse TRAP-TYPE
+        ENTERPRISE  trapFault
+        DESCRIPTION
+            "Power supply right ok"
+    ::= 1018
+    
+    faultpsRightFailureTrue TRAP-TYPE
+        ENTERPRISE  trapFault
+        DESCRIPTION
+            "Power supply right failure"
+    ::= 1019
+
+-- end of psRightFailure trap
+
+-- beginning of internalHardwareFailure trap
+
+    faultinternalHardwareFailureFalse TRAP-TYPE
+        ENTERPRISE  trapFault
+        DESCRIPTION
+            "internalHardware ok"
+    ::= 1020
+    
+    faultinternalHardwareFailureTrue TRAP-TYPE
+        ENTERPRISE  trapFault
+        DESCRIPTION
+            "internalHardware failure"
+    ::= 1021
+
+-- end of internalHardwareFailure trap
+
+-- beginning of temperature trap
+
+    faulttemperatureFalse TRAP-TYPE
+        ENTERPRISE  trapFault
+        DESCRIPTION
+            "Internal temperature ok"
+    ::= 1022
+    
+    faulttemperatureTrue TRAP-TYPE
+        ENTERPRISE  trapFault
+        DESCRIPTION
+            "Internal temperature overheat"
+    ::= 1023
+
+-- end of temperature trap
+
+-- beginning of gpi1Assert trap
+
+    faultgpi1AssertFalse TRAP-TYPE
+        ENTERPRISE  trapFault
+        DESCRIPTION
+            "gpi1 level. high"
+    ::= 1024
+    
+    faultgpi1AssertTrue TRAP-TYPE
+        ENTERPRISE  trapFault
+        DESCRIPTION
+            "gpi1 level. low"
+    ::= 1025
+
+-- end of gpi1Assert trap
+
+-- beginning of gpi2Assert trap
+
+    faultgpi2AssertFalse TRAP-TYPE
+        ENTERPRISE  trapFault
+        DESCRIPTION
+            "gpi2 level. high"
+    ::= 1026
+    
+    faultgpi2AssertTrue TRAP-TYPE
+        ENTERPRISE  trapFault
+        DESCRIPTION
+            "gpi2 level. low"
+    ::= 1027
+
+-- end of gpi2Assert trap
+
+-- beginning of ptpState trap
+
+    faultptpStateFalse TRAP-TYPE
+        ENTERPRISE  trapFault
+        DESCRIPTION
+            "gpi2 level. noChange"
+    ::= 1028
+    
+    faultptpStateTrue TRAP-TYPE
+        ENTERPRISE  trapFault
+        DESCRIPTION
+            "gpi2 level. changed"
+    ::= 1029
+
+-- end of ptpState trap
+
+
+
+
+END

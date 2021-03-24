@@ -1,0 +1,56 @@
+NORTEL-nnSRNode-MSEDGE-SYSTEM-MIB DEFINITIONS ::= BEGIN
+
+   IMPORTS
+       nnMseNode
+           FROM NORTEL-nnSRNode-MIB
+       MODULE-IDENTITY, OBJECT-IDENTITY
+           FROM SNMPv2-SMI;
+
+
+   nnMseInternal  MODULE-IDENTITY
+       LAST-UPDATED "200403170000Z"
+       ORGANIZATION "Nortel Networks"
+       CONTACT-INFO
+              "    Nortel Networks
+                   8200 Dixie Road
+                   Brampton, Ontario L6T 5P6
+                   Canada
+
+                   1-800-4Nortel 
+                   www.nortelnetworks.com"
+       DESCRIPTION
+               "This MIB defines the system MIB objects for the  
+                Nortel Multi-Service Edge device" 
+
+       -- Revision history
+       REVISION "200307140000Z"
+       DESCRIPTION
+                "Initial Version."
+
+       ::= { nnMseNode 1 }
+  
+  -- Not-Accessible MIB Objects; Internal use only
+  	nnMseInternalOAM    OBJECT IDENTIFIER ::= { nnMseInternal 1 }
+ 
+  	nnMseInternalBase    OBJECT IDENTIFIER ::= { nnMseInternal 2 }
+ 
+  	nnMseInternalL2    OBJECT IDENTIFIER ::= { nnMseInternal 3 }
+ 
+  	nnMseInternalIP    OBJECT IDENTIFIER ::= { nnMseInternal 4 }
+ 
+  	nnMseInternalMPLS    OBJECT IDENTIFIER ::= { nnMseInternal 5 }
+ 
+  	nnMseInternal2547    OBJECT IDENTIFIER ::= { nnMseInternal 6 }
+
+  	nnMseInternalCommon   OBJECT IDENTIFIER ::= { nnMseInternal 7 }
+ 
+  	nnMseInternalIPv6    OBJECT IDENTIFIER ::= { nnMseInternal 8 }
+
+   	nnMseInternalWlsedge   OBJECT IDENTIFIER ::= { nnMseInternal 9 }
+
+    nnMseInternalVsm   OBJECT IDENTIFIER ::= { nnMseInternal 10 }
+ 
+  -- MIB Objects
+  
+END
+

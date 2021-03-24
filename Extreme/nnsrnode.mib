@@ -1,0 +1,43 @@
+NORTEL-nnSRNode-MIB DEFINITIONS ::= BEGIN
+
+   IMPORTS
+       nortel
+           FROM NORTEL-MIB-ARCS-MIB
+       MODULE-IDENTITY, OBJECT-IDENTITY
+           FROM SNMPv2-SMI;
+
+
+   nnSRNode  MODULE-IDENTITY
+       LAST-UPDATED "200307140000Z"
+       ORGANIZATION "Nortel Networks"
+       CONTACT-INFO
+              "    Nortel Networks
+                   8200 Dixie Road
+                   Brampton, Ontario L6T 5P6
+                   Canada
+
+                   1-800-4Nortel 
+                   www.nortelnetworks.com"
+       DESCRIPTION
+               "This MIB defines the base arcs for a set of
+                Nortel Devices." 
+
+       -- Revision history
+       REVISION "200307140000Z"
+       DESCRIPTION
+                "Initial Version."
+
+       ::= { nortel 71 } 
+
+  -- Common MIB ARCs
+  nnSRNodePlatform      OBJECT IDENTIFIER ::= { nnSRNode 1 } 
+  
+  -- Device Specific MIB Arcs
+  nnSRNodeDevices    OBJECT IDENTIFIER ::= { nnSRNode 2 }
+  nnMseNode    OBJECT IDENTIFIER ::= { nnSRNodeDevices 1 }
+  -- nnMseNodeExperimental    OBJECT IDENTIFIER ::= { nnMseNode  2 }
+  
+  
+
+END
+

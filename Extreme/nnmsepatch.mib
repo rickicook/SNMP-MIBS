@@ -1,0 +1,586 @@
+-- The base hardware enterprise MIB is only used for show commands of hardware
+-- entities, such as chassis, csc, dsc, ioc, etc.  It is not visible to customers,
+-- or SNMP.
+--
+-- The entityPhysical group of the entity mib is used to model the hardware from
+-- a customer/SNMP perspective.
+-- 
+
+NORTEL-MSE-BASE-PATCH-MIB DEFINITIONS ::= BEGIN
+
+IMPORTS
+	OBJECT-TYPE, MODULE-IDENTITY, Integer32
+		FROM SNMPv2-SMI
+	TEXTUAL-CONVENTION
+		FROM SNMPv2-TC
+	nnMseInternalBase
+		FROM NORTEL-nnSRNode-MSEDGE-SYSTEM-MIB;
+
+nnMsePatch MODULE-IDENTITY
+	LAST-UPDATED "200312041528Z"
+	ORGANIZATION 
+		""
+	CONTACT-INFO 
+		""
+	DESCRIPTION 
+		""
+::= { nnMseInternalBase 13 }
+
+
+TC1 ::= TEXTUAL-CONVENTION
+	STATUS     current
+	DESCRIPTION 
+		""
+	SYNTAX  Integer32
+
+patchSys             OBJECT IDENTIFIER ::= { nnMsePatch 1 }
+patch                OBJECT IDENTIFIER ::= { nnMsePatch 2 }
+patchGroupGlobal     OBJECT IDENTIFIER ::= { patch 4      }
+
+
+patchSysStatus  OBJECT-TYPE
+	SYNTAX     INTEGER {
+		unknown (0),
+		idle (1),
+		busy (2),
+		wait-confirm (3),
+		suspended (4),
+		initializing (5),
+		activation-refused (6)
+	}
+	MAX-ACCESS read-only
+	STATUS     current
+	DESCRIPTION 	
+		""
+	::= { patchSys 1 }
+
+patchSysStatusDescription  OBJECT-TYPE
+	SYNTAX     OCTET STRING (SIZE(64))
+	MAX-ACCESS read-only
+	STATUS     current
+	DESCRIPTION 
+		""
+	::= { patchSys 2 }
+
+patchTable  OBJECT-TYPE
+	SYNTAX SEQUENCE OF PatchEntry
+	MAX-ACCESS not-accessible
+	STATUS     current
+	DESCRIPTION 
+		""
+	::= { patch 1 }
+
+patchEntry  OBJECT-TYPE
+	SYNTAX 	PatchEntry
+	MAX-ACCESS not-accessible
+	STATUS     current
+	DESCRIPTION 
+		""
+	INDEX { patchIndex }
+	::= { patchTable 1 }
+
+PatchEntry ::= SEQUENCE {
+	patchIndex
+		Integer32,
+	patchId
+		OCTET STRING,
+	patchStatus
+		INTEGER,
+	patchCommitted
+		INTEGER,
+	patchTitle
+		OCTET STRING,
+	patchDescription
+		OCTET STRING,
+	patchWarning
+		OCTET STRING,
+	patchInstructions
+		OCTET STRING,
+	patchType
+		INTEGER,
+	patchArch
+		INTEGER,
+	patchUnpackedPath
+		OCTET STRING,
+	patchPackagingType
+		INTEGER,
+	patchPackagingName
+		OCTET STRING,
+	patchTrackingType
+		INTEGER,
+	patchTrackingId
+		OCTET STRING,
+	patchSelected
+		INTEGER
+}
+
+patchIndex  OBJECT-TYPE
+	SYNTAX     Integer32 (0..255)
+	MAX-ACCESS read-only
+	STATUS     current
+	DESCRIPTION 
+		""
+	::= { patchEntry 1 }
+
+patchId  OBJECT-TYPE
+	SYNTAX     OCTET STRING (SIZE(0..32))
+	MAX-ACCESS read-only
+	STATUS     current
+	DESCRIPTION 
+		""
+	::= { patchEntry 2 }
+
+patchStatus  OBJECT-TYPE
+	SYNTAX     INTEGER {
+		unknown (0),
+		available (1),
+		candidate (2),
+		applied (3)
+	}
+	MAX-ACCESS read-only
+	STATUS     current
+	DESCRIPTION 
+		""
+	::= { patchEntry 3 }
+
+patchCommitted  OBJECT-TYPE
+	SYNTAX     INTEGER {
+		false (0),
+		true (1)
+	}
+	MAX-ACCESS read-only
+	STATUS     current
+	DESCRIPTION 
+		""
+	::= { patchEntry 4 }
+
+patchTitle  OBJECT-TYPE
+	SYNTAX     OCTET STRING (SIZE(0..80))
+	MAX-ACCESS read-only
+	STATUS     current
+	DESCRIPTION 
+		""
+	::= { patchEntry 5 }
+
+patchDescription  OBJECT-TYPE
+	SYNTAX     OCTET STRING (SIZE(0..1024))
+	MAX-ACCESS read-only
+	STATUS     current
+	DESCRIPTION 
+		""
+	::= { patchEntry 6 }
+
+patchWarning  OBJECT-TYPE
+	SYNTAX     OCTET STRING (SIZE(0..1024))
+	MAX-ACCESS read-only
+	STATUS     current
+	DESCRIPTION 
+		""
+	::= { patchEntry 7 }
+
+patchInstructions  OBJECT-TYPE
+	SYNTAX     OCTET STRING (SIZE(0..1024))
+	MAX-ACCESS read-only
+	STATUS     current
+	DESCRIPTION 
+		""
+	::= { patchEntry 8 }
+
+patchType  OBJECT-TYPE
+	SYNTAX     INTEGER {
+		unknown (0),
+		hitless (1),
+		reset (2),
+		hitful (3)
+	}
+	MAX-ACCESS read-only
+	STATUS     current
+	DESCRIPTION 
+		""
+	::= { patchEntry 9 }
+
+patchArch  OBJECT-TYPE
+	SYNTAX     INTEGER {
+		unknown (0),
+		ppc (1)
+	}
+	MAX-ACCESS read-only
+	STATUS     current
+	DESCRIPTION 
+		""
+	::= { patchEntry 10 }
+
+patchUnpackedPath  OBJECT-TYPE
+	SYNTAX     OCTET STRING (SIZE(0..256))
+	MAX-ACCESS read-only
+	STATUS     current
+	DESCRIPTION 
+		""
+	::= { patchEntry 11 }
+
+patchPackagingType  OBJECT-TYPE
+	SYNTAX     INTEGER {
+		unknown (0),
+		rpm (1),
+		tgz (2),
+		targz (3)
+	}
+	MAX-ACCESS read-only
+	STATUS     current
+	DESCRIPTION 
+		""
+	::= { patchEntry 12 }
+
+patchPackagingName  OBJECT-TYPE
+	SYNTAX     OCTET STRING (SIZE(0..256))
+	MAX-ACCESS read-only
+	STATUS     current
+	DESCRIPTION 
+		""
+	::= { patchEntry 13 }
+
+patchTrackingType  OBJECT-TYPE
+	SYNTAX     INTEGER {
+		unknown (0),
+		cr (1)
+	}
+	MAX-ACCESS read-only
+	STATUS     current
+	DESCRIPTION 
+		""
+	::= { patchEntry 14 }
+
+patchTrackingId  OBJECT-TYPE
+	SYNTAX     OCTET STRING (SIZE(0..32))
+	MAX-ACCESS read-only
+	STATUS     current
+	DESCRIPTION 
+		""
+	::= { patchEntry 15 }
+
+patchSelected  OBJECT-TYPE
+	SYNTAX     INTEGER {
+		none (0),
+		remove (1),
+		apply (2)
+	}
+	MAX-ACCESS read-only
+	STATUS     current
+	DESCRIPTION 
+		""
+	::= { patchEntry 16 }
+
+patchRelationshipTable  OBJECT-TYPE
+	SYNTAX SEQUENCE OF PatchRelationshipEntry
+	MAX-ACCESS not-accessible
+	STATUS     current
+	DESCRIPTION 
+		""
+	::= { patch 2 }
+
+patchRelationshipEntry  OBJECT-TYPE
+	SYNTAX 	PatchRelationshipEntry
+	MAX-ACCESS not-accessible
+	STATUS     current
+	DESCRIPTION 
+		""
+	INDEX { patchRelationshipPatchIndex, 
+		patchRelationshipIndex }
+	::= { patchRelationshipTable 1 }
+
+PatchRelationshipEntry ::= SEQUENCE {
+	patchRelationshipPatchIndex
+		Integer32,
+	patchRelationshipIndex
+		Integer32,
+	patchRelationshipType
+		INTEGER,
+	patchRelationshipObject
+		INTEGER,
+	patchRelationshipName
+		OCTET STRING,
+	patchRelationshipVersion
+		OCTET STRING
+}
+
+patchRelationshipPatchIndex  OBJECT-TYPE
+	SYNTAX     Integer32 (0..255)
+	MAX-ACCESS read-only
+	STATUS     current
+	DESCRIPTION 
+		""
+	::= { patchRelationshipEntry 1 }
+
+patchRelationshipIndex  OBJECT-TYPE
+	SYNTAX     Integer32 (1..255)
+	MAX-ACCESS read-only
+	STATUS     current
+	DESCRIPTION 
+		""
+	::= { patchRelationshipEntry 2 }
+
+patchRelationshipType  OBJECT-TYPE
+	SYNTAX     INTEGER {
+		unknown (0),
+		depends-on (1),
+		mutex-of (2),
+		supersedes (3)
+	}
+	MAX-ACCESS read-only
+	STATUS     current
+	DESCRIPTION 
+		""
+	::= { patchRelationshipEntry 3 }
+
+patchRelationshipObject  OBJECT-TYPE
+	SYNTAX     INTEGER {
+		unknown (0),
+		patch (1),
+		sw (2)
+	}
+	MAX-ACCESS read-only
+	STATUS     current
+	DESCRIPTION 
+		""
+	::= { patchRelationshipEntry 4 }
+
+patchRelationshipName  OBJECT-TYPE
+	SYNTAX     OCTET STRING (SIZE(0..32))
+	MAX-ACCESS read-only
+	STATUS     current
+	DESCRIPTION 
+		""
+	::= { patchRelationshipEntry 5 }
+
+patchRelationshipVersion  OBJECT-TYPE
+	SYNTAX     OCTET STRING (SIZE(0..32))
+	MAX-ACCESS read-only
+	STATUS     current
+	DESCRIPTION 
+		""
+	::= { patchRelationshipEntry 6 }
+
+patchFileTable  OBJECT-TYPE
+	SYNTAX SEQUENCE OF PatchFileEntry
+	MAX-ACCESS not-accessible
+	STATUS     current
+	DESCRIPTION 
+		""
+	::= { patch 3 }
+
+patchFileEntry  OBJECT-TYPE
+	SYNTAX 	PatchFileEntry
+	MAX-ACCESS not-accessible
+	STATUS     current
+	DESCRIPTION 
+		""
+	INDEX { patchFilePatchIndex, 
+		patchFileIndex }
+	::= { patchFileTable 1 }
+
+PatchFileEntry ::= SEQUENCE {
+	patchFilePatchIndex
+		Integer32,
+	patchFileIndex
+		Integer32,
+	patchFileType
+		INTEGER,
+	patchFileName
+		OCTET STRING,
+	patchFileOrig
+		OCTET STRING
+}
+
+patchFilePatchIndex  OBJECT-TYPE
+	SYNTAX     Integer32 (0..255)
+	MAX-ACCESS read-only
+	STATUS     current
+	DESCRIPTION 
+		""
+	::= { patchFileEntry 1 }
+
+patchFileIndex  OBJECT-TYPE
+	SYNTAX     Integer32 (1..255)
+	MAX-ACCESS read-only
+	STATUS     current
+	DESCRIPTION 
+		""
+	::= { patchFileEntry 2 }
+
+patchFileType  OBJECT-TYPE
+	SYNTAX     INTEGER {
+		unknown (0),
+		tap-so (1),
+		repl-so (2),
+		repl-prog (3),
+		repl-other (4)
+	}
+	MAX-ACCESS read-only
+	STATUS     current
+	DESCRIPTION 
+		""
+	::= { patchFileEntry 3 }
+
+patchFileName  OBJECT-TYPE
+	SYNTAX     OCTET STRING (SIZE(0..256))
+	MAX-ACCESS read-only
+	STATUS     current
+	DESCRIPTION 
+		""
+	::= { patchFileEntry 4 }
+
+patchFileOrig  OBJECT-TYPE
+	SYNTAX     OCTET STRING (SIZE(0..256))
+	MAX-ACCESS read-only
+	STATUS     current
+	DESCRIPTION 
+		""
+	::= { patchFileEntry 5 }
+
+patchGrpConfirmTime   OBJECT-TYPE
+	SYNTAX     Integer32
+	MAX-ACCESS read-write
+	STATUS     current
+	DESCRIPTION 	"Number of minutes for software patch activation to occur from
+			the time a patch is added."
+	DEFVAL     { 20 }
+	::= { patchGroupGlobal 1 }
+
+pathGrpFilePath	      OBJECT-TYPE
+	SYNTAX     OCTET STRING (SIZE(0..256))
+        MAX-ACCESS read-write
+	STATUS     current
+	DESCRIPTION 	"Location of compressed patches.  The location is on the system's
+			 internal flash.  Operation is rejected if path is invalid."
+	DEFVAL     { "/intflash" }
+	::= { patchGroupGlobal 2 }
+
+patchGrpSetPatch   OBJECT-TYPE
+	SYNTAX     OCTET STRING (SIZE(0..256))
+        MAX-ACCESS read-write
+	STATUS     current
+	DESCRIPTION 	"Sets up a given patch for an operation."
+	::= { patchGroupGlobal 3 }
+
+patchGrpSetVersion OBJECT-TYPE
+	SYNTAX     OCTET STRING (SIZE(0..256))
+        MAX-ACCESS read-write
+	STATUS     current
+	DESCRIPTION 	"Sets up a given version for a patch operation." 
+	::= { patchGroupGlobal 4 }
+
+patchGrpPatchAction OBJECT-TYPE
+	SYNTAX	INTEGER {
+			none (1),
+			add (2),
+			remove (3),
+			apply (4),
+			apply-all (5),
+			apply-hitless (6),
+			apply-reset (7),
+			apply-check (8),
+			apply-all-check (9),
+			apply-hitless-check (10),
+			apply-reset-check (11),
+			apply-activate (12),
+			apply-all-activate (13),
+			apply-hitless-activate (14),
+			apply-reset-activate (15),
+			apply-activate-confirm (16),
+			apply-all-activate-confirm (17),
+			apply-hitless-activate-confirm (18),
+			apply-reset-activate-confirm (19),
+			revert (20),
+			revert-all (21),
+			revert-hitless (22),
+			revert-reset (23),
+			revert-check (24),
+			revert-all-check (25),
+			revert-hitless-check (26),
+			revert-reset-check (27),
+			revert-activate (28),
+			revert-all-activate (29),
+			revert-hitless-activate (30),
+			revert-reset-activate (31),
+			revert-activate-confirm (32),
+			revert-all-activate-confirm (33),
+			revert-hitless-activate-confirm (34),
+			revert-reset-activate-confirm (35),
+			activate (36),
+			activate-confirm (37),
+			confirm (38),
+			clear (39),
+			abort (40)
+		}
+	MAX-ACCESS   read-write
+	STATUS       current
+	DESCRIPTION 	"Operational command applied against the current values of patchGrpSetPatch
+			 and patchGrpSetVersion.  The result is found in patchGrpPatchResult.
+
+			 The add operation uncompresses the specified patch from the location specified
+			 patchGrpFilePath to \intflash\release\<version>\patches\<patch-id>\.  The
+			 patch status is updated to available.  Patches must have a .tgz suffix.
+
+			 The remove operation removes the uncompressed patch from the system and 
+			 eliminates it from the list of patches prepared for staging, if applicable.
+
+			 The apply operation lines up the patch in the staging area preparing it for
+			 activation.  Patches must be previously added.
+
+			 The apply-all operation lines up all patches previously added in the staging
+			 area and prepares them for activation.
+
+			 The apply-hitless operation lines up all hitless patches that were previously
+			 added.  Then, it prepares them for activation.
+
+			 The apply-reset operations updates the staging area and reboots for upgrades.
+
+			 Check operations verify that the patch selected is in the staging area
+			 and available for activation.  Attributes relationships are verified but no
+			 change to the patch lineup occurs.
+
+			 The revert operations pull out the patch from the staging area, thus
+			 rearranging the lineup.  The patch is not deleted from the system.  It can be
+			 re-added at a later time.
+
+			 The activate operation begins the patch load process.  The process is delayed by
+			 the value in patchGrpConfirmTime.
+
+			 The confirm-activate operation requires a manual confirmation within the time
+			 specified by patchGrpConfirmTime in order for the patch activation process to
+			 move forward.
+
+			 The confirm operation must be executed after a confirm-activate operation and before
+			 the number of minutes specified in patchGrpConfirmTime has expired.  Under this
+			 scenario activation will occur at the timer expires.  Unconfirmed patches will be
+			 removed from the lineup.
+
+			 The clear operation removes all patches from the staging area.  Although the patch
+			 lineup is empty patches still remains added in uncompressed form on the system.
+
+			 The abort operation terminates the process of activating a patch.  The patch is
+			 removed from the lineup in the staging area."
+
+	DEFVAL	{ none }
+	::= { patchGroupGlobal 5 }
+
+patchGrpPatchResult OBJECT-TYPE
+	SYNTAX		INTEGER {
+				success (1),
+				error (2),
+				patch-unavailable (3),
+				patch-available (4),
+				patch-match (5)
+			}
+	MAX-ACCESS 	read-only
+	STATUS     	current
+	DESCRIPTION 	"Result of the most recent operation executed by patchGrpPatchAction."
+	::= { patchGroupGlobal 6 }
+
+END
+
+
+-- This MIB was created using NuDesign Team's Visual MIBuilder (Ver 4.4).
+
+
+

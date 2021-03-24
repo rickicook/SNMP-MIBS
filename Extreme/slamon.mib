@@ -1,0 +1,537 @@
+
+SLA-MONITOR-MIB DEFINITIONS ::= BEGIN
+
+IMPORTS
+    Unsigned32, MODULE-IDENTITY, OBJECT-TYPE, NOTIFICATION-TYPE
+            FROM SNMPv2-SMI
+    MODULE-COMPLIANCE, OBJECT-GROUP
+            FROM SNMPv2-CONF
+    InetAddressType, InetAddress, InetPortNumber
+            FROM INET-ADDRESS-MIB
+    DisplayString
+            FROM RFC1213-MIB	    
+    policy
+            FROM SYNOPTICS-ROOT-MIB;
+
+slaMonitorMib  MODULE-IDENTITY
+    LAST-UPDATED "201209040000Z"     -- September 4, 2012
+    ORGANIZATION "Avaya Networks, Inc."
+    CONTACT-INFO "
+                  John Seligson
+                  Avaya Networks, Inc.
+                  4655 Great America Parkway
+                  Santa Clara, CA 95054 USA
+                  Phone: +1 408 496 3424
+                  Email: jseligso@avaya.com"
+    DESCRIPTION
+            "An Avaya management module containing data 
+             definitions related to the SLA Monitor Agent."
+
+    REVISION "201209040000Z" -- 4 September 2012
+    DESCRIPTION "Version 1: Initial version. Basic agent support."
+
+    ::= { policy 8 }
+
+slaMonitorMibNotifications 
+            OBJECT IDENTIFIER ::= { slaMonitorMib 0 }
+
+slaMonitorMibClasses 
+            OBJECT IDENTIFIER ::= { slaMonitorMib 1 }
+
+slaMonitorMibConformance 
+            OBJECT IDENTIFIER ::= { slaMonitorMib 2 }
+
+--
+-- Avaya Networks SLA Monitor Agent Classes
+--
+
+slaMonitorAgtClasses OBJECT IDENTIFIER ::= { slaMonitorMibClasses 1 }
+
+--
+-- SLA Monitor Agent Configuration Objects
+--
+
+slaMonitorAgentStatus OBJECT-TYPE
+    SYNTAX         INTEGER {
+                        enabled(1),
+                        disabled(2)
+                   }
+    MAX-ACCESS     read-write
+    STATUS         current
+    DESCRIPTION
+        "The value of this attribute indicates whether
+        the SLA Monitor agent is enabled or not. An agent
+        that is enabled will respond to SLA Monitor
+        server discovery packets. A disabled agent will 
+        remain dormant until manually enabled."
+
+    ::= { slaMonitorAgtClasses 1 }
+
+slaMonitorAgentAddressType OBJECT-TYPE
+    SYNTAX         InetAddressType
+    MAX-ACCESS     read-only
+    STATUS         current
+    DESCRIPTION
+        "The type of IP address used by the agent. This
+        object is limited to IPv4 and IPv6 addresses."
+
+    ::= { slaMonitorAgtClasses 2 }
+
+slaMonitorAgentAddress OBJECT-TYPE
+    SYNTAX         InetAddress
+    MAX-ACCESS     read-only
+    STATUS         current
+    DESCRIPTION
+        "The IP address currently used by the SLA Monitor agent."
+
+    ::= { slaMonitorAgtClasses 3 }
+
+slaMonitorAgentPort OBJECT-TYPE
+    SYNTAX         InetPortNumber
+    MAX-ACCESS     read-only
+    STATUS         current
+    DESCRIPTION
+        "The UDP port currently used by the SLA Monitor 
+        agent for agent-server communication."
+
+    ::= { slaMonitorAgtClasses 4 }
+
+slaMonitorAgentRegisteredWithServer OBJECT-TYPE
+    SYNTAX         INTEGER {
+                        registered(1),
+                        notRegistered(2)
+                   }
+    MAX-ACCESS     read-only
+    STATUS         current
+    DESCRIPTION
+        "The value of this attribute indicates whether
+        the SLA Monitor agent is registered with an SLA
+        Monitor server or not."
+
+    ::= { slaMonitorAgtClasses 5 }
+
+slaMonitorAgentRegisteredServerAddrType OBJECT-TYPE
+    SYNTAX         InetAddressType
+    MAX-ACCESS     read-only
+    STATUS         current
+    DESCRIPTION
+        "The type of IP address used by the server. This
+        object is limited to IPv4 and IPv6 addresses."
+
+    ::= { slaMonitorAgtClasses 6 }
+
+slaMonitorAgentRegisteredServerAddr OBJECT-TYPE
+    SYNTAX         InetAddress
+    MAX-ACCESS     read-only
+    STATUS         current
+    DESCRIPTION
+        "The IP address of the SLA Monitor server with which
+        the agent is currently registered."
+
+    ::= { slaMonitorAgtClasses 7 }
+
+slaMonitorAgentRegisteredServerPort OBJECT-TYPE
+    SYNTAX         InetPortNumber
+    MAX-ACCESS     read-only
+    STATUS         current
+    DESCRIPTION
+        "The TCP port utilized by the SLA Monitor server with 
+        which the agent is currently registered."
+
+    ::= { slaMonitorAgtClasses 8 }
+
+slaMonitorAgentRegistrationTime OBJECT-TYPE
+    SYNTAX         Unsigned32
+    UNITS          "seconds"
+    MAX-ACCESS     read-only
+    STATUS         current
+    DESCRIPTION
+        "Specifies the maximum amount of time, in seconds,
+        until the current registration period expires."
+
+    ::= { slaMonitorAgtClasses 9 }
+
+slaMonitorAgentCliAvailable OBJECT-TYPE
+    SYNTAX         INTEGER {
+                        available(1),
+                        notAvailable(2)
+                   }
+    MAX-ACCESS     read-write
+    STATUS         current
+    DESCRIPTION
+        "The value of this attribute indicates whether
+        the SLA Monitor agent CLI is available or not."
+
+    ::= { slaMonitorAgtClasses 10 }
+
+slaMonitorAgentCliTimeout OBJECT-TYPE
+    SYNTAX         Unsigned32
+    UNITS          "seconds"
+    MAX-ACCESS     read-write
+    STATUS         current
+    DESCRIPTION
+        "Specifies the maximum amount of time, in seconds,
+        until the CLI session is automatically terminated.
+        The value of this attribute is pertinent only if CLI
+        timeouts are enabled (slaMonitorAgentCliTimeoutMode 
+        equals 'enable(1)')."
+
+    ::= { slaMonitorAgtClasses 11 }
+
+slaMonitorAgentCliTimeoutMode OBJECT-TYPE
+    SYNTAX         INTEGER {
+                        enable(1),
+                        disable(2)
+                   }
+    MAX-ACCESS     read-write
+    STATUS         current
+    DESCRIPTION
+        "The value of this attribute indicates whether
+        the SLA Monitor agent automatic CLI session
+        timeout is enabled or not. When this attribute
+        is set to 'enable(1)', a CLI session will 
+        automatically timeout after slaMonitorAgentCliTimeout
+        seconds."
+
+    ::= { slaMonitorAgtClasses 12 }
+
+slaMonitorAgentSupportedApps OBJECT-TYPE
+    SYNTAX         BITS {
+                        other(0),
+                        ntr(1),    -- Network Traceroute
+                        rtp(2)     -- Real Time Performance tests
+                   }
+    MAX-ACCESS     read-only
+    STATUS         current
+    DESCRIPTION
+        "An enumeration of the SLA Monitor agent capabilities."
+
+    ::= { slaMonitorAgtClasses 13 }
+
+slaMonitorAgentConfiguredAgentAddrType OBJECT-TYPE
+    SYNTAX         InetAddressType
+    MAX-ACCESS     read-write
+    STATUS         current
+    DESCRIPTION
+        "The type of IP address used by the agent. This
+        object is limited to IPv4 and IPv6 addresses."
+
+    ::= { slaMonitorAgtClasses 14 }
+
+slaMonitorAgentConfiguredAgentAddr OBJECT-TYPE
+    SYNTAX         InetAddress
+    MAX-ACCESS     read-write
+    STATUS         current
+    DESCRIPTION
+        "The IP address of the SLA Monitor agent. If the value 
+        of this attribute is 0.0.0.0, the SLA Monitor agent will
+        utilize an active device IP address by default."
+
+    ::= { slaMonitorAgtClasses 15 }
+
+slaMonitorAgentConfiguredAgentPort OBJECT-TYPE
+    SYNTAX         InetPortNumber
+    MAX-ACCESS     read-write
+    STATUS         current
+    DESCRIPTION
+        "The UDP port utilized by the SLA Monitor agent for
+        agent-server communication. If the value of this 
+        attribute is zero, the SLA Monitor agent will utilize 
+        a default port value for communication purposes."
+
+    ::= { slaMonitorAgtClasses 16 }
+
+slaMonitorAgentConfiguredServerAddrType OBJECT-TYPE
+    SYNTAX         InetAddressType
+    MAX-ACCESS     read-write
+    STATUS         current
+    DESCRIPTION
+        "The type of IP address used by the server. This
+        object is limited to IPv4 and IPv6 addresses."
+
+    ::= { slaMonitorAgtClasses 17 }
+
+slaMonitorAgentConfiguredServerAddr OBJECT-TYPE
+    SYNTAX         InetAddress
+    MAX-ACCESS     read-write
+    STATUS         current
+    DESCRIPTION
+        "The IP address of the SLA Monitor server with which
+        the agent is allowed to register. If the value of this
+        attribute is not 0.0.0.0, the SLA Monitor agent may
+        only respond to server requests originating at the
+        specified IP address (or the IP address specified by 
+        the slaMonitorAgentConfiguredAltServerAddr object if 
+        it is non-zero)."
+
+    ::= { slaMonitorAgtClasses 18 }
+
+slaMonitorAgentConfiguredServerPort OBJECT-TYPE
+    SYNTAX         InetPortNumber
+    MAX-ACCESS     read-write
+    STATUS         current
+    DESCRIPTION
+        "The TCP port utilized by the SLA Monitor server with 
+        which the agent is allowed to register. If the value
+        of this attribute is non-zero, the SLA Monitor agent
+        may only respond to server requests originating from
+        the specified port (or from the port specified by the 
+        slaMonitorAgentConfiguredAltServerPort object if it 
+        is non-zero)."
+
+    ::= { slaMonitorAgtClasses 19 }
+
+slaMonitorAgentConfiguredAltServerAddrType OBJECT-TYPE
+    SYNTAX         InetAddressType
+    MAX-ACCESS     read-write
+    STATUS         current
+    DESCRIPTION
+        "The type of IP address used by the server. This
+        object is limited to IPv4 and IPv6 addresses."
+
+    ::= { slaMonitorAgtClasses 20 }
+
+slaMonitorAgentConfiguredAltServerAddr OBJECT-TYPE
+    SYNTAX         InetAddress
+    MAX-ACCESS     read-write
+    STATUS         current
+    DESCRIPTION
+        "The IP address of the alternate SLA Monitor server 
+        with which the agent is allowed to register. If the 
+        value of this attribute is not 0.0.0.0, the SLA Monitor 
+        agent may only respond to server requests originating 
+        at the specified IP address (or the IP address
+        specified by the slaMonitorAgentConfiguredServerAddr
+        object if it is non-zero)."
+
+    ::= { slaMonitorAgtClasses 21 }
+
+slaMonitorAgentConfiguredAltServerPort OBJECT-TYPE
+    SYNTAX         InetPortNumber
+    MAX-ACCESS     read-write
+    STATUS         current
+    DESCRIPTION
+        "The TCP port utilized by the alternate SLA Monitor 
+        server with which the agent is allowed to register. 
+        If the value of this attribute is non-zero, the SLA 
+        Monitor agent may only respond to server requests 
+        originating from the specified port (or from the port
+        specified by the slaMonitorAgentConfiguredServerPort
+        object if it is non-zero)."
+
+    ::= { slaMonitorAgtClasses 22 }
+
+slaMonitorAgentToAgentPort OBJECT-TYPE
+    SYNTAX         InetPortNumber
+    MAX-ACCESS     read-only
+    STATUS         current
+    DESCRIPTION
+        "The base UDP port currently used by the SLA Monitor 
+        agent for agent-agent communication. The base UDP port
+        is used to derive multiple agent communication ports.
+
+        An even base port values causes slaMonitorAgentToAgentPort
+        and slaMonitorAgentToAgentPort+1 ports to be used. An 
+        odd base port values causes slaMonitorAgentToAgentPort
+        and slaMonitorAgentToAgentPort-1 ports to be used." 
+
+    ::= { slaMonitorAgtClasses 23 }
+
+slaMonitorAgentConfiguredAgentToAgentPort OBJECT-TYPE
+    SYNTAX         InetPortNumber
+    MAX-ACCESS     read-write
+    STATUS         current
+    DESCRIPTION
+        "The UDP port utilized by the SLA Monitor agent for
+        agent-agent communication. If the value of this 
+        attribute is zero, the SLA Monitor agent will utilize 
+        a default port value for the base agent-agent UDP
+        communication port."
+
+    ::= { slaMonitorAgtClasses 24 }
+
+slaMonitorAgentEncryptionSupport OBJECT-TYPE
+    SYNTAX         INTEGER {
+                        available(1),
+                        notAvailable(2)
+                   }
+    MAX-ACCESS     read-only
+    STATUS         current
+    DESCRIPTION
+        "Specifies if encrypted agent-server communication
+        is supported by the agent."
+
+    ::= { slaMonitorAgtClasses 25 }
+
+slaMonitorAgentConfiguredAgentVrfName OBJECT-TYPE
+    SYNTAX	  DisplayString (SIZE (0..32))
+    MAX-ACCESS    read-write
+    STATUS        current
+    DESCRIPTION   "The name of the virtual Router which SLA Monitor
+		   Agent IP address (slaMonitorAgentConfiguredAgentAddr)
+		   is associated with.  This is only supported on VSP9K
+		   for now"
+    ::= { slaMonitorAgtClasses 26 }
+
+slaMonitorAgentSlaParameter OBJECT-TYPE
+    SYNTAX	  DisplayString (SIZE (0..80))
+    MAX-ACCESS    read-write
+    STATUS        current
+    DESCRIPTION   " String directly passed to the SLA Agent as parameter"
+    ::= { slaMonitorAgtClasses 27  }
+
+slaMonitorAgentCertFileInstallAction OBJECT-TYPE
+    SYNTAX        INTEGER {
+                      noAction(1),
+                      install(2),
+                      deinstall(3)
+                  }
+    MAX-ACCESS    read-write
+    STATUS        current
+    DESCRIPTION     "Operation object to install and deinstall the
+		     certificate file to a platform specific location.
+                     'noactio' -is default setting and always is returned
+		          when this object is queried.
+                     'install', object slaMonitorAgentCertFile will be
+		          used as source certificate file to install .
+                     'deinstall', will ignore object slaMonitorAgentCertFile
+		          and just deinstall or remove the certificate file
+			  from the installed location"
+    DEFVAL   {noAction}
+    ::= { slaMonitorAgtClasses 28 }
+ 
+slaMonitorAgentCertFile OBJECT-TYPE
+    SYNTAX          DisplayString (SIZE(0..128))
+    MAX-ACCESS      read-write
+    STATUS          current
+    DESCRIPTION     "the certification file name for installation.
+                     It is only valid or used when object
+	             slaMonitorAgentCertFileInstallAction
+		     is set to install.  Otherwise, it will be ignored"
+    ::= { slaMonitorAgtClasses 29 }
+
+--
+-- Notifications Section
+--
+
+slaMonitorAgentExceptionDetected NOTIFICATION-TYPE
+    STATUS         current
+    DESCRIPTION
+            "Indicates that an exception event that impacts
+            the local SLA Monitor agent has been detected."
+
+    ::= { slaMonitorMibNotifications 1 }
+
+--
+-- Conformance Section
+--
+
+slaMonitorMibCompliances
+                OBJECT IDENTIFIER ::= { slaMonitorMibConformance 1 }
+slaMonitorMibGroups
+                OBJECT IDENTIFIER ::= { slaMonitorMibConformance 2 }
+
+slaMonitorMibCompliance MODULE-COMPLIANCE
+    STATUS  current
+    DESCRIPTION
+            "Describes the requirements for conformance to the
+             Avaya Networks SLA Monitor Agent MIB."
+
+    MODULE  -- this module
+    MANDATORY-GROUPS { slaMonitorAgentConfigGroup }
+
+        OBJECT        slaMonitorAgentStatus  
+        MIN-ACCESS    read-only
+        DESCRIPTION  "Write access is not required."
+
+        OBJECT        slaMonitorAgentCliAvailable  
+        MIN-ACCESS    read-only
+        DESCRIPTION  "Write access is not required."
+
+        OBJECT        slaMonitorAgentCliTimeout  
+        MIN-ACCESS    read-only
+        DESCRIPTION  "Write access is not required."
+
+        OBJECT        slaMonitorAgentCliTimeoutMode
+        MIN-ACCESS    read-only
+        DESCRIPTION  "Write access is not required."
+
+        OBJECT        slaMonitorAgentConfiguredAgentAddrType
+        MIN-ACCESS    read-only
+        DESCRIPTION  "Write access is not required."
+
+        OBJECT        slaMonitorAgentConfiguredAgentAddr
+        MIN-ACCESS    read-only
+        DESCRIPTION  "Write access is not required."
+
+        OBJECT        slaMonitorAgentConfiguredAgentPort
+        MIN-ACCESS    read-only
+        DESCRIPTION  "Write access is not required."
+
+        OBJECT        slaMonitorAgentConfiguredServerAddrType
+        MIN-ACCESS    read-only
+        DESCRIPTION  "Write access is not required."
+
+        OBJECT        slaMonitorAgentConfiguredServerAddr
+        MIN-ACCESS    read-only
+        DESCRIPTION  "Write access is not required."
+
+        OBJECT        slaMonitorAgentConfiguredServerPort
+        MIN-ACCESS    read-only
+        DESCRIPTION  "Write access is not required."
+
+        OBJECT        slaMonitorAgentConfiguredAltServerAddrType
+        MIN-ACCESS    read-only
+        DESCRIPTION  "Write access is not required."
+
+        OBJECT        slaMonitorAgentConfiguredAltServerAddr
+        MIN-ACCESS    read-only
+        DESCRIPTION  "Write access is not required."
+
+        OBJECT        slaMonitorAgentConfiguredAltServerPort
+        MIN-ACCESS    read-only
+        DESCRIPTION  "Write access is not required."
+
+        OBJECT        slaMonitorAgentConfiguredAgentToAgentPort
+        MIN-ACCESS    read-only
+        DESCRIPTION  "Write access is not required."
+
+    ::= { slaMonitorMibCompliances 1 }
+
+slaMonitorAgentConfigGroup OBJECT-GROUP
+    OBJECTS {
+             slaMonitorAgentStatus,
+             slaMonitorAgentAddressType,
+             slaMonitorAgentAddress,
+             slaMonitorAgentPort,
+             slaMonitorAgentRegisteredWithServer,
+             slaMonitorAgentRegisteredServerAddrType,
+             slaMonitorAgentRegisteredServerAddr,
+             slaMonitorAgentRegisteredServerPort,
+             slaMonitorAgentRegistrationTime,
+             slaMonitorAgentCliAvailable,
+             slaMonitorAgentCliTimeout,
+             slaMonitorAgentCliTimeoutMode,
+             slaMonitorAgentSupportedApps,
+             slaMonitorAgentConfiguredAgentAddrType,
+             slaMonitorAgentConfiguredAgentAddr,
+             slaMonitorAgentConfiguredAgentPort,
+             slaMonitorAgentConfiguredServerAddrType,
+             slaMonitorAgentConfiguredServerAddr,
+             slaMonitorAgentConfiguredServerPort,
+             slaMonitorAgentConfiguredAltServerAddrType,
+             slaMonitorAgentConfiguredAltServerAddr,
+             slaMonitorAgentConfiguredAltServerPort,
+             slaMonitorAgentToAgentPort,
+             slaMonitorAgentConfiguredAgentToAgentPort,
+             slaMonitorAgentEncryptionSupport
+    }
+    STATUS  current
+    DESCRIPTION
+            "Objects used for SLA Monitor Agent 
+             configuration and monitoring."
+
+    ::= { slaMonitorMibGroups 1 }
+
+END
+

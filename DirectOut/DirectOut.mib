@@ -1,0 +1,554 @@
+DirectOutGlobal DEFINITIONS ::= BEGIN
+
+internet OBJECT IDENTIFIER ::= { iso(1) org(3) dod(6) 1 }
+enterprises OBJECT IDENTIFIER ::= { internet(1) private(4) 1 }
+directout OBJECT IDENTIFIER ::= { enterprises(1) 40740 }
+
+DirectOutGlobal MODULE-IDENTITY
+    LAST-UPDATED "201511090000Z"     
+    ORGANIZATION "DirectOut GmbH"
+    CONTACT-INFO "email: development@directout.eu"
+    DESCRIPTION  "MIB for DirectOut devices"
+    ::= { directout 1 }
+
+
+--
+--
+--
+
+directoutTraps OBJECT IDENTIFIER ::= { directout 99 }
+
+device OBJECT IDENTIFIER ::= { directout 2 }
+
+model OBJECT-TYPE
+		SYNTAX INTEGER {
+		M1k2(1)
+		}
+		ACCESS read-only
+		STATUS mandatory
+		DESCRIPTION
+				"Model identification"
+		::= { device 1 }
+
+serial OBJECT-TYPE
+		SYNTAX DisplayString
+		ACCESS read-only
+		STATUS mandatory
+		DESCRIPTION
+				"Serial number"
+		::= { device 2 }
+
+
+--
+--
+--
+
+
+VersionEntry ::=
+SEQUENCE {
+versionIndex INTEGER,
+versionName DisplayString,
+versionString DisplayString,
+versionDate DisplayString
+}
+
+versionTable OBJECT-TYPE
+		SYNTAX SEQUENCE OF VersionEntry
+		ACCESS not-accessible
+		STATUS mandatory
+		DESCRIPTION
+				"Table of firmware/hardware versions"
+		::= { device 3 }
+
+versionEntry OBJECT-TYPE
+		SYNTAX VersionEntry
+		ACCESS not-accessible
+		STATUS mandatory
+		DESCRIPTION
+				"List of version entries"
+		INDEX { versionIndex }
+		::= { versionTable 1 }
+
+versionIndex OBJECT-TYPE
+		SYNTAX INTEGER
+		ACCESS read-only
+		STATUS mandatory
+		DESCRIPTION
+				"ID of the version row"
+		::= { versionEntry 1 }
+
+versionName OBJECT-TYPE
+		SYNTAX DisplayString
+		ACCESS read-only
+		STATUS mandatory
+		DESCRIPTION
+				"Identifies the version's subject, e.g. FPGA firmware, Controller firmware, Hardware revision, .."
+		::= { versionEntry 2 }
+
+versionString OBJECT-TYPE
+		SYNTAX DisplayString
+		ACCESS read-only
+		STATUS mandatory
+		DESCRIPTION
+				"Version string"
+		::= { versionEntry 3 }
+
+versionDate OBJECT-TYPE
+		SYNTAX DisplayString
+		ACCESS read-only
+		STATUS optional
+		DESCRIPTION
+				"Release date"
+		::= { versionEntry 4 }
+
+
+--
+--
+--
+
+
+hardware OBJECT IDENTIFIER ::= { device 4 }
+
+-- PSU status
+
+PSUEntry ::=
+SEQUENCE {
+psuIndex INTEGER,
+psuName DisplayString,
+psuStatus INTEGER
+}
+
+psuTable OBJECT-TYPE
+		SYNTAX SEQUENCE OF PSUEntry
+		ACCESS not-accessible
+		STATUS mandatory
+		DESCRIPTION
+				"Table of power supplies"
+		::= { hardware 1 }
+
+psuEntry OBJECT-TYPE
+		SYNTAX PSUEntry
+		ACCESS not-accessible
+		STATUS mandatory
+		DESCRIPTION
+				"Power supply entry"
+		INDEX { psuIndex }
+		::= { psuTable 1 }
+
+psuIndex OBJECT-TYPE
+		SYNTAX INTEGER
+		ACCESS read-only
+		STATUS mandatory
+		DESCRIPTION
+				"ID of the PSU row"
+		::= { psuEntry 1 }
+
+psuName OBJECT-TYPE
+		SYNTAX DisplayString
+		ACCESS read-only
+		STATUS mandatory
+		DESCRIPTION
+				"Identifies the PSU."
+		::= { psuEntry 2 }
+
+psuStatus OBJECT-TYPE
+		SYNTAX INTEGER { off(0), on(1), fail(2) }
+		ACCESS read-only
+		STATUS mandatory
+		DESCRIPTION
+				"PSU status"
+		::= { psuEntry 3 }
+
+psuTrap TRAP-TYPE
+		ENTERPRISE { directoutTraps }
+		VARIABLES { psuIndex, psuStatus }
+		DESCRIPTION
+				"Power supply status changed"
+		::= 1
+
+
+-- Voltages
+
+
+-- Temperatures
+
+TemperatureEntry ::=
+SEQUENCE {
+temperatureIndex INTEGER,
+temperatureName DisplayString,
+temperatureValue INTEGER
+}
+
+temperatureTable OBJECT-TYPE
+		SYNTAX SEQUENCE OF TemperatureEntry
+		ACCESS not-accessible
+		STATUS mandatory
+		DESCRIPTION
+				"Table of measured temperatures"
+		::= { hardware 3 }
+
+temperatureEntry OBJECT-TYPE
+		SYNTAX TemperatureEntry
+		ACCESS not-accessible
+		STATUS mandatory
+		DESCRIPTION
+				"Temperature entry"
+		INDEX { temperatureIndex }
+		::= { temperatureTable 1 }
+
+temperatureIndex OBJECT-TYPE
+		SYNTAX INTEGER
+		ACCESS read-only
+		STATUS mandatory
+		DESCRIPTION
+				"ID of the temperature row"
+		::= { temperatureEntry 1 }
+
+temperatureName OBJECT-TYPE
+		SYNTAX DisplayString
+		ACCESS read-only
+		STATUS mandatory
+		DESCRIPTION
+				"Identifies the temperature."
+		::= { temperatureEntry 2 }
+
+temperatureValue OBJECT-TYPE
+		SYNTAX INTEGER 
+		ACCESS read-only
+		STATUS mandatory
+		DESCRIPTION
+				"Measured temperature in 10*degrees Celsius"
+		::= { temperatureEntry 3 }
+
+
+temperatureTrap TRAP-TYPE
+		ENTERPRISE { directoutTraps }
+		VARIABLES { temperatureIndex, temperatureValue }
+		DESCRIPTION
+				"Monitored temperature changed"
+		::= 3
+
+
+-- Fans
+
+-- trapid 4
+		
+-- Filesystems
+
+-- trapid 5
+
+		
+--
+--
+--
+
+
+interfaces OBJECT IDENTIFIER ::= { device 5 }
+
+-- MADI
+
+MADIEntry ::=
+SEQUENCE {
+madiIndex INTEGER,
+madiPhysical INTEGER,
+madiPortName DisplayString,  
+madiLabel DisplayString,     
+madiSignal INTEGER,
+madiSyncStatus INTEGER,
+madiReference INTEGER,
+madiFrequency INTEGER,
+madiSpeedmodeIn INTEGER,
+madiChannelsIn INTEGER,
+madiFrameIn INTEGER,
+madiRedundancy INTEGER,
+madiChannelsOut INTEGER,
+madiFrameOut INTEGER
+}
+
+madiTable OBJECT-TYPE
+		SYNTAX SEQUENCE OF VersionEntry
+		ACCESS not-accessible
+		STATUS optional
+		DESCRIPTION
+				"Table of MADI ports"
+		::= { interfaces 1 }
+
+madiEntry OBJECT-TYPE
+		SYNTAX MADIEntry
+		ACCESS not-accessible
+		STATUS mandatory
+		DESCRIPTION
+				"MADI port entry"
+		INDEX { madiIndex }
+		::= { madiTable 1 }
+
+madiIndex OBJECT-TYPE
+		SYNTAX INTEGER
+		ACCESS read-only
+		STATUS mandatory
+		DESCRIPTION
+				"ID of the MADI row"
+		::= { madiEntry 1 }
+
+madiPhysical OBJECT-TYPE
+		SYNTAX INTEGER { BNC(1), scMultimode(2), scSinglemode(3), stMultimode(4), stSinglemode(5), SFP(6) }
+		ACCESS read-only
+		STATUS mandatory
+		DESCRIPTION
+				"Physical port description"
+		::= { madiEntry 2 }
+
+madiPortName OBJECT-TYPE
+		SYNTAX DisplayString
+		ACCESS read-only
+		STATUS mandatory
+		DESCRIPTION
+				"MADI port system name."
+		::= { madiEntry 3 }
+
+madiLabelIn OBJECT-TYPE
+		SYNTAX DisplayString
+		ACCESS read-write
+		STATUS optional
+		DESCRIPTION
+				"MADI input port user defined label."
+		::= { madiEntry 4 }
+
+madiLabelOut OBJECT-TYPE
+		SYNTAX DisplayString
+		ACCESS read-write
+		STATUS optional
+		DESCRIPTION
+				"MADI output port user defined label."
+		::= { madiEntry 5 }
+
+madiSignal OBJECT-TYPE
+		SYNTAX INTEGER
+		ACCESS read-only
+		STATUS optional
+		DESCRIPTION
+				"Measured signal level in 10*dB"
+		::= { madiEntry 6 }
+
+madiSignalTrap TRAP-TYPE
+		ENTERPRISE { directoutTraps }
+		VARIABLES { madiIndex, madiSignal }
+		DESCRIPTION
+				"Monitored incoming signal level changed"
+		::= 10		
+
+madiSyncStatus OBJECT-TYPE
+		SYNTAX INTEGER { noSignal(0), lock(1), sync(3) }
+		ACCESS read-only
+		STATUS mandatory
+		DESCRIPTION
+				"Sync status"
+		::= { madiEntry 7 }
+
+madiSyncTrap TRAP-TYPE
+		ENTERPRISE { directoutTraps }
+		VARIABLES { madiIndex, madiSyncStatus }
+		DESCRIPTION
+				"Sync status changed"
+		::= 11		
+
+madiReference OBJECT-TYPE
+		SYNTAX INTEGER
+		ACCESS read-write
+		STATUS mandatory
+		DESCRIPTION
+				"Clock reference for this MADI port, references one entry from the WordClock table."
+		::= { madiEntry 8 }
+
+madiFrequency OBJECT-TYPE
+		SYNTAX INTEGER
+		ACCESS read-only
+		STATUS mandatory
+		DESCRIPTION
+				"Measured frequency in 10*Hz"
+		::= { madiEntry 9 }
+
+madiFrequencyTrap TRAP-TYPE
+		ENTERPRISE { directoutTraps }
+		VARIABLES { madiIndex, madiFrequency }
+		DESCRIPTION
+				"Monitored incoming signal frequency changed."
+		::= 12		
+
+madiSpeedmode OBJECT-TYPE
+		SYNTAX INTEGER { 1FS(0), 2FS(1), 4FS(2) }
+		ACCESS read-only
+		STATUS mandatory
+		DESCRIPTION
+				"Speed factor active on the port."
+		::= { madiEntry 10 }
+
+madiChannelsIn OBJECT-TYPE
+		SYNTAX INTEGER
+		ACCESS read-only
+		STATUS mandatory
+		DESCRIPTION
+				"Number of input channels"
+		::= { madiEntry 11 }
+
+madiChannelsInTrap TRAP-TYPE
+		ENTERPRISE { directoutTraps }
+		VARIABLES { madiIndex, madiChannelsIn }
+		DESCRIPTION
+				"The number of channels in the incoming MADI stream changed."
+		::= 13		
+
+madiFrameIn OBJECT-TYPE
+		SYNTAX INTEGER { 48k(0), 96k(1) }
+		ACCESS read-only
+		STATUS mandatory
+		DESCRIPTION
+				"Input frame mode"
+		::= { madiEntry 12 }
+
+madiFrameInTrap TRAP-TYPE
+		ENTERPRISE { directoutTraps }
+		VARIABLES { madiIndex, madiFrameIn }
+		DESCRIPTION
+				"The frame geometry of the incoming MADI stream changed."
+		::= 14		
+
+madiRedundancy OBJECT-TYPE
+		SYNTAX INTEGER
+		ACCESS read-write
+		STATUS optional
+		DESCRIPTION
+				"Redundant input port, set to same port to disable"
+		::= { madiEntry 13 }
+
+madiRedundancyInput OBJECT-TYPE
+		SYNTAX INTEGER
+		ACCESS read-only
+		STATUS optional
+		DESCRIPTION
+				"Active redundant input port"
+		::= { madiEntry 14 }
+
+madiRedundancyTrap TRAP-TYPE
+		ENTERPRISE { directoutTraps }
+		VARIABLES { madiIndex, madiRedundancyInput }
+		DESCRIPTION
+				"Reflects changes on the redundancy status."
+		::= 15		
+
+madiChannelsOut OBJECT-TYPE
+		SYNTAX INTEGER { 56ch(0), 64ch(1) }
+		ACCESS read-write
+		STATUS mandatory
+		DESCRIPTION
+				"Number of output channels"
+		::= { madiEntry 15 }
+
+madiFrameOut OBJECT-TYPE
+		SYNTAX INTEGER { 48k(0), 96k(1) }
+		ACCESS read-write
+		STATUS mandatory
+		DESCRIPTION
+				"Output frame mode"
+		::= { madiEntry 16 }
+
+
+-- AES
+
+-- traps 2X
+
+-- Analogue
+
+-- traps 3X
+
+-- WCK
+
+WCKEntry ::=
+SEQUENCE {
+wckIndex INTEGER,
+wckPortName DisplayString,
+wckLabel DisplayString,
+wckLock INTEGER,
+wckFrequency INTEGER
+}
+
+wckTable OBJECT-TYPE
+		SYNTAX SEQUENCE OF WCKEntry
+		ACCESS not-accessible
+		STATUS optional
+		DESCRIPTION
+				"Table of word clock inputs"
+		::= { interfaces 4 }
+
+wckEntry OBJECT-TYPE
+		SYNTAX WCKEntry
+		ACCESS not-accessible
+		STATUS mandatory
+		DESCRIPTION
+				"Word clock table entry"
+		INDEX { wckIndex }
+		::= {wckTable 1 }
+
+wckIndex OBJECT-TYPE
+		SYNTAX INTEGER
+		ACCESS read-only
+		STATUS mandatory
+		DESCRIPTION
+				"Word clock entry row ID"
+		::= { wckEntry 1 }
+
+wckPortName OBJECT-TYPE
+		SYNTAX DisplayString
+		ACCESS read-only
+		STATUS mandatory
+		DESCRIPTION
+				"Word clock system name."
+		::= { wckEntry 2 }
+
+wckLabel OBJECT-TYPE
+		SYNTAX DisplayString
+		ACCESS read-write
+		STATUS optional
+		DESCRIPTION
+				"Word clock user label."
+		::= { wckEntry 3 }
+
+wckSyncStatus OBJECT-TYPE
+		SYNTAX INTEGER { noSignal(0), lock(1), sync(3) }
+		ACCESS read-only
+		STATUS mandatory
+		DESCRIPTION
+				"Sync status"
+		::= { wckEntry 4 }
+
+wckSyncTrap TRAP-TYPE
+		ENTERPRISE { directoutTraps }
+		VARIABLES { wckIndex, wckSyncStatus }
+		DESCRIPTION
+				"Sync status changed"
+		::= 40		
+
+-- Video
+
+-- RSXXX
+
+-- GPI
+
+-- GPO
+
+
+
+
+--
+--
+--
+
+
+routing OBJECT IDENTIFIER ::= { device 6 }
+
+
+
+
+
+
+END

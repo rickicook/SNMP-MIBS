@@ -1,0 +1,77 @@
+NORTEL-MIB-ARCS-MIB DEFINITIONS ::= BEGIN
+
+IMPORTS
+	enterprises
+		FROM RFC1155-SMI;
+
+nortel OBJECT IDENTIFIER ::= { enterprises 562 }
+
+magellan                OBJECT IDENTIFIER ::= { nortel 2 }
+meridian                OBJECT IDENTIFIER ::= { nortel 3 }
+supernode               OBJECT IDENTIFIER ::= { nortel 4 }
+interactiveBroadband    OBJECT IDENTIFIER ::= { nortel 5 }
+callcentre              OBJECT IDENTIFIER ::= { nortel 6 }
+sbip                    OBJECT IDENTIFIER ::= { nortel 7 }
+nav                     OBJECT IDENTIFIER ::= { nortel 8 }
+nsam                    OBJECT IDENTIFIER ::= { nortel 9 }
+iwu                     OBJECT IDENTIFIER ::= { nortel 10 }
+iLink                   OBJECT IDENTIFIER ::= { nortel 11 }
+frontier                OBJECT IDENTIFIER ::= { nortel 12 }
+networks                OBJECT IDENTIFIER ::= { nortel 13 }
+dialAccess              OBJECT IDENTIFIER ::= { nortel 14 }
+sonetTransport          OBJECT IDENTIFIER ::= { nortel 15 }
+congruity               OBJECT IDENTIFIER ::= { nortel 16 }
+newIPProduct            OBJECT IDENTIFIER ::= { nortel 17 }
+voipCallCenter          OBJECT IDENTIFIER ::= { nortel 18 }
+iap                     OBJECT IDENTIFIER ::= { nortel 19 }
+radio                   OBJECT IDENTIFIER ::= { nortel 20 }
+broadbandWirelessAccess OBJECT IDENTIFIER ::= { nortel 21 }
+digitalPowerLine        OBJECT IDENTIFIER ::= { nortel 22 }
+dnsp                    OBJECT IDENTIFIER ::= { nortel 23 }
+spectrum                OBJECT IDENTIFIER ::= { nortel 24 }
+ue9000                  OBJECT IDENTIFIER ::= { nortel 25 }
+newwave                 OBJECT IDENTIFIER ::= { nortel 26 }
+mmcs                    OBJECT IDENTIFIER ::= { nortel 27 }
+voip                    OBJECT IDENTIFIER ::= { nortel 28 }
+nortelGenericMibs       OBJECT IDENTIFIER ::= { nortel 29 }
+securityNortel          OBJECT IDENTIFIER ::= { nortel 30 }
+sEMS                    OBJECT IDENTIFIER ::= { nortel 31 }
+eCommerce               OBJECT IDENTIFIER ::= { nortel 32 }
+dms10                   OBJECT IDENTIFIER ::= { nortel 33 }
+ssg                     OBJECT IDENTIFIER ::= { nortel 34 }
+nnd                     OBJECT IDENTIFIER ::= { nortel 35 }
+msCarrier               OBJECT IDENTIFIER ::= { nortel 36 }
+smallsite               OBJECT IDENTIFIER ::= { nortel 37 }
+mg5000                  OBJECT IDENTIFIER ::= { nortel 38 }
+policyServices          OBJECT IDENTIFIER ::= { nortel 39 }
+eMobility               OBJECT IDENTIFIER ::= { nortel 40 }
+satCom                  OBJECT IDENTIFIER ::= { nortel 41 }
+ops                     OBJECT IDENTIFIER ::= { nortel 42 }
+dmp                     OBJECT IDENTIFIER ::= { nortel 43 }
+dmsmmp                  OBJECT IDENTIFIER ::= { nortel 44 }
+contivity               OBJECT IDENTIFIER ::= { nortel 45 }
+presideRadius           OBJECT IDENTIFIER ::= { nortel 46 }
+pp9400                  OBJECT IDENTIFIER ::= { nortel 47 }
+accessOS                OBJECT IDENTIFIER ::= { nortel 48 }
+cellularRadio           OBJECT IDENTIFIER ::= { nortel 49 }
+otm                     OBJECT IDENTIFIER ::= { nortel 50 }
+cns                     OBJECT IDENTIFIER ::= { nortel 51 }
+patchingMib             OBJECT IDENTIFIER ::= { nortel 52 }
+-- symposium               OBJECT IDENTIFIER ::= { nortel 53 }
+ipm                     OBJECT IDENTIFIER ::= { nortel 54 }
+e-mobility              OBJECT IDENTIFIER ::= { nortel 55 }
+pan                     OBJECT IDENTIFIER ::= { nortel 56 }
+uDC                     OBJECT IDENTIFIER ::= { nortel 57 }
+utility                 OBJECT IDENTIFIER ::= { nortel 58 }
+opc                     OBJECT IDENTIFIER ::= { nortel 61 }
+tls                     OBJECT IDENTIFIER ::= { nortel 62 }
+usf                     OBJECT IDENTIFIER ::= { nortel 63 }
+locationcenter          OBJECT IDENTIFIER ::= { nortel 65 }
+oe                      OBJECT IDENTIFIER ::= { nortel 67 }
+opTeraMetro             OBJECT IDENTIFIER ::= { nortel 68 }
+univityDS               OBJECT IDENTIFIER ::= { nortel 69 }
+acumen                  OBJECT IDENTIFIER ::= { nortel 70 }
+nnSRNode                OBJECT IDENTIFIER ::= { nortel 71 }
+nnEthernetSwitching     OBJECT IDENTIFIER ::= { nortel 74 }
+
+END

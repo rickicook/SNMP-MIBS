@@ -1,0 +1,4076 @@
+-- Copyright 2017 Evertz Microsystems Ltd.
+-- Thu Dec 21 11:59:25 2017
+-- Confidential
+MSC5601-MIB DEFINITIONS ::= BEGIN
+
+IMPORTS
+    miniexprMSC5601
+      FROM EVERTZ-MINI-EXPERIMENTAL-NODE
+    OBJECT-TYPE
+      FROM RFC-1212;
+
+      
+    frequencyReference OBJECT IDENTIFIER ::= { miniexprMSC5601 2}
+    timeReference OBJECT IDENTIFIER ::= { miniexprMSC5601 3}
+    signalStatus OBJECT IDENTIFIER ::= { miniexprMSC5601 4}
+    genericStatus OBJECT IDENTIFIER ::= { miniexprMSC5601 5}
+    mscControlVisibility OBJECT IDENTIFIER ::= { miniexprMSC5601 6}
+    mscControlVisibilityPhase OBJECT IDENTIFIER ::= { miniexprMSC5601 7}
+    mscControlInput OBJECT IDENTIFIER ::= { miniexprMSC5601 8}
+    mscControlCommands OBJECT IDENTIFIER ::= { miniexprMSC5601 9}
+    mscControlLtc OBJECT IDENTIFIER ::= { miniexprMSC5601 10}
+    mscControlSync OBJECT IDENTIFIER ::= { miniexprMSC5601 11}
+    mscControlTG OBJECT IDENTIFIER ::= { miniexprMSC5601 12}
+    mscControlVideoAudioGroup OBJECT IDENTIFIER ::= { miniexprMSC5601 13}
+    mscTestPattern OBJECT IDENTIFIER ::= { miniexprMSC5601 14}
+    globalPhase OBJECT IDENTIFIER ::= { miniexprMSC5601 15}
+    globalPedestal OBJECT IDENTIFIER ::= { miniexprMSC5601 16}
+    analogAudio OBJECT IDENTIFIER ::= { miniexprMSC5601 17}
+    darsAes OBJECT IDENTIFIER ::= { miniexprMSC5601 18}
+    general OBJECT IDENTIFIER ::= { miniexprMSC5601 19}
+    generalModem OBJECT IDENTIFIER ::= { miniexprMSC5601 20}
+    generalDst OBJECT IDENTIFIER ::= { miniexprMSC5601 21}
+    ntpGeneral OBJECT IDENTIFIER ::= { miniexprMSC5601 22}
+    options OBJECT IDENTIFIER ::= { miniexprMSC5601 23}
+    mscNotify OBJECT IDENTIFIER ::= { miniexprMSC5601 24}
+    mscTraps OBJECT IDENTIFIER ::= { miniexprMSC5601 25}
+    ieee1588 OBJECT IDENTIFIER ::= { miniexprMSC5601 26}
+
+
+        
+    referenceInputStatus OBJECT-TYPE
+      SYNTAX INTEGER {
+            internal(1),
+            gpsOk(2),
+            gpsUnlocked(3),
+            videoOkNarrowRange(4),
+            videoOkWideRange(5),
+            videoUnlocked(6),
+            tenMhzOk(7),
+            tenMhzUnlocked(8)
+            }
+      ACCESS read-only
+      STATUS mandatory
+      DESCRIPTION " Shows input reference status. "
+    ::= { frequencyReference 1 }
+
+        
+    lockPercentDone OBJECT-TYPE
+      SYNTAX INTEGER ( 0..100 )
+      ACCESS read-only
+      STATUS mandatory
+      DESCRIPTION " This is the percentage completion of a locking operation. "
+    ::= { frequencyReference 2 }
+
+        
+    lockPercentFrequency OBJECT-TYPE
+      SYNTAX INTEGER ( -100..100 )
+      ACCESS read-only
+      STATUS mandatory
+      DESCRIPTION " This shows the centering of the reference with respect to the
+    high stability internal reference.  It is only valid when the referenceInputStatus
+    is gpsOK or videoOkNarrowRange or temMhzOk. "
+    ::= { frequencyReference 3 }
+
+        
+    timeInputStatus OBJECT-TYPE
+      SYNTAX INTEGER {
+            none(1),
+            ltc25FpsOk(2),
+            ltc25FpsUnlocked(3),
+            ltc2997dfFpsOk(4),
+            ltc2997dfFpsUnlocked(5),
+            vitcPalOk(6),
+            vitcPalUnlocked(7),
+            vitcNtscOk(8),
+            vitcNtscUnlocked(9),
+            gpsOk(10),
+            gpsUnlocked(11),
+            modemOk(12),
+            modemUnlocked(13),
+            synchroOk(14),
+            synchroUnlocked(15),
+            irigOk(16),
+            irigUnlocked(17),
+            ltcUnlocked(18),
+            sntpOk(19),
+            sntpUnlocked(20)
+            }
+      ACCESS read-only
+      STATUS mandatory
+      DESCRIPTION " Shows input reference status. "
+    ::= { timeReference 1 }
+
+        
+    modemStatus OBJECT-TYPE
+      SYNTAX OCTET STRING ( SIZE(16) )
+      ACCESS read-only
+      STATUS mandatory
+      DESCRIPTION " Shows last modem call status.
+    It is only valid when modemPresent is valid "
+    ::= { timeReference 2 }
+
+        
+    gpsHealth OBJECT-TYPE
+      SYNTAX INTEGER {
+            gpsOk(1),
+            gpsUnlockedSearchingForSatellites(2),
+            gpsUnlockedNoAlmanac(3),
+            gpsUnlockedPoorSignal(4),
+            gpsUnlockedNoSatellites(5),
+            gpsUnlockedOnly1Satellite(6),
+            gpsUnlockedOnly2Satellites(7),
+            gpsUnlockedOnly3Satellites(8),
+            gpsUnlockedDisconnected(9)
+            }
+      ACCESS read-only
+      STATUS mandatory
+      DESCRIPTION " Shows gps status. "
+    ::= { signalStatus 1 }
+
+        
+    gpsNumberSatellites OBJECT-TYPE
+      SYNTAX INTEGER ( 0..32 )
+      ACCESS read-only
+      STATUS mandatory
+      DESCRIPTION " This is the number of satellites with useable signals being tracked. "
+    ::= { signalStatus 2 }
+
+        
+    tenMhzPresence OBJECT-TYPE
+      SYNTAX INTEGER {
+            noFiveTenMhzInput(1),
+            fiveMhzInputPresent(2),
+            tenMhzInputPresent(3)
+            }
+      ACCESS read-only
+      STATUS mandatory
+      DESCRIPTION " Shows 5/10 MHz input status. "
+    ::= { signalStatus 3 }
+
+        
+    videoPresence OBJECT-TYPE
+      SYNTAX INTEGER {
+            none(1),
+            sdPalB(2),
+            sdNtscM(3),
+            hd1080p2398(4),
+            hd1080p24(5),
+            hd1080i50(6),
+            hd1080i5994(7),
+            hd1080i60(8),
+            hd720p5994(9),
+            hd720p60(10),
+            hd1080p2398sF(11),
+            hd1080p24sF(12),
+            hd1080p25(13),
+            hd1080p2997(14),
+            hd1080p30(15),
+            hd1035i5994(16),
+            hd1035i60(17),
+            hd720p50(18),
+            hd720p24(19),
+            hd720p2398(20),
+            sd625i48(21),
+            sd625i4795(22)
+            }
+      ACCESS read-only
+      STATUS mandatory
+      DESCRIPTION " Shows video input status. "
+    ::= { signalStatus 4 }
+
+        
+    gpi1 OBJECT-TYPE
+      SYNTAX INTEGER {
+            gpi1High(1),
+            gpi1Low(2)
+            }
+      ACCESS read-only
+      STATUS mandatory
+      DESCRIPTION " Shows the level of gpi 1. "
+    ::= { genericStatus 1 }
+
+        
+    gpi2 OBJECT-TYPE
+      SYNTAX INTEGER {
+            gpi2High(1),
+            gpi2Low(2)
+            }
+      ACCESS read-only
+      STATUS mandatory
+      DESCRIPTION " Shows the level of gpi 2. "
+    ::= { genericStatus 2 }
+
+        
+    synchroLinkStatus OBJECT-TYPE
+      SYNTAX INTEGER {
+            synchroNotSlave(1),
+            synchroLinkOk(2),
+            synchroNoLink(3)
+            }
+      ACCESS read-only
+      STATUS mandatory
+      DESCRIPTION " Shows the status of the synchro link. "
+    ::= { genericStatus 3 }
+
+        
+    acoPresence OBJECT-TYPE
+      SYNTAX INTEGER {
+            noAcoDetected(1),
+            acoOnA(2),
+            acoOnB(3)
+            }
+      ACCESS read-only
+      STATUS mandatory
+      DESCRIPTION " Shows the presence of a 5601ACO2 using SNSA and SNSB pins. "
+    ::= { genericStatus 4 }
+
+        
+-- Beginning of controlVisibilityTable
+    controlVisibilityTable OBJECT-TYPE
+      SYNTAX SEQUENCE OF ControlVisibilityEntry
+        ACCESS not-accessible
+        STATUS mandatory
+        DESCRIPTION  " This table indexes the visibility controls. "
+    ::= { mscControlVisibility 1 }
+
+    controlVisibilityEntry OBJECT-TYPE
+      SYNTAX ControlVisibilityEntry
+        ACCESS not-accessible
+        STATUS mandatory
+        DESCRIPTION 
+                "
+                This entry object type is used to reference
+                all of the objects in the table
+                "
+        INDEX { controlIndex }
+    ::= { controlVisibilityTable 1 }
+
+    ControlVisibilityEntry ::= SEQUENCE {
+        controlIndex     INTEGER,
+        controlVisible     INTEGER
+    }
+
+
+    
+    controlIndex OBJECT-TYPE
+      SYNTAX INTEGER {
+            setSystemTimeVisibility(1),
+            setSystemDateVisibility(2),
+            setUserbitsVisibility(3),
+            userBitModeVisibility(4),
+            irigInputModeVisibility(5),
+            syncroVisibility(6),
+            modemSetupVisibility(7),
+            gpo1Visibility(8),
+            gpo2Visibility(9),
+            gpi1Visibility(10),
+            gpi2Visibility(11),
+            firmwareVisibility(12),
+            dstRulesVisibility(13),
+            presetsVisibility(14),
+            ipRulesVisibility(15),
+            ipRulesTimeVisibility(16),
+            ntpRulesVisibility(17),
+            inputFrequencyReferenceVisibility(18),
+            inputGenlockRangeVisiblity(19),
+            inputFrequencyLockModeVisibility(20),
+            inputTimeReferenceSourceVisibility(21),
+            inputVitcLineVisibility(22),
+            inputLtcVitcDateModeVisibility(23),
+            inputTimeReferenceLockModeVisibility(24),
+            inputJamFrequencyReferenceVisibility(25),
+            inputJamTimeReferenceVisibility(26),
+            ltc1OutputVisibility(27),
+            ltc2OutputVisibility(28),
+            analogAudioVisibility(29),
+            aesAudioVisibility(30),
+            globalPedestalVisibility(31),
+            globalPhasingVisibility(32),
+            autoJamInputTimeVisibility(33),
+            testGeneratorModeVisibility(34),
+            ptpControlsVisibility(35),
+            waveformAnchorVisibility(36),
+            setLeapSecondsVisibility(37)
+            }
+      ACCESS read-only
+      STATUS mandatory
+      DESCRIPTION " This table controls visiblity of controls
+    ipRulesTimeVisibility, gpi1Visibility and gpi2Visibility are no longer used. 
+    Do not display "
+    ::= { controlVisibilityEntry 1 }
+
+    
+    controlVisible OBJECT-TYPE
+      SYNTAX INTEGER {
+            visible(1),
+            hidden(2)
+            }
+      ACCESS read-write
+      STATUS mandatory
+      DESCRIPTION " Makes controls hidden. "
+    ::= { controlVisibilityEntry 2 }
+
+-- End of controlVisibilityTable
+
+
+        
+-- Beginning of controlVisibilityPhaseTable
+    controlVisibilityPhaseTable OBJECT-TYPE
+      SYNTAX SEQUENCE OF ControlVisibilityPhaseEntry
+        ACCESS not-accessible
+        STATUS mandatory
+        DESCRIPTION  " This table indexes the visibility controls. "
+    ::= { mscControlVisibilityPhase 1 }
+
+    controlVisibilityPhaseEntry OBJECT-TYPE
+      SYNTAX ControlVisibilityPhaseEntry
+        ACCESS not-accessible
+        STATUS mandatory
+        DESCRIPTION 
+                "
+                This entry object type is used to reference
+                all of the objects in the table
+                "
+        INDEX { controlIndexPhase }
+    ::= { controlVisibilityPhaseTable 1 }
+
+    ControlVisibilityPhaseEntry ::= SEQUENCE {
+        controlIndexPhase     INTEGER,
+        controlVisiblePhase     INTEGER
+    }
+
+
+    
+    controlIndexPhase OBJECT-TYPE
+      SYNTAX INTEGER {
+            video1OutputVisibility(1),
+            video2OutputVisibility(2),
+            video3OutputVisibility(3),
+            video4OutputVisibility(4),
+            video5OutputVisibility(5),
+            video6OutputVisibility(6),
+            tenMHzOutputVisibility(7),
+            wordClockOutputVisibility(8),
+            sdiTestGenerator1Visibility(9),
+            sdiTestGenerator2Visibility(10),
+            sdiTestGenerator3Visibility(11),
+            sdiTestGenerator4Visibility(12),
+            analogTestGenerator1Visibility(13),
+            analogTestGenerator2Visibility(14)
+            }
+      ACCESS read-only
+      STATUS mandatory
+      DESCRIPTION " This table controls visiblity of phaseable controls "
+    ::= { controlVisibilityPhaseEntry 1 }
+
+    
+    controlVisiblePhase OBJECT-TYPE
+      SYNTAX INTEGER {
+            allVisible(1),
+            hidden(2),
+            phaseVisible(3),
+            testSignalVisible(4),
+            phaseTestSignalVisible(5)
+            }
+      ACCESS read-write
+      STATUS mandatory
+      DESCRIPTION " Makes controls hidden.  testSignalVisible and phaseTestSignalVisible
+    are only available is controlIndexPhase = sdiTestGenerator1Visibility to 
+    analogTestGenerator2Visibility. "
+    ::= { controlVisibilityPhaseEntry 2 }
+
+-- End of controlVisibilityPhaseTable
+
+
+        
+    inputFrequencyReference OBJECT-TYPE
+      SYNTAX INTEGER {
+            gpsMobile(1),
+            tenMhz(2),
+            video(3),
+            internal(4),
+            gpsFixed(5)
+            }
+      ACCESS read-write
+      STATUS mandatory
+      DESCRIPTION " This control selects the source of frequency reference "
+    ::= { mscControlInput 1 }
+
+        
+    inputGenlockRange OBJECT-TYPE
+      SYNTAX INTEGER {
+            narrowRange(1),
+            wideRange(2)
+            }
+      ACCESS read-write
+      STATUS mandatory
+      DESCRIPTION " This control selects lock range of the master oscillator.
+    If inputFrequencyReference is not video, it will always be narrowRange "
+    ::= { mscControlInput 2 }
+
+        
+    inputFrequencyReferenceLockMode OBJECT-TYPE
+      SYNTAX INTEGER {
+            slowLock(1),
+            abruptLock(2)
+            }
+      ACCESS read-write
+      STATUS mandatory
+      DESCRIPTION " This control allows the 5601MSC to jam its input reference
+    whenever it needs to if set to abruptLock, or only on user command if set
+    to slowLock.  It will always be abruptLock if inputFrequencyReference is video,
+    and inputGenlockRange is wideRange. "
+    ::= { mscControlInput 3 }
+
+        
+    inputJamFrequencyReference OBJECT-TYPE
+      SYNTAX INTEGER {
+            jamNow(1)
+            }
+      ACCESS read-write
+      STATUS mandatory
+      DESCRIPTION " This commands the 5601MSC to jam the frequency reference if needed.
+    It is only valid if inputFrequencyReferenceLockMode is in slowLock and the frequency
+    reference will need signifigant time to lock "
+    ::= { mscControlInput 4 }
+
+        
+    inputTimeReference OBJECT-TYPE
+      SYNTAX INTEGER {
+            gps(1),
+            modem(2),
+            synchro(3),
+            ltc(4),
+            vitc(5),
+            none(6),
+            irig(7),
+            sntp(8)
+            }
+      ACCESS read-write
+      STATUS mandatory
+      DESCRIPTION " This control selects the source of time reference
+    modem is only valid when modemPresent is valid.
+    irig is only valid when irigPresent is valid.
+    sntp is only valid when ntpPresent is valid. "
+    ::= { mscControlInput 5 }
+
+        
+    inputTimeReferenceLockMode OBJECT-TYPE
+      SYNTAX INTEGER {
+            jamOnUserCommand(1),
+            jamNever(2),
+            jamAlways(3),
+            jamDaily(4)
+            }
+      ACCESS read-write
+      STATUS mandatory
+      DESCRIPTION " This control allows the 5601MSC to jam its input time
+    whenever it needs to if set to jamAlways, never when set to jamNever, or only on
+    user command if set to jamOnUserCommand.  If it is jamDaily, then it automatically
+    jams at the time in inputTimeAutoJamTime "
+    ::= { mscControlInput 6 }
+
+        
+    inputJamTimeReference OBJECT-TYPE
+      SYNTAX INTEGER {
+            jamNow(1)
+            }
+      ACCESS read-write
+      STATUS mandatory
+      DESCRIPTION " This commands the 5601MSC to jam the time reference if needed.
+    It is only valid if inputTimeReferenceLockMode is in jamOnUserCommand or jamDaily
+    and the time    input does not agree with the internal 5601MSC time. "
+    ::= { mscControlInput 7 }
+
+        
+    inputTimeReferenceVitcLine OBJECT-TYPE
+      SYNTAX INTEGER ( 6..31 )
+      ACCESS read-write
+      STATUS mandatory
+      DESCRIPTION " This sets the line to look for VITC if inputFrequencReference
+    is set to video. "
+    ::= { mscControlInput 8 }
+
+        
+    inputTimeReferenceDateMode OBJECT-TYPE
+      SYNTAX INTEGER {
+            ltcVitcAutoDate(1),
+            ltcVitcNoDate(2),
+            ltcVitcLegacyDate(3),
+            ltcVitcProductionDate(4),
+            ltcVitcSmpte309BcdDate(5),
+            ltcVitcSmpte309MjdDate(6)
+            }
+      ACCESS read-write
+      STATUS mandatory
+      DESCRIPTION " This control selects how date is read from vitc or ltc.
+    ltcVitcAutoDate will select the date mode based on data.  It will 
+    always guess legacy if date format is none, legacy or production. "
+    ::= { mscControlInput 9 }
+
+        
+    inputIrigMode OBJECT-TYPE
+      SYNTAX INTEGER {
+            b12xAuto(1),
+            b120tob123(2),
+            b124tob127(3)
+            }
+      ACCESS read-write
+      STATUS mandatory
+      DESCRIPTION " Sets the mode of the IRIG input.  Mode b12xAuto sets it to
+   auto detect.  Mode B120 to B123 ignores any date data.  
+   Mode 124 to 127 expects valid date, including year.
+   Only valid when irigPresent is valid. "
+    ::= { mscControlInput 10 }
+
+        
+    inputTimeAutoJamTime OBJECT-TYPE
+      SYNTAX OCTET STRING ( SIZE(5) )
+      ACCESS read-write
+      STATUS mandatory
+      DESCRIPTION " Sets jam time for time reference input.  Format is hh:mm.
+    It is valid only if inputTimeReferenceLockMode is set to jamDaily "
+    ::= { mscControlInput 11 }
+
+        
+-- Beginning of ipServerAddressTable
+    ipServerAddressTable OBJECT-TYPE
+      SYNTAX SEQUENCE OF IpServerAddressEntry
+        ACCESS not-accessible
+        STATUS mandatory
+        DESCRIPTION  " This table contains controls related to server IPs. "
+    ::= { mscControlInput 12 }
+
+    ipServerAddressEntry OBJECT-TYPE
+      SYNTAX IpServerAddressEntry
+        ACCESS not-accessible
+        STATUS mandatory
+        DESCRIPTION 
+                "
+                This entry object type is used to reference
+                all of the objects in the table
+                "
+        INDEX { serverInstance }
+    ::= { ipServerAddressTable 1 }
+
+    IpServerAddressEntry ::= SEQUENCE {
+        serverInstance     INTEGER,
+        serverEnable     INTEGER,
+        serverIp     OCTET STRING
+    }
+
+
+    
+    serverInstance OBJECT-TYPE
+      SYNTAX INTEGER {
+            server1(1),
+            server2(2),
+            server3(3),
+            server4(4),
+            server5(5),
+            server6(6),
+            server7(7),
+            server8(8)
+            }
+      ACCESS read-only
+      STATUS mandatory
+      DESCRIPTION " This object is the index for server IPs. "
+    ::= { ipServerAddressEntry 1 }
+
+    
+    serverEnable OBJECT-TYPE
+      SYNTAX INTEGER {
+            off(1),
+            on(2)
+            }
+      ACCESS read-write
+      STATUS mandatory
+      DESCRIPTION " Enables server IP address. "
+    ::= { ipServerAddressEntry 2 }
+
+    
+    serverIp OBJECT-TYPE
+      SYNTAX OCTET STRING ( SIZE(16) )
+      ACCESS read-write
+      STATUS mandatory
+      DESCRIPTION " Sets server IP address.  This should be entered in a decimal dot format. "
+    ::= { ipServerAddressEntry 3 }
+
+-- End of ipServerAddressTable
+
+
+        
+    outputVitcLtcJamAll OBJECT-TYPE
+      SYNTAX INTEGER {
+            jamNow(1)
+            }
+      ACCESS read-write
+      STATUS mandatory
+      DESCRIPTION " This commands the 5601MSC to jam all the VITC and LTC outputs to
+    the selected time reference immediately. "
+    ::= { mscControlCommands 1 }
+
+        
+    presets OBJECT-TYPE
+      SYNTAX INTEGER {
+            savePreset1(1),
+            savePreset2(2),
+            savePreset3(3),
+            retrievePreset1(4),
+            retrievePreset2(5),
+            retrievePreset3(6),
+            retrieveUsaFactoryPreset(7),
+            retrieveEuropeFactoryPreset(8)
+            }
+      ACCESS read-write
+      STATUS mandatory
+      DESCRIPTION " This commands the 5601MSC to save or retrieve all of its controls
+    from memory.  Use retrieve with caution.
+    After a retrieve, all controls should be refreshed.
+    THIS IS A COMMAND.  DO NOT SET IT UNLESS YOU WANT ALL SETTINGS OVERWRITTEN 
+    WITH THE PRESET VALUES. "
+    ::= { mscControlCommands 2 }
+
+        
+-- Beginning of outputLtcTable
+    outputLtcTable OBJECT-TYPE
+      SYNTAX SEQUENCE OF OutputLtcEntry
+        ACCESS not-accessible
+        STATUS mandatory
+        DESCRIPTION  " This table contains controls related to LTC. "
+    ::= { mscControlLtc 1 }
+
+    outputLtcEntry OBJECT-TYPE
+      SYNTAX OutputLtcEntry
+        ACCESS not-accessible
+        STATUS mandatory
+        DESCRIPTION 
+                "
+                This entry object type is used to reference
+                all of the objects in the table
+                "
+        INDEX { ltcIndex }
+    ::= { outputLtcTable 1 }
+
+    OutputLtcEntry ::= SEQUENCE {
+        ltcIndex     INTEGER,
+        ltcPower     INTEGER,
+        ltcRate     INTEGER,
+        ltcJamTime     OCTET STRING,
+        ltcJamNow     INTEGER,
+        ltcOffset     INTEGER,
+        ltcTimeZone     INTEGER,
+        ltcDstEnable     INTEGER,
+        ltcLevel     INTEGER,
+        ltcParity     INTEGER,
+        ltcColourFrame     INTEGER,
+        irigMode     INTEGER,
+        irigOffset     INTEGER
+    }
+
+
+    
+    ltcIndex OBJECT-TYPE
+      SYNTAX INTEGER {
+            ltc1(1),
+            ltc2(2)
+            }
+      ACCESS read-only
+      STATUS mandatory
+      DESCRIPTION " This object is the index for ltc output. "
+    ::= { outputLtcEntry 1 }
+
+    
+    ltcPower OBJECT-TYPE
+      SYNTAX INTEGER {
+            powerOff(1),
+            powerOn(2)
+            }
+      ACCESS read-write
+      STATUS mandatory
+      DESCRIPTION " This is enables the DC power to be put on the LTC.  It is only valid in instance ltc1. "
+    ::= { outputLtcEntry 2 }
+
+    
+    ltcRate OBJECT-TYPE
+      SYNTAX INTEGER {
+            fps2398(1),
+            fps24(2),
+            fps25(3),
+            fps2997(4),
+            fps2997df(5),
+            fps30(6),
+            irig(7)
+            }
+      ACCESS read-write
+      STATUS mandatory
+      DESCRIPTION " This is the rate select. "
+    ::= { outputLtcEntry 3 }
+
+    
+    ltcJamTime OBJECT-TYPE
+      SYNTAX OCTET STRING ( SIZE(5) )
+      ACCESS read-write
+      STATUS mandatory
+      DESCRIPTION " Sets jam time for LTC output.  Format is hh:mm "
+    ::= { outputLtcEntry 4 }
+
+    
+    ltcJamNow OBJECT-TYPE
+      SYNTAX INTEGER {
+            jamNow(1)
+            }
+      ACCESS read-write
+      STATUS mandatory
+      DESCRIPTION " This jams the output ltc time to reference. "
+    ::= { outputLtcEntry 5 }
+
+    
+    ltcOffset OBJECT-TYPE
+      SYNTAX INTEGER ( -1000..1000 )
+      ACCESS read-write
+      STATUS mandatory
+      DESCRIPTION " This sets the offset in frames to the LTC ouptut. "
+    ::= { outputLtcEntry 6 }
+
+    
+    ltcTimeZone OBJECT-TYPE
+      SYNTAX INTEGER {
+            n1200(1),
+            n1130(2),
+            n1100(3),
+            n1030(4),
+            n1000(5),
+            n0930(6),
+            n0900(7),
+            n0830(8),
+            n0800(9),
+            n0730(10),
+            n0700(11),
+            n0630(12),
+            n0600(13),
+            n0530(14),
+            n0500(15),
+            n0430(16),
+            n0400(17),
+            n0330(18),
+            n0300(19),
+            n0230(20),
+            n0200(21),
+            n0130(22),
+            n0100(23),
+            n0030(24),
+            p0000(25),
+            p0030(26),
+            p0100(27),
+            p0130(28),
+            p0200(29),
+            p0230(30),
+            p0300(31),
+            p0330(32),
+            p0400(33),
+            p0430(34),
+            p0500(35),
+            p0550(36),
+            p0600(37),
+            p0630(38),
+            p0700(39),
+            p0730(40),
+            p0800(41),
+            p0830(42),
+            p0900(43),
+            p0930(44),
+            p1000(45),
+            p1030(46),
+            p1100(47),
+            p1130(48),
+            p1200(49)
+            }
+      ACCESS read-write
+      STATUS mandatory
+      DESCRIPTION " This sets the time zone of the LTC ouptut.  
+    Steps are -1200, -1130, -1100, -1030 ... 1130, 1200
+    n indicates negative offset and p indicates posative offset "
+    ::= { outputLtcEntry 7 }
+
+    
+    ltcDstEnable OBJECT-TYPE
+      SYNTAX INTEGER {
+            off(1),
+            on(2),
+            onLegacyAuxBits(3)
+            }
+      ACCESS read-write
+      STATUS mandatory
+      DESCRIPTION " Enables automatic Daylight Saving Time "
+    ::= { outputLtcEntry 8 }
+
+    
+    ltcLevel OBJECT-TYPE
+      SYNTAX INTEGER ( 1..15 )
+      ACCESS read-write
+      STATUS mandatory
+      DESCRIPTION " This sets the output level of the ltc.  It is a relative
+    number representing 0.4 to 4.0 volts. "
+    ::= { outputLtcEntry 9 }
+
+    
+    ltcParity OBJECT-TYPE
+      SYNTAX INTEGER {
+            off(1),
+            on(2)
+            }
+      ACCESS read-write
+      STATUS mandatory
+      DESCRIPTION " Enables the parity bit "
+    ::= { outputLtcEntry 10 }
+
+    
+    ltcColourFrame OBJECT-TYPE
+      SYNTAX INTEGER {
+            off(1),
+            on(2)
+            }
+      ACCESS read-write
+      STATUS mandatory
+      DESCRIPTION " Enables Colour Frame bit.  Not valid if ltcRate is
+    fps30, fps2398 or fps24 "
+    ::= { outputLtcEntry 11 }
+
+    
+    irigMode OBJECT-TYPE
+      SYNTAX INTEGER {
+            b122(1),
+            b123(2),
+            b126(3),
+            b127(4)
+            }
+      ACCESS read-write
+      STATUS mandatory
+      DESCRIPTION " Sets the mode of the IRIG content.
+   Only valid when irigPresent is valid. "
+    ::= { outputLtcEntry 12 }
+
+    
+    irigOffset OBJECT-TYPE
+      SYNTAX INTEGER ( -59..59 )
+      ACCESS read-write
+      STATUS mandatory
+      DESCRIPTION " This sets the offset in seconds to the IRIG ouptut.
+    Only valid when irigPresent is valid. "
+    ::= { outputLtcEntry 13 }
+
+-- End of outputLtcTable
+
+
+        
+-- Beginning of syncTable
+    syncTable OBJECT-TYPE
+      SYNTAX SEQUENCE OF SyncEntry
+        ACCESS not-accessible
+        STATUS mandatory
+        DESCRIPTION  " This table contains controls related to video outputs. "
+    ::= { mscControlSync 1 }
+
+    syncEntry OBJECT-TYPE
+      SYNTAX SyncEntry
+        ACCESS not-accessible
+        STATUS mandatory
+        DESCRIPTION 
+                "
+                This entry object type is used to reference
+                all of the objects in the table
+                "
+        INDEX { videoIndex }
+    ::= { syncTable 1 }
+
+    SyncEntry ::= SEQUENCE {
+        videoIndex     INTEGER,
+        videoVideoStandard     INTEGER,
+        videoVitcEnable     INTEGER,
+        videoVitcLine1     INTEGER,
+        videoVitcLine2     INTEGER,
+        videoDropFrame     INTEGER,
+        videoColourFrame     INTEGER,
+        videoJamTime     OCTET STRING,
+        videoJamNow     INTEGER,
+        videoOffset     INTEGER,
+        videoTimeZone     INTEGER,
+        videoDstEnable     INTEGER,
+        videoTenField     INTEGER,
+        videoColourPhase     INTEGER,
+        videoVertPhase     INTEGER,
+        videoHorPhase     INTEGER,
+        videoFinePhase     INTEGER,
+        videoPulseType     INTEGER,
+        videoSineLevel     INTEGER,
+        videoWordClockLevel     INTEGER
+    }
+
+
+    
+    videoIndex OBJECT-TYPE
+      SYNTAX INTEGER {
+            sync1(1),
+            sync2(2),
+            sync3(3),
+            sync4(4),
+            sync5(5),
+            sync6(6),
+            tenMhz(7),
+            wordClock(8)
+            }
+      ACCESS read-only
+      STATUS mandatory
+      DESCRIPTION " This object is the index for video output "
+    ::= { syncEntry 1 }
+
+    
+    videoVideoStandard OBJECT-TYPE
+      SYNTAX INTEGER {
+            sdPal(1),
+            sdNtsc(2),
+            hdf1080p2398(3),
+            hdi1080p24(4),
+            hdi1080i50(5),
+            hdf1080i5994(6),
+            hdi1080i60(7),
+            hdf720p5994(8),
+            hdi720p60(9),
+            hdf1080p2398sF(10),
+            hdi1080p24sf(11),
+            hdi1080p25(12),
+            hdf1080p2997(13),
+            hdi1080p30(14),
+            notUsed1(15),
+            notUsed2(16),
+            hdi720p50(17),
+            hdi720p24(18),
+            notUsed3(19),
+            hdi625i48(20),
+            hdf625i4795(21),
+            sdPalColourFrame(22),
+            sd1Hz(23),
+            sd1per1001Hz(24),
+            sd6per1001Hz(25),
+            fiveMhz(26),
+            tenMhz(27),
+            ntscSubcarrier(28),
+            palSubcarier(29),
+            wordClock(30),
+            irigDatum(31),
+            notUsed4(32),
+            hdi720p30(33),
+            hdi480p5994(34),
+            hdi576p50(35),
+            hdi1080p50(36),
+            hdi1080p5994(37),
+            hdi1080p60(38)
+            }
+      ACCESS read-write
+      STATUS mandatory
+      DESCRIPTION " This is the video mode select. Do not show notUsed1, notUsed2, or notUsed3. "
+    ::= { syncEntry 2 }
+
+    
+    videoVitcEnable OBJECT-TYPE
+      SYNTAX INTEGER {
+            off(1),
+            on(2)
+            }
+      ACCESS read-write
+      STATUS mandatory
+      DESCRIPTION " Enables embedded VITC.  Only valid if videoVideoStandard is sdPal or sdNtsc. "
+    ::= { syncEntry 3 }
+
+    
+    videoVitcLine1 OBJECT-TYPE
+      SYNTAX INTEGER ( 6..31 )
+      ACCESS read-write
+      STATUS mandatory
+      DESCRIPTION " Sets embedded VITC line 1.  Only valid if videoVideoStandard is sdPal or sdNtsc.
+    If sdPal, the range is 6 to 31.  If sdNtsc, the range is 10 to 30. "
+    ::= { syncEntry 4 }
+
+    
+    videoVitcLine2 OBJECT-TYPE
+      SYNTAX INTEGER ( 6..31 )
+      ACCESS read-write
+      STATUS mandatory
+      DESCRIPTION " Sets embedded VITC line 2.  Only valid if videoVideoStandard is sdPal or sdNtsc.
+    If sdPal, the range is 6 to 31.  If sdNtsc, the range is 10 to 30. "
+    ::= { syncEntry 5 }
+
+    
+    videoDropFrame OBJECT-TYPE
+      SYNTAX INTEGER {
+            off(1),
+            on(2)
+            }
+      ACCESS read-write
+      STATUS mandatory
+      DESCRIPTION " Enables Drop Frame bit.  Only valid if videoVideoStandard is sdNtsc. "
+    ::= { syncEntry 6 }
+
+    
+    videoColourFrame OBJECT-TYPE
+      SYNTAX INTEGER {
+            off(1),
+            on(2)
+            }
+      ACCESS read-write
+      STATUS mandatory
+      DESCRIPTION " Enables Colour Frame bit.  Only valid if videoVideoStandard is sdPal or sdNtsc. "
+    ::= { syncEntry 7 }
+
+    
+    videoJamTime OBJECT-TYPE
+      SYNTAX OCTET STRING ( SIZE(5) )
+      ACCESS read-write
+      STATUS mandatory
+      DESCRIPTION " Sets jam time for video output.  Format is hh:mm "
+    ::= { syncEntry 8 }
+
+    
+    videoJamNow OBJECT-TYPE
+      SYNTAX INTEGER {
+            jamNow(1)
+            }
+      ACCESS read-write
+      STATUS mandatory
+      DESCRIPTION " This jams the output video VITC time to reference. "
+    ::= { syncEntry 9 }
+
+    
+    videoOffset OBJECT-TYPE
+      SYNTAX INTEGER ( -1000..1000 )
+      ACCESS read-write
+      STATUS mandatory
+      DESCRIPTION " This sets the offset in frames to the video VITC ouptut. "
+    ::= { syncEntry 10 }
+
+    
+    videoTimeZone OBJECT-TYPE
+      SYNTAX INTEGER {
+            n1200(1),
+            n1130(2),
+            n1100(3),
+            n1030(4),
+            n1000(5),
+            n0930(6),
+            n0900(7),
+            n0830(8),
+            n0800(9),
+            n0730(10),
+            n0700(11),
+            n0630(12),
+            n0600(13),
+            n0530(14),
+            n0500(15),
+            n0430(16),
+            n0400(17),
+            n0330(18),
+            n0300(19),
+            n0230(20),
+            n0200(21),
+            n0130(22),
+            n0100(23),
+            n0030(24),
+            p0000(25),
+            p0030(26),
+            p0100(27),
+            p0130(28),
+            p0200(29),
+            p0230(30),
+            p0300(31),
+            p0330(32),
+            p0400(33),
+            p0430(34),
+            p0500(35),
+            p0550(36),
+            p0600(37),
+            p0630(38),
+            p0700(39),
+            p0730(40),
+            p0800(41),
+            p0830(42),
+            p0900(43),
+            p0930(44),
+            p1000(45),
+            p1030(46),
+            p1100(47),
+            p1130(48),
+            p1200(49)
+            }
+      ACCESS read-write
+      STATUS mandatory
+      DESCRIPTION " This sets the time zone of the video VITC ouptut.  
+    Steps are -1200, -1130, -1100, -1030 ... 1130, 1200
+    n indicates negative offset and p indicates posative offset "
+    ::= { syncEntry 11 }
+
+    
+    videoDstEnable OBJECT-TYPE
+      SYNTAX INTEGER {
+            off(1),
+            on(2),
+            onLegacyAuxBits(3)
+            }
+      ACCESS read-write
+      STATUS mandatory
+      DESCRIPTION " Enables automatic Daylight Saving Time "
+    ::= { syncEntry 12 }
+
+    
+    videoTenField OBJECT-TYPE
+      SYNTAX INTEGER {
+            off(1),
+            on(2)
+            }
+      ACCESS read-write
+      STATUS mandatory
+      DESCRIPTION " Enables Ten Field pulse.  Only valid if videoVideoStandard is sdNtsc. "
+    ::= { syncEntry 13 }
+
+    
+    videoColourPhase OBJECT-TYPE
+      SYNTAX INTEGER ( 1..4 )
+      ACCESS read-write
+      STATUS mandatory
+      DESCRIPTION " Sets colour frame phase of video.  Only valid if videoVideoStandard is sdPal or sdNtsc.
+    If sdPal, the range is 1 to 4.  If sdNtsc, the range is 1 to 2. "
+    ::= { syncEntry 14 }
+
+    
+    videoVertPhase OBJECT-TYPE
+      SYNTAX INTEGER ( 1..1125 )
+      ACCESS read-write
+      STATUS mandatory
+      DESCRIPTION " Sets vertical phase of video. 
+    Mode             Max Range 
+    sdPal            625
+    sdNtsc           525
+    hdf1080p2398    1125
+    hdi1080p24      1125
+    hdi1080i50      1125
+    hdf1080i5994    1125
+    hdi1080i60      1125
+    hdf720p5994      750
+    hdi720p60        750
+    hdf1080p2398sF  1125
+    hdi1080p24sf    1125
+    hdi1080p25      1125
+    hdf1080p2997    1125
+    hdi1080p30      1125
+    hdi720p50        750
+    hdi720p24        750
+    hdi625i48        625
+    hdf625i4795      625
+    hdi720p30        750
+    hdi480p5994      525
+    hdi576p50        625
+    hdi1080p50      1125
+    hdi1080p5994    1125
+    hdi1080p60      1125
+    Not valid for sdPalColourFrame, sd1Hz, sd1per1001Hz, sd6per1001Hz,
+    fiveMhz, tenMhz, ntscSubcarrier, palSubcarier, wordClock, irigDatum "
+    ::= { syncEntry 15 }
+
+    
+    videoHorPhase OBJECT-TYPE
+      SYNTAX INTEGER ( 1..4950 )
+      ACCESS read-write
+      STATUS mandatory
+      DESCRIPTION " Sets horizontal phase of video. 
+    Mode             Max Range 
+    sdPal           1728
+    sdNtsc          1716
+    hdf1080p2398    2750
+    hdi1080p24      2750
+    hdi1080i50      2640
+    hdf1080i5994    2200
+    hdi1080i60      2200
+    hdf720p5994     1650
+    hdi720p60       1650
+    hdf1080p2398sF  2750
+    hdi1080p24sf    2750
+    hdi1080p25      2640
+    hdf1080p2997    2200
+    hdi1080p30      2200
+    hdi720p50       1980
+    hdi720p24       4125
+    hdi625i48       4950
+    hdf625i4795     4950
+    hdi720p30       3300
+    hdi480p5994      858
+    hdi576p50        864
+    hdi1080p50      2640
+    hdi1080p5994    2200
+    hdi1080p60      2200
+
+    Not valid for sdPalColourFrame, sd1Hz, sd1per1001Hz, sd6per1001Hz,
+    fiveMhz, tenMhz, ntscSubcarrier, palSubcarier, wordClock, irigDatum "
+    ::= { syncEntry 16 }
+
+    
+    videoFinePhase OBJECT-TYPE
+      SYNTAX INTEGER ( 0..255 )
+      ACCESS read-write
+      STATUS mandatory
+      DESCRIPTION " Sets fine phase of video.
+    Should be displayed as a percentage.  ie  0.00 to 99.4%, where each count
+    represents 100/256 %
+    Not valid for sdPalColourFrame, sd1Hz, sd1per1001Hz, sd6per1001Hz,
+    fiveMhz, tenMhz, ntscSubcarrier, palSubcarier, wordClock, irigDatum "
+    ::= { syncEntry 17 }
+
+    
+    videoPulseType OBJECT-TYPE
+      SYNTAX INTEGER {
+            cmosLevel(1),
+            biLevel(2),
+            triLevel(3)
+            }
+      ACCESS read-write
+      STATUS mandatory
+      DESCRIPTION " Sets the pulse output to 5V CMOS, or +/- 1V bi-level, 
+    or +/- 1V tri-level.  Only valid if videoVideoStandard is sdPalColourFrame,
+    or sd1Hz, or sd1per1001Hz, sd6per1001Hz or irigDatum. "
+    ::= { syncEntry 18 }
+
+    
+    videoSineLevel OBJECT-TYPE
+      SYNTAX INTEGER {
+            lowLevel(1),
+            highLevel(2)
+            }
+      ACCESS read-write
+      STATUS mandatory
+      DESCRIPTION " Sets the sinudoidal output to +/- 1V or +/- 2V.  
+    Only valid if videoVideoStandard is fiveMhz, or tenMhz,
+    or ntscSubcarrier, or palSubcarrier. "
+    ::= { syncEntry 19 }
+
+    
+    videoWordClockLevel OBJECT-TYPE
+      SYNTAX INTEGER {
+            cmosLevel(1),
+            oneVoltLevel(2)
+            }
+      ACCESS read-write
+      STATUS mandatory
+      DESCRIPTION " Sets the sinudoidal output to 5V CMOS or +/- 1V.  
+    Only valid if videoVideoStandard is wordClock. "
+    ::= { syncEntry 20 }
+
+-- End of syncTable
+
+
+        
+-- Beginning of testGeneratorTable
+    testGeneratorTable OBJECT-TYPE
+      SYNTAX SEQUENCE OF TestGeneratorEntry
+        ACCESS not-accessible
+        STATUS mandatory
+        DESCRIPTION  " This table contains controls related to test generator outputs. "
+    ::= { mscControlTG 1 }
+
+    testGeneratorEntry OBJECT-TYPE
+      SYNTAX TestGeneratorEntry
+        ACCESS not-accessible
+        STATUS mandatory
+        DESCRIPTION 
+                "
+                This entry object type is used to reference
+                all of the objects in the table
+                "
+        INDEX { tgIndex }
+    ::= { testGeneratorTable 1 }
+
+    TestGeneratorEntry ::= SEQUENCE {
+        tgIndex     INTEGER,
+        tgInterface     INTEGER,
+        tgImageFormat     INTEGER,
+        tgSampleSpace     INTEGER,
+        tgColourPhase     INTEGER,
+        tgVertPhase     INTEGER,
+        tgHorPhase     INTEGER,
+        tgFinePhase     INTEGER,
+        tgMessage1     OCTET STRING,
+        tgMessage2     OCTET STRING,
+        tgMessageHor     INTEGER,
+        tgMessageVert     INTEGER,
+        tgMessageEnable     INTEGER,
+        tgMessageFont     INTEGER,
+        tgClosedCaptioning     INTEGER,
+        tgSynchro     INTEGER,
+        tgOutputDrive     INTEGER,
+        tgNumActiveTestPatterns     INTEGER,
+        tgCurrentTestPattern     INTEGER,
+        tgBurnIn     INTEGER,
+        tgDropFrame     INTEGER,
+        tgJamTime     OCTET STRING,
+        tgJamNow     INTEGER,
+        tgOffset     INTEGER,
+        tgTimeZone     INTEGER,
+        tgDstEnable     INTEGER,
+        tgDigitalTimeCode     INTEGER
+    }
+
+
+    
+    tgIndex OBJECT-TYPE
+      SYNTAX INTEGER {
+            sdiTestGen1(1),
+            sdiTestGen2(2),
+            sdiTestGen3(3),
+            sdiTestGen4(4),
+            sdAnalogTestGen1(5),
+            sdAnalogTestGen2(6)
+            }
+      ACCESS read-only
+      STATUS mandatory
+      DESCRIPTION " This object is the index for test generator outputs "
+    ::= { testGeneratorEntry 1 }
+
+    
+    tgInterface OBJECT-TYPE
+      SYNTAX INTEGER {
+            highDefinition(1),
+            levelA3G(2),
+            levelB3G(3),
+            dualLink(4),
+            standardDefinition(5)
+            }
+      ACCESS read-write
+      STATUS mandatory
+      DESCRIPTION " This is the test generator interface select.  If the instance
+    is sdAnalogTestGen1 or sdAnalogTestGen2, do not show this control.
+    If this changes, refresh tgImageFormat, and tgColourPhase, tgVertPhase,
+    tgHorPhase, tgFinePhase and test signals. "
+    ::= { testGeneratorEntry 2 }
+
+    
+    tgImageFormat OBJECT-TYPE
+      SYNTAX INTEGER {
+            hd1920x1080i5994(1),
+            hd1920x1080p2398(2),
+            hd1920x1080p2997(3),
+            hd1920x1080p2398sF(4),
+            hd1920x1080p2998sF(5),
+            hd2048x1080p2398(6),
+            hd2048x1080p2398sF(7),
+            hd1280x720p5994(8),
+            hd1920x1080i50(9),
+            hd1920x1080p25(10),
+            hd1920x1080p25sF(11),
+            hd1280x720p50(12),
+            hd1920x1080i60(13),
+            hd1920x1080p24(14),
+            hd1920x1080p30(15),
+            hd1920x1080p24sF(16),
+            hd1920x1080p30sF(17),
+            hd2048x1080p24(18),
+            hd2048x1080p24sF(19),
+            hd1280x720p60(20),
+            a3G1920x1080p5994(21),
+            a3G1920x1080p50(22),
+            a3G1920x1080p60(23),
+            b3G1920x1080i5994(24),
+            b3G1920x1080p5994(25),
+            b3G1920x1080p2398sF(26),
+            b3G1920x1080p2998sF(27),
+            b3G2048x1080p2398(28),
+            b3G2048x1080p2398sF(29),
+            b3G1920x1080i50(30),
+            b3G1920x1080p50(31),
+            b3G1920x1080i60(32),
+            b3G1920x1080p60(33),
+            b3G1920x1080p24sF(34),
+            b3G1920x1080p30sF(35),
+            b3G2048x1080p24(36),
+            b3G2048x1080p24sF(37),
+            dL1920x1080i5994(38),
+            dL1920x1080p5994(39),
+            dL1920x1080p2398sF(40),
+            dL1920x1080p2998sF(41),
+            dL2048x1080p2398(42),
+            dL2048x1080p2398sF(43),
+            dL1920x1080i50(44),
+            dL1920x1080p50(45),
+            dL1920x1080i60(46),
+            dL1920x1080p60(47),
+            dL1920x1080p24sF(48),
+            dL1920x1080p30sF(49),
+            dL2048x1080p24(50),
+            dL2048x1080p24sF(51),
+            sd525i5994(52),
+            analogNtsc(53),
+            sd625i50(54),
+            analogPal(55)
+            }
+      ACCESS read-write
+      STATUS mandatory
+      DESCRIPTION " The above applies to tgInterface = highDefinition.
+
+    For link format = highDefinition, the table is items starting in hd.
+    For link format = levelA3G, the table is items starting in a3G.
+    For link format = levelB3G, the table is items starting in b3G.
+    For link format = dualLink, the table is items starting in dL.
+    For link format = standardDefinition, the table is items starting in sd.
+    If tgIndex is sdAnalogTestGen1 or sdAnalogTestGen2 the table is items 
+    starting in analog.
+    If this changes, refresh tgColourPhase, tgVertPhase,
+    tgHorPhase, tgFinePhase and test signals. "
+    ::= { testGeneratorEntry 3 }
+
+    
+    tgSampleSpace OBJECT-TYPE
+      SYNTAX INTEGER {
+            yCbCr42210(1),
+            ycBcR444410(2),
+            rgb444410(3),
+            yCbCr44412(4),
+            rgb44412(5),
+            yCbCr42212(6),
+            xyz44412(7),
+            xyz444410(8)
+            }
+      ACCESS read-write
+      STATUS mandatory
+      DESCRIPTION " This is the test generator sample space.
+    The space is either YCrCb, or RGB or XYZ.  The samples is either 4:2:2, 
+    4:4:4, or 4:4:4:4.  The dynamic range is either 10 or 12 bits.
+    It should not be shown for sdAnalogTestGen1 and sdAnalogTestGen2 "
+    ::= { testGeneratorEntry 4 }
+
+    
+    tgColourPhase OBJECT-TYPE
+      SYNTAX INTEGER ( 1..4 )
+      ACCESS read-write
+      STATUS mandatory
+      DESCRIPTION " Sets colour frame phase of video.  If the instance
+    is not sdAnalogTestGen1 or sdAnalogTestGen2, do not show this control.
+    If analogPal or sd625i50, the range is 1 to 4.  Otherwise, the range is 1 to 2. "
+    ::= { testGeneratorEntry 5 }
+
+    
+    tgVertPhase OBJECT-TYPE
+      SYNTAX INTEGER ( 1..1125 )
+      ACCESS read-write
+      STATUS mandatory
+      DESCRIPTION " Sets vertical phase of video. 
+    Mode             Max Range 
+    hd1920x1080i5994    1125
+    hd1920x1080p2398    1125
+    hd1920x1080p2997    1125
+    hd1920x1080p2398sF  1125
+    hd1920x1080p2998sF  1125
+    hd2048x1080p2398    1125
+    hd2048x1080p2398sF  1125
+    hd1280x720p5994      750
+    hd1920x1080i50      1125
+    hd1920x1080p25      1125
+    hd1920x1080p25sF    1125
+    hd1280x720p50        750
+    hd1920x1080i60      1125
+    hd1920x1080p24      1125
+    hd1920x1080p30      1125
+    hd1920x1080p24sF    1125
+    hd1920x1080p30sF    1125
+    hd2048x1080p24      1125
+    hd2048x1080p24sF    1125
+    hd1280x720p60        750
+    a3G1920x1080p5994   1125
+    a3G1920x1080p50     1125
+    a3G1920x1080p60     1125
+    b3G1920x108ip5994   1125
+    b3G1920x1080p5994   1125
+    b3G1920x1080p2398sF 1125
+    b3G1920x1080p2998sF 1125
+    b3G2048x1080p2398   1125
+    b3G2048x1080p2398sF 1125
+    b3G1920x1080i50     1125
+    b3G1920x1080p50     1125
+    b3G1920x1080i60     1125
+    b3G1920x1080p60     1125
+    b3G1920x1080p24sF   1125
+    b3G1920x1080p30sF   1125
+    b3G2048x1080p24     1125
+    b3G2048x1080p24sF   1125
+    dL1920x1080i5994    1125
+    dL1920x1080p5994    1125
+    dL1920x1080p2398sF  1125
+    dL1920x1080p2998sF  1125
+    dL2048x1080p2398    1125
+    dL2048x1080p2398sF  1125
+    dL1920x1080p50      1125
+    dL1920x1080i60      1125
+    dL1920x1080p60      1125
+    dL1920x1080p24sF    1125
+    dL1920x1080p30sF    1125
+    dL2048x1080p24      1125
+    dL2048x1080p24sF    1125
+    sd525i5994           525
+    analogNtsc           525
+    sd625i50             625
+    analogPal            625 "
+    ::= { testGeneratorEntry 6 }
+
+    
+    tgHorPhase OBJECT-TYPE
+      SYNTAX INTEGER ( 1..2750 )
+      ACCESS read-write
+      STATUS mandatory
+      DESCRIPTION " Sets horizontal phase of video. 
+    Mode             Max Range 
+    hd1920x1080i5994    2200
+    hd1920x1080p2398    2750
+    hd1920x1080p2997    2220
+    hd1920x1080p2398sF  2750
+    hd1920x1080p2998sF  2200
+    hd2048x1080p2398    2750
+    hd2048x1080p2398sF  2750
+    hd1280x720p5994     1650
+    hd1920x1080i50      2640
+    hd1920x1080p25      2640
+    hd1920x1080p25sF    2640
+    hd1280x720p50       1980
+    hd1920x1080i60      2200
+    hd1920x1080p24      2750
+    hd1920x1080p30      2200
+    hd1920x1080p24sF    2750
+    hd1920x1080p30sF    2200
+    hd2048x1080p24      2750
+    hd2048x1080p24sF    2750
+    hd1280x720p60       1650
+    a3G1920x1080p5994   2200
+    a3G1920x1080p50     2640
+    a3G1920x1080p60     2200
+    b3G1920x1080i5994   2200
+    b3G1920x1080p5994   2200
+    b3G1920x1080p2398sF 2750
+    b3G1920x1080p2998sF 2200
+    b3G2048x1080p2398   2750
+    b3G2048x1080p2398sF 2750
+    b3G1920x1080i50     2640
+    b3G1920x1080p50     2640
+    b3G1920x1080i60     2200
+    b3G1920x1080p60     2200
+    b3G1920x1080p24sF   2750
+    b3G1920x1080p30sF   2200
+    b3G2048x1080p24     2750
+    b3G2048x1080p24sF   2750
+    dL1920x1080i5994    2200
+    dL1920x1080p5994    2200
+    dL1920x1080p2398sF  2750
+    dL1920x1080p2998sF  2200
+    dL2048x1080p2398    2750
+    dL2048x1080p2398sF  2750
+    dL1920x1080p50      2640
+    dL1920x1080i60      2200
+    dL1920x1080p60      2200
+    dL1920x1080p24sF    2750
+    dL1920x1080p30sF    2200
+    dL2048x1080p24      2750
+    dL2048x1080p24sF    2750
+    sd525i5994          1716
+    analogNtsc          1716
+    sd625i50            1728
+    analogPal           1728 "
+    ::= { testGeneratorEntry 7 }
+
+    
+    tgFinePhase OBJECT-TYPE
+      SYNTAX INTEGER ( 0..255 )
+      ACCESS read-write
+      STATUS mandatory
+      DESCRIPTION " Sets fine phase of video.  If the instance
+    is not sdAnalogTestGen1 or sdAnalogTestGen2, do not show this control.
+    Should be displayed as a percentage.  ie  0.00 to 99.4%, where each count
+    represents 100/256 % "
+    ::= { testGeneratorEntry 8 }
+
+    
+    tgMessage1 OBJECT-TYPE
+      SYNTAX OCTET STRING ( SIZE(16) )
+      ACCESS read-write
+      STATUS mandatory
+      DESCRIPTION " Shows message line 1 test to be put on the tg.
+    It is only valid when tgPresent is not notValid "
+    ::= { testGeneratorEntry 9 }
+
+    
+    tgMessage2 OBJECT-TYPE
+      SYNTAX OCTET STRING ( SIZE(16) )
+      ACCESS read-write
+      STATUS mandatory
+      DESCRIPTION " Shows message line 2 test to be put on the tg.
+    It is only valid when tgPresent is not notValid "
+    ::= { testGeneratorEntry 10 }
+
+    
+    tgMessageHor OBJECT-TYPE
+      SYNTAX INTEGER ( 0..20 )
+      ACCESS read-write
+      STATUS mandatory
+      DESCRIPTION " Sets horizontal position of messages on the tg.
+    If tgMessageFont is smallFont, the range is 0 to 20.
+    If tgMessageFont is largeFont, the range is 0 to 9.
+    It is only valid when tgPresent is not notValid "
+    ::= { testGeneratorEntry 11 }
+
+    
+    tgMessageVert OBJECT-TYPE
+      SYNTAX INTEGER ( 0..20 )
+      ACCESS read-write
+      STATUS mandatory
+      DESCRIPTION " Sets vertical position of messages on the tg.
+    If tgMessageFont is smallFont, the range is 0 to 20.
+    If tgMessageFont is largeFont, the range is 0 to 9.
+    It is only valid when tgPresent is not notValid "
+    ::= { testGeneratorEntry 12 }
+
+    
+    tgMessageEnable OBJECT-TYPE
+      SYNTAX INTEGER {
+            messageOff(1),
+            messageOnOneLine(2),
+            messageOnTwoLines(3)
+            }
+      ACCESS read-write
+      STATUS mandatory
+      DESCRIPTION " Enables the messages on the tg.
+    It is only valid when tgPresent is not notValid "
+    ::= { testGeneratorEntry 13 }
+
+    
+    tgMessageFont OBJECT-TYPE
+      SYNTAX INTEGER {
+            smallFont(1),
+            largeFont(2)
+            }
+      ACCESS read-write
+      STATUS mandatory
+      DESCRIPTION " Sets the size of the message on tg.
+    It is only valid when tgPresent is not notValid "
+    ::= { testGeneratorEntry 14 }
+
+    
+    tgClosedCaptioning OBJECT-TYPE
+      SYNTAX INTEGER {
+            off(1),
+            on(2)
+            }
+      ACCESS read-write
+      STATUS mandatory
+      DESCRIPTION " Controls where captions are enabled.
+   It is only valid when tgPresent is not notValid "
+    ::= { testGeneratorEntry 15 }
+
+    
+    tgSynchro OBJECT-TYPE
+      SYNTAX INTEGER {
+            include(1),
+            exclude(2)
+            }
+      ACCESS read-write
+      STATUS mandatory
+      DESCRIPTION " Controls where this tg channel is excluded from syncro operations.
+   It is only valid when tgPresent is not notValid "
+    ::= { testGeneratorEntry 16 }
+
+    
+    tgOutputDrive OBJECT-TYPE
+      SYNTAX INTEGER {
+            autoSelect(1),
+            no5601ACO2used(2),
+            yes5601ACO2used(3)
+            }
+      ACCESS read-write
+      STATUS mandatory
+      DESCRIPTION " This is the test generator link select.  If the instance
+    is sdAnalogTestGen1 or sdAnalogTestGen2, do not show this control. "
+    ::= { testGeneratorEntry 17 }
+
+    
+    tgNumActiveTestPatterns OBJECT-TYPE
+      SYNTAX INTEGER ( 1..100 )
+      ACCESS read-only
+      STATUS mandatory
+      DESCRIPTION " This is the number of active test patterns available. 
+    NOTE: Some test patterens are not available with certain video output standards!
+    The list will be read from atgTestPatternName and atgTestPatternNumber.
+    Reread this number whenever standards are changed.
+    It is only valid when tgPresent is not notValid "
+    ::= { testGeneratorEntry 18 }
+
+    
+    tgCurrentTestPattern OBJECT-TYPE
+      SYNTAX INTEGER ( 1..100 )
+      ACCESS read-write
+      STATUS mandatory
+      DESCRIPTION " This is the current test pattern thats selected. 
+    NOTE: Some test patterens are not available with certain video output standards!
+    The list will be read from atgTestPatternName and atgTestPatternNumber.
+    Reread this number whenever standards are changed.
+    It is only valid when tgPresent is not notValid "
+    ::= { testGeneratorEntry 19 }
+
+    
+    tgBurnIn OBJECT-TYPE
+      SYNTAX INTEGER {
+            off(1),
+            on(2)
+            }
+      ACCESS read-write
+      STATUS mandatory
+      DESCRIPTION " Enables time code burn in in the test generator "
+    ::= { testGeneratorEntry 20 }
+
+    
+    tgDropFrame OBJECT-TYPE
+      SYNTAX INTEGER {
+            off(1),
+            on(2)
+            }
+      ACCESS read-write
+      STATUS mandatory
+      DESCRIPTION " Enables Drop Frame bit. "
+    ::= { testGeneratorEntry 21 }
+
+    
+    tgJamTime OBJECT-TYPE
+      SYNTAX OCTET STRING ( SIZE(5) )
+      ACCESS read-write
+      STATUS mandatory
+      DESCRIPTION " Sets jam time for test generator output.  Format is hh:mm "
+    ::= { testGeneratorEntry 22 }
+
+    
+    tgJamNow OBJECT-TYPE
+      SYNTAX INTEGER {
+            jamNow(1)
+            }
+      ACCESS read-write
+      STATUS mandatory
+      DESCRIPTION " This jams the output test generator burn in time to reference. "
+    ::= { testGeneratorEntry 23 }
+
+    
+    tgOffset OBJECT-TYPE
+      SYNTAX INTEGER ( -1000..1000 )
+      ACCESS read-write
+      STATUS mandatory
+      DESCRIPTION " This sets the offset in frames to the test generator burn in ouptut. "
+    ::= { testGeneratorEntry 24 }
+
+    
+    tgTimeZone OBJECT-TYPE
+      SYNTAX INTEGER {
+            n1200(1),
+            n1130(2),
+            n1100(3),
+            n1030(4),
+            n1000(5),
+            n0930(6),
+            n0900(7),
+            n0830(8),
+            n0800(9),
+            n0730(10),
+            n0700(11),
+            n0630(12),
+            n0600(13),
+            n0530(14),
+            n0500(15),
+            n0430(16),
+            n0400(17),
+            n0330(18),
+            n0300(19),
+            n0230(20),
+            n0200(21),
+            n0130(22),
+            n0100(23),
+            n0030(24),
+            p0000(25),
+            p0030(26),
+            p0100(27),
+            p0130(28),
+            p0200(29),
+            p0230(30),
+            p0300(31),
+            p0330(32),
+            p0400(33),
+            p0430(34),
+            p0500(35),
+            p0550(36),
+            p0600(37),
+            p0630(38),
+            p0700(39),
+            p0730(40),
+            p0800(41),
+            p0830(42),
+            p0900(43),
+            p0930(44),
+            p1000(45),
+            p1030(46),
+            p1100(47),
+            p1130(48),
+            p1200(49)
+            }
+      ACCESS read-write
+      STATUS mandatory
+      DESCRIPTION " This sets the time zone of the test generator burn in ouptut.  
+    Steps are -1200, -1130, -1100, -1030 ... 1130, 1200
+    n indicates negative offset and p indicates posative offset "
+    ::= { testGeneratorEntry 25 }
+
+    
+    tgDstEnable OBJECT-TYPE
+      SYNTAX INTEGER {
+            off(1),
+            on(2)
+            }
+      ACCESS read-write
+      STATUS mandatory
+      DESCRIPTION " Enables automatic Daylight Saving Time "
+    ::= { testGeneratorEntry 26 }
+
+    
+    tgDigitalTimeCode OBJECT-TYPE
+      SYNTAX INTEGER {
+            off(1),
+            on(2)
+            }
+      ACCESS read-write
+      STATUS mandatory
+      DESCRIPTION " Enables time code burn in in the test generator.
+    It is only valid in SDI tgs, and if tgInterface is not set to standardDefinition. "
+    ::= { testGeneratorEntry 27 }
+
+-- End of testGeneratorTable
+
+
+        
+-- Beginning of videoAudioGroupControlTable
+    videoAudioGroupControlTable OBJECT-TYPE
+      SYNTAX SEQUENCE OF VideoAudioGroupControlEntry
+        ACCESS not-accessible
+        STATUS mandatory
+        DESCRIPTION  " This table contains controls to enable audio group.  
+    It is only valid when tgPresent is not notValid "
+    ::= { mscControlVideoAudioGroup 1 }
+
+    videoAudioGroupControlEntry OBJECT-TYPE
+      SYNTAX VideoAudioGroupControlEntry
+        ACCESS not-accessible
+        STATUS mandatory
+        DESCRIPTION 
+                "
+                This entry object type is used to reference
+                all of the objects in the table
+                "
+        INDEX { tgAudioIndex, audioGroupIndex }
+    ::= { videoAudioGroupControlTable 1 }
+
+    VideoAudioGroupControlEntry ::= SEQUENCE {
+        tgAudioIndex     INTEGER,
+        audioGroupIndex     INTEGER,
+        groupEn     INTEGER,
+        audioCh1Level     INTEGER,
+        audioCh1Frequency     INTEGER,
+        audioCh2Level     INTEGER,
+        audioCh2Frequency     INTEGER,
+        audioCh3Level     INTEGER,
+        audioCh3Frequency     INTEGER,
+        audioCh4Level     INTEGER,
+        audioCh4Frequency     INTEGER
+    }
+
+
+    
+    tgAudioIndex OBJECT-TYPE
+      SYNTAX INTEGER {
+            sdiTestGen1(1),
+            sdiTestGen2(2),
+            sdiTestGen3(3),
+            sdiTestGen4(4)
+            }
+      ACCESS read-only
+      STATUS mandatory
+      DESCRIPTION " This object is the index for tg embedded audios. "
+    ::= { videoAudioGroupControlEntry 1 }
+
+    
+    audioGroupIndex OBJECT-TYPE
+      SYNTAX INTEGER {
+            group1(1),
+            group2(2),
+            group3(3),
+            group4(4)
+            }
+      ACCESS read-only
+      STATUS mandatory
+      DESCRIPTION " This object is the index for test generator audio groups "
+    ::= { videoAudioGroupControlEntry 2 }
+
+    
+    groupEn OBJECT-TYPE
+      SYNTAX INTEGER {
+            off(1),
+            on(2)
+            }
+      ACCESS read-write
+      STATUS mandatory
+      DESCRIPTION " Enables embedding of this audio group in the sdi test signal
+    It is only valid when tgPresent is not notValid "
+    ::= { videoAudioGroupControlEntry 3 }
+
+    
+    audioCh1Level OBJECT-TYPE
+      SYNTAX INTEGER {
+            mute(1),
+            dBFSm60(2),
+            dBFSm59(3),
+            dBFSm58(4),
+            dBFSm57(5),
+            dBFSm56(6),
+            dBFSm55(7),
+            dBFSm54(8),
+            dBFSm53(9),
+            dBFSm52(10),
+            dBFSm51(11),
+            dBFSm50(12),
+            dBFSm49(13),
+            dBFSm48(14),
+            dBFSm47(15),
+            dBFSm46(16),
+            dBFSm45(17),
+            dBFSm44(18),
+            dBFSm43(19),
+            dBFSm42(20),
+            dBFSm41(21),
+            dBFSm40(22),
+            dBFSm39(23),
+            dBFSm38(24),
+            dBFSm37(25),
+            dBFSm36(26),
+            dBFSm35(27),
+            dBFSm34(28),
+            dBFSm33(29),
+            dBFSm32(30),
+            dBFSm31(31),
+            dBFSm30(32),
+            dBFSm29(33),
+            dBFSm28(34),
+            dBFSm27(35),
+            dBFSm26(36),
+            dBFSm25(37),
+            dBFSm24(38),
+            dBFSm23(39),
+            dBFSm22(40),
+            dBFSm21(41),
+            dBFSm20(42),
+            dBFSm19(43),
+            dBFSm18(44),
+            dBFSm17(45),
+            dBFSm16(46),
+            dBFSm15(47),
+            dBFSm14(48),
+            dBFSm13(49),
+            dBFSm12(50),
+            dBFSm11(51),
+            dBFSm10(52),
+            dBFSm9(53),
+            dBFSm8(54),
+            dBFSm7(55),
+            dBFSm6(56),
+            dBFSm5(57),
+            dBFSm4(58),
+            dBFSm3(59),
+            dBFSm2(60),
+            dBFSm1(61),
+            dBFS0(62)
+            }
+      ACCESS read-write
+      STATUS mandatory
+      DESCRIPTION " Sets audio level. dBFS = Dedibels Full Scale. m = -.
+    It is only valid when tgPresent is not notValid. "
+    ::= { videoAudioGroupControlEntry 4 }
+
+    
+    audioCh1Frequency OBJECT-TYPE
+      SYNTAX INTEGER {
+            hz20(1),
+            hz60(2),
+            hz100(3),
+            hz200(4),
+            hz400(5),
+            hz800(6),
+            khz1p0(7),
+            khz1p6(8),
+            khz2p0(9),
+            khz3p2(10),
+            khz4p0(11),
+            khz5p0(12),
+            khz6p4(13),
+            khz8p0(14),
+            khz10(15),
+            khz12(16)
+            }
+      ACCESS read-write
+      STATUS mandatory
+      DESCRIPTION " Sets audio frequency or tick.  p = decimal point.
+    It is only valid when tgPresent is not notValid "
+    ::= { videoAudioGroupControlEntry 5 }
+
+    
+    audioCh2Level OBJECT-TYPE
+      SYNTAX INTEGER {
+            mute(1),
+            dBFSm60(2),
+            dBFSm59(3),
+            dBFSm58(4),
+            dBFSm57(5),
+            dBFSm56(6),
+            dBFSm55(7),
+            dBFSm54(8),
+            dBFSm53(9),
+            dBFSm52(10),
+            dBFSm51(11),
+            dBFSm50(12),
+            dBFSm49(13),
+            dBFSm48(14),
+            dBFSm47(15),
+            dBFSm46(16),
+            dBFSm45(17),
+            dBFSm44(18),
+            dBFSm43(19),
+            dBFSm42(20),
+            dBFSm41(21),
+            dBFSm40(22),
+            dBFSm39(23),
+            dBFSm38(24),
+            dBFSm37(25),
+            dBFSm36(26),
+            dBFSm35(27),
+            dBFSm34(28),
+            dBFSm33(29),
+            dBFSm32(30),
+            dBFSm31(31),
+            dBFSm30(32),
+            dBFSm29(33),
+            dBFSm28(34),
+            dBFSm27(35),
+            dBFSm26(36),
+            dBFSm25(37),
+            dBFSm24(38),
+            dBFSm23(39),
+            dBFSm22(40),
+            dBFSm21(41),
+            dBFSm20(42),
+            dBFSm19(43),
+            dBFSm18(44),
+            dBFSm17(45),
+            dBFSm16(46),
+            dBFSm15(47),
+            dBFSm14(48),
+            dBFSm13(49),
+            dBFSm12(50),
+            dBFSm11(51),
+            dBFSm10(52),
+            dBFSm9(53),
+            dBFSm8(54),
+            dBFSm7(55),
+            dBFSm6(56),
+            dBFSm5(57),
+            dBFSm4(58),
+            dBFSm3(59),
+            dBFSm2(60),
+            dBFSm1(61),
+            dBFS0(62)
+            }
+      ACCESS read-write
+      STATUS mandatory
+      DESCRIPTION " Sets audio level. dBFS = Dedibels Full Scale. m = -.
+    It is only valid when tgPresent is not notValid. "
+    ::= { videoAudioGroupControlEntry 6 }
+
+    
+    audioCh2Frequency OBJECT-TYPE
+      SYNTAX INTEGER {
+            hz20(1),
+            hz60(2),
+            hz100(3),
+            hz200(4),
+            hz400(5),
+            hz800(6),
+            khz1p0(7),
+            khz1p6(8),
+            khz2p0(9),
+            khz3p2(10),
+            khz4p0(11),
+            khz5p0(12),
+            khz6p4(13),
+            khz8p0(14),
+            khz10(15),
+            khz12(16)
+            }
+      ACCESS read-write
+      STATUS mandatory
+      DESCRIPTION " Sets audio frequency or tick.  p = decimal point.
+    It is only valid when tgPresent is not notValid "
+    ::= { videoAudioGroupControlEntry 7 }
+
+    
+    audioCh3Level OBJECT-TYPE
+      SYNTAX INTEGER {
+            mute(1),
+            dBFSm60(2),
+            dBFSm59(3),
+            dBFSm58(4),
+            dBFSm57(5),
+            dBFSm56(6),
+            dBFSm55(7),
+            dBFSm54(8),
+            dBFSm53(9),
+            dBFSm52(10),
+            dBFSm51(11),
+            dBFSm50(12),
+            dBFSm49(13),
+            dBFSm48(14),
+            dBFSm47(15),
+            dBFSm46(16),
+            dBFSm45(17),
+            dBFSm44(18),
+            dBFSm43(19),
+            dBFSm42(20),
+            dBFSm41(21),
+            dBFSm40(22),
+            dBFSm39(23),
+            dBFSm38(24),
+            dBFSm37(25),
+            dBFSm36(26),
+            dBFSm35(27),
+            dBFSm34(28),
+            dBFSm33(29),
+            dBFSm32(30),
+            dBFSm31(31),
+            dBFSm30(32),
+            dBFSm29(33),
+            dBFSm28(34),
+            dBFSm27(35),
+            dBFSm26(36),
+            dBFSm25(37),
+            dBFSm24(38),
+            dBFSm23(39),
+            dBFSm22(40),
+            dBFSm21(41),
+            dBFSm20(42),
+            dBFSm19(43),
+            dBFSm18(44),
+            dBFSm17(45),
+            dBFSm16(46),
+            dBFSm15(47),
+            dBFSm14(48),
+            dBFSm13(49),
+            dBFSm12(50),
+            dBFSm11(51),
+            dBFSm10(52),
+            dBFSm9(53),
+            dBFSm8(54),
+            dBFSm7(55),
+            dBFSm6(56),
+            dBFSm5(57),
+            dBFSm4(58),
+            dBFSm3(59),
+            dBFSm2(60),
+            dBFSm1(61),
+            dBFS0(62)
+            }
+      ACCESS read-write
+      STATUS mandatory
+      DESCRIPTION " Sets audio level. dBFS = Dedibels Full Scale. m = -.
+    It is only valid when tgPresent is not notValid. "
+    ::= { videoAudioGroupControlEntry 8 }
+
+    
+    audioCh3Frequency OBJECT-TYPE
+      SYNTAX INTEGER {
+            hz20(1),
+            hz60(2),
+            hz100(3),
+            hz200(4),
+            hz400(5),
+            hz800(6),
+            khz1p0(7),
+            khz1p6(8),
+            khz2p0(9),
+            khz3p2(10),
+            khz4p0(11),
+            khz5p0(12),
+            khz6p4(13),
+            khz8p0(14),
+            khz10(15),
+            khz12(16)
+            }
+      ACCESS read-write
+      STATUS mandatory
+      DESCRIPTION " Sets audio frequency or tick.  p = decimal point.
+    It is only valid when tgPresent is not notValid "
+    ::= { videoAudioGroupControlEntry 9 }
+
+    
+    audioCh4Level OBJECT-TYPE
+      SYNTAX INTEGER {
+            mute(1),
+            dBFSm60(2),
+            dBFSm59(3),
+            dBFSm58(4),
+            dBFSm57(5),
+            dBFSm56(6),
+            dBFSm55(7),
+            dBFSm54(8),
+            dBFSm53(9),
+            dBFSm52(10),
+            dBFSm51(11),
+            dBFSm50(12),
+            dBFSm49(13),
+            dBFSm48(14),
+            dBFSm47(15),
+            dBFSm46(16),
+            dBFSm45(17),
+            dBFSm44(18),
+            dBFSm43(19),
+            dBFSm42(20),
+            dBFSm41(21),
+            dBFSm40(22),
+            dBFSm39(23),
+            dBFSm38(24),
+            dBFSm37(25),
+            dBFSm36(26),
+            dBFSm35(27),
+            dBFSm34(28),
+            dBFSm33(29),
+            dBFSm32(30),
+            dBFSm31(31),
+            dBFSm30(32),
+            dBFSm29(33),
+            dBFSm28(34),
+            dBFSm27(35),
+            dBFSm26(36),
+            dBFSm25(37),
+            dBFSm24(38),
+            dBFSm23(39),
+            dBFSm22(40),
+            dBFSm21(41),
+            dBFSm20(42),
+            dBFSm19(43),
+            dBFSm18(44),
+            dBFSm17(45),
+            dBFSm16(46),
+            dBFSm15(47),
+            dBFSm14(48),
+            dBFSm13(49),
+            dBFSm12(50),
+            dBFSm11(51),
+            dBFSm10(52),
+            dBFSm9(53),
+            dBFSm8(54),
+            dBFSm7(55),
+            dBFSm6(56),
+            dBFSm5(57),
+            dBFSm4(58),
+            dBFSm3(59),
+            dBFSm2(60),
+            dBFSm1(61),
+            dBFS0(62)
+            }
+      ACCESS read-write
+      STATUS mandatory
+      DESCRIPTION " Sets audio level. dBFS = Dedibels Full Scale. m = -.
+    It is only valid when tgPresent is not notValid. "
+    ::= { videoAudioGroupControlEntry 10 }
+
+    
+    audioCh4Frequency OBJECT-TYPE
+      SYNTAX INTEGER {
+            hz20(1),
+            hz60(2),
+            hz100(3),
+            hz200(4),
+            hz400(5),
+            hz800(6),
+            khz1p0(7),
+            khz1p6(8),
+            khz2p0(9),
+            khz3p2(10),
+            khz4p0(11),
+            khz5p0(12),
+            khz6p4(13),
+            khz8p0(14),
+            khz10(15),
+            khz12(16)
+            }
+      ACCESS read-write
+      STATUS mandatory
+      DESCRIPTION " Sets audio frequency or tick.  p = decimal point.
+    It is only valid when tgPresent is not notValid "
+    ::= { videoAudioGroupControlEntry 11 }
+
+-- End of videoAudioGroupControlTable
+
+
+        
+-- Beginning of tgTestPatternTable
+    tgTestPatternTable OBJECT-TYPE
+      SYNTAX SEQUENCE OF TgTestPatternEntry
+        ACCESS not-accessible
+        STATUS mandatory
+        DESCRIPTION  " This table contains controls related to tg test patterns.  
+    It is only valid when tgPresent is not notValid "
+    ::= { mscTestPattern 1 }
+
+    tgTestPatternEntry OBJECT-TYPE
+      SYNTAX TgTestPatternEntry
+        ACCESS not-accessible
+        STATUS mandatory
+        DESCRIPTION 
+                "
+                This entry object type is used to reference
+                all of the objects in the table
+                "
+        INDEX { tgIndex, tgTestPatternIndex }
+    ::= { tgTestPatternTable 1 }
+
+    TgTestPatternEntry ::= SEQUENCE {
+        tgTestPatternIndex     INTEGER,
+        tgTestPatternName     OCTET STRING
+    }
+
+
+    
+    tgTestPatternIndex OBJECT-TYPE
+      SYNTAX INTEGER ( 1..100 )
+      ACCESS read-only
+      STATUS mandatory
+      DESCRIPTION " This is an index for testPatternName.  
+
+    It is for getting the name and availablilty of test patterns.
+    NOTE: Some test patterens are not available with certain video output standards!
+    The list will be read from tgTestPatternName and tgTestPatternNumber.
+    This will return the tgTestPatternName for patterns which are valid based on the
+    tgNumActiveTestPatterns.  
+    It is only valid when tgPresent is not notValid "
+    ::= { tgTestPatternEntry 1 }
+
+    
+    tgTestPatternName OBJECT-TYPE
+      SYNTAX OCTET STRING ( SIZE(33) )
+      ACCESS read-only
+      STATUS mandatory
+      DESCRIPTION " This is the Name of a test pattern at the index tgTestPatternNumber. 
+    NOTE: Some test patterens are not available with certain video output standards!
+    This variable will return a valid tgTestPatternName based on the tgNumActiveTestPatterns,
+    any other index values will return a default value of notValid.
+    It is only valid when tgPresent is not notValid "
+    ::= { tgTestPatternEntry 2 }
+
+-- End of tgTestPatternTable
+
+
+        
+    globalPhaseGpsEnable OBJECT-TYPE
+      SYNTAX INTEGER {
+            off(1),
+            on(2)
+            }
+      ACCESS read-write
+      STATUS mandatory
+      DESCRIPTION " to control whether global phasing is active.
+   It only affects phasing if inputFrequencyReference is set to gps. "
+    ::= { globalPhase 1 }
+
+        
+    globalPhaseGpsMilliSeconds OBJECT-TYPE
+      SYNTAX INTEGER ( 0..159 )
+      ACCESS read-write
+      STATUS mandatory
+      DESCRIPTION " to control milliseconds of global phasing.
+   It only affects phasing if inputFrequencyReference is set to gps. "
+    ::= { globalPhase 2 }
+
+        
+    globalPhaseGpsMicroSeconds OBJECT-TYPE
+      SYNTAX INTEGER ( 0..999 )
+      ACCESS read-write
+      STATUS mandatory
+      DESCRIPTION " to control microseconds of global phasing.
+   It only affects phasing if inputFrequencyReference is set to gps. "
+    ::= { globalPhase 3 }
+
+        
+    globalPhaseGpsNanoSeconds OBJECT-TYPE
+      SYNTAX INTEGER ( 0..999 )
+      ACCESS read-write
+      STATUS mandatory
+      DESCRIPTION " to control nanoseconds of global phasing.
+   It only affects phasing if inputFrequencyReference is set to gps. "
+    ::= { globalPhase 4 }
+
+        
+    globalPhaseVideoEnable OBJECT-TYPE
+      SYNTAX INTEGER {
+            off(1),
+            on(2)
+            }
+      ACCESS read-write
+      STATUS mandatory
+      DESCRIPTION " to control whether global phasing is active.
+    It only affects phasing if inputFrequencyReference is set to video. "
+    ::= { globalPhase 5 }
+
+        
+    globalPhaseVideoMilliSeconds OBJECT-TYPE
+      SYNTAX INTEGER ( 0..159 )
+      ACCESS read-write
+      STATUS mandatory
+      DESCRIPTION " to control milliseconds of global phasing.
+    It only affects phasing if inputFrequencyReference is set to video. "
+    ::= { globalPhase 6 }
+
+        
+    globalPhaseVideoMicroSeconds OBJECT-TYPE
+      SYNTAX INTEGER ( 0..999 )
+      ACCESS read-write
+      STATUS mandatory
+      DESCRIPTION " to control microseconds of global phasing.
+    It only affects phasing if inputFrequencyReference is set to video. "
+    ::= { globalPhase 7 }
+
+        
+    globalPhaseVideoNanoSeconds OBJECT-TYPE
+      SYNTAX INTEGER ( 0..999 )
+      ACCESS read-write
+      STATUS mandatory
+      DESCRIPTION " to control nanoseconds of global phasing.
+    It only affects phasing if inputFrequencyReference is set to video. "
+    ::= { globalPhase 8 }
+
+        
+    globalPhaseTenMHzEnable OBJECT-TYPE
+      SYNTAX INTEGER {
+            off(1),
+            on(2)
+            }
+      ACCESS read-write
+      STATUS mandatory
+      DESCRIPTION " to control whether global phasing is active.
+    It only affects phasing if inputFrequencyReference is set to tenMHz.
+    It is non volatile, and is set to 0 on a power cycle. "
+    ::= { globalPhase 9 }
+
+        
+    globalPhaseTenMHzMilliSeconds OBJECT-TYPE
+      SYNTAX INTEGER ( 0..159 )
+      ACCESS read-write
+      STATUS mandatory
+      DESCRIPTION " to control milliseconds of global phasing.
+    It only affects phasing if inputFrequencyReference is set to tenMHz.
+    It is non volatile, and is set to 0 on a power cycle. "
+    ::= { globalPhase 10 }
+
+        
+    globalPhaseTenMHzMicroSeconds OBJECT-TYPE
+      SYNTAX INTEGER ( 0..999 )
+      ACCESS read-write
+      STATUS mandatory
+      DESCRIPTION " to control microseconds of global phasing.
+    It only affects phasing if inputFrequencyReference is set to tenMHz.
+    It is non volatile, and is set to 0 on a power cycle. "
+    ::= { globalPhase 11 }
+
+        
+    globalPhaseTenMHzNanoSeconds OBJECT-TYPE
+      SYNTAX INTEGER ( 0..999 )
+      ACCESS read-write
+      STATUS mandatory
+      DESCRIPTION " to control nanoseconds of global phasing.
+    It only affects phasing if inputFrequencyReference is set to tenMHz.
+    It is non volatile, and is set to 0 on a power cycle. "
+    ::= { globalPhase 12 }
+
+        
+    globalPhaseFreeRunEnable OBJECT-TYPE
+      SYNTAX INTEGER {
+            off(1),
+            on(2)
+            }
+      ACCESS read-write
+      STATUS mandatory
+      DESCRIPTION " to control whether global phasing is active.
+    It only affects phasing if inputFrequencyReference is set to freerun.
+    It is non volatile, and is set to off on a power cycle. "
+    ::= { globalPhase 13 }
+
+        
+    globalPhaseFreeRunMilliSeconds OBJECT-TYPE
+      SYNTAX INTEGER ( 0..159 )
+      ACCESS read-write
+      STATUS mandatory
+      DESCRIPTION " to control milliseconds of global phasing.
+    It only affects phasing if inputFrequencyReference is set to freerun.
+    It is non volatile, and is set to 0 on a power cycle. "
+    ::= { globalPhase 14 }
+
+        
+    globalPhaseFreeRunMicroSeconds OBJECT-TYPE
+      SYNTAX INTEGER ( 0..999 )
+      ACCESS read-write
+      STATUS mandatory
+      DESCRIPTION " to control microseconds of global phasing.
+    It only affects phasing if inputFrequencyReference is set to freerun.
+    It is non volatile, and is set to 0 on a power cycle. "
+    ::= { globalPhase 15 }
+
+        
+    globalPhaseFreeRunNanoSeconds OBJECT-TYPE
+      SYNTAX INTEGER ( 0..999 )
+      ACCESS read-write
+      STATUS mandatory
+      DESCRIPTION " to control nanoseconds of global phasing.
+    It only affects phasing if inputFrequencyReference is set to freerun.
+    It is non volatile, and is set to 0 on a power cycle. "
+    ::= { globalPhase 16 }
+
+        
+    globalPedestalEnable OBJECT-TYPE
+      SYNTAX INTEGER {
+            off(1),
+            on(2)
+            }
+      ACCESS read-write
+      STATUS mandatory
+      DESCRIPTION " to control whether global pedestal is active in ntsc standards. "
+    ::= { globalPedestal 1 }
+
+        
+    tgMode OBJECT-TYPE
+      SYNTAX INTEGER {
+            fourHdTgs(1),
+            oneUltraHDtg(2),
+            oneUltra2SItg(3)
+            }
+      ACCESS read-write
+      STATUS mandatory
+      DESCRIPTION " to control whether Test gererators act as 4 3G/HD/SD TGs
+   , or one ultra HD TG or one ultra 2SI TG. 
+   It is valid only when ultraHDTgPresent is valid "
+    ::= { globalPedestal 2 }
+
+        
+    tgModeSynchro OBJECT-TYPE
+      SYNTAX INTEGER {
+            include(1),
+            exclude(2)
+            }
+      ACCESS read-write
+      STATUS mandatory
+      DESCRIPTION " Controls whether the tg mode is excluded from syncro operations.
+   It is valid only when ultraHDTgPresent is valid "
+    ::= { globalPedestal 3 }
+
+        
+    waveformAnchor OBJECT-TYPE
+      SYNTAX INTEGER {
+            off(1),
+            on(2)
+            }
+      ACCESS read-write
+      STATUS mandatory
+      DESCRIPTION " to control to use 5600MSC epoch, or TAI epoch. "
+    ::= { globalPedestal 4 }
+
+        
+    analogAudioMode OBJECT-TYPE
+      SYNTAX INTEGER {
+            steadyTones(1),
+            timedTones(2)
+            }
+      ACCESS read-write
+      STATUS mandatory
+      DESCRIPTION " to control whether analogue audio is controled by frequency and 
+   level for each channel, or by time based events. "
+    ::= { analogAudio 1 }
+
+        
+-- Beginning of analogAudioEventsTable
+    analogAudioEventsTable OBJECT-TYPE
+      SYNTAX SEQUENCE OF AnalogAudioEventsEntry
+        ACCESS not-accessible
+        STATUS mandatory
+        DESCRIPTION  " This table contains controls related to analog audio events.
+   It is only valid when tgPresent is not notValid "
+    ::= { analogAudio 2 }
+
+    analogAudioEventsEntry OBJECT-TYPE
+      SYNTAX AnalogAudioEventsEntry
+        ACCESS not-accessible
+        STATUS mandatory
+        DESCRIPTION 
+                "
+                This entry object type is used to reference
+                all of the objects in the table
+                "
+        INDEX { analogAudioIndex }
+    ::= { analogAudioEventsTable 1 }
+
+    AnalogAudioEventsEntry ::= SEQUENCE {
+        analogAudioIndex     INTEGER,
+        analogAudioSoundType     INTEGER,
+        analogAudioEventFrequencyLeft     INTEGER,
+        analogAudioEventFrequencyRight     INTEGER,
+        analogAudioStartTime     OCTET STRING,
+        analogAudioDuration     INTEGER
+    }
+
+
+    
+    analogAudioIndex OBJECT-TYPE
+      SYNTAX INTEGER {
+            event1(1),
+            event2(2),
+            event3(3),
+            event4(4),
+            event5(5),
+            event6(6),
+            event7(7),
+            event8(8),
+            event9(9),
+            event10(10)
+            }
+      ACCESS read-only
+      STATUS mandatory
+      DESCRIPTION " This object is the index for analog audio events
+    It is only valid when tgPresent is not notValid "
+    ::= { analogAudioEventsEntry 1 }
+
+    
+    analogAudioSoundType OBJECT-TYPE
+      SYNTAX INTEGER {
+            mute(1),
+            continuousToneLeft(2),
+            continuousToneRight(3),
+            continuousToneBoth(4),
+            beepLeft(5),
+            beepRight(6),
+            beepBoth(7),
+            bellLeft(8),
+            bellRight(9),
+            bellBoth(10),
+            beepLeftContinuousRight(11),
+            beepRightContinuousLeft(12),
+            bellLeftContinuousRight(13),
+            bellRightContinuousLeft(14)
+            }
+      ACCESS read-write
+      STATUS mandatory
+      DESCRIPTION " selects the type of sound output for this event.  Mute means that this
+   event is not used.  Continuous Tone means that the tone will go on forever.  The first
+   case of continuous tone overrides all other events.  Beep is a sine wave tone that 
+   starts at start time and ends after duration.  Bell is a sine wave tone that starts at 
+   start time and decays over duration. 
+   It is only valid when tgPresent is not notValid "
+    ::= { analogAudioEventsEntry 2 }
+
+    
+    analogAudioEventFrequencyLeft OBJECT-TYPE
+      SYNTAX INTEGER {
+            hz20(1),
+            hz60(2),
+            hz100(3),
+            hz200(4),
+            hz400(5),
+            hz800(6),
+            khz1p0(7),
+            khz1p6(8),
+            khz2p0(9),
+            khz3p2(10),
+            khz4p0(11),
+            khz5p0(12),
+            khz6p4(13),
+            khz8p0(14),
+            khz10(15),
+            khz12(16)
+            }
+      ACCESS read-write
+      STATUS mandatory
+      DESCRIPTION " Sets audio frequency for this events right channel.  p = decimal point.
+   It is only valid when tgPresent is not notValid "
+    ::= { analogAudioEventsEntry 3 }
+
+    
+    analogAudioEventFrequencyRight OBJECT-TYPE
+      SYNTAX INTEGER {
+            hz20(1),
+            hz60(2),
+            hz100(3),
+            hz200(4),
+            hz400(5),
+            hz800(6),
+            khz1p0(7),
+            khz1p6(8),
+            khz2p0(9),
+            khz3p2(10),
+            khz4p0(11),
+            khz5p0(12),
+            khz6p4(13),
+            khz8p0(14),
+            khz10(15),
+            khz12(16)
+            }
+      ACCESS read-write
+      STATUS mandatory
+      DESCRIPTION " Sets audio frequency for this events right channel.  p = decimal point.
+   It is only valid when tgPresent is not notValid "
+    ::= { analogAudioEventsEntry 4 }
+
+    
+    analogAudioStartTime OBJECT-TYPE
+      SYNTAX OCTET STRING ( SIZE(10) )
+      ACCESS read-write
+      STATUS mandatory
+      DESCRIPTION " Sets time. Format is hh:mm:ss.d  hh is hours, mm is minutes,
+    ss is seconds, and d is tenths of a second.  If hours is 24, then
+    event happens every hour.  If minutes is than 60, event happens every
+    minute.  It is only valid when tgPresent is not notValid "
+    ::= { analogAudioEventsEntry 5 }
+
+    
+    analogAudioDuration OBJECT-TYPE
+      SYNTAX INTEGER ( 1..100 )
+      ACCESS read-write
+      STATUS mandatory
+      DESCRIPTION " Sets duration of event in units of tenths of a second.
+   It is only valid when tgPresent is not notValid "
+    ::= { analogAudioEventsEntry 6 }
+
+-- End of analogAudioEventsTable
+
+
+        
+    analogAudioFrequencyLeft OBJECT-TYPE
+      SYNTAX INTEGER {
+            hz20(1),
+            hz60(2),
+            hz100(3),
+            hz200(4),
+            hz400(5),
+            hz800(6),
+            khz1p0(7),
+            khz1p6(8),
+            khz2p0(9),
+            khz3p2(10),
+            khz4p0(11),
+            khz5p0(12),
+            khz6p4(13),
+            khz8p0(14),
+            khz10(15),
+            khz12(16)
+            }
+      ACCESS read-write
+      STATUS mandatory
+      DESCRIPTION " Sets audio frequency for this events left channel.  p = decimal point.
+   It is only valid when tgPresent is not notValid "
+    ::= { analogAudio 3 }
+
+        
+    analogAudioLevelLeft OBJECT-TYPE
+      SYNTAX INTEGER ( 1..402 )
+      ACCESS read-write
+      STATUS mandatory
+      DESCRIPTION " Sets audio level the left channel in units of tenths of a db.
+   1 represents +10dBu, and 401 represents -30dBu.  402 represents mute.
+   The dB level to show would be ((101 - x) / 10) dB for all levels except 
+   x = 402, in which case the level is mute.
+   It is only valid when tgPresent is not notValid "
+    ::= { analogAudio 4 }
+
+        
+    analogAudioFrequencyRight OBJECT-TYPE
+      SYNTAX INTEGER {
+            hz20(1),
+            hz60(2),
+            hz100(3),
+            hz200(4),
+            hz400(5),
+            hz800(6),
+            khz1p0(7),
+            khz1p6(8),
+            khz2p0(9),
+            khz3p2(10),
+            khz4p0(11),
+            khz5p0(12),
+            khz6p4(13),
+            khz8p0(14),
+            khz10(15),
+            khz12(16)
+            }
+      ACCESS read-write
+      STATUS mandatory
+      DESCRIPTION " Sets audio frequency for this events left channel.  p = decimal point.
+   It is only valid when tgPresent is not notValid "
+    ::= { analogAudio 5 }
+
+        
+    analogAudioLevelRight OBJECT-TYPE
+      SYNTAX INTEGER ( 1..402 )
+      ACCESS read-write
+      STATUS mandatory
+      DESCRIPTION " Sets audio level the left channel in units of tenths of a db.
+   1 represents +10dBu, and 401 represents -30dBu.  402 represents mute.
+   The dB level to show would be ((101 - x) / 10) dB for all levels except 
+   x = 402, in which case the level is mute.
+   It is only valid when tgPresent is not notValid "
+    ::= { analogAudio 6 }
+
+        
+    darsAesFinePhase OBJECT-TYPE
+      SYNTAX INTEGER ( 0..127 )
+      ACCESS read-write
+      STATUS mandatory
+      DESCRIPTION " Sets AES/DARS fine phase.  It is only valid when tgPresent is not notValid "
+    ::= { darsAes 1 }
+
+        
+    darsAesCoarsePhase OBJECT-TYPE
+      SYNTAX INTEGER ( 0..191 )
+      ACCESS read-write
+      STATUS mandatory
+      DESCRIPTION " Sets AES/DARS coarse phase.  Not valid when darsAesLock 
+   is NTSC.  It is only valid when tgPresent is not notValid "
+    ::= { darsAes 2 }
+
+        
+    aesCh1LeftFrequency OBJECT-TYPE
+      SYNTAX INTEGER {
+            hz20(1),
+            hz60(2),
+            hz100(3),
+            hz200(4),
+            hz400(5),
+            hz800(6),
+            khz1p0(7),
+            khz1p6(8),
+            khz2p0(9),
+            khz3p2(10),
+            khz4p0(11),
+            khz5p0(12),
+            khz6p4(13),
+            khz8p0(14),
+            khz10p0(15),
+            khz12p0(16)
+            }
+      ACCESS read-write
+      STATUS mandatory
+      DESCRIPTION " Sets audio frequency for AES Ch1.  p = decimal point.
+   It is only valid when tgPresent is not notValid "
+    ::= { darsAes 3 }
+
+        
+    aesCh1LeftLevel OBJECT-TYPE
+      SYNTAX INTEGER {
+            mute(1),
+            dBFSm30(2),
+            dBFSm29(3),
+            dBFSm28(4),
+            dBFSm27(5),
+            dBFSm26(6),
+            dBFSm25(7),
+            dBFSm24(8),
+            dBFSm23(9),
+            dBFSm22(10),
+            dBFSm21(11),
+            dBFSm20(12),
+            dBFSm19(13),
+            dBFSm18(14),
+            dBFSm17(15),
+            dBFSm16(16),
+            dBFSm15(17),
+            dBFSm14(18),
+            dBFSm13(19),
+            dBFSm12(20),
+            dBFSm11(21),
+            dBFSm10(22),
+            dBFSm9(23),
+            dBFSm8(24),
+            dBFSm7(25),
+            dBFSm6(26),
+            dBFSm5(27),
+            dBFSm4(28),
+            dBFSm3(29),
+            dBFSm2(30),
+            dBFSm1(31),
+            dBFS0(32)
+            }
+      ACCESS read-write
+      STATUS mandatory
+      DESCRIPTION " Sets Ch1 AES audio level. dBFS = Dedibels Full Scale. m = -.
+   It is only valid when tgPresent is not notValid "
+    ::= { darsAes 4 }
+
+        
+    aesCh1RightFrequency OBJECT-TYPE
+      SYNTAX INTEGER {
+            hz20(1),
+            hz60(2),
+            hz100(3),
+            hz200(4),
+            hz400(5),
+            hz800(6),
+            khz1p0(7),
+            khz1p6(8),
+            khz2p0(9),
+            khz3p2(10),
+            khz4p0(11),
+            khz5p0(12),
+            khz6p4(13),
+            khz8p0(14),
+            khz10p0(15),
+            khz12p0(16)
+            }
+      ACCESS read-write
+      STATUS mandatory
+      DESCRIPTION " Sets audio frequency for AES Ch1.  p = decimal point.
+   It is only valid when tgPresent is not notValid "
+    ::= { darsAes 5 }
+
+        
+    aesCh1RightLevel OBJECT-TYPE
+      SYNTAX INTEGER {
+            mute(1),
+            dBFSm30(2),
+            dBFSm29(3),
+            dBFSm28(4),
+            dBFSm27(5),
+            dBFSm26(6),
+            dBFSm25(7),
+            dBFSm24(8),
+            dBFSm23(9),
+            dBFSm22(10),
+            dBFSm21(11),
+            dBFSm20(12),
+            dBFSm19(13),
+            dBFSm18(14),
+            dBFSm17(15),
+            dBFSm16(16),
+            dBFSm15(17),
+            dBFSm14(18),
+            dBFSm13(19),
+            dBFSm12(20),
+            dBFSm11(21),
+            dBFSm10(22),
+            dBFSm9(23),
+            dBFSm8(24),
+            dBFSm7(25),
+            dBFSm6(26),
+            dBFSm5(27),
+            dBFSm4(28),
+            dBFSm3(29),
+            dBFSm2(30),
+            dBFSm1(31),
+            dBFS0(32)
+            }
+      ACCESS read-write
+      STATUS mandatory
+      DESCRIPTION " Sets Ch1 AES audio level. dBFS = Dedibels Full Scale. m = -.
+   It is only valid when tgPresent is not notValid "
+    ::= { darsAes 6 }
+
+        
+    aesCh2LeftFrequency OBJECT-TYPE
+      SYNTAX INTEGER {
+            hz20(1),
+            hz60(2),
+            hz100(3),
+            hz200(4),
+            hz400(5),
+            hz800(6),
+            khz1p0(7),
+            khz1p6(8),
+            khz2p0(9),
+            khz3p2(10),
+            khz4p0(11),
+            khz5p0(12),
+            khz6p4(13),
+            khz8p0(14),
+            khz10p0(15),
+            khz12p0(16)
+            }
+      ACCESS read-write
+      STATUS mandatory
+      DESCRIPTION " Sets audio frequency for AES Ch2.  p = decimal point.
+   It is only valid when tgPresent is not notValid "
+    ::= { darsAes 7 }
+
+        
+    aesCh2LeftLevel OBJECT-TYPE
+      SYNTAX INTEGER {
+            mute(1),
+            dBFSm30(2),
+            dBFSm29(3),
+            dBFSm28(4),
+            dBFSm27(5),
+            dBFSm26(6),
+            dBFSm25(7),
+            dBFSm24(8),
+            dBFSm23(9),
+            dBFSm22(10),
+            dBFSm21(11),
+            dBFSm20(12),
+            dBFSm19(13),
+            dBFSm18(14),
+            dBFSm17(15),
+            dBFSm16(16),
+            dBFSm15(17),
+            dBFSm14(18),
+            dBFSm13(19),
+            dBFSm12(20),
+            dBFSm11(21),
+            dBFSm10(22),
+            dBFSm9(23),
+            dBFSm8(24),
+            dBFSm7(25),
+            dBFSm6(26),
+            dBFSm5(27),
+            dBFSm4(28),
+            dBFSm3(29),
+            dBFSm2(30),
+            dBFSm1(31),
+            dBFS0(32)
+            }
+      ACCESS read-write
+      STATUS mandatory
+      DESCRIPTION " Sets Ch2 AES audio level. dBFS = Dedibels Full Scale. m = -.
+   It is only valid when tgPresent is not notValid "
+    ::= { darsAes 8 }
+
+        
+    aesCh2RightFrequency OBJECT-TYPE
+      SYNTAX INTEGER {
+            hz20(1),
+            hz60(2),
+            hz100(3),
+            hz200(4),
+            hz400(5),
+            hz800(6),
+            khz1p0(7),
+            khz1p6(8),
+            khz2p0(9),
+            khz3p2(10),
+            khz4p0(11),
+            khz5p0(12),
+            khz6p4(13),
+            khz8p0(14),
+            khz10p0(15),
+            khz12p0(16)
+            }
+      ACCESS read-write
+      STATUS mandatory
+      DESCRIPTION " Sets audio frequency for AES Ch2.  p = decimal point.
+   It is only valid when tgPresent is not notValid "
+    ::= { darsAes 9 }
+
+        
+    aesCh2RightLevel OBJECT-TYPE
+      SYNTAX INTEGER {
+            mute(1),
+            dBFSm30(2),
+            dBFSm29(3),
+            dBFSm28(4),
+            dBFSm27(5),
+            dBFSm26(6),
+            dBFSm25(7),
+            dBFSm24(8),
+            dBFSm23(9),
+            dBFSm22(10),
+            dBFSm21(11),
+            dBFSm20(12),
+            dBFSm19(13),
+            dBFSm18(14),
+            dBFSm17(15),
+            dBFSm16(16),
+            dBFSm15(17),
+            dBFSm14(18),
+            dBFSm13(19),
+            dBFSm12(20),
+            dBFSm11(21),
+            dBFSm10(22),
+            dBFSm9(23),
+            dBFSm8(24),
+            dBFSm7(25),
+            dBFSm6(26),
+            dBFSm5(27),
+            dBFSm4(28),
+            dBFSm3(29),
+            dBFSm2(30),
+            dBFSm1(31),
+            dBFS0(32)
+            }
+      ACCESS read-write
+      STATUS mandatory
+      DESCRIPTION " Sets Ch2 AES audio level. dBFS = Dedibels Full Scale. m = -.
+   It is only valid when tgPresent is not notValid "
+    ::= { darsAes 10 }
+
+        
+    darsAesLock OBJECT-TYPE
+      SYNTAX INTEGER {
+            pal(1),
+            ntsc(2)
+            }
+      ACCESS read-write
+      STATUS mandatory
+      DESCRIPTION " Sets DARS/AES lock to either PAL or NTSC system reference
+   It is only valid when tgPresent is not notValid "
+    ::= { darsAes 11 }
+
+        
+    wordClockPhase OBJECT-TYPE
+      SYNTAX INTEGER ( 0..127 )
+      ACCESS read-write
+      STATUS mandatory
+      DESCRIPTION " This sets the phase of the word clock outputs with respect to the 
+    AES/DARS. "
+    ::= { darsAes 12 }
+
+        
+    setTimeGeneral OBJECT-TYPE
+      SYNTAX OCTET STRING ( SIZE(8) )
+      ACCESS read-write
+      STATUS mandatory
+      DESCRIPTION " Sets time. Format is hh:mm:ss
+    It is only valid if inputFrequencyReference is not set to gps, and
+    inputTimeReference is set to none "
+    ::= { general 1 }
+
+        
+    setDateGeneral OBJECT-TYPE
+      SYNTAX OCTET STRING ( SIZE(8) )
+      ACCESS read-write
+      STATUS mandatory
+      DESCRIPTION " Sets Date. Format is yy:mm:dd
+    It is only valid if inputFrequencyReference is not set to gps, and
+    inputTimeReference is set to none "
+    ::= { general 2 }
+
+        
+    userBitsGeneral OBJECT-TYPE
+      SYNTAX OCTET STRING ( SIZE(8) )
+      ACCESS read-write
+      STATUS mandatory
+      DESCRIPTION " Sets the user bit field for VITC and LTC.  
+    Data is hex characters.
+    It is only valid if userBitModeGeneral is set to manual "
+    ::= { general 3 }
+
+        
+    userBitModeGeneral OBJECT-TYPE
+      SYNTAX INTEGER {
+            legacyDate(1),
+            productionDate(2),
+            smptMjdDate(3),
+            smptBcdDate(4),
+            manual(5),
+            latLong(6)
+            }
+      ACCESS read-write
+      STATUS mandatory
+      DESCRIPTION " Sets mode of user bits. "
+    ::= { general 4 }
+
+        
+    gpo1General OBJECT-TYPE
+      SYNTAX INTEGER {
+            notUsed(1),
+            noReference(2),
+            fanFailure(3),
+            powerSupplyFailure(4),
+            anyFault(5),
+            timeFault(6),
+            gpsFault(7),
+            analogAudioActive(8),
+            internalHardwareFailure(9),
+            noReferenceSlow(10)
+            }
+      ACCESS read-write
+      STATUS mandatory
+      DESCRIPTION " Sets which condition will cause GPO 1 to go active (low) "
+    ::= { general 5 }
+
+        
+    gpo2General OBJECT-TYPE
+      SYNTAX INTEGER {
+            notUsed(1),
+            noReference(2),
+            fanFailure(3),
+            powerSupplyFailure(4),
+            anyFault(5),
+            timeFault(6),
+            gpsFault(7),
+            analogAudioActive(8),
+            internalHardwareFailure(9),
+            noReferenceSlow(10)
+            }
+      ACCESS read-write
+      STATUS mandatory
+      DESCRIPTION " Sets which condition will cause GPO 2 to go active (low) "
+    ::= { general 6 }
+
+        
+    gpi1General OBJECT-TYPE
+      SYNTAX INTEGER {
+            notUsed(1),
+            sdiTestGen1SignalChange(2),
+            sdiTestGen2SignalChange(3),
+            sdiTestGen3SignalChange(4),
+            sdiTestGen4SignalChange(5),
+            sdAnalogTestGen1SignalChange(6),
+            sdAnalogTestGen2SignalChange(7)
+            }
+      ACCESS read-write
+      STATUS mandatory
+      DESCRIPTION " Sets what action a low condition on GPI 1 will cause. "
+    ::= { general 7 }
+
+        
+    gpi2General OBJECT-TYPE
+      SYNTAX INTEGER {
+            notUsed(1),
+            sdiTestGen1SignalChange(2),
+            sdiTestGen2SignalChange(3),
+            sdiTestGen3SignalChange(4),
+            sdiTestGen4SignalChange(5),
+            sdAnalogTestGen1SignalChange(6),
+            sdAnalogTestGen2SignalChange(7)
+            }
+      ACCESS read-write
+      STATUS mandatory
+      DESCRIPTION " Sets what action a low condition on GPI 2 will cause. "
+    ::= { general 8 }
+
+        
+    setPasswordGeneral OBJECT-TYPE
+      SYNTAX INTEGER ( 1..999999999 )
+      ACCESS read-write
+      STATUS mandatory
+      DESCRIPTION " Sets the password. "
+    ::= { general 9 }
+
+        
+    synchroEnable OBJECT-TYPE
+      SYNTAX INTEGER {
+            synchroOff(1),
+            synchroSlaveMenu(2),
+            synchroSlaveTime(3),
+            synchroSlaveMenuTime(4),
+            synchroMasterMenu(5),
+            synchroMasterTime(6),
+            synchroMasterMenuTime(7)
+            }
+      ACCESS read-write
+      STATUS mandatory
+      DESCRIPTION " Enables syncro mode.  When enabled, the controls for items 
+   under the output menu will may be overridden by synchro signals from 
+   another 5601MSC. "
+    ::= { general 10 }
+
+        
+    menuHidingEnable OBJECT-TYPE
+      SYNTAX INTEGER {
+            allMenusVisible(1),
+            menuHidingEnabled(2)
+            }
+      ACCESS read-write
+      STATUS mandatory
+      DESCRIPTION " Enables menu hiding.  When disabled, all menus will be 
+   visible.  Can only be enabled if 5601MSC is in ENG mode.  This can only be 
+   enabled from the front panel for security reasons. "
+    ::= { general 11 }
+
+        
+    gpsEnable OBJECT-TYPE
+      SYNTAX INTEGER {
+            gpsDisabled(1),
+            gpsEnabled(2)
+            }
+      ACCESS read-write
+      STATUS mandatory
+      DESCRIPTION " Enables reception of American GPS satellites.  Should only be shown when glonassPresent is valid "
+    ::= { general 12 }
+
+        
+    glonassEnable OBJECT-TYPE
+      SYNTAX INTEGER {
+            glonassDisabled(1),
+            glonassEnabled(2)
+            }
+      ACCESS read-write
+      STATUS mandatory
+      DESCRIPTION " Enables reception of Russian Glonass satellites.  Should only be shown when glonassPresent is valid "
+    ::= { general 13 }
+
+        
+    leapSeconds OBJECT-TYPE
+      SYNTAX INTEGER ( 2..100 )
+      ACCESS read-write
+      STATUS mandatory
+      DESCRIPTION " This sets the current offset between GPS and UTC in seconds.
+    Should only be shown when glonassPresent is valid. "
+    ::= { general 14 }
+
+        
+    syslogAddressIp OBJECT-TYPE
+      SYNTAX OCTET STRING ( SIZE(16) )
+      ACCESS read-write
+      STATUS mandatory
+      DESCRIPTION " Sets syslog destination IP address.
+    This should be entered in a decimal dot format "
+    ::= { general 15 }
+
+        
+    syslogEnable OBJECT-TYPE
+      SYNTAX INTEGER {
+            off(1),
+            level1(2),
+            level2(3)
+            }
+      ACCESS read-write
+      STATUS mandatory
+      DESCRIPTION " Enables sending of syslog/insight messages "
+    ::= { general 16 }
+
+        
+    modeGeneralModem OBJECT-TYPE
+      SYNTAX INTEGER {
+            off(1),
+            autoAnswer(2),
+            autoDial(3),
+            autoDialAnswer(4)
+            }
+      ACCESS read-write
+      STATUS mandatory
+      DESCRIPTION " Sets what action modem should do.
+   autoAnswer and autoDialAnswer are not valid if standardGeneralModem is
+   not nrc.  Only valid when modemPresent is valid. "
+    ::= { generalModem 1 }
+
+        
+    standardGeneralModem OBJECT-TYPE
+      SYNTAX INTEGER {
+            nrc(1),
+            nist(2)
+            }
+      ACCESS read-write
+      STATUS mandatory
+      DESCRIPTION " Sets what protocol modem will use.
+   Only valid when modemPresent is valid. "
+    ::= { generalModem 2 }
+
+        
+    volumeGeneralModem OBJECT-TYPE
+      SYNTAX INTEGER {
+            speakerOff(1),
+            speakerOn(2)
+            }
+      ACCESS read-write
+      STATUS mandatory
+      DESCRIPTION " Turns on or off modem speaker.
+   Only valid when modemPresent is valid. "
+    ::= { generalModem 3 }
+
+        
+    phoneNumberGeneralModem OBJECT-TYPE
+      SYNTAX OCTET STRING ( SIZE(32) )
+      ACCESS read-write
+      STATUS mandatory
+      DESCRIPTION " The phone number to be used when autodialing.
+    Must be digits from 0 to 9, or P for a 1 second pause.
+   Only valid when modemPresent is valid. "
+    ::= { generalModem 4 }
+
+        
+    dialtimeGeneralModem OBJECT-TYPE
+      SYNTAX OCTET STRING ( SIZE(8) )
+      ACCESS read-write
+      STATUS mandatory
+      DESCRIPTION " Sets time of day to dial. Format is hh:mm:ss
+   Only valid when modemPresent is valid. "
+    ::= { generalModem 5 }
+
+        
+    dialDayGeneralModem OBJECT-TYPE
+      SYNTAX INTEGER {
+            sunday(1),
+            monday(2),
+            tuesday(3),
+            wednesday(4),
+            thursday(5),
+            friday(6),
+            saturday(7),
+            everyDay(8)
+            }
+      ACCESS read-write
+      STATUS mandatory
+      DESCRIPTION " Sets what day of the week to auto dial.
+   Only valid when modemPresent is valid. "
+    ::= { generalModem 6 }
+
+        
+    retriesGeneralModem OBJECT-TYPE
+      SYNTAX INTEGER ( 0..100 )
+      ACCESS read-write
+      STATUS mandatory
+      DESCRIPTION " Sets the number of times to try to dial if previous attempt
+   is a failure.  Only valid when modemPresent is valid. "
+    ::= { generalModem 7 }
+
+        
+    dialNowGeneralModem OBJECT-TYPE
+      SYNTAX INTEGER {
+            dialNow(1)
+            }
+      ACCESS read-write
+      STATUS mandatory
+      DESCRIPTION " This commands the 5601MSC to start a call sequence to get time.
+    Only valid when modemPresent is valid. "
+    ::= { generalModem 8 }
+
+        
+    cancelCallGeneralModem OBJECT-TYPE
+      SYNTAX INTEGER {
+            cancelCall(1)
+            }
+      ACCESS read-write
+      STATUS mandatory
+      DESCRIPTION " This commands the 5601MSC to start a call sequence to get time.
+    Only valid when modemPresent is valid. "
+    ::= { generalModem 9 }
+
+        
+    modeGeneralDst OBJECT-TYPE
+      SYNTAX INTEGER {
+            dstDayOfWeekOfMonth(1),
+            dstDayOfMonth(2)
+            }
+      ACCESS read-write
+      STATUS mandatory
+      DESCRIPTION " Selects daylight saving time mode.
+                   Day of week of month selects a time such as 
+                   Day 1 of week 1 week of month 4, ie the first Sunday in April
+                   Day of month selects an absolute date such as
+                   Day 3 of month 5, ie May 5. "
+    ::= { generalDst 1 }
+
+        
+    startHourGeneralDst OBJECT-TYPE
+      SYNTAX INTEGER ( 0..23 )
+      ACCESS read-write
+      STATUS mandatory
+      DESCRIPTION " Selects daylight saving time starting hour from 
+    0 = midnight to 23 = 11pm. "
+    ::= { generalDst 2 }
+
+        
+    startDayGeneralDst OBJECT-TYPE
+      SYNTAX INTEGER ( 1..31 )
+      ACCESS read-write
+      STATUS mandatory
+      DESCRIPTION " Selects daylight saving time starting day.
+    If dstMode = dstDayOfWeekOfMonth, then the maximum should be 7,
+    which represents Sunday through Saturday "
+    ::= { generalDst 3 }
+
+        
+    startWeekGeneralDst OBJECT-TYPE
+      SYNTAX INTEGER {
+            firstWeek(1),
+            secondWeek(2),
+            thirdWeek(3),
+            fourthWeek(4),
+            lastWeek(5)
+            }
+      ACCESS read-write
+      STATUS mandatory
+      DESCRIPTION " Selects daylight saving time starting week. "
+    ::= { generalDst 4 }
+
+        
+    startMonthGeneralDst OBJECT-TYPE
+      SYNTAX INTEGER {
+            january(1),
+            february(2),
+            march(3),
+            april(4),
+            may(5),
+            june(6),
+            july(7),
+            august(8),
+            september(9),
+            october(10),
+            november(11),
+            december(12)
+            }
+      ACCESS read-write
+      STATUS mandatory
+      DESCRIPTION " Selects daylight saving time starting month. "
+    ::= { generalDst 5 }
+
+        
+    endHourGeneralDst OBJECT-TYPE
+      SYNTAX INTEGER ( 0..23 )
+      ACCESS read-write
+      STATUS mandatory
+      DESCRIPTION " Selects daylight saving time ending hour from 
+    0 = midnight to 23 = 11pm. "
+    ::= { generalDst 6 }
+
+        
+    endDayGeneralDst OBJECT-TYPE
+      SYNTAX INTEGER ( 1..31 )
+      ACCESS read-write
+      STATUS mandatory
+      DESCRIPTION " Selects daylight saving time ending day.
+    If dstMode = dstDayOfWeekOfMonth, then the maximum should be 7,
+    which represents Sunday through Saturday "
+    ::= { generalDst 7 }
+
+        
+    endWeekGeneralDst OBJECT-TYPE
+      SYNTAX INTEGER {
+            firstWeek(1),
+            secondWeek(2),
+            thirdWeek(3),
+            fourthWeek(4),
+            lastWeek(5)
+            }
+      ACCESS read-write
+      STATUS mandatory
+      DESCRIPTION " Selects daylight ending time ending week. "
+    ::= { generalDst 8 }
+
+        
+    endMonthGeneralDst OBJECT-TYPE
+      SYNTAX INTEGER {
+            january(1),
+            february(2),
+            march(3),
+            april(4),
+            may(5),
+            june(6),
+            july(7),
+            august(8),
+            september(9),
+            october(10),
+            november(11),
+            december(12)
+            }
+      ACCESS read-write
+      STATUS mandatory
+      DESCRIPTION " Selects daylight saving time ending month. "
+    ::= { generalDst 9 }
+
+        
+    offsetGeneralDst OBJECT-TYPE
+      SYNTAX INTEGER {
+            noDST(1),
+            hour1(2),
+            hour2(3)
+            }
+      ACCESS read-write
+      STATUS mandatory
+      DESCRIPTION " Selects daylight saving time offset in hours that will be used. "
+    ::= { generalDst 10 }
+
+        
+-- Beginning of ntpTable
+    ntpTable OBJECT-TYPE
+      SYNTAX SEQUENCE OF NtpEntry
+        ACCESS not-accessible
+        STATUS mandatory
+        DESCRIPTION  " This table contains controls related to ntp restriction lists. "
+    ::= { ntpGeneral 1 }
+
+    ntpEntry OBJECT-TYPE
+      SYNTAX NtpEntry
+        ACCESS not-accessible
+        STATUS mandatory
+        DESCRIPTION 
+                "
+                This entry object type is used to reference
+                all of the objects in the table
+                "
+        INDEX { ntpIndex }
+    ::= { ntpTable 1 }
+
+    NtpEntry ::= SEQUENCE {
+        ntpIndex     INTEGER,
+        ntpRestrictEnable     INTEGER,
+        ntpRestrictIp     OCTET STRING,
+        ntpRestrictMask     OCTET STRING
+    }
+
+
+    
+    ntpIndex OBJECT-TYPE
+      SYNTAX INTEGER {
+            restriction1(1),
+            restriction2(2),
+            restriction3(3),
+            restriction4(4),
+            restriction5(5),
+            restriction6(6),
+            restriction7(7),
+            restriction8(8)
+            }
+      ACCESS read-only
+      STATUS mandatory
+      DESCRIPTION " This object is the index for NTP restrictions. "
+    ::= { ntpEntry 1 }
+
+    
+    ntpRestrictEnable OBJECT-TYPE
+      SYNTAX INTEGER {
+            permit(1),
+            deny(2)
+            }
+      ACCESS read-write
+      STATUS mandatory
+      DESCRIPTION " enables restrictions.  If deny, and the IP mask and IP address match an 
+   incomming NTP packet, that packet will be ignored.  If permit, this restriction will be 
+   ignored.  Any combination of address and mask that gives an IP of 0.0.0.0 will be ignored. "
+    ::= { ntpEntry 2 }
+
+    
+    ntpRestrictIp OBJECT-TYPE
+      SYNTAX OCTET STRING ( SIZE(16) )
+      ACCESS read-write
+      STATUS mandatory
+      DESCRIPTION " Sets NTP IP address for restricted addresses.
+    This should be entered in a decimal dot format.
+    Any combination of address and mask that gives an IP of 0.0.0.0 will be ignored. "
+    ::= { ntpEntry 3 }
+
+    
+    ntpRestrictMask OBJECT-TYPE
+      SYNTAX OCTET STRING ( SIZE(16) )
+      ACCESS read-write
+      STATUS mandatory
+      DESCRIPTION " Sets NTP IP mask for restricted addresses.
+    This should be entered in a decimal dot format.
+    Any combination of address and mask that gives an IP of 0.0.0.0 will be ignored. "
+    ::= { ntpEntry 4 }
+
+-- End of ntpTable
+
+
+        
+    spoofing OBJECT-TYPE
+      SYNTAX INTEGER {
+            normal(1),
+            spoofed(2)
+            }
+      ACCESS read-write
+      STATUS mandatory
+      DESCRIPTION " Enables (spoofing) NTP to operate without a reference "
+    ::= { ntpGeneral 2 }
+
+        
+    tgPresent OBJECT-TYPE
+      SYNTAX INTEGER {
+            notValid(1),
+            sdPresent(2),
+            hdPresent(3),
+            threeGPresent(4)
+            }
+      ACCESS read-only
+      STATUS mandatory
+      DESCRIPTION " When notValid, analogTestGenerator, analogTestSignals,
+    sdiTestGenerator, sdiTestSignals, analogAudio, and aesAudio should not
+    be shown to the user. "
+    ::= { options 1 }
+
+        
+    modemPresent OBJECT-TYPE
+      SYNTAX INTEGER {
+            notValid(1),
+            valid(2)
+            }
+      ACCESS read-only
+      STATUS mandatory
+      DESCRIPTION " When notValid, modemSetup should not be shown to the user. "
+    ::= { options 2 }
+
+        
+    ntpPresent OBJECT-TYPE
+      SYNTAX INTEGER {
+            notValid(1),
+            valid(2)
+            }
+      ACCESS read-only
+      STATUS mandatory
+      DESCRIPTION " When notValid, ntpRules should not be
+    shown to the user. "
+    ::= { options 3 }
+
+        
+    irigPresent OBJECT-TYPE
+      SYNTAX INTEGER {
+            notValid(1),
+            valid(2)
+            }
+      ACCESS read-only
+      STATUS mandatory
+      DESCRIPTION " When notValid, irigRules should not be
+    shown to the user. "
+    ::= { options 4 }
+
+        
+    changeCounter OBJECT-TYPE
+      SYNTAX INTEGER ( 1..2147483647 )
+      ACCESS read-only
+      STATUS mandatory
+      DESCRIPTION " This is incremented whenever a change is made to the 5601MSC
+    for any reason.  It can be used to invoke a refresh of the all the vars. "
+    ::= { options 5 }
+
+        
+    ptpPresent OBJECT-TYPE
+      SYNTAX INTEGER {
+            notValid(1),
+            valid(2)
+            }
+      ACCESS read-only
+      STATUS mandatory
+      DESCRIPTION " When notValid, ptpControls should not be
+    shown to the user. "
+    ::= { options 6 }
+
+        
+    glonassPresent OBJECT-TYPE
+      SYNTAX INTEGER {
+            notValid(1),
+            valid(2)
+            }
+      ACCESS read-only
+      STATUS mandatory
+      DESCRIPTION " When notValid, GlobalGpsEnable and GlobalGlonassEnable 
+    should not be shown to the user. "
+    ::= { options 7 }
+
+        
+    ultraHDTgPresent OBJECT-TYPE
+      SYNTAX INTEGER {
+            notValid(1),
+            valid(2)
+            }
+      ACCESS read-only
+      STATUS mandatory
+      DESCRIPTION " When notValid, ultraHD should not be
+    shown to the user. "
+    ::= { options 8 }
+
+        
+    gmpPresent OBJECT-TYPE
+      SYNTAX INTEGER {
+            notValid(1),
+            valid(2)
+            }
+      ACCESS read-only
+      STATUS mandatory
+      DESCRIPTION " Shows when the gmp signal controls are Valid "
+    ::= { options 9 }
+
+        
+-- Beginning of mgmtFaultTable
+    mgmtFaultTable OBJECT-TYPE
+      SYNTAX SEQUENCE OF MgmtFaultEntry
+        ACCESS not-accessible
+        STATUS mandatory
+        DESCRIPTION  " 
+    This table contains fault monitoring, traps, etc.
+     "
+    ::= { mscNotify 1 }
+
+    mgmtFaultEntry OBJECT-TYPE
+      SYNTAX MgmtFaultEntry
+        ACCESS not-accessible
+        STATUS mandatory
+        DESCRIPTION 
+                "
+                This entry object type is used to reference
+                all of the objects in the table
+                "
+        INDEX { faultName }
+    ::= { mgmtFaultTable 1 }
+
+    MgmtFaultEntry ::= SEQUENCE {
+        faultName     INTEGER,
+        sendTrap     INTEGER,
+        faultPresent     INTEGER
+    }
+
+
+    
+    faultName OBJECT-TYPE
+      SYNTAX INTEGER {
+            referenceFault(1),
+            timeFault(2),
+            referenceJamNeeded(3),
+            timeJamNeeded(4),
+            fanFailureLeftFront(5),
+            fanFailureLeftRear(6),
+            fanFailureRightFront(7),
+            fanFailureRightRear(8),
+            psLeftFailure(9),
+            psRightFailure(10),
+            internalHardwareFailure(11),
+            temperature(12),
+            gpi1Assert(13),
+            gpi2Assert(14),
+            ptpState(15)
+            }
+      ACCESS read-only
+      STATUS mandatory
+      DESCRIPTION " This is the main index for this table.  The values of this
+    index correspond to particular faults or signals. "
+    ::= { mgmtFaultEntry 1 }
+
+    
+    sendTrap OBJECT-TYPE
+      SYNTAX INTEGER {
+            false(1),
+            true(2)
+            }
+      ACCESS read-write
+      STATUS mandatory
+      DESCRIPTION " This control allows the user to read the state of a fault, if
+    the value for a fault is true, then there is no error with that
+    fault.  If the value for a fault is false then there is a trap
+    present for that fault. "
+    ::= { mgmtFaultEntry 2 }
+
+    
+    faultPresent OBJECT-TYPE
+      SYNTAX INTEGER {
+            false(1),
+            true(2)
+            }
+      ACCESS read-only
+      STATUS mandatory
+      DESCRIPTION " This control allows the user to read the present state
+    of a particular fault.  The values for this object are
+    false and true.
+     "
+    ::= { mgmtFaultEntry 3 }
+
+-- End of mgmtFaultTable
+
+
+        
+-- Beginning of ipTrapAddressTable
+    ipTrapAddressTable OBJECT-TYPE
+      SYNTAX SEQUENCE OF IpTrapAddressEntry
+        ACCESS not-accessible
+        STATUS mandatory
+        DESCRIPTION  " This table contains controls related to trap IPs. "
+    ::= { mscNotify 2 }
+
+    ipTrapAddressEntry OBJECT-TYPE
+      SYNTAX IpTrapAddressEntry
+        ACCESS not-accessible
+        STATUS mandatory
+        DESCRIPTION 
+                "
+                This entry object type is used to reference
+                all of the objects in the table
+                "
+        INDEX { trapsIndex }
+    ::= { ipTrapAddressTable 1 }
+
+    IpTrapAddressEntry ::= SEQUENCE {
+        trapsIndex     INTEGER,
+        trapsEnable     INTEGER,
+        trapsIp     OCTET STRING
+    }
+
+
+    
+    trapsIndex OBJECT-TYPE
+      SYNTAX INTEGER {
+            trap1(1),
+            trap2(2),
+            trap3(3),
+            trap4(4)
+            }
+      ACCESS read-only
+      STATUS mandatory
+      DESCRIPTION " This object is the index for trap IPs. "
+    ::= { ipTrapAddressEntry 1 }
+
+    
+    trapsEnable OBJECT-TYPE
+      SYNTAX INTEGER {
+            off(1),
+            on(2)
+            }
+      ACCESS read-write
+      STATUS mandatory
+      DESCRIPTION " Enables trap IP address. "
+    ::= { ipTrapAddressEntry 2 }
+
+    
+    trapsIp OBJECT-TYPE
+      SYNTAX OCTET STRING ( SIZE(16) )
+      ACCESS read-write
+      STATUS mandatory
+      DESCRIPTION " Sets trap IP address.  This should be entered in a decimal dot format. "
+    ::= { ipTrapAddressEntry 3 }
+
+-- End of ipTrapAddressTable
+
+
+        
+    enableGMP OBJECT-TYPE
+      SYNTAX INTEGER {
+            off(1),
+            sync1(2),
+            sync2(3),
+            sync3(4),
+            sync4(5),
+            sync5(6),
+            sync6(7),
+            wordClock(8),
+            tenMHz(9)
+            }
+      ACCESS read-write
+      STATUS mandatory
+      DESCRIPTION " to generate frame time TLV packets.  Do not show if
+   both gmpPresent and ptpPresent are not valid.   "
+    ::= { ieee1588 1 }
+
+        
+    masterEnable OBJECT-TYPE
+      SYNTAX INTEGER {
+            off(1),
+            on(2)
+            }
+      ACCESS read-write
+      STATUS mandatory
+      DESCRIPTION " Enables IEEE1588.  Do not show if ptpPresent is not valid. "
+    ::= { ieee1588 2 }
+
+        
+    dscp OBJECT-TYPE
+      SYNTAX INTEGER ( 0..63 )
+      ACCESS read-write
+      STATUS mandatory
+      DESCRIPTION " Sets IEEE1588 dscp Differentiated Services Code Point.  Do not show if ptpPresent is not valid. "
+    ::= { ieee1588 3 }
+
+        
+    syncRate OBJECT-TYPE
+      SYNTAX INTEGER {
+            onePerTwoSec(1),
+            onePerOneSec(2),
+            twoPerOneSec(3),
+            fourPerOneSec(4),
+            eightPerOneSec(5),
+            sixteenPerOneSec(6),
+            thirtyTwoPerOneSec(7),
+            sixtyFourPerOneSec(8),
+            oneHundredTwentyEightPerOneSec(9)
+            }
+      ACCESS read-write
+      STATUS mandatory
+      DESCRIPTION " Rates of IEEE1588 sync packets.  Do not show if ptpPresent is not valid.
+   If ptpMode is ieee1588Annexj, the range is onePerTwoSec to twoPerOneSec.
+   If ptpMode is smpte2059, the range is twoPerOneSec to oneHundredTwentyEightPerOneSec. "
+    ::= { ieee1588 4 }
+
+        
+    announceRate OBJECT-TYPE
+      SYNTAX INTEGER {
+            onePerSixteenSec(1),
+            onePerEightSec(2),
+            onePerFourSec(3),
+            onePerTwoSec(4),
+            onePerOneSec(5),
+            twoPerOneSec(6),
+            fourPerOneSec(7),
+            eightPerOneSec(8)
+            }
+      ACCESS read-write
+      STATUS mandatory
+      DESCRIPTION " Rates of IEEE1588 announce packets.  Do not show if ptpPresent is not valid.
+   If ptpMode is ieee1588Annexj, the range is onePer16Sec to onePerOneSec.
+   If ptpMode is smpte2059, the range is onePerTwoSec to eightPerOneSec. "
+    ::= { ieee1588 5 }
+
+        
+    timeout OBJECT-TYPE
+      SYNTAX INTEGER {
+            twoTimesAnnouncRate(1),
+            threeTimesAnnouncRate(2),
+            fourTimesAnnouncRate(3),
+            fiveTimesAnnouncRate(4),
+            sixTimesAnnouncRate(5),
+            sevenTimesAnnouncRate(6),
+            eightTimesAnnouncRate(7),
+            nineTimesAnnouncRate(8),
+            tenTimesAnnouncRate(9)
+            }
+      ACCESS read-write
+      STATUS mandatory
+      DESCRIPTION " Timeout of IEEE1588 in units of announce packets.  Do not show if ptpPresent is not valid. "
+    ::= { ieee1588 6 }
+
+        
+    priority1 OBJECT-TYPE
+      SYNTAX INTEGER ( 0..255 )
+      ACCESS read-write
+      STATUS mandatory
+      DESCRIPTION " Sets IEEE1588 priority 1.  Do not show if ptpPresent is not valid. "
+    ::= { ieee1588 7 }
+
+        
+    priority2 OBJECT-TYPE
+      SYNTAX INTEGER ( 0..255 )
+      ACCESS read-write
+      STATUS mandatory
+      DESCRIPTION " Sets IEEE1588 priority 2.  Do not show if ptpPresent is not valid. "
+    ::= { ieee1588 8 }
+
+        
+    domain OBJECT-TYPE
+      SYNTAX INTEGER ( 0..127 )
+      ACCESS read-write
+      STATUS mandatory
+      DESCRIPTION " Sets IEEE1588 domain.  Do not show if ptpPresent is not valid. "
+    ::= { ieee1588 9 }
+
+        
+    ptpMode OBJECT-TYPE
+      SYNTAX INTEGER {
+            ieee1588Annexj(1),
+            smpte2059(2)
+            }
+      ACCESS read-write
+      STATUS mandatory
+      DESCRIPTION " Sets IEEE1588 profile.  Changing this causes changes to the values
+   and ranges of announceRate and syncRate.  Do not show if ptpPresent is not valid. "
+    ::= { ieee1588 10 }
+
+
+END
